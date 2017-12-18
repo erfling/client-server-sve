@@ -4,11 +4,44 @@
   "description": "Client server in one package with dev and deployment",
   "main": "index.js",
   "dependencies": {
-    "npm": "^5.6.0"
+    "@types/gapi": "^0.0.35",
+    "@types/socket.io": "^1.4.31",
+    "body-parser": "^1.18.2",
+    "compression": "^1.7.1",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "google-auth-library": "^0.12.0",
+    "googleapis": "^23.0.0",
+    "helmet": "^3.9.0",
+    "jasmine": "^2.8.0",
+    "mongoose": "^4.13.7",
+    "morgan": "^1.9.0",
+    "nodemon": "^1.12.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "redux": "^3.7.2",
+    "socket.io": "^2.0.4",
+    "ts-loader": "^3.2.0",
+    "tsx": "^1.0.0",
+    "typegoose": "^3.7.0",
+    "webpack-dev-server": "^2.9.7"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/compression": "^0.0.35",
+    "@types/cors": "^2.8.3",
+    "@types/debug": "^0.0.30",
+    "@types/express": "^4.0.39",
+    "@types/helmet": "^0.0.37",
+    "@types/jasmine": "^2.8.2",
+    "@types/morgan": "^1.7.35",
+    "@types/node": "^8.0.53",
+    "typescript": "^2.6.2"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./build/index.js",
+    "server": "tsc && nodemon ./build/index.js",
+    "ts": "tsc -w"
   },
   "repository": {
     "type": "git",

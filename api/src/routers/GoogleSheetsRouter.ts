@@ -53,7 +53,4 @@ class GoogleSheetsRouter{
     }
 }
 
-const sheetRoutes = new GoogleSheetsRouter();
-sheetRoutes.routes();
-
-export default sheetRoutes.router;
+export default new GoogleSheetsRouter().router;

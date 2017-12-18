@@ -93,6 +93,4 @@ class GameRouter{
     }
 }
 
-const gameRoutes = new GameRouter();
-
-export default gameRoutes.router;
+export default new GameRouter().router;

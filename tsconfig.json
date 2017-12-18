@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "./build/",
+        "outDir": "./app/build/",
         "sourceMap": true,
         "noImplicitAny": true,
         "module": "commonjs",
@@ -10,7 +10,7 @@
         "experimentalDecorators": true     
     },
     "include": [
-        "./src/**/*"
+        "./**/*"
     ]
 }
 

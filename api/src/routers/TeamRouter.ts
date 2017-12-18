@@ -82,6 +82,4 @@ class TeamRouter{
     }
 }
 
-const teamRoutes = new TeamRouter();
-
-export default teamRoutes.router;
+export default new TeamRouter().router;
