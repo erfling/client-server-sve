@@ -1,0 +1,23 @@
+{
+  "name": "client-server-sve",
+  "version": "1.0.0",
+  "description": "Client server in one package with dev and deployment",
+  "main": "index.js",
+  "dependencies": {
+    "npm": "^5.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erfling/client-server-sve.git"
+  },
+  "author": "Matthew Breeden",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/erfling/client-server-sve/issues"
+  },
+  "homepage": "https://github.com/erfling/client-server-sve#readme"
+}

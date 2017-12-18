@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "outDir": "./build/",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "module": "commonjs",
+        "target": "es2015",
+        "jsx": "react",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true     
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}
+
+//console.log("TEAMS REQ:", req)
