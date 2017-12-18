@@ -1,0 +1,149 @@
+const fs: any = require('fs');
+const readline: any = require('readline');
+const google: any = require('googleapis');
+const googleAuth: any = require('google-auth-library');
+/*
+import * as fs from 'fs';
+import * as readline from 'readline';
+import * as google from 'googleapis';
+import * as googleAuth form 'google-auth-library'
+*/
+
+export default class GoogleSheets{
+
+    auth: any;
+    static SCOPES:string[] = ['https://www.googleapis.com/auth/spreadsheets'];
+    static TOKEN_DIR: string = (process.env.HOME || process.env.HOMEPATH ||
+        process.env.USERPROFILE) + '/.credentials/';
+    static TOKEN_PATH: string = GoogleSheets.TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
+
+    public GetSheetValues(auth:any): any {
+        
+        const sheets = google.sheets('v4');
+        console.log( auth ,"AUTH");
+        var options = {
+            auth: auth,            
+            spreadsheetId: '1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q',
+            range: 'NASA!A:ZZ'
+        }
+
+      return new Promise( (resolve, reject) => {
+        sheets.spreadsheets.values.get({
+          auth: auth,            
+          spreadsheetId: '1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q',
+          range: 'NASA!A:ZZ'
+      }, (err:any, response: any) => {
+          if(err){
+            console.log(err,"ERROR HERE")
+            return reject(err);
+          }
+          return resolve(response.values);
+        })
+      })
+    }
+
+    private storeToken(token: any) {
+      try {
+        fs.mkdirSync(GoogleSheets.TOKEN_DIR);
+      } catch (err) {
+        if (err.code != 'EEXIST') {
+          throw err;
+        }
+      }
+      fs.writeFile(GoogleSheets.TOKEN_PATH, JSON.stringify(token));
+      console.log('Token stored to ' + GoogleSheets.TOKEN_PATH);
+    }
+
+    private getNewToken(oauth2Client:any, callback: Function) {
+      var authUrl = oauth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: GoogleSheets.SCOPES
+      });
+      console.log('Authorize this app by visiting this url: ', authUrl);
+      var rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      });
+      rl.question('Enter the code from that page here: ', (code: any) => {
+        rl.close();
+        oauth2Client.getToken(code, (err: any, token: any) => {
+          if (err) {
+            console.log('Error while trying to retrieve access token', err);
+            return;
+          }
+          oauth2Client.credentials = token;
+          this.storeToken(token);
+          this.auth = oauth2Client;
+          callback();
+        });
+      });
+    }
+
+    private authorize( credentials:any ):Promise<any> {
+      console.log("trying to authorize")
+      var clientSecret = credentials.installed.client_secret;
+      var clientId = credentials.installed.client_id;
+      var redirectUrl = credentials.installed.redirect_uris[0];
+      var auth = new googleAuth();
+      var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
+      return new Promise((resolve, reject)=>{
+        fs.readFile(GoogleSheets.TOKEN_PATH, function(err:any, token:any) {
+          if (err) {
+            this.getNewToken(oauth2Client);
+            return reject(err)
+          } else {
+            oauth2Client.credentials = JSON.parse(token);
+            oauth2Client;
+            return resolve(oauth2Client);
+          }
+        });
+      })
+      // Check if we have previously stored a token.
+      
+    }
+    
+    public entryPoint( method: Function, instance:GoogleSheets ){
+
+      return new Promise((resolve, reject)=>{
+        fs.readFile('./src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
+          if (err) {
+            console.log('Error loading client secret file: ' + err);
+            reject(err);
+          }          // Authorize a client with the loaded credentials, then call the
+          // Google Sheets API.
+          if(!method)method = this.GetSheetValues;
+          //instance.authorize( JSON.parse(content) );
+          resolve(JSON.parse(content));
+        });
+      })
+      .then(this.authorize)
+      .then(this.GetSheetValues)
+     
+    }
+
+    /*
+
+        sheets.spreadsheets.values.get({
+          auth: this.auth,
+          spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+          range: 'Class Data!A2:E',
+        }, function(err, response) {
+          if (err) {
+            console.log('The API returned an error: ' + err);
+            return;
+          }
+          var rows = response.values;
+          if (rows.length == 0) {
+            console.log('No data found.');
+          } else {
+            console.log('Name, Major:');
+            for (var i = 0; i < rows.length; i++) {
+              var row = rows[i];
+              // Print columns A and E, which correspond to indices 0 and 4.
+              console.log('%s, %s', row[0], row[4]);
+            }
+          }
+        });
+      }
+      */
+}
