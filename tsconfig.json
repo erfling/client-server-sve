@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "./app/build/",
+        "outDir": "./build",
         "sourceMap": true,
         "noImplicitAny": true,
         "module": "commonjs",

@@ -1,6 +1,10 @@
 import { prop, Typegoose, ModelType, InstanceType } from 'typegoose';
+import IBaseClass from '../../../shared/models/BaseModel';
 
-export default class BaseClass extends Typegoose{
+export default class BaseClass 
+    extends Typegoose
+    implements IBaseClass
+    {
     @prop()
     Created:Date;
 

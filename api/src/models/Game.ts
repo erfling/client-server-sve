@@ -2,10 +2,14 @@ import { prop, arrayProp, Typegoose, ModelType, InstanceType, Ref } from 'typego
 import * as mongoose from 'mongoose';
 import BaseClass from './BaseModel'
 import { Team } from './Team';
+import IGame from '../../../shared/models/Game';
+import ITeam from '../../../shared/models/Team';
 
 //TODO: find out how to save nested teams, not just their refs. Possibly with pre method: https://github.com/szokodiakos/typegoose#pre
 
-export class Game extends BaseClass {
+export class Game 
+  extends BaseClass 
+  implements IGame{
     @prop()
     Location?: string;
   
@@ -13,7 +17,7 @@ export class Game extends BaseClass {
     Slug: string;
 
     @arrayProp({ itemsRef: Team })
-    Teams: Ref<Team>[];
+    Teams:  Ref<ITeam>[] | ITeam[];
 
   }
 
