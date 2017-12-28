@@ -2,6 +2,7 @@ var webpack = require('webpack');
 
 var path = require('path');  
 var HtmlwebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var ROOT_PATH = path.resolve(__dirname);
 
@@ -21,13 +22,22 @@ module.exports = {
             test: /\.tsx?$/,
             use: 'ts-loader',
             exclude: /node_modules/
+          },
+          {
+            test: /\.scss$/,
+            use: ExtractTextPlugin.extract({
+              fallback: 'style-loader',
+              use: ['css-loader', 'sass-loader']
+            })
           }
         ],
-        loaders: [{
+        loaders: [
+        {
           test: /\.jsx?$/,
           exclude: /node_modules/,
-          loaders: ['react-hot', 'babel'],
-        }]
+          loaders: ['react-hot'],
+        }
+      ]
     },
     devServer: {
         contentBase: path.resolve(ROOT_PATH, '/build'),
@@ -43,6 +53,7 @@ module.exports = {
       new webpack.HotModuleReplacementPlugin(),
       new HtmlwebpackPlugin({
         title: 'Listlogs'
-      })
+      }),
+      new ExtractTextPlugin('style.css')      
     ]
   };

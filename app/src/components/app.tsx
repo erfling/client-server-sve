@@ -2,6 +2,7 @@ import * as React from "react";
 import Games from "./games";
 import IGame from '../../../shared/models/Game';
 
+import './app.scss';
 
 interface Thing {
     hey?:string
