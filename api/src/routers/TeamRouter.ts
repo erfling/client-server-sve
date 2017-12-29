@@ -28,8 +28,7 @@ class TeamRouter{
         } catch(err) {
             console.log("ERROR", err);
             ( err: any ) => res.status(500).json({ error: err })
-        }
-        
+        }       
       
     }
 
@@ -38,9 +37,8 @@ class TeamRouter{
         
         const Slug = req.params.team;
         
-        console.log(Slug);
         try {
-            let game = await TeamModel.findOne({Slug});
+            let game = await TeamModel.findOne(Object.assign({Slug}));
         
             if (!game) {
               res.status(400).json({ error: 'No games' });
@@ -77,6 +75,7 @@ class TeamRouter{
 
     public routes(){
         this.router.get("/", this.GetTeams)
+        console.log("yes");
         this.router.get("/:team", this.GetTeam)
         this.router.post("/", this.CreateTeam)
     }

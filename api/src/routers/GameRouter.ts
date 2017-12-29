@@ -84,12 +84,28 @@ class GameRouter{
     
     }
 
+    public async GetTeams(req: Request, res: Response):Promise<any> {
+        console.log("trying to get teams from game")
+        const Slug = req.params.game;
+        try {
+            let game = await GameModel.findOne({Slug}).populate("Teams")
+        
+            if (!game) {
+              res.status(400).json({ error: 'No games' });
+            } else {
+              res.json(game.Teams);
+            }
+        } catch(err) {
+            ( err: any ) => res.status(500).json({ error: err })
+        }
+    } 
+
     public routes(){
         this.router.get("/", this.GetGames)
         this.router.get("/:game", this.GetGame)
         this.router.post("/", this.CreateGame);
         this.router.put("/:game", this.UpdateGame);
-        this.router.use("/:game/teams", TeamRouter)
+        this.router.use("/:game/teams", this.GetTeams)
     }
 }
 
