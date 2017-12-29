@@ -1,17 +1,20 @@
 import IGame from '../../../shared/models/Game';
 import ITeam from '../../../shared/models/Team';
 import {Socket} from 'socket.io-client';
-import { ApplicationStore } from '../stores/Store'
+import  ApplicationStore  from '../stores/Store'
 import { ActionCreator, Dispatch} from 'redux';
 import {ThunkAction} from 'redux-thunk';
+import BaseClass from '../../../api/src/models/BaseModel';
 
 export interface Action<T>{
     type: string;
     payload?: T;
+    payloads?: T[];
 }
 
 export interface GameAction<IGame> extends Action<IGame | IGame[]>{
-    payload: IGame | IGame[]
+    payload?: IGame;
+    payloads?: IGame[];
 }
 
 export enum ACTION_TYPES{

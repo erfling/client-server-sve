@@ -5,10 +5,12 @@ import thunk from 'redux-thunk'
 import IGame from '../../../shared/models/Game';
 import ITeam from '../../../shared/models/Team';
 
-export interface ApplicationStore{
+export default interface ApplicationStore{
 
     Game?: IGame[];
     Team?: ITeam[];
     //export type SheetData   
+
+    Loading: boolean;
 
 }

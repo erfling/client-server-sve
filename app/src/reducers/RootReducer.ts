@@ -1,17 +1,31 @@
-import { loadInitialDataSocket, saveGame, ACTION_TYPES, Action } from './../actions/Actions';
-import {ApplicationStore} from '../stores/Store';
+import { loadInitialDataSocket, saveGame, ACTION_TYPES, Action, GameAction } from './../actions/Actions';
+import ApplicationStore from '../stores/Store';
 import IBaseClass from '../../../shared/models/BaseModel';
+import IGame from '../../../shared/models/Game';
 
-const initialState: ApplicationStore = {
+export const initialState: ApplicationStore = {
     Game: [],
-    Team: []
+    Team: [],
+    Loading: true
 };
 
-export const RootReducer = (state = initialState, action:Action<any | IBaseClass>) => {
+export const RootReducer = (state:ApplicationStore = initialState, action: Action<any | IBaseClass>) => {
     switch(action.type) {
         case(ACTION_TYPES.GAME_SAVED): 
             return state.Game.map(g => {
                 return g._id != action.payload._id ? g : Object.assign(g, action.payload)
+            })
+        default:
+            return state;
+    }
+}
+
+export const GameReducer = (state = initialState, action: GameAction<IGame | IGame[]>) => {
+    switch(action.type) {
+        case(ACTION_TYPES.GAME_SAVED):
+            var payload = action.payload as IGame;
+            return state.Game.map(g => {
+                return g._id != payload._id ? g : Object.assign(g, action.payload)
             })
         default:
             return state;
