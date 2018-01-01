@@ -21,17 +21,13 @@ export interface GameAction<IGame> extends Action<IGame | IGame[]> {
 export enum ACTION_TYPES {
     GAME_SAVED = "GAME_SAVED",
     IS_LOADING = "IS_LOADING",
-    LOADING_COMPLETE = "LOADING_COMPLETE"
+    LOADING_COMPLETE = "LOADING_COMPLETE",
+    GAMES_LOADED = "GAMES_LOADED",
+    TEAMS_LOADED = "TEAMS_LOADED",
+    PLAYERS_LOADED = "PLAYERS_LOADED",
 }
 
-const reduxAction: ActionCreator<Action<any>> = (obj: any) => {
-    return {
-        type: "Thang",
-        obj
-    };
-};
-
-const gameSaved: ActionCreator<GameAction<IGame>> = (game: IGame) => {
+const gameSaved: ActionCreator<GameAction<IGame>> = (game: IGame):GameAction<IGame> => {
     return {
         type: ACTION_TYPES.GAME_SAVED,
         payload: game
@@ -46,7 +42,14 @@ const gamePushed: ActionCreator<GameAction<IGame>> = (game: IGame) => {
     }
 }
 
+const dataInit: ActionCreator<Action<any>> = (type, payload:any) => {
+    return {
+        type,
+        payload
+    }
+}
 
+/*
 
 export const loadInitialDataSocket = (socket: SocketIOClient.Socket) => {
     return (dispatch: Dispatch<any>) => {
@@ -56,7 +59,7 @@ export const loadInitialDataSocket = (socket: SocketIOClient.Socket) => {
         })
     }
 }
-
+*/
 export const saveGame = (socket: SocketIOClient.Socket, game: IGame) => {
     return (dispatch: Dispatch<any>) => {
         socket.on('gameSaved', (savedGame: IGame) => {
@@ -65,10 +68,19 @@ export const saveGame = (socket: SocketIOClient.Socket, game: IGame) => {
     }
 }
 
-export const testUpdate = () => {
-    gamePushed({ Slug: "testing1234" })
-    return (dispatch: Dispatch<any>) => {
+export const fetchGames = () => {
+    return (dispatch: Dispatch<GameAction<IGame>>) => {
         //dispatch(gamePushed({ Slug: "testing1234" }))
-        gamePushed({ Slug: "testing1234" })
+        fetch("http://localhost:4000/sapien/api/games", {mode: 'cors'})
+        .then(res => res.json())
+        .then((data:any)=>{
+            console.log("GOT BACK", data);
+            dispatch(dataInit(ACTION_TYPES.GAMES_LOADED, data))
+        })
+        .catch(()=>{
+            dispatch(gamePushed({ Slug: "testing1234" }))
+        })
+        
     }
+    
 }

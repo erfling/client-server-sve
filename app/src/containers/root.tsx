@@ -13,11 +13,10 @@ import Games from '../components/games';
 interface Props extends ApplicationStore {
 }
 interface DispatchProps {
-    testUpdate: () => {}
+    fetchGames: () => {}
 }
 
 const mapStateToProps = (state:ApplicationStore, ownProps: {}): ApplicationStore => {
-    console.log("STATE HERE",state)
     return {
         Game: state.Game,
         Team: state.Team,
@@ -27,21 +26,11 @@ const mapStateToProps = (state:ApplicationStore, ownProps: {}): ApplicationStore
 
 const mapDispatchToProps = (dispatch: Dispatch<Props & DispatchProps>, ownProps: any) => {
     return {
-        testUpdate: () =>  {
-            dispatch(
-                {
-                    type: Actions.ACTION_TYPES.GAME_SAVED,
-                    payload: {Slug: "hello"}
-                }
-            )  
-        }      
+        fetchGames: () => dispatch(Actions.fetchGames())         
     }
 }
-/**testUpdate: () =>  {
-            dispatch(
-                Actions.testUpdate()
-            )  
-        }   */
+
+
 
 const Root = connect<Props, any>(mapStateToProps, mapDispatchToProps)(Games);
 export default Root;
