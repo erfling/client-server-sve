@@ -5,8 +5,8 @@ import IGame from '../../../shared/models/Game';
 import { combineReducers } from 'redux';
 
 const initialState: ApplicationStore = {
-    Game: [{Slug:"butt", _id:"1"}, {Slug:"a;lskdjf", _id:"2"}],
-    Team: [{Slug:"test"}],
+    Game: [],
+    Team: [],
     Loading: true
 };
 

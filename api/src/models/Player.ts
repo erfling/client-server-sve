@@ -1,12 +1,7 @@
 import { Schema, model } from 'mongoose';
+import {Role} from '../../../shared/models/Player';
 
-enum Role{
-    BANKER = "Banker",
-    ENERGY = "Energy",
-    HEALTH = "Health",
-    NGO    = "NGO"
-}
-interface Player{
+interface impPlayer{
     Created: Date | any;
     Modified : Date | any;
     Slug: String | any;

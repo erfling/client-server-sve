@@ -13,12 +13,11 @@ class GameRouter{
     }
 
     public async GetGames(req: Request, res: Response):Promise<Game[] | any> {
-        console.log("GET GAMES CALLED")    
+        console.log("GET GAMES CALLED")
         
         try {
             console.log("trying")
             let games = await GameModel.find();
-            console.log("GAMES", games, Game)
             if (!games) {
                 res.status(400).json({ error: 'No games' });
             } else {

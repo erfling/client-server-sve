@@ -1,7 +1,7 @@
 import { GameAction } from './Actions';
 import IGame from '../../../shared/models/Game';
 import ITeam from '../../../shared/models/Team';
-import { Socket } from 'socket.io-client';
+import * as socketIo from 'socket.io-client';
 import ApplicationStore from '../stores/Store'
 import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
@@ -79,6 +79,18 @@ export const fetchGames = () => {
         })
         .catch(()=>{
             dispatch(gamePushed({ Slug: "testing1234" }))
+        })
+
+        //Socket.connect("http://localhost:4000");
+        const socket = socketIo("http://localhost:5000");
+        socket.on('connect', (data: any) => {
+            console.dir("SOCKET RETURNED SOMETHING", data)
+            //dispatch(reduxAction(data))
+        })
+
+        socket.on("HELLO", (res:any)=>{
+            alert("server said hello")
+            console.log("FROM SERVER: ", res)
         })
         
     }

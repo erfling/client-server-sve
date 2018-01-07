@@ -15,6 +15,7 @@ export interface GamesList {
 export default class Games extends React.Component<GamesList, any> {
     componentDidMount(){
         this.props.fetchGames();
+        
     }
     //onClick={this.props.testUpdate}
     render() {

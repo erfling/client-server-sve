@@ -4,17 +4,16 @@ import * as debug from 'debug';
 import Server from './server';
 
 //debug('ts-express:server');
-
+const server = new Server();
 const port = normalizePort(4000);
-Server.set('port', port);
+//Server.set('port', port);
 
 console.log(`Server listening on port ${port}`);
 
-const server = http.createServer(Server);
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
+const httpServer = http.createServer(server.app);
+httpServer.listen(port);
+httpServer.on('error', onError);
+httpServer.on('listening', onListening);
 function normalizePort(val: number|string): number|string|boolean {
   let port: number = (typeof val === 'string') ? parseInt(val, 10) : val;
   if (isNaN(port)) return val;
@@ -40,7 +39,7 @@ function onError(error: NodeJS.ErrnoException): void {
 }
 
 function onListening(): void {
-  let addr = server.address();
+  let addr = httpServer.address();
   let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
   debug(`Listening on ${bind}`);
 }
