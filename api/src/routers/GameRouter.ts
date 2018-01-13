@@ -17,7 +17,7 @@ class GameRouter{
         
         try {
             console.log("trying")
-            let games = await GameModel.find();
+            let games = await GameModel.find().populate('Teams');;
             if (!games) {
                 res.status(400).json({ error: 'No games' });
             } else {

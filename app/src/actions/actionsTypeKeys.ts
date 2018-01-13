@@ -12,7 +12,7 @@ export enum ActionTypeStates {
     SIGNOUT_SUCCESS = "SIGNOUT_SUCCESS",
     SIGNOUT_FAIL = "SIGNOUT_FAIL",
     LOAD_GAMES = "LOAD_GAMES",
-    LOAD_TEAMS = "LOAD_TEAMS"
+    LOAD_TEAMS = "LOAD_TEAMS",
   }
   
   export default ActionTypeKeys;

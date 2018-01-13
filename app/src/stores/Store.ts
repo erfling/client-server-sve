@@ -1,16 +1,18 @@
-import { createStore, applyMiddleware } from 'Redux';
-import {Provider} from 'react-redux'
-import thunk from 'redux-thunk'
-
-import IGame from '../../../shared/models/Game';
-import ITeam from '../../../shared/models/Team';
+import IGame from '../../../shared/models/IGame';
+import ITeam from '../../../shared/models/ITeam';
+import IPlayer from '../../../shared/models/IPlayer';
 
 export default interface ApplicationStore{
-
-    Game?: IGame[];
-    Team?: ITeam[];
+    GameData?: {
+        Game?: IGame[],
+        Team?: ITeam[],
+        SelectedTeam?: ITeam;
+        Player?: IPlayer[];
+        CurrentPlayer?: IPlayer
+    };
     //export type SheetData   
-
-    Loading: boolean;
-
+    Application?: {
+        Loading: boolean
+    }
+    Route?: any;
 }

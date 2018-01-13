@@ -1,9 +1,9 @@
 /**
  * Defines sockets for players to submit and receive game info
  */
-import IGame from '../../../shared/models/Game';
-import ITeam from '../../../shared/models/Team';
-import IPlayer from '../../../shared/models/Player';
+import IGame from '../../../shared/models/IGame';
+import ITeam from '../../../shared/models/ITeam';
+import IPlayer from '../../../shared/models/IPlayer';
 
 
 

@@ -1,6 +1,6 @@
 import { GameAction } from './Actions';
-import IGame from '../../../shared/models/Game';
-import ITeam from '../../../shared/models/Team';
+import IGame from '../../../shared/models/IGame';
+import ITeam from '../../../shared/models/ITeam';
 import * as socketIo from 'socket.io-client';
 import ApplicationStore from '../stores/Store'
 import { ActionCreator, Dispatch } from 'redux';
@@ -23,8 +23,11 @@ export enum ACTION_TYPES {
     IS_LOADING = "IS_LOADING",
     LOADING_COMPLETE = "LOADING_COMPLETE",
     GAMES_LOADED = "GAMES_LOADED",
+    TEAMS_LOADED_WITH_GAMES = "TEAMS_LOADED_WITH_GAMES",
     TEAMS_LOADED = "TEAMS_LOADED",
     PLAYERS_LOADED = "PLAYERS_LOADED",
+    PLAYERS_LOADED_WITH_TEAMS = "PLAYERS_LOADED_WITH_TEAMS",
+    GET_TEAM_BY_SLUG = "GET_TEAM_BY_SLUG",
 }
 
 const gameSaved: ActionCreator<GameAction<IGame>> = (game: IGame):GameAction<IGame> => {
@@ -42,13 +45,18 @@ const gamePushed: ActionCreator<GameAction<IGame>> = (game: IGame) => {
     }
 }
 
-const dataInit: ActionCreator<Action<any>> = (type, payload:any) => {
+const dataInit: ActionCreator<GameAction<IGame[]>> = (type, payload:any) => {
     return {
         type,
         payload
     }
 }
-
+const isLoading: ActionCreator<Action<boolean>> = (type = ACTION_TYPES.IS_LOADING, payload: boolean) => {
+    return {
+        type,
+        payload
+    }
+}
 /*
 
 export const loadInitialDataSocket = (socket: SocketIOClient.Socket) => {
@@ -69,30 +77,47 @@ export const saveGame = (socket: SocketIOClient.Socket, game: IGame) => {
 }
 
 export const fetchGames = () => {
-    return (dispatch: Dispatch<GameAction<IGame>>) => {
-        //dispatch(gamePushed({ Slug: "testing1234" }))
-        fetch("http://localhost:4000/sapien/api/games", {mode: 'cors'})
-        .then(res => res.json())
-        .then((data:any)=>{
-            console.log("GOT BACK", data);
-            dispatch(dataInit(ACTION_TYPES.GAMES_LOADED, data))
-        })
-        .catch(()=>{
-            dispatch(gamePushed({ Slug: "testing1234" }))
-        })
-
-        //Socket.connect("http://localhost:4000");
+    return (dispatch: Dispatch<GameAction<IGame> | Action<any>>) => {
+        dispatch(isLoading(ACTION_TYPES.IS_LOADING, true))
+        
         const socket = socketIo("http://localhost:5000");
+
+        
         socket.on('connect', (data: any) => {
             console.dir("SOCKET RETURNED SOMETHING", data)
-            //dispatch(reduxAction(data))
         })
 
         socket.on("HELLO", (res:any)=>{
-            alert("server said hello")
-            console.log("FROM SERVER: ", res)
+            dispatch(dataInit(ACTION_TYPES.GAMES_LOADED, res));
+            dispatch(dataInit(ACTION_TYPES.TEAMS_LOADED_WITH_GAMES, res));    
+
+            setTimeout(() => dispatch( isLoading(ACTION_TYPES.IS_LOADING, false) ), 10)
         })
         
     }
     
+}
+
+const getTeamBySlug:ActionCreator<Action<any>> = (type:string, payload:string) => {
+    return {
+        type,
+        payload
+    }
+}
+export const findTeam = (slug:string = null) => {
+    return (dispatch: Dispatch<Action<ITeam>>) => {
+        dispatch(getTeamBySlug(ACTION_TYPES.GET_TEAM_BY_SLUG, slug));        
+    }
+}
+
+const getPlayersFromTeam:ActionCreator<Action<ITeam>> = (type:string, payload: ITeam) =>{
+    return {
+        type,
+        payload
+    }
+}
+export const findPlayers = (team:ITeam) => {
+    return (dispatch: Dispatch<Action<ITeam>>) => {
+        dispatch(getPlayersFromTeam(ACTION_TYPES.PLAYERS_LOADED_WITH_TEAMS, team))
+    }
 }

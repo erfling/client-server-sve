@@ -1,13 +1,15 @@
 import IBaseClass from './BaseModel';
-import ITeam from './Team';
+import ITeam from './ITeam';
 import IRole from './Role';
 import {  Ref } from 'typegoose';
 
 export enum Role{
-    BANKER = "Banker",
+    PRIVATE = "PRIVATE",
     ENERGY = "Energy",
     HEALTH = "Health",
-    NGO    = "NGO"
+    NGO    = "NGO",
+    GOVERNMENT    = "GOVERNMENT"
+
 }
 export default interface IPlayer extends IBaseClass {
     Role: Role;

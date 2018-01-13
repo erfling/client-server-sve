@@ -1,7 +1,9 @@
 import { prop, arrayProp, Typegoose, ModelType, InstanceType, Ref } from 'typegoose';
 import * as mongoose from 'mongoose';
 import BaseClass from './BaseModel'
-import ITeam from '../../../shared/models/Team';
+import ITeam from '../../../shared/models/ITeam';
+import IPlayer from '../../../shared/models/IPlayer';
+import { Player } from './Player';
 
 export class Team 
   extends BaseClass 
@@ -15,6 +17,12 @@ export class Team
 
     @prop()
     Slug:string;
+
+    @prop()
+    SheetId:string;
+    
+    @arrayProp({ itemsRef: Player })
+    Players:  Ref<IPlayer>[] | IPlayer[];
   
   }
 

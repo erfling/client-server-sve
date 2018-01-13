@@ -12,7 +12,8 @@ import * as socketIo from 'socket.io';
 import GameRouter from './routers/GameRouter';
 import SheetsRouter from './routers/GoogleSheetsRouter';
 import TeamRouter from './routers/TeamRouter';
-import IGame from '../../shared/models/Game';
+import PlayerRouter from './routers/PlayerRouter';
+import IGame from '../../shared/models/IGame';
 
 //socket setup
 import { SocketEvents } from './../../shared/models/SocketEvents';
@@ -77,6 +78,7 @@ export default class Server {
         this.app.use('/sapien/api/games', GameRouter);
         this.app.use('/sapien/api/sheets', SheetsRouter);
         this.app.use('/sapien/api/teams', TeamRouter);
+        this.app.use('/sapien/api/player', PlayerRouter);
     }
 
     private listenForSocket(): void {
@@ -86,12 +88,11 @@ export default class Server {
         });
 
         this.io.on(SocketEvents.CONNECT, (socket: any) => {
-            this.io.emit('HELLO',"CONNECTION ESTABLISHED");
 
             console.log('Connected client on port %s.', Server.SOCKET_PORT);
-
-            GameModel.find().then((g:Game[])=>{
-                this.io.emit("HELLO", g);
+            GameModel.find().populate("Teams").populate("Players").then((g:Game[])=>{
+                this.io.emit(SocketEvents.HELLO, g);
+                //setTimeout(() => this.io.emit("HELLO",g), 1000)
             })
 
             socket.on(SocketEvents.DISCONNECT, () => {

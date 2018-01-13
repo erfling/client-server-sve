@@ -2,8 +2,8 @@ import { prop, arrayProp, Typegoose, ModelType, InstanceType, Ref } from 'typego
 import * as mongoose from 'mongoose';
 import BaseClass from './BaseModel'
 import { Team } from './Team';
-import IGame from '../../../shared/models/Game';
-import ITeam from '../../../shared/models/Team';
+import IGame from '../../../shared/models/IGame';
+import ITeam from '../../../shared/models/ITeam';
 
 //TODO: find out how to save nested teams, not just their refs. Possibly with pre method: https://github.com/szokodiakos/typegoose#pre
 

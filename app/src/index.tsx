@@ -4,24 +4,29 @@ import { createBrowserHistory } from 'history';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import ApplicationStore from './stores/Store';
-import thunk from 'redux-thunk'
-
-import { App } from './components/App';
-import { createStore } from 'redux';
+import thunk from 'redux-thunk';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import { createStore, applyMiddleware, compose  } from 'redux';
 import reducer from './reducers/RootReducer';
-import { applyMiddleware } from 'redux';
+import { ConnectedRouter, routerReducer, routerMiddleware, push } from 'react-router-redux'
 
+import routes from './routes/routes'
+import { App } from './components/App';
 
 const history  = createBrowserHistory();
-const store = createStore(reducer, applyMiddleware(thunk));
+const store = createStore(reducer, composeWithDevTools(
+  applyMiddleware(thunk),
+  // other store enhancers if any
+));
+//const store = createStore(reducer, applyMiddleware(thunk));
 
 const app = document.createElement('div');
 document.body.appendChild(app);
 ReactDOM.render(
   <Provider store={store}>
-    <Router history={history}>
+    <ConnectedRouter history={history}>
       <App />
-    </Router>
+    </ConnectedRouter>
   </Provider>,
   app
 );

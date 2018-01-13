@@ -1,58 +1,35 @@
-import { Schema, model } from 'mongoose';
-import {Role} from '../../../shared/models/Player';
+import { prop, arrayProp, Typegoose, ModelType, InstanceType, Ref, instanceMethod } from 'typegoose';
+import * as mongoose from 'mongoose';
+import BaseClass from './BaseModel'
+import { Team } from './Team';
+import IGame from '../../../shared/models/IGame';
+import ITeam from '../../../shared/models/ITeam';
+import IPlayer from '../../../shared/models/IPlayer';
+import {Role} from '../../../shared/models/IPlayer';
 
-interface impPlayer{
-    Created: Date | any;
-    Modified : Date | any;
-    Slug: String | any;
-    Location: String | any;
-    Role: String | any;
-    PlayingAs: String | any;
-}
-var PlayerSchema = new Schema({
-    Created:{
-        type: Date,
-        default: Date.now
-    },
+//TODO: find out how to save nested teams, not just their refs. Possibly with pre method: https://github.com/szokodiakos/typegoose#pre
 
-    Modified:{
-        type: Date,
-        default: Date.now
-    },
+export class Player
+  extends BaseClass 
+  {
+    @prop()
+    Slug: string;
 
-    Slug:{
-        type: String,
-        default:'',
-        required :true,
-        unique: true,
-        trim: true
-    },
+    @prop()
+    Name: string;
 
-    Location: {
-        type: String
-    },
+    @prop()
+    Role:Role;
 
-    Role: {
-        type:String,
-        validate: {
-            validator: ( role: string ) => {
-                return role in Role;
-            }
-        }
-    },
-
-    PlayingAs: {
-        type:String,
-        validate: {
-            validator: ( role: string ) => {
-                return role in Role;
-            }
-        },
-        default: () => {
-            return this.Role;
-        }
+    @instanceMethod
+    getSheetRangeByRole():string {
+        return this.Role == Role.PRIVATE ? "SPACE X" : "NASA";
     }
 
-});
+    @prop()
+    SheetRange:string;
 
-export default model('Game', PlayerSchema);
+  }
+
+
+  export const PlayerModel = new Player().getModelForClass( Player, { existingMongoose: mongoose } )

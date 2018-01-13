@@ -17,7 +17,7 @@ class TeamRouter{
         console.log("TEAMS REQ:", req.params)
         try {
             console.log("trying")
-            let teams = await TeamModel.find();
+            let teams = await TeamModel.find({}).populate("Players");;
             console.log("GAMES", teams, Team)
             if (!teams) {
                 res.status(400).json({ error: 'No games' });
@@ -38,7 +38,7 @@ class TeamRouter{
         const Slug = req.params.team;
         
         try {
-            let game = await TeamModel.findOne(Object.assign({Slug}));
+            let game = await TeamModel.findOne(Object.assign({Slug})).populate("Players");
         
             if (!game) {
               res.status(400).json({ error: 'No games' });

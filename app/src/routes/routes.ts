@@ -1,4 +1,5 @@
 import Root from '../containers/Root';
+import TeamDetailContainer from '../containers/TeamDetailContainer';
 
 interface RouteDefinition {
   sequence: number;
@@ -17,6 +18,12 @@ const routes: Routes = {
     component: Root,
     exact: true,
     path: '/'
+  },
+  team: {
+    sequence: 2,
+    component: TeamDetailContainer,
+    path: '/team-detail/:slug',
+    exact: false
   }
 };
 
