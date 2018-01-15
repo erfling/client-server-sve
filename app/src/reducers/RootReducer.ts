@@ -3,6 +3,7 @@ import ApplicationStore from '../stores/Store';
 import IBaseClass from '../../../shared/models/BaseModel';
 import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
+import IPlayer from '../../../shared/models/IPlayer';
 import { combineReducers } from 'redux';
 import { reducer as FormReducer } from 'redux-form';
 import { routerReducer } from 'react-router-redux'
@@ -11,7 +12,8 @@ const initialState: ApplicationStore = {
     GameData: {
         Game: [],
         Team: [],
-        SelectedTeam: null
+        SelectedTeam: null,
+        Dashboard: null
     },
     Application: {
         Loading: false
@@ -50,12 +52,19 @@ export const GameData = (state = initialState.GameData, action: GameAction<IGame
             return Object.assign( {}, state, 
                 { Team: teams },
             );
+        case(ACTION_TYPES.TEAM_SELECTED):
+            var team:ITeam = action.payload as ITeam;  
+            return Object.assign({}, state, {SelectedTeam: team || null})
         case(ACTION_TYPES.GET_TEAM_BY_SLUG):
             return Object.assign({}, state, {SelectedTeam: state.Team.filter(t => t.Slug == action.payload)[0] || null})
-            /**const filteredResponseObj = rawResponseBodyObj.reduce(function(map, obj) {
-    map[obj.name] = obj.content;
-    return map;
-}, {}); */
+        case(ACTION_TYPES.CURRENT_PLAYER_SET):
+            let players: IPlayer[] = state.SelectedTeam.Players as IPlayer[];
+            var newState = Object.assign({},state);
+            newState.SelectedTeam.Players = players.map(p => Object.assign({}, p, {IsSelected: p._id == action.payload}))
+            return newState;
+        case(ACTION_TYPES.DASHBOARD_UPDATED):
+            console.log("REDUCE IT", action.payload);
+            return Object.assign({}, state, {Dashboard: action.payload})
         default:
             return state;
     }

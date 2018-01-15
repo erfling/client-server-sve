@@ -7,11 +7,12 @@ var googleAuth = require('google-auth-library');
 // at ~/.credentials/sheets.googleapis.com-nodejs-quickstart.json
 var SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
-    process.env.USERPROFILE) + '/.credentials/';
-var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
+    process.env.USERPROFILE) + '/.creds/';
+var TOKEN_PATH = TOKEN_DIR + 'client_secret_230642235342-a135refh9hsheb633db3q7frah74vqsh.apps.googleusercontent.com';
 
 // Load client secrets from a local file.
 fs.readFile('./creds/client_secret.json', function processClientSecrets(err, content) {
+  console.log("TOKEN_PAHT",TOKEN_PATH);
   if (err) {
     console.log('Error loading client secret file: ' + err);
     return;
@@ -40,6 +41,7 @@ function authorize(credentials, callback) {
     if (err) {
       getNewToken(oauth2Client, callback);
     } else {
+      console.log(token,"TOKEN")
       oauth2Client.credentials = JSON.parse(token);
       callback(oauth2Client);
     }

@@ -2,6 +2,7 @@ const fs: any = require('fs');
 const readline: any = require('readline');
 const google: any = require('googleapis');
 const googleAuth: any = require('google-auth-library');
+//import * as token from '../creds/client_secret.json'
 /*
 import * as fs from 'fs';
 import * as readline from 'readline';
@@ -9,37 +10,48 @@ import * as google from 'googleapis';
 import * as googleAuth form 'google-auth-library'
 */
 
+
+import IPlayer from '../../../shared/models/IPlayer';
+import formValues from '../../../shared/models/FormValues';
+
 export default class GoogleSheets{
 
     auth: any;
     static SCOPES:string[] = ['https://www.googleapis.com/auth/spreadsheets'];
     static TOKEN_DIR: string = (process.env.HOME || process.env.HOMEPATH ||
         process.env.USERPROFILE) + '/.credentials/';
-    static TOKEN_PATH: string = GoogleSheets.TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
+    static TOKEN_PATH: string = GoogleSheets.TOKEN_DIR + 'sheets.googleapis.sve.json';
 
-    public GetSheetValues(auth:any): any {
+    public GetSheetValues(): any {
         
         const sheets = google.sheets('v4');
-        console.log( auth ,"AUTH");
-        var options = {
-            auth: auth,            
-            spreadsheetId: '1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q',
-            range: 'NASA!A:ZZ'
-        }
-
-      return new Promise( (resolve, reject) => {
-        sheets.spreadsheets.values.get({
-          auth: auth,            
-          spreadsheetId: '1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q',
-          range: 'NASA!A:ZZ'
-      }, (err:any, response: any) => {
-          if(err){
-            console.log(err,"ERROR HERE")
-            return reject(err);
-          }
-          return resolve(response.values);
+        return new Promise((resolve, reject) => {
+          fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
+            if (err) {
+              console.log('Error loading client secret file: ' + err);
+              reject(err);
+            }          // Authorize a client with the loaded credentials, then call the
+            // Google Sheets API.
+            //instance.authorize( JSON.parse(content) );
+            resolve(JSON.parse(content));
+          });
         })
-      })
+        .then(this.authorize)
+        .then((auth) => {
+          return new Promise((resolve, reject) => {
+            sheets.spreadsheets.values.get({
+              auth: auth,            
+              spreadsheetId: '1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q',
+              range: 'DECISION MODEL!A:ZZ'
+            }, (err:any, response: any) => {
+              if(err){
+                console.log(err,"ERROR HERE")
+                return reject(err);
+              }
+              return resolve(response.values);
+            })
+          })            
+        })
     }
 
     private storeToken(token: any) {
@@ -54,7 +66,7 @@ export default class GoogleSheets{
       console.log('Token stored to ' + GoogleSheets.TOKEN_PATH);
     }
 
-    private getNewToken(oauth2Client:any, callback: Function) {
+    private getNewToken(oauth2Client:any) {
       var authUrl = oauth2Client.generateAuthUrl({
         access_type: 'offline',
         scope: GoogleSheets.SCOPES
@@ -74,7 +86,6 @@ export default class GoogleSheets{
           oauth2Client.credentials = token;
           this.storeToken(token);
           this.auth = oauth2Client;
-          callback();
         });
       });
     }
@@ -87,9 +98,10 @@ export default class GoogleSheets{
       var auth = new googleAuth();
       var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
       return new Promise((resolve, reject)=>{
+        console.log("TOKEN PATH", GoogleSheets.TOKEN_PATH);
         fs.readFile(GoogleSheets.TOKEN_PATH, function(err:any, token:any) {
           if (err) {
-            this.getNewToken(oauth2Client);
+            new GoogleSheets().getNewToken(oauth2Client);
             return reject(err)
           } else {
             oauth2Client.credentials = JSON.parse(token);
@@ -117,8 +129,98 @@ export default class GoogleSheets{
         });
       })
       .then(this.authorize)
-      .then(this.GetSheetValues)
+      .then()
      
+    }
+
+    public commitAnswers( player:IPlayer, formValues:formValues){
+      return new Promise((resolve, reject)=>{
+        fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
+          if (err) {
+            console.log('Error loading client secret file: ' + err);
+            reject(err);
+          }          // Authorize a client with the loaded credentials, then call the
+          // Google Sheets API.
+          //instance.authorize( JSON.parse(content) );
+          resolve(JSON.parse(content));
+        });
+      })
+      .then(this.authorize)
+      .then((auth) => {
+        
+
+        var values:any[][] = [
+          [
+            null, parseInt(formValues.PeopleOnBoard), "test"
+          ],
+          [
+            null, parseInt(formValues.LaunchDate)
+          ],
+          [
+            null, formValues.Budget
+          ],
+          [
+            null, null
+          ],
+          [
+            null, null
+          ],
+          [
+            null, null
+          ],
+          [
+            null, null
+          ],
+          [
+            null, formValues.RecruitingBudget
+          ],
+          [
+            null, null
+          ]
+        ];
+        var data = [];
+        var range = player.SheetRange + "!A2:C10"
+        const sheets = google.sheets('v4');
+        /*
+        var body = {
+          data:data,
+          valueInputOption: 'USER_ENTERED'
+        }
+        */
+        var requestBody = {
+          resource: body,
+          spreadsheetId: '1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q',
+          auth:auth,
+        }
+
+        var data = [];
+        data.push({
+          range: range,
+          values: values
+        });
+        // Additional ranges to update ...
+        var body = {
+          data: data,
+          valueInputOption: 'USER_ENTERED'
+        };
+
+       // console.log("TRYING TO SEND:",requestBody)
+        return new Promise((resolve, reject) => {
+          sheets.spreadsheets.values.batchUpdate({
+            spreadsheetId:'1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q',
+            resource: body,
+            auth:auth
+          }, (err:any, result: any) => {
+            console.log(result);
+            if(err){
+              console.log(err,"ERROR HERE")
+              return reject(err);
+            }
+            console.log("HERE");
+            return resolve(result.values);
+          })
+        })
+      })
     }
 
     /*

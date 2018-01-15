@@ -6,7 +6,7 @@ import IPlayer from '../../../shared/models/IPlayer';
 import { Player } from './Player';
 
 export class Team 
-  extends BaseClass 
+  extends BaseClass
   implements ITeam{
     
     @prop()

@@ -9,6 +9,7 @@ export default interface ApplicationStore{
         SelectedTeam?: ITeam;
         Player?: IPlayer[];
         CurrentPlayer?: IPlayer
+        Dashboard: any;
     };
     //export type SheetData   
     Application?: {

@@ -8,5 +8,6 @@ export default interface ITeam extends IBaseClass {
   Slug?:string;
 
   Players?: Ref<IPlayer>[] | IPlayer[];
+  IsSelected?: boolean;
 
 }  

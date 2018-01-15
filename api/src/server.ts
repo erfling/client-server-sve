@@ -14,11 +14,20 @@ import SheetsRouter from './routers/GoogleSheetsRouter';
 import TeamRouter from './routers/TeamRouter';
 import PlayerRouter from './routers/PlayerRouter';
 import IGame from '../../shared/models/IGame';
+import ITeam from '../../shared/models/ITeam';
+import formValues from '../../shared/models/FormValues';
+
+//sheets api
+import  GoogleSheets  from './models/GoogleSheets'; 
+import { resolve } from 'dns';
+
 
 //socket setup
 import { SocketEvents } from './../../shared/models/SocketEvents';
 
 import { Game, GameModel } from './models/Game'; 
+import { Team, TeamModel } from './models/Team'; 
+import { Player, PlayerModel } from './models/Player'; 
 
 
 //Server class
@@ -89,16 +98,52 @@ export default class Server {
 
         this.io.on(SocketEvents.CONNECT, (socket: any) => {
 
+
+            /**
+             * google sheets event loop watching scoreboard tab
+             */
+            var sheets = new GoogleSheets();
+            sheets.GetSheetValues().then((v:any)=>{
+                socket.emit(SocketEvents.DASHBOARD_UPDATED,v);                            
+            })
+
             console.log('Connected client on port %s.', Server.SOCKET_PORT);
-            GameModel.find().populate("Teams").populate("Players").then((g:Game[])=>{
+            GameModel.find().populate("Teams").then((g:Game[])=>{
                 this.io.emit(SocketEvents.HELLO, g);
                 //setTimeout(() => this.io.emit("HELLO",g), 1000)
             })
+            
 
             socket.on(SocketEvents.DISCONNECT, () => {
                 console.log('Client disconnected');
             });
 
+            socket.on(SocketEvents.SELECT_TEAM, (Slug:string) => {
+                TeamModel.findOne( { Slug } ).populate("Players").then((t:ITeam) => {
+                    this.io.emit(SocketEvents.SELECT_TEAM, t);
+                })
+            })
+
+            socket.on(SocketEvents.SUBMIT_TO_SHEET, (values:formValues) => { 
+                console.log("submitted");
+                PlayerModel.findById(values.PlayerId).then((player:Player)=>{
+                    console.log(values);
+                    var sheets = new GoogleSheets();
+                    sheets.commitAnswers(player, values)
+                    .then(() => {
+                        console.log("THENNED");
+                        setTimeout(() => {
+                            sheets.GetSheetValues().then((v:any)=>{
+                                socket.emit(SocketEvents.DASHBOARD_UPDATED,v);                            
+                            })
+                        },1000)
+                    })
+                    /*
+                     */
+                    
+                    
+                })                
+            })
 
             
         });

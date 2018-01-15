@@ -10,7 +10,7 @@ class GoogleSheetsRouter{
         this.routes();
     }
 
-    public  GetSheetValues(req: Request, res: Response):Promise<any> {
+    public GetSheetValues(req: Request, res: Response):Promise<any> {
         console.log("GET SHEETS CALLED")
         let sheet = new GoogleSheets();
         
