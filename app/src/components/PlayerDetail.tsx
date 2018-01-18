@@ -5,7 +5,7 @@ import IPlayer from '../../../shared/models/IPlayer';
 import { Game } from "../../../api/src/models/Game";
 import BaseForm from './form-elements/form'
 import './app.scss';
-
+import {Row, Col} from 'antd';
 export interface TeamDetailProps {
     Players: IPlayer[];
     //fetchTeam:(slug:string)=>{};
@@ -24,14 +24,14 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
         if( this.props.Players ){
             return this.props.Players.map((p) => {
                 if(p.IsSelected){ 
-                    return <div key={p._id}>
-                                {p.Name} ({p.SheetRange})
+                    return <Row key={p._id} type="flex" justify="start">
+                                <h3>{p.Name} ({p.SheetRange})</h3>
                                 <BaseForm form={p._id} initialValues={{PlayerId: p._id}} onSubmit={this.props.sumbmitForm}/>
-                            </div> 
+                            </Row>
                 }
-                return <div key={p._id}>
-                            <a onClick = { e => this.props.selectPlayer(e, p) }>{p.Name || p.Role || p._id} ({p.SheetRange})</a>
-                        </div>
+                    return <Row key={p._id} type="flex" justify="start">
+                                <h3><a onClick = { e => this.props.selectPlayer(e, p) }>{p.Name || p.Role || p._id} ({p.SheetRange})</a></h3>
+                           </Row>
 
             })
         } else {

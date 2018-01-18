@@ -32,7 +32,10 @@ const mapStateToProps = (state: ApplicationStore, ownProps: {}): TeamDetailProps
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>, ownProps: any) => {
     return {
         fetchTeam: (slug: string) => dispatch(Actions.fetchTeamDetails(slug)),
-        submitForm: (values: formValues) => dispatch(Actions.dispatchSubmitForm(Object.assign(values))),
+        submitForm: (values: formValues) => {
+            console.log(values);
+            dispatch(Actions.dispatchSubmitForm(Object.assign(values)))
+        },
         subscribeToDashboard: () => { dispatch( Actions.updateDashboard()) }
     }
 }

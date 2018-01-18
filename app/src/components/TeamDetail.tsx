@@ -45,7 +45,6 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
                                 <table style={{width:'60%'}}>
                                     <tbody>
                                         {data && data.slice(0,5).concat(data.slice(8,10)).map((d:any[], i:number)=>{
-                                            console.log("mapping",d);
                                             return <tr key={i}>{d.map((datum, j:number )=> <td key={i+j}>{datum}</td>)}</tr>
                                     })}
                                     </tbody>                                    

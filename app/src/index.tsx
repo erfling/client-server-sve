@@ -13,6 +13,7 @@ import { ConnectedRouter, routerReducer, routerMiddleware, push } from 'react-ro
 import routes from './routes/routes'
 import { App } from './components/App';
 import {Layout} from 'antd';
+import { Row, Col } from 'antd/lib/grid';
 const history  = createBrowserHistory();
 export const store = createStore(reducer, composeWithDevTools(
   applyMiddleware(thunk),
@@ -26,7 +27,11 @@ ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
       <Layout>
-        <App />
+        <Row type="flex" justify="center">
+          <Col xs={24} sm={20} md={16} lg={16} xl={16}>
+            <App />
+          </Col >
+        </Row>
       </Layout>
     </ConnectedRouter>
   </Provider>,
