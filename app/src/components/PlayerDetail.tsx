@@ -23,15 +23,14 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
     render() {
         if( this.props.Players ){
             return this.props.Players.map((p) => {
-                console.log(p);
                 if(p.IsSelected){ 
                     return <div key={p._id}>
-                                {p.Name}
+                                {p.Name} ({p.SheetRange})
                                 <BaseForm form={p._id} initialValues={{PlayerId: p._id}} onSubmit={this.props.sumbmitForm}/>
                             </div> 
                 }
                 return <div key={p._id}>
-                            <a onClick = { e => this.props.selectPlayer(e, p) }>{p.Name || p.Role || p._id}</a>
+                            <a onClick = { e => this.props.selectPlayer(e, p) }>{p.Name || p.Role || p._id} ({p.SheetRange})</a>
                         </div>
 
             })

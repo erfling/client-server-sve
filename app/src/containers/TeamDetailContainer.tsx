@@ -18,12 +18,14 @@ interface DispatchProps {
 }
 interface TeamDetailProps{
     Team:ITeam;
-    Dashboard:any
+    Dashboard:any;
+    DashboardUpdating: boolean;
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): TeamDetailProps => {
     return {
         Team: state.GameData.SelectedTeam,
-        Dashboard: state.GameData.Dashboard
+        Dashboard: state.GameData.Dashboard,
+        DashboardUpdating: state.Application.DashboardUpdating
     };
 };
 

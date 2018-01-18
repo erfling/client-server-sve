@@ -12,9 +12,9 @@ import { ConnectedRouter, routerReducer, routerMiddleware, push } from 'react-ro
 
 import routes from './routes/routes'
 import { App } from './components/App';
-
+import {Layout} from 'antd';
 const history  = createBrowserHistory();
-const store = createStore(reducer, composeWithDevTools(
+export const store = createStore(reducer, composeWithDevTools(
   applyMiddleware(thunk),
   // other store enhancers if any
 ));
@@ -25,7 +25,9 @@ document.body.appendChild(app);
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
-      <App />
+      <Layout>
+        <App />
+      </Layout>
     </ConnectedRouter>
   </Provider>,
   app

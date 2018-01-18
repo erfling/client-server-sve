@@ -9,10 +9,17 @@ import { ActionCreator, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import BaseClass from '../../../api/src/models/BaseModel';
 import IPlayer from '../../../shared/models/IPlayer';
+import { store } from '../index';
+import { setTimeout } from 'timers';
 
-const socket = socketIo("http://localhost:5000");
-socket.on('connect', (data: any) => {
-    console.dir("SOCKET RETURNED SOMETHING", data)
+
+const socket = socketIo("http://localhost:5000/" + "Team1");
+console.log("SOCKET ON CONNECT", socket);
+const teamSocket = '';
+
+socket.on(SocketEvents.CONNECT, (data: any) => {
+    console.log("SOCKET RETURNED SOMETHING", data)
+    console.log("SOCKET THAT RETURNED", socket);
 })
 
 export interface Action<T> {
@@ -39,6 +46,7 @@ export enum ACTION_TYPES {
     TEAM_SELECTED = "TEAM_SELECTED",
     CURRENT_PLAYER_SET = "CURRENT_PLAYER_SET",
     SUBMIT = "SUBMIT",
+    DASHBOARD_UPDATING = "DASHBOARD_UPDATING",
     DASHBOARD_UPDATED = "DASHBOARD_UPDATED"
 }
 
@@ -91,12 +99,11 @@ export const saveGame = (socket: SocketIOClient.Socket, game: IGame) => {
 export const fetchGames = () => {
     return (dispatch: Dispatch<GameAction<IGame> | Action<any>>) => {
         dispatch(isLoading(ACTION_TYPES.IS_LOADING, true))
-
+        console.log("fetching games")
         socket.on("HELLO", (res:any)=>{
             dispatch(dataInit(ACTION_TYPES.GAMES_LOADED, res));
             dispatch(dataInit(ACTION_TYPES.TEAMS_LOADED_WITH_GAMES, res));    
-
-            setTimeout(() => dispatch( isLoading(ACTION_TYPES.IS_LOADING, false) ), 10)
+            setTimeout(() => dispatch( isLoading(ACTION_TYPES.IS_LOADING, false) ), 2000)
         })
         
     }
@@ -131,15 +138,23 @@ const teamSelected:ActionCreator<Action<ITeam>> = (type:string, payload: ITeam) 
     return {type,payload};
 }
 export const fetchTeamDetails = (slug:string) => {
-    return (dispatch: Dispatch<GameAction<IGame> | Action<any>>) => {
+    //const socket = socketIo("http://localhost:5000/" + slug);
+
+    return (dispatch: Dispatch<GameAction<ITeam>>) => {
         dispatch(isLoading(ACTION_TYPES.IS_LOADING, true))
+        //socket.on(SocksetTimetEvents.CONNECT,()=>{
+        //setTimeout(() => {
+            console.log("getting team", slug)
 
         socket.emit(SocketEvents.SELECT_TEAM, slug);
-        socket.on(SocketEvents.SELECT_TEAM, (res:ITeam)=>{   
-            console.log("RESPONSE", res)       
+
+        //},2000)
+        socket.on(SocketEvents.SELECT_TEAM, (res:ITeam)=>{ 
+
             dispatch(teamSelected(ACTION_TYPES.TEAM_SELECTED, res));
-            setTimeout(() => dispatch( isLoading(ACTION_TYPES.IS_LOADING, false) ), 10)
+            //setTimeout(() => dispatch( isLoading(ACTION_TYPES.IS_LOADING, false) ), 10)
         })
+        //})
         
     }
     
@@ -158,22 +173,24 @@ export const chooseCurrentPlayer = (player:IPlayer) => {
     }
 }
 
+const dashboardUpdating:ActionCreator<Action<boolean>> = (type:string, payload:boolean) => {return {type, payload}}
 const submitForm:ActionCreator<Action<formValues>> = (type:string, payload:formValues):Action<formValues> => {return {type, payload}}
 export const dispatchSubmitForm = (values:formValues) => {
     return (dispatch: Dispatch<Action<formValues>>) => {
-        //dispatch(submitForm)
+        dispatch(dashboardUpdating(ACTION_TYPES.DASHBOARD_UPDATING, true))
         socket.emit(SocketEvents.SUBMIT_TO_SHEET, values);
     }
 }
 
 const dashboardUpdated:ActionCreator<Action<any>> = (type:string, dashboardData:any):Action<any> => {
-    console.log(type, dashboardData);
     return {type, payload: dashboardData}
-}//TODO: have components subsribe to this method
+}
 export const updateDashboard = () => {
     return (dispatch: Dispatch<Action<any>>) => {
+        console.log(socket);
         socket.on(SocketEvents.DASHBOARD_UPDATED, (dashboardData:any) => {
             dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED, dashboardData))
+            dispatch(dashboardUpdating(ACTION_TYPES.DASHBOARD_UPDATING, false))
          })         
     }
 }

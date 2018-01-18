@@ -22,7 +22,7 @@ export default class GoogleSheets{
         process.env.USERPROFILE) + '/.credentials/';
     static TOKEN_PATH: string = GoogleSheets.TOKEN_DIR + 'sheets.googleapis.sve.json';
 
-    public GetSheetValues(): any {
+    public GetSheetValues(sheetId:string = null): any {
         
         const sheets = google.sheets('v4');
         return new Promise((resolve, reject) => {
@@ -38,10 +38,11 @@ export default class GoogleSheets{
         })
         .then(this.authorize)
         .then((auth) => {
+          if(!sheetId)sheetId = '1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q'
           return new Promise((resolve, reject) => {
             sheets.spreadsheets.values.get({
               auth: auth,            
-              spreadsheetId: '1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q',
+              spreadsheetId: sheetId ,
               range: 'DECISION MODEL!A:ZZ'
             }, (err:any, response: any) => {
               if(err){
@@ -133,7 +134,7 @@ export default class GoogleSheets{
      
     }
 
-    public commitAnswers( player:IPlayer, formValues:formValues){
+    public commitAnswers( player:IPlayer, formValues:formValues ){
       return new Promise((resolve, reject)=>{
         fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
           if (err) {

@@ -21,7 +21,7 @@ interface TeamDetailProps{
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): TeamDetailProps => {
     var Players: IPlayer[] = state.GameData.SelectedTeam.Players as IPlayer[]
     return {
-        Players
+        Players,
     };
 };
 

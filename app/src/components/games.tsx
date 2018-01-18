@@ -4,7 +4,8 @@ import ITeam from '../../../shared/models/ITeam';
 import { Game } from "../../../api/src/models/Game";
 import BaseForm from './form-elements/form'
 import TeamList from './TeamList'
-import './app.scss';
+import { Row, Col, Icon } from 'antd';
+
 
 export interface GamesList {
     Game: IGame[];
@@ -26,15 +27,15 @@ export default class Games extends React.Component<GamesList, any> {
 
     //onClick={this.props.testUpdate}
     render() {
-        return  this.props.Application.Loading ?  <h1>Loading..</h1> :
-        this.props.Game && <div className="container">
+        return  this.props.Application.Loading ?  <h1>Loading..<Icon type="loading" /></h1> :
+        this.props.Game && <Row>
                                 {this.props.Game.map((g, i) =>
                                     <div key={i}>
                                         <h1>Hello from {g.Location || g.Slug} at {g.idx}!</h1>
                                         <TeamList Game={g} Location={window.location}/>
                                     </div>
                                 )}
-                            </div>
+                            </Row>
     }
 }
 

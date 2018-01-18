@@ -11,6 +11,7 @@ import PlayerContainer from '../containers/PlayerContainer';
 export interface TeamDetailProps {
     Team: ITeam;
     Dashboard:any;
+    DashboardUpdating:boolean;
     fetchTeam:(slug:string)=>{};
     selectPlayer:(e: React.MouseEvent<HTMLAnchorElement>, player: IPlayer)=>{}
     submitForm: () => {}
@@ -40,7 +41,7 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
                                     selectPlayer={this.props.selectPlayer} 
                                     sumbmitForm={this.props.submitForm}
                                 />
-                                <h1>{data && data[6][1]}</h1>
+                                <h1>{data && data[6][1]} {this.props.DashboardUpdating ? "Dashboard updating..." : "" }</h1>
                                 <table style={{width:'60%'}}>
                                     <tbody>
                                         {data && data.slice(0,5).concat(data.slice(8,10)).map((d:any[], i:number)=>{

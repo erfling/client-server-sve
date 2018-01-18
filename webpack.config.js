@@ -52,7 +52,7 @@ module.exports = {
     plugins: [
       new webpack.HotModuleReplacementPlugin(),
       new HtmlwebpackPlugin({
-        title: 'Listlogs'
+        title: 'Shared Value Experience'
       }),
       new ExtractTextPlugin('style.css')      
     ]

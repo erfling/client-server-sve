@@ -1,5 +1,6 @@
 export enum SocketEvents{
     CONNECT = "connect",
+    MESSAGE = "MESSAGE",
     HELLO = "HELLO",
     DISCONNECT = "disconnect",
     SUBMIT_TO_SHEET = "SUBMIT_TO_SHEET",

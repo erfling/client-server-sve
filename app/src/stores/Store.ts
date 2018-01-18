@@ -13,7 +13,8 @@ export default interface ApplicationStore{
     };
     //export type SheetData   
     Application?: {
-        Loading: boolean
+        Loading: boolean,
+        DashboardUpdating:boolean;
     }
     Route?: any;
 }

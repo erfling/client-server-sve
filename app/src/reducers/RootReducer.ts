@@ -16,7 +16,8 @@ const initialState: ApplicationStore = {
         Dashboard: null
     },
     Application: {
-        Loading: false
+        Loading: false,
+        DashboardUpdating: true
     }
 };
 
@@ -74,6 +75,8 @@ export const Application = ( state = initialState.Application, action: Action<{t
     switch(action.type){
         case (ACTION_TYPES.IS_LOADING):
             return Object.assign({}, {Loading: action.payload})
+        case (ACTION_TYPES.DASHBOARD_UPDATING):
+            return Object.assign({}, {DashboardUpdating: action.payload})
         default:
             return state;
     }
