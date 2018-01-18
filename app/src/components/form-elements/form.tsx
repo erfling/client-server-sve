@@ -1,77 +1,15 @@
 import * as React from 'react';
 import { reduxForm, Field, WrappedFieldProps, InjectedFormProps, GenericFieldHTMLAttributes } from 'redux-form';
-
-import { ReactChild } from 'react';
 import { ReactNode } from 'react-redux';
 import { Form, Input, Radio, Select, Button, Slider } from "antd";
 const FormItem = Form.Item;
+
+import { SelectWrapper, SliderWrapper} from './AntdFormWrappers'
 
 interface FormProps extends InjectedFormProps{
     name:string;
     handleSubmit: (stuff:any) => {};
     PlayerId: string;
-}
-
-
-type TextInputProps = {
-    label: string,
-    className?: string
-} //& WrappedFieldProps
-
-class SliderWrapper extends React.Component<WrappedFieldProps & GenericFieldHTMLAttributes & {min:number, max:number, marks:"hi"}> {
-    render() {
-        console.log(this.props);
-        //const { input: { value, onChange } } = this.props
-        const getMarks = (min:number, max:number):{[index: string]:number} => {
-        var marks:{[index: string]:number} = {}
-        while(max > min-1){
-            marks[max] = max;
-            max--;
-        }
-        return marks;
-        }
-        console.log(getMarks(this.props.min, this.props.max))
-
-        return (
-        <div>
-            <h3>{this.props.input.value}</h3>
-            <Slider 
-                onChange={(e) => {console.log(e); this.props.input.onChange(e)}}
-                min={this.props.min}
-                max={this.props.max}
-                marks={getMarks(this.props.min, this.props.max)}
-            />
-        </div>
-        )
-    }
-}
-
-class SelectWrapper extends React.Component<WrappedFieldProps & GenericFieldHTMLAttributes>{
-    render() {
-        var children: {props:{children:string}}[] = this.props.children as {props:{children:string}}[];
-        var placeholder:{props:{children:string}} = children[0] as { props:{children:string}};
-        console.log(placeholder.props)
-        return  <Select 
-                    onChange={(e) => {console.log(e); this.props.input.onChange(e)}}
-                    placeholder={placeholder.props.children}>
-                        {children.map((child,i) => {
-                            return <Select.Option value={child.props.children} key={i}>{child.valueOf()}</Select.Option>
-                        })}
-                </Select>
-    }
-}
-/**
- * {this.props.children.map((child) => {
-                        
-                    })}
- */
-
-interface LabelFieldProps extends Field{
-    label:string;
-    validateStates: boolean;
-}
-class LabelField extends Field<LabelFieldProps>{
-
 }
 class AppForm extends React.Component<FormProps> {
     render(){
@@ -136,16 +74,3 @@ const BaseForm = reduxForm({
 })(AppForm);
 
 export default BaseForm;
-/*           <Field
-                        name="testField"
-                        type="text"
-                        component="input"
-                    />*/ /*
-                        <Field name="PeopleOnBoard" component="select">
-                            <option>--Select People--</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </Field>
-                        */
