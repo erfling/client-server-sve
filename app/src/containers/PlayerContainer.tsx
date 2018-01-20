@@ -17,11 +17,13 @@ interface DispatchProps {
 }
 interface TeamDetailProps{
     Players: IPlayer[];
+    submitting:boolean
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): TeamDetailProps => {
     var Players: IPlayer[] = state.GameData.SelectedTeam.Players as IPlayer[]
     return {
         Players,
+        submitting:state.Application.DashboardUpdating
     };
 };
 

@@ -1,5 +1,8 @@
 import Root from '../containers/Root';
 import TeamDetailContainer from '../containers/TeamDetailContainer';
+import AdminGamesListContainer from '../containers/AdminGamesListContainer';
+import AdminGamesContainer from '../containers/AdminGamesListContainer';
+
 
 interface RouteDefinition {
   sequence: number;
@@ -19,8 +22,14 @@ const routes: Routes = {
     exact: true,
     path: '/'
   },
+  adminGames:{
+    sequence:2,
+    component: AdminGamesContainer,
+    exact: true,
+    path: '/admin-games'
+  },
   team: {
-    sequence: 2,
+    sequence: 3,
     component: TeamDetailContainer,
     path: '/team-detail/:slug',
     exact: false

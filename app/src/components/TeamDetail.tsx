@@ -8,6 +8,7 @@ import './app.scss';
 
 import PlayerDetail from './PlayerDetail';
 import PlayerContainer from '../containers/PlayerContainer';
+import { Row } from "antd/lib/grid";
 export interface TeamDetailProps {
     Team: ITeam;
     Dashboard:any;
@@ -17,6 +18,7 @@ export interface TeamDetailProps {
     submitForm: () => {}
     subscribeToDashboard:() => {}
     match:any;
+    submitting:boolean
 }
 // 'HelloProps' describes the shape of props.
 // State is never set so we use the '{}' type.
@@ -35,13 +37,15 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
                 var data = this.props.Dashboard;
                 return <div key={this.props.Team._id}>
                             <h3>{this.props.Team.Name || this.props.Team.Slug || this.props.Team._id}</h3>
-                                <h4>Players: ({players.length})</h4>
-                                <PlayerContainer 
-                                    Players={players} 
-                                    selectPlayer={this.props.selectPlayer} 
-                                    sumbmitForm={this.props.submitForm}
-                                />
-                                <h1>{data && data[6][1]} {this.props.DashboardUpdating ? "Dashboard updating..." : "" }</h1>
+                            <h4>Players: ({players.length})</h4>
+                            <PlayerContainer 
+                                Players={players} 
+                                selectPlayer={this.props.selectPlayer} 
+                                sumbmitForm={this.props.submitForm}
+                                submitting={this.props.submitting}
+                            />
+                            <h1>{data && data[6][1]} {this.props.DashboardUpdating ? "Dashboard updating..." : "" }</h1>
+                            <div>
                                 <table style={{width:'60%'}}>
                                     <tbody>
                                         {data && data.slice(0,5).concat(data.slice(8,10)).map((d:any[], i:number)=>{
@@ -49,6 +53,7 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
                                     })}
                                     </tbody>                                    
                                 </table>
+                            </div>
                         </div> 
             }else{
                 return <p>no team, yo</p>  

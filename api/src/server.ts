@@ -121,16 +121,11 @@ export default class Server {
                         GameModel.find().populate("Teams").then((g:Game[])=>{
                             console.log("say hello")
                             this.io.of(t.Slug).emit(SocketEvents.HELLO, g);
-                        })
-
-                       
+                        })                       
         
                         socket.on(SocketEvents.DISCONNECT, () => {
                             console.log('Client disconnected');
-                        });
-
-
-                        
+                        });                        
     
                         socket.on(SocketEvents.SELECT_TEAM, (Slug:string) => {
                             console.log("SELECTING TEAM", Slug);

@@ -5,7 +5,6 @@ import { Form, Input, Radio, Select, Button, Slider } from "antd";
 
 export class SliderWrapper extends React.Component<WrappedFieldProps & GenericFieldHTMLAttributes & {min:number, max:number, marks:"hi"}> {
     render() {
-        console.log(this.props);
         //const { input: { value, onChange } } = this.props
         const getMarks = (min:number, max:number):{[index: string]:number} => {
         var marks:{[index: string]:number} = {}
@@ -15,11 +14,9 @@ export class SliderWrapper extends React.Component<WrappedFieldProps & GenericFi
         }
         return marks;
         }
-        console.log(getMarks(this.props.min, this.props.max))
 
         return (
         <div>
-            <h3>{this.props.input.value}</h3>
             <Slider 
                 onChange={(e) => {console.log(e); this.props.input.onChange(e)}}
                 min={this.props.min}

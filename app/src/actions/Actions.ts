@@ -12,7 +12,7 @@ import IPlayer from '../../../shared/models/IPlayer';
 import { store } from '../index';
 import { setTimeout } from 'timers';
 
-
+const baseRestURL = "http://localhost:4000/sapien/api/";
 const socket = socketIo("http://localhost:5000/" + "Team1");
 console.log("SOCKET ON CONNECT", socket);
 const teamSocket = '';
@@ -173,11 +173,11 @@ export const chooseCurrentPlayer = (player:IPlayer) => {
     }
 }
 
-const dashboardUpdating:ActionCreator<Action<boolean>> = (type:string, payload:boolean) => {return {type, payload}}
+const appStateChange:ActionCreator<Action<boolean>> = (type:string, payload:boolean) => {return {type, payload}}
 const submitForm:ActionCreator<Action<formValues>> = (type:string, payload:formValues):Action<formValues> => {return {type, payload}}
 export const dispatchSubmitForm = (values:formValues) => {
     return (dispatch: Dispatch<Action<formValues>>) => {
-        dispatch(dashboardUpdating(ACTION_TYPES.DASHBOARD_UPDATING, true))
+        dispatch(appStateChange(ACTION_TYPES.DASHBOARD_UPDATING, true))
         socket.emit(SocketEvents.SUBMIT_TO_SHEET, values);
     }
 }
@@ -190,7 +190,24 @@ export const updateDashboard = () => {
         console.log(socket);
         socket.on(SocketEvents.DASHBOARD_UPDATED, (dashboardData:any) => {
             dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED, dashboardData))
-            dispatch(dashboardUpdating(ACTION_TYPES.DASHBOARD_UPDATING, false))
+            dispatch(appStateChange(ACTION_TYPES.DASHBOARD_UPDATING, false))
          })         
+    }
+}
+
+const gotGames: ActionCreator<Action<IGame[]>> = (type: string, payload:IGame[]) => {return {type, payload}}
+export const getGames = () => {
+    return (dispatch: Dispatch<Action<IGame[]>>) => {
+        dispatch(isLoading(ACTION_TYPES.IS_LOADING, true))
+
+        return fetch(baseRestURL + 'games')
+            .then(( res:Response ) => {
+                return res.json()
+            })
+            .then( (games:IGame[] )=>{
+                dispatch( gotGames( ACTION_TYPES.GAMES_LOADED, games ) );
+                setTimeout( () => {dispatch(isLoading(ACTION_TYPES.IS_LOADING, false))},1000)
+            })
+            .catch( ( reason ) => { console.log(reason); alert("LOAD FAILED") } )
     }
 }

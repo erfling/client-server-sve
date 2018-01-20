@@ -11,6 +11,7 @@ export interface TeamDetailProps {
     //fetchTeam:(slug:string)=>{};
     selectPlayer:(e: React.MouseEvent<HTMLAnchorElement>, player:IPlayer)=>{}
     sumbmitForm:()=>{}
+    submitting:boolean
 }
 // 'HelloProps' describes the shape of props.
 // State is never set so we use the '{}' type.
@@ -24,12 +25,16 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
         if( this.props.Players ){
             return this.props.Players.map((p) => {
                 if(p.IsSelected){ 
-                    return <Row key={p._id} type="flex" justify="start">
+                    return <Row key={p._id}>
                                 <h3>{p.Name} ({p.SheetRange})</h3>
-                                <BaseForm form={p._id} initialValues={{PlayerId: p._id}} onSubmit={this.props.sumbmitForm}/>
+                                <Row>
+                                    <Col xs={24} sm={24} md={16} lg={16} xl={16}>
+                                        <BaseForm form={p._id} initialValues={{PlayerId: p._id}} onSubmit={this.props.sumbmitForm} />
+                                    </Col>
+                                </Row>
                             </Row>
                 }
-                    return <Row key={p._id} type="flex" justify="start">
+                    return <Row key={p._id}>
                                 <h3><a onClick = { e => this.props.selectPlayer(e, p) }>{p.Name || p.Role || p._id} ({p.SheetRange})</a></h3>
                            </Row>
 

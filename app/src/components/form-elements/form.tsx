@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { reduxForm, Field, WrappedFieldProps, InjectedFormProps, GenericFieldHTMLAttributes } from 'redux-form';
 import { ReactNode } from 'react-redux';
-import { Form, Input, Radio, Select, Button, Slider } from "antd";
+import { Form, Input, Radio, Select, Button, Slider, Icon } from "antd";
 const FormItem = Form.Item;
 
 import { SelectWrapper, SliderWrapper} from './AntdFormWrappers'
@@ -10,6 +10,7 @@ interface FormProps extends InjectedFormProps{
     name:string;
     handleSubmit: (stuff:any) => {};
     PlayerId: string;
+    submitting: boolean
 }
 class AppForm extends React.Component<FormProps> {
     render(){
@@ -63,7 +64,7 @@ class AppForm extends React.Component<FormProps> {
                             <option value="$10,000,000">$10,000,000</option>
                         </Field>
                     </FormItem>
-                    <Button onClick={e => this.props.handleSubmit(e)}>Submit</Button>
+                    <Button onClick={e => this.props.handleSubmit(e)}>Submit {this.props.submitting && <Icon type="loading"/>}</Button>
                 </form>
             </div>
     }

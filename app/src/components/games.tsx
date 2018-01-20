@@ -29,6 +29,7 @@ export default class Games extends React.Component<GamesList, any> {
     render() {
         return  this.props.Application.Loading ?  <h1>Loading..<Icon type="loading" /></h1> :
         this.props.Game && <Row>
+                                <h2>Games</h2>
                                 {this.props.Game.map((g, i) =>
                                     <div key={i}>
                                         <h1>Hello from {g.Location || g.Slug} at {g.idx}!</h1>

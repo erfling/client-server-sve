@@ -28,7 +28,7 @@ ReactDOM.render(
     <ConnectedRouter history={history}>
       <Layout>
         <Row type="flex" justify="center">
-          <Col xs={24} sm={20} md={16} lg={16} xl={16}>
+          <Col xs={24}>
             <App />
           </Col >
         </Row>

@@ -64,7 +64,6 @@ export const GameData = (state = initialState.GameData, action: GameAction<IGame
             newState.SelectedTeam.Players = players.map(p => Object.assign({}, p, {IsSelected: p._id == action.payload}))
             return newState;
         case(ACTION_TYPES.DASHBOARD_UPDATED):
-            console.log("REDUCE IT", action.payload);
             return Object.assign({}, state, {Dashboard: action.payload})
         default:
             return state;
