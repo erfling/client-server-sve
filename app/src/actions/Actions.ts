@@ -46,15 +46,14 @@ export enum ACTION_TYPES {
     TEAM_SELECTED = "TEAM_SELECTED",
     CURRENT_PLAYER_SET = "CURRENT_PLAYER_SET",
     SUBMIT = "SUBMIT",
+    SUBMITTING = "SUBMITTING",
     DASHBOARD_UPDATING = "DASHBOARD_UPDATING",
-    DASHBOARD_UPDATED = "DASHBOARD_UPDATED"
-}
+    DASHBOARD_UPDATED = "DASHBOARD_UPDATED",
+    EDIT_GAME = "EDIT_GAME",
+    CANCEL_EDIT_GAME = "CANCEL_EDIT_GAME",
 
-const gameSaved: ActionCreator<GameAction<IGame>> = (game: IGame):GameAction<IGame> => {
-    return {
-        type: ACTION_TYPES.GAME_SAVED,
-        payload: game
-    }
+    ADD_CLIENT_OBJECT = "ADD_CLIENT_OBJECT",
+    REST_SAVE_SUCCESS = "REST_SAVE_SUCCESS"
 }
 
 
@@ -88,13 +87,6 @@ export const loadInitialDataSocket = (socket: SocketIOClient.Socket) => {
     }
 }
 */
-export const saveGame = (socket: SocketIOClient.Socket, game: IGame) => {
-    return (dispatch: Dispatch<any>) => {
-        socket.on('gameSaved', (savedGame: IGame) => {
-            dispatch(gameSaved(savedGame))
-        })
-    }
-}
 
 export const fetchGames = () => {
     return (dispatch: Dispatch<GameAction<IGame> | Action<any>>) => {
@@ -103,7 +95,7 @@ export const fetchGames = () => {
         socket.on("HELLO", (res:any)=>{
             dispatch(dataInit(ACTION_TYPES.GAMES_LOADED, res));
             dispatch(dataInit(ACTION_TYPES.TEAMS_LOADED_WITH_GAMES, res));    
-            setTimeout(() => dispatch( isLoading(ACTION_TYPES.IS_LOADING, false) ), 2000)
+            setTimeout(() => dispatch( isLoading(ACTION_TYPES.IS_LOADING, false) ), 300)
         })
         
     }
@@ -202,12 +194,100 @@ export const getGames = () => {
 
         return fetch(baseRestURL + 'games')
             .then(( res:Response ) => {
+                console.log(res);
                 return res.json()
             })
             .then( (games:IGame[] )=>{
                 dispatch( gotGames( ACTION_TYPES.GAMES_LOADED, games ) );
-                setTimeout( () => {dispatch(isLoading(ACTION_TYPES.IS_LOADING, false))},1000)
+                setTimeout( () => {dispatch(isLoading(ACTION_TYPES.IS_LOADING, false))},2000)
             })
             .catch( ( reason ) => { console.log(reason); alert("LOAD FAILED") } )
     }
+}
+
+export const editGame = (game: IGame): Dispatch<Action<string>> => {
+    return (dispatch: Dispatch<Action<string>>) => {
+        dispatch({type:ACTION_TYPES.EDIT_GAME, payload: game._id})
+    }
+}
+export const cancelEditGame = (game: IGame): Dispatch<Action<string>> => {
+    return (dispatch: Dispatch<Action<string>>) => {
+        dispatch({type:ACTION_TYPES.CANCEL_EDIT_GAME, payload: game._id})
+    }
+}
+
+const gameSaved: ActionCreator<GameAction<IGame>> = (game: IGame):GameAction<IGame> => {
+    return {
+        type: ACTION_TYPES.GAME_SAVED,
+        payload: game
+    }
+}
+
+
+export const saveGame = (game: IGame) => {
+    let method = game._id ? "POST" : "POST";
+    let segment = game._id ? "games/" + game._id : "games";
+    let body = JSON.stringify(game);
+
+    return (dispatch:Dispatch<Action<any>>) => {                        
+        dispatch({type:ACTION_TYPES.SUBMITTING, payload: true})
+
+        fetch(
+                baseRestURL + segment, 
+                {
+                    method,
+                    body, 
+                    headers: new Headers({
+                        'Content-Type': 'application/json'
+                    })
+                }
+            )
+                .then( (res:Response) => {
+                    return res.json()//.then(r => r);
+                })
+                .then( (game:IGame) => {
+                    dispatch({type:"test", payload: game})
+                    setTimeout(() => dispatch({type:ACTION_TYPES.SUBMITTING, payload: false}), 1000)                    
+                })
+                .catch(reason => {console.log(reason), alert("SAVE FAILED")})
+    }
+}
+
+export const restSave = (payload: IGame | ITeam | IPlayer) => {
+    let method = payload._id ? "PUT" : "POST";
+    let url = baseRestURL + payload.REST_URL;
+    url = url + (payload._id ? "/" + payload._id : "");
+    let body = JSON.stringify(payload);
+
+
+    return (dispatch:Dispatch<Action<any>>) => {   
+        
+        dispatch({type:ACTION_TYPES.SUBMITTING, payload: true})
+
+        fetch(
+            url, 
+            {
+                method,
+                body, 
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            }
+        )
+        .then( (res:Response) => {
+            return res.json()//.then(r => r);
+        })
+        .then( (game:IGame) => {
+            setTimeout(() => {
+                dispatch({type:ACTION_TYPES.SUBMITTING, payload: false})
+                dispatch({type:ACTION_TYPES.REST_SAVE_SUCCESS, payload: game})
+            }, 1000)    
+                               
+        })
+        .catch(reason => {console.log(reason), alert("SAVE FAILED")})
+    }
+}
+
+export const addClientObject = ( objectType:string ) =>{
+    return ( dispatch:Dispatch<Action<any>> ) => dispatch( { type:ACTION_TYPES.ADD_CLIENT_OBJECT, payload:{ CLASS_NAME:objectType, IsSelected:true, REST_URL: objectType.toLowerCase() + 's'} } )
 }

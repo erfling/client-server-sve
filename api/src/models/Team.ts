@@ -8,7 +8,14 @@ import { Player } from './Player';
 export class Team 
   extends BaseClass
   implements ITeam{
+
+    @prop({default: "Team"})
+    CLASS_NAME:string;
+
     
+    @prop({default: "teams"})
+    REST_URL:string;
+
     @prop()
     Location?: string;
   

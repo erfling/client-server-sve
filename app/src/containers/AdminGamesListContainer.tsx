@@ -11,12 +11,16 @@ import * as ReactDOM from "react-dom";
 interface DispatchProps {
     getGames: (slug: string) => {},
     selectGame: (event: React.MouseEvent<HTMLAnchorElement>, game: IGame) => {}
+    editGame: (game: IGame) => {}
+    cancelEditGame: (game: IGame) => {}
+    saveGame: (game: any) => {}
+    addGame: () => {};
 }
-interface TeamDetailProps{
+interface GameListProps{
     Games:IGame[];
     Loading:boolean;
 }
-const mapStateToProps = (state: ApplicationStore, ownProps: {}): TeamDetailProps => {
+const mapStateToProps = (state: ApplicationStore, ownProps: {}): GameListProps => {
     return {
         Games: state.GameData.Game,
         Loading: state.Application.Loading
@@ -25,9 +29,13 @@ const mapStateToProps = (state: ApplicationStore, ownProps: {}): TeamDetailProps
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>, ownProps: any) => {
     return {
-        getGames: () => dispatch( Actions.getGames() )
+        getGames: () => dispatch( Actions.getGames() ),
+        editGame: (game: IGame) => dispatch( Actions.editGame(game) ),
+        cancelEditGame: (game: IGame) => dispatch( Actions.cancelEditGame(game) ),
+        saveGame: (game: IGame) => dispatch( Actions.restSave(game) ),
+        addGame: () => dispatch( Actions.addClientObject("Game") )
     }
 }
 
-const AdminGamesListContainer = connect<TeamDetailProps, any>(mapStateToProps, mapDispatchToProps)(AdminGamesList);
+const AdminGamesListContainer = connect<GameListProps, any>(mapStateToProps, mapDispatchToProps)(AdminGamesList);
 export default AdminGamesListContainer;

@@ -1,7 +1,14 @@
 @import '~antd/dist/antd.css';
-.ant-layout{
-    background: #fff;
+.has-button .ant-card-extra {
+    padding: 9.5px 0;
 }
+.ant-btn{
+    margin-right: 8px;
+}
+.ant-card{
+    margin-bottom:10px;
+}
+
 body{
     padding:0;
     margin:0;

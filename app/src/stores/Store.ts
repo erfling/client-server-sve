@@ -4,6 +4,7 @@ import IPlayer from '../../../shared/models/IPlayer';
 
 export default interface ApplicationStore{
     GameData?: {
+        [index:string]:any;
         Game?: IGame[],
         Team?: ITeam[],
         SelectedTeam?: ITeam;
@@ -15,6 +16,8 @@ export default interface ApplicationStore{
     Application?: {
         Loading: boolean,
         DashboardUpdating:boolean;
+        Submitting: boolean;
     }
+    form: any;
     Route?: any;
 }

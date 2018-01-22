@@ -18,7 +18,8 @@ const mapStateToProps = (state:ApplicationStore, ownProps: {}) => {
     console.log(state);
     return {
         Game: state.GameData.Game,
-        Application: state.Application
+        Application: state.Application,
+        form: state.form
     };
 };
 

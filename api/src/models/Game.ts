@@ -10,11 +10,21 @@ import ITeam from '../../../shared/models/ITeam';
 export class Game 
   extends BaseClass 
   implements IGame{
+    
+    @prop({default: "Game"})
+    CLASS_NAME:string;
+    
+    @prop({default: "games"})
+    REST_URL:string;
+
     @prop()
     Location?: string;
   
     @prop()
     Slug: string;
+
+    @prop()
+    Name: string;
 
     @arrayProp({ itemsRef: Team })
     Teams:  Ref<ITeam>[] | ITeam[];

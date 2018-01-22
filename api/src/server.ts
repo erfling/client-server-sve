@@ -110,68 +110,53 @@ export default class Server {
             teams.forEach((t:ITeam) => {
 
                 //if(!this.gameSockets.has(t.Slug)){
-                    var teamSocket = this.io.of(t.Slug);
-                    
-                    this.gameSockets.set(t.Slug, teamSocket);
-                    this.io.of(t.Slug).on(SocketEvents.CONNECT, (socket) => {
-                        socket.join(t.Slug);
-                        console.log("CONNECTION SUCCESS ON SOCKET FOR GAME " + gameId);
-                        this.io.to(t.Slug).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + gameId);
-                        //console.log(socket.client)
-                        GameModel.find().populate("Teams").then((g:Game[])=>{
-                            console.log("say hello")
-                            this.io.of(t.Slug).emit(SocketEvents.HELLO, g);
-                        })                       
-        
-                        socket.on(SocketEvents.DISCONNECT, () => {
-                            console.log('Client disconnected');
-                        });                        
+                var teamSocket = this.io.of(t.Slug);
+                
+                this.gameSockets.set(t.Slug, teamSocket);
+                this.io.of(t.Slug).on(SocketEvents.CONNECT, (socket) => {
+                    socket.join(t.Slug);
+                    console.log("CONNECTION SUCCESS ON SOCKET FOR GAME " + gameId);
+                    this.io.to(t.Slug).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + gameId);
+                    //console.log(socket.client)
+                    GameModel.find().populate("Teams").then((g:Game[])=>{
+                        console.log("say hello")
+                        this.io.of(t.Slug).emit(SocketEvents.HELLO, g);
+                    })                       
     
-                        socket.on(SocketEvents.SELECT_TEAM, (Slug:string) => {
-                            console.log("SELECTING TEAM", Slug);
-                            TeamModel.findOne( { Slug } ).populate("Players").then((t:ITeam) => {
-                                this.io.of(t.Slug).emit(SocketEvents.SELECT_TEAM, t);
-                            })
-                            this.sheets.GetSheetValues().then((v:any)=>{
-                                console.log("going to send values", v);
-                                this.io.of(t.Slug).emit(SocketEvents.DASHBOARD_UPDATED,v);                            
-                            })
-                        })
-        
-                        
-                        socket.on(SocketEvents.SUBMIT_TO_SHEET, (values:formValues) => { 
-                            console.log("submitted");
-                            PlayerModel.findById(values.PlayerId).then((player:Player)=>{
-                                console.log(values);
-                                var sheets = new GoogleSheets();
-                                sheets.commitAnswers(player, values)
-                                .then(() => {
-                                    console.log("THENNED");
-                                    setTimeout(() => {
-                                        sheets.GetSheetValues().then((v:any)=>{                                            
-                                            this.io.of(t.Slug).emit(SocketEvents.DASHBOARD_UPDATED,v);                            
-                                        })
-                                    },500)
-                                })                    
-                            })                
-                        })
-                       
+                    socket.on(SocketEvents.DISCONNECT, () => {
+                        console.log('Client disconnected');
+                    });                        
 
+                    socket.on(SocketEvents.SELECT_TEAM, (Slug:string) => {
+                        console.log("SELECTING TEAM", Slug);
+                        TeamModel.findOne( { Slug } ).populate("Players").then((t:ITeam) => {
+                            this.io.of(t.Slug).emit(SocketEvents.SELECT_TEAM, t);
+                        })
+                        this.sheets.GetSheetValues().then((v:any)=>{
+                            console.log("going to send values", v);
+                            this.io.of(t.Slug).emit(SocketEvents.DASHBOARD_UPDATED,v);                            
+                        })
                     })
-
+    
                     
-                    
-                
-
-
-                
-
-
-
+                    socket.on(SocketEvents.SUBMIT_TO_SHEET, (values:formValues) => { 
+                        console.log("submitted");
+                        PlayerModel.findById(values.PlayerId).then((player:Player)=>{
+                            console.log(values);
+                            var sheets = new GoogleSheets();
+                            sheets.commitAnswers(player, values)
+                            .then(() => {
+                                console.log("THENNED");
+                                setTimeout(() => {
+                                    sheets.GetSheetValues().then((v:any)=>{                                            
+                                        this.io.of(t.Slug).emit(SocketEvents.DASHBOARD_UPDATED,v);                            
+                                    })
+                                },500)
+                            })                    
+                        })                
+                    })
+                })
             })
-
-
-            
         })
     
     }

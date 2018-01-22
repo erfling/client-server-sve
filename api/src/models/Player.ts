@@ -1,4 +1,4 @@
-import { prop, arrayProp, Typegoose, ModelType, InstanceType, Ref, instanceMethod } from 'typegoose';
+import { prop, arrayProp, Typegoose, ModelType, InstanceType, Ref, instanceMethod, staticMethod } from 'typegoose';
 import * as mongoose from 'mongoose';
 import BaseClass from './BaseModel'
 import { Team } from './Team';
@@ -11,7 +11,15 @@ import {Role} from '../../../shared/models/IPlayer';
 
 export class Player
   extends BaseClass 
+  implements IPlayer
   {
+    @prop({default: "Player"})
+    CLASS_NAME:string;
+
+    @prop({default: "players"})
+    REST_URL:string;
+
+
     @prop()
     Slug: string;
 

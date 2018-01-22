@@ -1,5 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import * as cors from 'cors';
 import { Game, GameModel } from '../models/Game'; 
+import IGame from '../../../shared/models/IGame'; 
 import { Error } from 'mongoose';
 import TeamRouter  from './TeamRouter';
 
@@ -65,15 +67,15 @@ class GameRouter{
         }
     }
 
-    public async UpdateGame(req: Request, res: Response):Promise<Game | any> {
-        const Slug = req.params.game;
+    public async UpdateGame(req: Request, res: Response):Promise<IGame | any> {
+        const Slug = req.body.Slug;
         const game = new Game(req.body); 
-        console.log(game);        
+
         try {
-            let savedGame = await GameModel.findOneAndUpdate({ Slug }, game).populate('Teams');
-        
+            let savedGame = await GameModel.findOneAndUpdate({ _id:req.body._id }, game, {new: true }).populate('Teams');
+            console.log("after save",savedGame);
             if (!savedGame) {
-              res.status(400).json({ error: 'No games' });
+              res.status(400).json({ error: "couldn't but we tried"});
             } else {
               res.json(savedGame);
             }
@@ -100,6 +102,7 @@ class GameRouter{
     } 
 
     public routes(){
+        //this.router.all("*", cors());
         this.router.get("/", this.GetGames)
         this.router.get("/:game", this.GetGame)
         this.router.post("/", this.CreateGame);
