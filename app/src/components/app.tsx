@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Root from "../containers/root";
+import Root from "../containers/Root";
 import TeamDetailContainer from '../containers/TeamDetailContainer';
 import { Route, Switch } from 'react-router';
 

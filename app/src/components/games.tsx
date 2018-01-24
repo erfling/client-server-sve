@@ -36,6 +36,7 @@ export default class Games extends React.Component<GamesList, any> {
                                         <TeamList Game={g} Location={window.location}/>
                                     </div>
                                 )}
+                                
                             </Row>
     }
 }
