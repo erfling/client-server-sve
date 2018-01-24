@@ -16,13 +16,13 @@ interface DispatchProps {
     saveGame: (game: any) => {}
     addGame: () => {};
 }
-interface GameListProps{
-    Games:IGame[];
+interface AdminGameDetailProps{
+    Game:IGame;
     Loading:boolean;
 }
-const mapStateToProps = (state: ApplicationStore, ownProps: {}): GameListProps => {
+const mapStateToProps = (state: ApplicationStore, ownProps: {}): AdminGameDetailProps => {
     return {
-        Games: state.GameData.Game,
+        Game: state.GameData.SelectedGame,
         Loading: state.Application.Loading
     };
 };
@@ -30,8 +30,13 @@ const mapStateToProps = (state: ApplicationStore, ownProps: {}): GameListProps =
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>, ownProps: any) => {
     return {
         getGames: () => dispatch( Actions.getGames() ),
+        editGame: (game: IGame) => dispatch( Actions.editGame(game) ),
+        cancelEditGame: (game: IGame) => dispatch( Actions.cancelEditGame(game) ),
+        saveGame: (game: IGame) => dispatch( Actions.restSave(game) ),
+        addGame: () => dispatch( Actions.addClientObject("Game") ),
+        selectGame: (game: IGame) => dispatch( Actions.chooseCurrentGame( game ) )
     }
 }
 
-const AdminGamesListContainer = connect<GameListProps, any>(mapStateToProps, mapDispatchToProps)(AdminGamesList);
+const AdminGamesListContainer = connect<AdminGameDetailProps, any>(mapStateToProps, mapDispatchToProps)(AdminGamesList);
 export default AdminGamesListContainer;

@@ -2,8 +2,8 @@ import * as React from 'react';
 import { reduxForm, Field, WrappedFieldProps, InjectedFormProps, GenericFieldHTMLAttributes } from 'redux-form';
 import { ReactNode } from 'react-redux';
 import { Form } from "antd";
-import Button from "antd/lib/Button";
-import Icon from "antd/lib/Icon";
+import Button from "antd/lib/button";
+import Icon from "antd/lib/icon";
 const FormItem = Form.Item;
 import IGame from '../../../../shared/models/IGame';
 import { SelectWrapper, InputWrapper} from './AntdFormWrappers'

@@ -10,6 +10,7 @@ export default interface ApplicationStore{
         SelectedTeam?: ITeam;
         Player?: IPlayer[];
         CurrentPlayer?: IPlayer
+        CurrentGame?: IGame;
         Dashboard: any;
     };
     //export type SheetData   

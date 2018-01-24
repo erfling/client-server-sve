@@ -53,7 +53,10 @@ export enum ACTION_TYPES {
     CANCEL_EDIT_GAME = "CANCEL_EDIT_GAME",
 
     ADD_CLIENT_OBJECT = "ADD_CLIENT_OBJECT",
-    REST_SAVE_SUCCESS = "REST_SAVE_SUCCESS"
+    REST_SAVE_SUCCESS = "REST_SAVE_SUCCESS",
+    CURRENT_GAME_SET = "CURRENT_GAME_SET",
+    GOT_OBJECT_BY_SLUG = "GOT_OBJECT_BY_SLUG"
+
 }
 
 
@@ -165,6 +168,19 @@ export const chooseCurrentPlayer = (player:IPlayer) => {
     }
 }
 
+const setCurrentGame:ActionCreator<Action<IGame>> = (type:string, payload: IGame) => {
+    return {
+        type,
+        payload
+    }
+}
+export const chooseCurrentGame = (game: IGame) => {
+    console.log("CHOOSING", game)
+    return (dispatch: Dispatch<Action<IPlayer>>) => {
+        dispatch(setCurrentPlayer(ACTION_TYPES.CURRENT_GAME_SET, game))
+    }
+}
+
 const appStateChange:ActionCreator<Action<boolean>> = (type:string, payload:boolean) => {return {type, payload}}
 const submitForm:ActionCreator<Action<formValues>> = (type:string, payload:formValues):Action<formValues> => {return {type, payload}}
 export const dispatchSubmitForm = (values:formValues) => {
@@ -223,43 +239,11 @@ const gameSaved: ActionCreator<GameAction<IGame>> = (game: IGame):GameAction<IGa
     }
 }
 
-
-export const saveGame = (game: IGame) => {
-    let method = game._id ? "POST" : "POST";
-    let segment = game._id ? "games/" + game._id : "games";
-    let body = JSON.stringify(game);
-
-    return (dispatch:Dispatch<Action<any>>) => {                        
-        dispatch({type:ACTION_TYPES.SUBMITTING, payload: true})
-
-        fetch(
-                baseRestURL + segment, 
-                {
-                    method,
-                    body, 
-                    headers: new Headers({
-                        'Content-Type': 'application/json'
-                    })
-                }
-            )
-                .then( (res:Response) => {
-                    return res.json()//.then(r => r);
-                })
-                .then( (game:IGame) => {
-                    dispatch({type:"test", payload: game})
-                    setTimeout(() => dispatch({type:ACTION_TYPES.SUBMITTING, payload: false}), 1000)                    
-                })
-                .catch(reason => {console.log(reason), alert("SAVE FAILED")})
-    }
-}
-
 export const restSave = (payload: IGame | ITeam | IPlayer) => {
     let method = payload._id ? "PUT" : "POST";
     let url = baseRestURL + payload.REST_URL;
     url = url + (payload._id ? "/" + payload._id : "");
     let body = JSON.stringify(payload);
-
-
     return (dispatch:Dispatch<Action<any>>) => {   
         
         dispatch({type:ACTION_TYPES.SUBMITTING, payload: true})
@@ -277,17 +261,33 @@ export const restSave = (payload: IGame | ITeam | IPlayer) => {
         .then( (res:Response) => {
             return res.json()//.then(r => r);
         })
-        .then( (game:IGame) => {
+        .then( (saved: IGame | ITeam | IPlayer) => {
             setTimeout(() => {
                 dispatch({type:ACTION_TYPES.SUBMITTING, payload: false})
-                dispatch({type:ACTION_TYPES.REST_SAVE_SUCCESS, payload: game})
+                dispatch({type:ACTION_TYPES.REST_SAVE_SUCCESS, payload: saved})
             }, 1000)    
                                
         })
         .catch(reason => {console.log(reason), alert("SAVE FAILED")})
     }
 }
-
 export const addClientObject = ( objectType:string ) =>{
     return ( dispatch:Dispatch<Action<any>> ) => dispatch( { type:ACTION_TYPES.ADD_CLIENT_OBJECT, payload:{ CLASS_NAME:objectType, IsSelected:true, REST_URL: objectType.toLowerCase() + 's'} } )
+}
+
+
+//TODO: add action, apllication store membder, reducer switch for abstraced types. set states.
+export const restFetchBySlug = ( type: string, slug:string) => {
+    let url = baseRestURL + "/type/" + slug;
+    return (dispatch:Dispatch<Action<IGame | ITeam | IPlayer>>) => {
+        fetch( url )
+            .then( r => r.json )
+            .then( ( r: ITeam | IGame | IPlayer ) => {
+                dispatch( {
+                    type: ACTION_TYPES.GOT_OBJECT_BY_SLUG,
+                    payload: r
+                })
+                //dispatch({type:ACTION_TYPES.})
+            })
+    }
 }

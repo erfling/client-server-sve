@@ -28,6 +28,12 @@ const routes: Routes = {
     exact: true,
     path: '/admin-games'
   },
+  adminGameDetail:{
+    sequence:3,
+    component: AdminGamesContainer,
+    exact: false,
+    path: '/admin-games/:id'
+  },
   team: {
     sequence: 3,
     component: TeamDetailContainer,

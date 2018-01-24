@@ -10,6 +10,7 @@ const { Header, Footer, Sider, Content } = Layout;
 import Collapse  from "antd/lib/collapse"
 import Menu from "antd/lib/menu"
 import { Button } from "antd/";
+import { Link } from "react-router-dom";
 
 const Panel = Collapse.Panel;
 
@@ -19,6 +20,7 @@ export interface GameListProps {
     isSelected:boolean;
     getGames: () => {}
     editGame: (game:IGame) => {}
+    selectGame: (game:IGame) => {}
     cancelEditGame: (game:IGame) => {}
     saveGame: () => {}
     addGame: () => {}
@@ -63,7 +65,9 @@ export default class AdminGamesList extends React.Component<GameListProps, {addi
                                         return <Card key={i} title={g.Name} className="has-button"
                                                 extra={ <div>
                                                             <Button type="dashed" shape="circle" onClick={e => this.props.editGame(g)}><Icon type="edit" /></Button>
-                                                            <Button type="dashed" shape="circle"><Icon type="info" /></Button>
+                                                            <Button type="dashed" shape="circle" onClick={e => this.props.selectGame(g)}>
+                                                                <Link to={'admin-games/'+g.Slug}><Icon type="info" /></Link>
+                                                            </Button>
                                                         </div>}> 
                                                     <p>Location: {g.Location}</p>
                                                     <p>Game URL: <a href="#">https://someurl.com{g.Slug}</a></p>

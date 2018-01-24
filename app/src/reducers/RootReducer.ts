@@ -64,6 +64,11 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             var newState = Object.assign({},state);
             newState.SelectedTeam.Players = players.map(p => Object.assign({}, p, {IsSelected: p._id == action.payload}))
             return newState;
+
+        case(ACTION_TYPES.CURRENT_GAME_SET):
+            var game:IGame = action.payload as IGame;  
+            return Object.assign({}, state, {SelectedGame: game || null})
+
         case(ACTION_TYPES.EDIT_GAME):
             var newState = Object.assign({},state);
             newState.Game = state.Game.map(g => Object.assign({}, g, {IsSelected: g._id == action.payload}))
@@ -91,6 +96,24 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             })
             if(!found) newState[action.payload.CLASS_NAME].splice(0, 0, action.payload);
             return newState;
+
+        case (ACTION_TYPES.GOT_OBJECT_BY_SLUG):
+            var newState = Object.assign({} ,state);
+            var objects = newState[action.payload.CLASS_NAME];
+            var found = false;
+            newState[action.payload.CLASS_NAME] = objects.filter((o:IBaseClass) => o._id).map((o:IBaseClass) => {
+                found = o._id == action.payload._id ? true : found;
+                var newObject = o._id == action.payload._id ? Object.assign({}, action.payload, { IsSelected: false }) : { IsSelected: false } 
+                console.log(newObject, action.payload)
+                return Object.assign( 
+                    {}, 
+                    o, 
+                    newObject
+                )
+            })
+            if(!found) newState[action.payload.CLASS_NAME].splice(0, 0, action.payload);
+            return newState;
+        
         case (ACTION_TYPES.ADD_CLIENT_OBJECT):
             var newState = Object.assign({} ,state);
             var objects = newState[action.payload.CLASS_NAME];
