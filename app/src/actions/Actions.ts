@@ -12,8 +12,10 @@ import IPlayer from '../../../shared/models/IPlayer';
 import { store } from '../index';
 import { setTimeout } from 'timers';
 
-const baseRestURL = "http://localhost:4000/sapien/api/";
-const socket = socketIo("http://localhost:5000/" + "Team1");
+console.log(window.location)
+
+const baseRestURL =  "http://" + window.location.hostname + ":4000/sapien/api/";
+const socket = socketIo("http://" + window.location.hostname + ":5000/" + "Team1");
 console.log("SOCKET ON CONNECT", socket);
 const teamSocket = '';
 
