@@ -30,6 +30,10 @@ const mapStateToProps = (state: ApplicationStore, ownProps: {}): GameListProps =
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>, ownProps: any) => {
     return {
         getGames: () => dispatch( Actions.getGames() ),
+        editGame: (game: IGame) => dispatch( Actions.editGame(game) ),
+        cancelEditGame: (game: IGame) => dispatch( Actions.cancelEditGame(game) ),
+        saveGame: (game: IGame) => dispatch( Actions.restSave(game) ),
+        addGame: () => dispatch( Actions.addClientObject("Game") )
     }
 }
 

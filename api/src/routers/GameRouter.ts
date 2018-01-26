@@ -38,7 +38,7 @@ class GameRouter{
         const Slug = req.params.game;
         console.log(Slug);
         try {
-            let game = await GameModel.findOne({Slug}).populate('Teams');
+            let game = await GameModel.findOne({Slug}).populate({path : 'Teams', populate : {path : 'Players'}});
         
             if (!game) {
               res.status(400).json({ error: 'No games' });

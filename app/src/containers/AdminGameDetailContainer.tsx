@@ -1,22 +1,19 @@
 import * as React from "react";
 //import Games from "./games";
 import IGame from '../../../shared/models/IGame';
+import ITeam from '../../../shared/models/ITeam';
 import ApplicationStore from '../stores/Store';
-import AdminGamesList from '../components/AdminGamesList';
+import AdminGameDetail from '../components/AdminGameDetail';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import * as Actions from '../actions/Actions';
 import * as ReactDOM from "react-dom";
 
 interface DispatchProps {
-    getGames: (slug: string) => {},
-    selectGame: (game: IGame) => {}
-    editGame: (game: IGame) => {}
-    cancelEditGame: (game: IGame) => {}
-    saveGame: (game: any) => {}
-    addGame: () => {};
+    selectGame: (game:string) => {}
+    saveTeam: (team: ITeam) => {}
 }
-interface AdminGameDetailProps{
+export interface AdminGameDetailProps{
     Game:IGame;
     Loading:boolean;
 }
@@ -29,14 +26,9 @@ const mapStateToProps = (state: ApplicationStore, ownProps: {}): AdminGameDetail
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>, ownProps: any) => {
     return {
-        getGames: () => dispatch( Actions.getGames() ),
-        editGame: (game: IGame) => dispatch( Actions.editGame(game) ),
-        cancelEditGame: (game: IGame) => dispatch( Actions.cancelEditGame(game) ),
-        saveGame: (game: IGame) => dispatch( Actions.restSave(game) ),
-        addGame: () => dispatch( Actions.addClientObject("Game") ),
-        selectGame: (game: IGame) => dispatch( Actions.chooseCurrentGame( game ) )
+        selectGame: (slug: string) => dispatch( Actions.restFetchBySlug( "Game", slug ) )
     }
 }
 
-const AdminGamesListContainer = connect<AdminGameDetailProps, any>(mapStateToProps, mapDispatchToProps)(AdminGamesList);
+const AdminGamesListContainer = connect<AdminGameDetailProps, any>(mapStateToProps, mapDispatchToProps)(AdminGameDetail);
 export default AdminGamesListContainer;

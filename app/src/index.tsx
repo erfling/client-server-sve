@@ -11,9 +11,11 @@ import reducer from './reducers/RootReducer';
 import { ConnectedRouter, routerReducer, routerMiddleware, push } from 'react-router-redux'
 
 import routes from './routes/routes'
-import { App } from './components/App';
+import { App } from './components/App'
 import {Layout} from 'antd';
 import { Row, Col } from 'antd/lib/grid';
+import './components/app.scss';
+
 const history  = createBrowserHistory();
 export const store = createStore(reducer, composeWithDevTools(
   applyMiddleware(thunk),

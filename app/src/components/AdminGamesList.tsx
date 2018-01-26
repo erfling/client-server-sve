@@ -37,60 +37,44 @@ export default class AdminGamesList extends React.Component<GameListProps, {addi
         this.props.getGames()
     }
     componentWillMount(){
-
     }
     render() {
           const getName = (name:string = null) => {
             return name ? name : "Create New Game";
           }
 
-          return(            
-            <Layout>
-                <Menu
-                    mode="horizontal"
-                    theme="dark"
-                >
-                    <Menu.Item key="mail">
-                        <Icon type="mail" />Navigation One
-                    </Menu.Item>
-                </Menu>
-                <Content>
-                    <Row type="flex" justify="center">
-                        <Col xs={24} sm={24} lg={16}>
-                            <h1>Games <Button type="primary" shape="circle" onClick={e => this.props.addGame()}><Icon type="plus" /></Button></h1>
-                            {this.props.Loading ?  <Card loading title="Loading Games">testing</Card> :
-                            this.props.Games &&
-                                this.props.Games.map((g,i) => {
-                                    if(!g.IsSelected){
-                                        return <Card key={i} title={g.Name} className="has-button"
-                                                extra={ <div>
-                                                            <Button type="dashed" shape="circle" onClick={e => this.props.editGame(g)}><Icon type="edit" /></Button>
-                                                            <Button type="dashed" shape="circle" onClick={e => this.props.selectGame(g)}>
-                                                                <Link to={'admin-games/'+g.Slug}><Icon type="info" /></Link>
-                                                            </Button>
-                                                        </div>}> 
-                                                    <p>Location: {g.Location}</p>
-                                                    <p>Game URL: <a href="#">https://someurl.com{g.Slug}</a></p>
-                                            </Card>
-                                    } else {
-                                        return  <Card key={i} title={g.Name || "Create New Game"} className="has-button"
-                                                    extra={<div>
-                                                                <Button type="danger" shape="circle" onClick={e => this.props.cancelEditGame(g)}>X</Button>
-                                                           </div>}> 
-                                                        <AdminGameForm 
-                                                            form="admin-game"
-                                                            onSubmit={this.props.saveGame}
-                                                            initialValues={g}
-                                                        />
-                                                </Card>
-                                    }
-                                })      
+          return(          
+                <Col xs={24} sm={24} lg={16}>
+                    <h1>Games <Button type="primary" shape="circle" onClick={e => this.props.addGame()}><Icon type="plus" /></Button></h1>
+                    {this.props.Loading ?  <Card loading title="Loading Games">testing</Card> :
+                    this.props.Games &&
+                        this.props.Games.map((g,i) => {
+                            if(!g.IsSelected){
+                                return <Card key={i} title={g.Name} className="has-button"
+                                        extra={ <div>
+                                                    <Button type="dashed" shape="circle" onClick={e => this.props.editGame(g)}><Icon type="edit" /></Button>
+                                                    <Button type="dashed" shape="circle">
+                                                        <Link to={'/admin/games/'+g.Slug}><Icon type="info" /></Link>
+                                                    </Button>
+                                                </div>}> 
+                                            <p>Location: {g.Location}</p>
+                                            <p>Game URL: <a href="#">https://someurl.com{g.Slug}</a></p>
+                                    </Card>
+                            } else {
+                                return  <Card key={i} title={g.Name || "Create New Game"} className="has-button"
+                                            extra={<div>
+                                                        <Button type="danger" shape="circle" onClick={e => this.props.cancelEditGame(g)}>X</Button>
+                                                    </div>}> 
+                                                <AdminGameForm 
+                                                    form="admin-game"
+                                                    onSubmit={this.props.saveGame}
+                                                    initialValues={g}
+                                                />
+                                        </Card>
                             }
-                        </Col>
-                    </Row>
-                </Content>
-                
-            </Layout>
+                        })      
+                    }
+                </Col>
           )
     }
 }

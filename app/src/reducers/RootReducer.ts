@@ -99,7 +99,8 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
 
         case (ACTION_TYPES.GOT_OBJECT_BY_SLUG):
             var newState = Object.assign({} ,state);
-            var objects = newState[action.payload.CLASS_NAME];
+            var objects = newState[action.payload.CLASS_NAME] || [action.payload];
+            console.log("OBJECTS",objects, action)
             var found = false;
             newState[action.payload.CLASS_NAME] = objects.filter((o:IBaseClass) => o._id).map((o:IBaseClass) => {
                 found = o._id == action.payload._id ? true : found;
@@ -111,7 +112,10 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
                     newObject
                 )
             })
-            if(!found) newState[action.payload.CLASS_NAME].splice(0, 0, action.payload);
+            if(!found) {
+                newState[action.payload.CLASS_NAME].splice(0, 0, action.payload);
+            }
+            newState["Selected" + action.payload.CLASS_NAME] = action.payload;
             return newState;
         
         case (ACTION_TYPES.ADD_CLIENT_OBJECT):

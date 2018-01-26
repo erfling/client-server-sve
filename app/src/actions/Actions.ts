@@ -215,7 +215,7 @@ export const getGames = () => {
             })
             .then( (games:IGame[] )=>{
                 dispatch( gotGames( ACTION_TYPES.GAMES_LOADED, games ) );
-                setTimeout( () => {dispatch(isLoading(ACTION_TYPES.IS_LOADING, false))},2000)
+                setTimeout( () => {dispatch(isLoading(ACTION_TYPES.IS_LOADING, false))},200)
             })
             .catch( ( reason ) => { console.log(reason); alert("LOAD FAILED") } )
     }
@@ -265,7 +265,7 @@ export const restSave = (payload: IGame | ITeam | IPlayer) => {
             setTimeout(() => {
                 dispatch({type:ACTION_TYPES.SUBMITTING, payload: false})
                 dispatch({type:ACTION_TYPES.REST_SAVE_SUCCESS, payload: saved})
-            }, 1000)    
+            }, 200)    
                                
         })
         .catch(reason => {console.log(reason), alert("SAVE FAILED")})
@@ -278,11 +278,12 @@ export const addClientObject = ( objectType:string ) =>{
 
 //TODO: add action, apllication store membder, reducer switch for abstraced types. set states.
 export const restFetchBySlug = ( type: string, slug:string) => {
-    let url = baseRestURL + "/type/" + slug;
+    let url = baseRestURL + type.toLowerCase() + "s/" + slug;
     return (dispatch:Dispatch<Action<IGame | ITeam | IPlayer>>) => {
         fetch( url )
-            .then( r => r.json )
+            .then( r => r.json() )
             .then( ( r: ITeam | IGame | IPlayer ) => {
+                r.IsSelected = true;
                 dispatch( {
                     type: ACTION_TYPES.GOT_OBJECT_BY_SLUG,
                     payload: r

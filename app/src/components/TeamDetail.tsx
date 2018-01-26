@@ -5,10 +5,14 @@ import IPlayer from '../../../shared/models/IPlayer';
 import { Game } from "../../../api/src/models/Game";
 import BaseForm from './form-elements/form'
 import './app.scss';
-
+import TeamList from './TeamList'
+import { Row, Col, Icon } from 'antd';
+import {Layout} from "antd/lib";
+const { Header, Footer, Sider, Content } = Layout;
+import Menu from "antd/lib/menu";
+import { Link } from "react-router-dom";
 import PlayerDetail from './PlayerDetail';
 import PlayerContainer from '../containers/PlayerContainer';
-import { Row } from "antd/lib/grid";
 export interface TeamDetailProps {
     Team: ITeam;
     Dashboard:any;
@@ -25,7 +29,7 @@ export interface TeamDetailProps {
 export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
     componentDidMount() {
         console.log("DETAIL PROPS", this.props.match)
-        this.props.fetchTeam(this.props.match.params.slug);
+        this.props.fetchTeam(this.props.match.params.id);
         this.props.subscribeToDashboard();
     }
     componentWillMount(){
@@ -35,26 +39,40 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
           if(this.props.Team){ 
                 let players:IPlayer[] = this.props.Team.Players as IPlayer[];
                 var data = this.props.Dashboard;
-                return <div key={this.props.Team._id}>
-                            <h3>{this.props.Team.Name || this.props.Team.Slug || this.props.Team._id}</h3>
-                            <h4>Players: ({players.length})</h4>
-                            <PlayerContainer 
-                                Players={players} 
-                                selectPlayer={this.props.selectPlayer} 
-                                sumbmitForm={this.props.submitForm}
-                                submitting={this.props.submitting}
-                            />
-                            <h1>{data && data[6][1]} {this.props.DashboardUpdating ? "Dashboard updating..." : "" }</h1>
-                            <div>
-                                <table style={{width:'60%'}}>
-                                    <tbody>
-                                        {data && data.slice(0,5).concat(data.slice(8,10)).map((d:any[], i:number)=>{
-                                            return <tr key={i}>{d.map((datum, j:number )=> <td key={i+j}>{datum}</td>)}</tr>
-                                    })}
-                                    </tbody>                                    
-                                </table>
-                            </div>
-                        </div> 
+                return <Layout>
+                        <Menu
+                            mode="horizontal"
+                            theme="dark"
+                        >
+                            <Menu.Item>
+                                <Link to="/admin/games"><Icon type="bars" />Games List</Link>
+                            </Menu.Item>
+                        </Menu>
+                        <Content>
+                            <Row type="flex" justify="center">
+                                <Col xs={24} sm={24} lg={20}>
+                                    <h3>{this.props.Team.Name || this.props.Team.Slug || this.props.Team._id}</h3>
+                                    <h4>Players: ({players.length})</h4>
+                                    <PlayerContainer 
+                                        Players={players} 
+                                        selectPlayer={this.props.selectPlayer} 
+                                        sumbmitForm={this.props.submitForm}
+                                        submitting={this.props.submitting}
+                                    />
+                                    <h1>{data && data[6][1]} {this.props.DashboardUpdating ? "Dashboard updating..." : "" }</h1>
+                                    <div>
+                                        <table style={{width:'60%'}}>
+                                            <tbody>
+                                                {data && data.slice(0,5).concat(data.slice(8,10)).map((d:any[], i:number)=>{
+                                                    return <tr key={i}>{d.map((datum, j:number )=> <td key={i+j}>{datum}</td>)}</tr>
+                                            })}
+                                            </tbody>                                    
+                                        </table>
+                                    </div>
+                                </Col>
+                            </Row>
+                        </Content> 
+                    </Layout>    
             }else{
                 return <p>no team, yo</p>  
             }

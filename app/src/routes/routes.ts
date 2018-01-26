@@ -1,7 +1,9 @@
 import Root from '../containers/Root';
 import TeamDetailContainer from '../containers/TeamDetailContainer';
 import AdminGamesListContainer from '../containers/AdminGamesListContainer';
+import AdminRoot from '../components/AdminRoot';
 import AdminGamesContainer from '../containers/AdminGamesListContainer';
+import AdminGameDetailContainer from '../containers/AdminGameDetailContainer';
 
 
 interface RouteDefinition {
@@ -22,20 +24,14 @@ const routes: Routes = {
     exact: true,
     path: '/'
   },
-  adminGames:{
+  admin: {
     sequence:2,
-    component: AdminGamesContainer,
+    component: AdminRoot,
     exact: true,
-    path: '/admin-games'
-  },
-  adminGameDetail:{
-    sequence:3,
-    component: AdminGamesContainer,
-    exact: false,
-    path: '/admin-games/:id'
+    path: '/admin'
   },
   team: {
-    sequence: 3,
+    sequence: 5,
     component: TeamDetailContainer,
     path: '/team-detail/:slug',
     exact: false
