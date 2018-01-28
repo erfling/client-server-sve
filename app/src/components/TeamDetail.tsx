@@ -44,7 +44,7 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
     }
 
     componentDidUpdate(){
-
+        console.log(this.props.Dashboard);
         const  percentColors = [
             { pct: 0.0, color: { r: 0xff, g: 0x00, b: 0 } },
             { pct: 0.5, color: { r: 0xff, g: 0xff, b: 0 } },
@@ -111,6 +111,50 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
              }
             ]
            }
+
+          const mapDataForSunburst = (data:string[][]) => {
+            if(!data)return;
+            console.log(data.slice(8,10))
+            return {
+                title: "Sunburst Test",
+                color:"",
+                children: data.slice(8,10).map(row => {
+                    row.map(d => {
+                        return {
+                            title: d[0],
+                            color: "purple",
+                            size: d[1]
+                        }
+                    })
+                })
+            }
+
+          }
+
+          function randomLeaf():any {
+            return {
+              size: Math.random() * 1000,
+              color: Math.random()
+            };
+          }
+           function updateData() {
+            const totalLeaves = Math.random() * 20;
+            const leaves = [];
+            for (let i = 0; i < totalLeaves; i++) {
+              const leaf = randomLeaf();
+              if (Math.random() > 0.8) {
+                leaf.children = [...new Array(3)].map(() => randomLeaf());
+              }
+              leaves.push(leaf);
+            }
+            return {
+              title: '',
+              color: 1,
+              children: leaves
+            };
+          }
+          const DIVERGING_COLOR_SCALE = ['#00939C', '#85C4C8', '#EC9370', '#C22E00'];
+
           if(this.props.Team){ 
                 let players:IPlayer[] = this.props.Team.Players as IPlayer[];
                 var data = this.props.Dashboard;
@@ -136,12 +180,17 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
                                         />
                                         <Leaf className="leaf-thing" height={30}/>
                                         <span className="leaf-value">{this.props.EnvironmentalHealth}</span>
-                                        <Sunburst
-                                            hideRootNode
-                                            colorType="literal"
-                                            data={myData}
-                                            height={300}
-                                            width={350}/>
+                                        {this.props.Dashboard && <Sunburst
+                                                                    animation={{damping: 20, stiffness: 300}}
+                                                                    data={mapDataForSunburst(this.props.Dashboard)}
+                                                                    colorType={'category'}
+                                                                    colorRange={DIVERGING_COLOR_SCALE}
+                                                                    style={{stroke: '#fff'}}
+                                                                
+                                                                    height={300}
+                                                                    width={350} 
+                                                                    hideRootNode
+                                                                />}
                                     </div>
                                     <PlayerContainer 
                                         Players={players} 
