@@ -5,7 +5,7 @@ import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
 import { Game } from "../../../api/src/models/Game";
-import BaseForm from './form-elements/form'
+import BaseForm from './form-elements/Form'
 import './app.scss';
 import TeamList from './TeamList'
 import { Row, Col, Icon, Slider } from 'antd';

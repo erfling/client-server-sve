@@ -6,7 +6,7 @@ import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import * as Actions from '../actions/Actions';
 import * as ReactDOM from "react-dom";
-import Games from '../components/games';
+import Games from '../components/Games';
 //import './app.scss';
 
 interface Props extends ApplicationStore {
