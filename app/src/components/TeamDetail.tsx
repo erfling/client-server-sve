@@ -180,17 +180,16 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
                                         />
                                         <Leaf className="leaf-thing" height={30}/>
                                         <span className="leaf-value">{this.props.EnvironmentalHealth}</span>
-                                        {this.props.Dashboard && <Sunburst
-                                                                    animation={{damping: 20, stiffness: 300}}
-                                                                    data={mapDataForSunburst(this.props.Dashboard)}
-                                                                    colorType={'category'}
-                                                                    colorRange={DIVERGING_COLOR_SCALE}
-                                                                    style={{stroke: '#fff'}}
-                                                                
-                                                                    height={300}
-                                                                    width={350} 
-                                                                    hideRootNode
-                                                                />}
+                                        {data && <Sunburst
+                                                    animation={{damping: 20, stiffness: 300}}
+                                                    data={mapDataForSunburst( data ) }
+                                                    colorType={'category'}
+                                                    colorRange={DIVERGING_COLOR_SCALE}
+                                                    style={{stroke: '#ccc'}}                                                
+                                                    height={300}
+                                                    width={350}
+                                                    hideRootNode
+                                                />}
                                     </div>
                                     <PlayerContainer 
                                         Players={players} 

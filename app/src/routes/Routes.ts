@@ -17,7 +17,7 @@ interface Routes {
   [propName: string]: RouteDefinition;
 }
 
-const routes: Routes = {
+const Routes: Routes = {
   root: {
     sequence: 1,
     component: Root,
@@ -38,4 +38,4 @@ const routes: Routes = {
   }
 };
 
-export default routes;
+export default Routes;

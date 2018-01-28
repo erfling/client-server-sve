@@ -5,7 +5,7 @@ import AdminRoot from '../components/AdminRoot'
 import { Route, Switch } from 'react-router';
 
 // Icon = require('-!svg-react-loader?name=Icon!../img/si-glyph-leaf.svg');
-import routes from '../routes/routes';
+import Routes from '../routes/Routes';
 
 export class App extends React.Component<{}> {
 
