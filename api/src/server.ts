@@ -44,17 +44,17 @@ export default class Server {
     private sheets:GoogleSheets;
 
     constructor() {
-    this.app = express();
-    this.port = process.env.PORT || Server.PORT;
+        this.app = express();
+        this.port = process.env.PORT || Server.PORT;
 
-    //socket setup
-    //const io = socketIo(app); // < Interesting!
-    
-    this.config();
-    this.routes();
-    this.socketServer = http.createServer(this.app);
-    this.io = socketIo(this.socketServer);
-    this.listenForSocket();
+        //socket setup
+        //const io = socketIo(app); // < Interesting!
+        
+        this.config();
+        this.routes();
+        this.socketServer = http.createServer(this.app);
+        this.io = socketIo(this.socketServer);
+        this.listenForSocket();
     }
     
     // application config
@@ -105,6 +105,7 @@ export default class Server {
         //TODO: solve for how we will determine desired game
         let gameId = "5a3328d0a9021e2390a77bb3";
         GameModel.findById(gameId).populate("Teams").then((game:Game) => {
+            console.log("found game");
             //this.io.of(SocketEvents.)
             let teams:ITeam[] = game.Teams as ITeam[];
             teams.forEach((t:ITeam) => {
@@ -114,8 +115,9 @@ export default class Server {
                 
                 this.gameSockets.set(t.Slug, teamSocket);
                 this.io.of(t.Slug).on(SocketEvents.CONNECT, (socket) => {
-                    socket.join(t.Slug);
-                    console.log("CONNECTION SUCCESS ON SOCKET FOR GAME " + gameId);
+                    if(t.Slug.indexOf("1") == -1) return;
+                    //socket.join(t.Slug);
+                    console.log("CONNECTION SUCCESS ON SOCKET FOR GAME " + t.Slug, this.io.of(t.Slug).clients((c:any) => console.log(c)));
                     this.io.to(t.Slug).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + gameId);
                     //console.log(socket.client)
                     GameModel.find().populate("Teams").then((g:Game[])=>{
@@ -148,17 +150,29 @@ export default class Server {
                             .then(() => {
                                 console.log("THENNED");
                                 setTimeout(() => {
-                                    sheets.GetSheetValues().then((v:any)=>{                                            
+                                    sheets.GetSheetValues().then((v:any)=>{     
+                                        console.log("returning");                      
                                         this.io.of(t.Slug).emit(SocketEvents.DASHBOARD_UPDATED,v);                            
                                     })
                                 },500)
                             })                    
                         })                
                     })
+                      
                 })
-            })
+                
+            })           
         })
     
+        this.app.post('/sapien/api/driveupdate', (req, resp) => {
+            var sheets = new GoogleSheets();
+            sheets.GetSheetValues().then((v:any)=>{     
+                console.log("returning");                      
+                this.io.of(req.body.Slug).emit("DRIVE_UPDATE",v);      
+                resp.json({test: "hello"})                      
+            })
+        })      
+     
     }
 
     private getTeam(Slug: string): void{

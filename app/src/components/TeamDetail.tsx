@@ -1,4 +1,6 @@
 import * as React from "react";
+import * as DOM from 'react-dom'
+
 import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
@@ -6,13 +8,19 @@ import { Game } from "../../../api/src/models/Game";
 import BaseForm from './form-elements/form'
 import './app.scss';
 import TeamList from './TeamList'
-import { Row, Col, Icon } from 'antd';
+import { Row, Col, Icon, Slider } from 'antd';
 import {Layout} from "antd/lib";
 const { Header, Footer, Sider, Content } = Layout;
 import Menu from "antd/lib/menu";
 import { Link } from "react-router-dom";
 import PlayerDetail from './PlayerDetail';
 import PlayerContainer from '../containers/PlayerContainer';
+import { SliderWrapper} from './form-elements/AntdFormWrappers'
+
+import Leaf from '-!svg-react-loader?name=Icon!../img/si-glyph-leaf.svg';
+import {Sunburst} from 'react-vis';
+
+
 export interface TeamDetailProps {
     Team: ITeam;
     Dashboard:any;
@@ -22,20 +30,87 @@ export interface TeamDetailProps {
     submitForm: () => {}
     subscribeToDashboard:() => {}
     match:any;
-    submitting:boolean
+    submitting:boolean;
+    EnvironmentalHealth:number;
+    setEnvirontmentalHealth: (value:number) => {}
 }
 // 'HelloProps' describes the shape of props.
 // State is never set so we use the '{}' type.
 export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
+
     componentDidMount() {
-        console.log("DETAIL PROPS", this.props.match)
         this.props.fetchTeam(this.props.match.params.id);
         this.props.subscribeToDashboard();
     }
-    componentWillMount(){
+
+    componentDidUpdate(){
+
+        const  percentColors = [
+            { pct: 0.0, color: { r: 0xff, g: 0x00, b: 0 } },
+            { pct: 0.5, color: { r: 0xff, g: 0xff, b: 0 } },
+            { pct: 1.0, color: { r: 0x00, g: 0xff, b: 0 } } ];
+
+        const setLeafColor = (value: number) => {
+                let pct = value/100
+                for (var i = 1; i < percentColors.length - 1; i++) {
+                    if (pct < percentColors[i].pct) {
+                        break;
+                    }
+                }
+                var lower = percentColors[i - 1];
+                var upper = percentColors[i];
+                var range = upper.pct - lower.pct;
+                var rangePct = (pct - lower.pct) / range;
+                var pctLower = 1 - rangePct;
+                var pctUpper = rangePct;
+                var color = {
+                    r: Math.floor(lower.color.r * pctLower + upper.color.r * pctUpper),
+                    g: Math.floor(lower.color.g * pctLower + upper.color.g * pctUpper),
+                    b: Math.floor(lower.color.b * pctLower + upper.color.b * pctUpper)
+                };
+                return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
+          }
+
+          if(this.refs.leaf){
+              let fillTarget = DOM.findDOMNode(this.refs.leaf).querySelector("svg").querySelectorAll('g')[1];
+              if(fillTarget){
+                  fillTarget.setAttribute("fill", setLeafColor(this.props.EnvironmentalHealth))
+              }
+          }
 
     }
     render() {
+        const myData = {
+            "title": "analytics",
+            "color": "#12939A",
+            "children": [
+             {
+              "title": "cluster",
+              "children": [
+               {"title": "AgglomerativeCluster", "color": "#12939A", "size": 3938},
+               {"title": "CommunityStructure", "color": "#12939A", "size": 3812},
+               {"title": "HierarchicalCluster", "color": "#12939A", "size": 6714},
+               {"title": "MergeEdge", "color": "#12939A", "size": 743}
+              ]
+             },
+             {
+              "title": "graph",
+              "children": [
+               {"title": "BetweennessCentrality", "color": "#12939A", "size": 3534},
+               {"title": "LinkDistance", "color": "#12939A", "size": 5731},
+               {"title": "MaxFlowMinCut", "color": "#12939A", "size": 7840},
+               {"title": "ShortestPaths", "color": "#12939A", "size": 5914},
+               {"title": "SpanningTree", "color": "#12939A", "size": 3416}
+              ]
+             },
+             {
+              "title": "optimization",
+              "children": [
+               {"title": "AspectRatioBanker", "color": "#12939A", "size": 7074}
+              ]
+             }
+            ]
+           }
           if(this.props.Team){ 
                 let players:IPlayer[] = this.props.Team.Players as IPlayer[];
                 var data = this.props.Dashboard;
@@ -53,6 +128,21 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
                                 <Col xs={24} sm={24} lg={20}>
                                     <h3>{this.props.Team.Name || this.props.Team.Slug || this.props.Team._id}</h3>
                                     <h4>Players: ({players.length})</h4>
+                                    <div ref="leaf">
+                                        <Slider 
+                                            min={0}
+                                            max={100}
+                                            onChange={(e:number) => this.props.setEnvirontmentalHealth(e)}
+                                        />
+                                        <Leaf className="leaf-thing" height={30}/>
+                                        <span className="leaf-value">{this.props.EnvironmentalHealth}</span>
+                                        <Sunburst
+                                            hideRootNode
+                                            colorType="literal"
+                                            data={myData}
+                                            height={300}
+                                            width={350}/>
+                                    </div>
                                     <PlayerContainer 
                                         Players={players} 
                                         selectPlayer={this.props.selectPlayer} 

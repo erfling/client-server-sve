@@ -20,12 +20,14 @@ interface TeamDetailProps{
     Team:ITeam;
     Dashboard:any;
     DashboardUpdating: boolean;
+    EnvironmentalHealth: number;
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): TeamDetailProps => {
     return {
         Team: state.GameData.SelectedTeam,
         Dashboard: state.GameData.Dashboard,
-        DashboardUpdating: state.Application.DashboardUpdating
+        DashboardUpdating: state.Application.DashboardUpdating,
+        EnvironmentalHealth:state.GameData.EnvironmentalHealth
     };
 };
 
@@ -36,7 +38,8 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
             console.log(values);
             dispatch(Actions.dispatchSubmitForm(Object.assign(values)))
         },
-        subscribeToDashboard: () => { dispatch( Actions.updateDashboard()) }
+        subscribeToDashboard: () => { dispatch( Actions.updateDashboard()) },
+        setEnvirontmentalHealth : (health: number) => { dispatch(Actions.setEnvironmentalHealth(health))}
     }
 }
 

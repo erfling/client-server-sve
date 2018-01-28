@@ -13,7 +13,8 @@ const initialState: ApplicationStore = {
         Game: [],
         Team: [],
         SelectedTeam: null,
-        Dashboard: null
+        Dashboard: null,
+        EnvironmentalHealth:0
     },
     Application: {
         Loading: false,
@@ -123,6 +124,8 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             var objects = newState[action.payload.CLASS_NAME];
             newState[action.payload.CLASS_NAME] = [action.payload, ...objects];
             return newState;
+        case ACTION_TYPES.UPDATE_ENVIRONMENTAL_HEALTH:
+            return Object.assign({}, state, {EnvironmentalHealth: action.payload})
         default:
             return state;
     }

@@ -1,5 +1,4 @@
 import formValues from  '../../../shared/models/FormValues';
-import { submit } from 'redux-form';
 import { SocketEvents } from './../../../shared/models/SocketEvents';
 import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
@@ -54,6 +53,8 @@ export enum ACTION_TYPES {
     EDIT_GAME = "EDIT_GAME",
     CANCEL_EDIT_GAME = "CANCEL_EDIT_GAME",
 
+
+    UPDATE_ENVIRONMENTAL_HEALTH = "UPDATE_ENVIRONMENTAL_HEALTH",
     ADD_CLIENT_OBJECT = "ADD_CLIENT_OBJECT",
     REST_SAVE_SUCCESS = "REST_SAVE_SUCCESS",
     CURRENT_GAME_SET = "CURRENT_GAME_SET",
@@ -166,6 +167,7 @@ const setCurrentPlayer:ActionCreator<Action<string>> = (type:string, payload:str
 export const chooseCurrentPlayer = (player:IPlayer) => {
     console.log("CHOOSING", player)
     return (dispatch: Dispatch<Action<IPlayer>>) => {
+        socket.on("DRIVE_UPDATE",(dashboardData:any) => dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED, dashboardData)))
         dispatch(setCurrentPlayer(ACTION_TYPES.CURRENT_PLAYER_SET, player._id))
     }
 }
@@ -293,4 +295,14 @@ export const restFetchBySlug = ( type: string, slug:string) => {
                 //dispatch({type:ACTION_TYPES.})
             })
     }
+}
+
+export const setEnvironmentalHealth = (health: number):Dispatch<Action<number>> => {
+    return (dispatch: Dispatch<Action<number>>) => {
+        dispatch( {
+            type: ACTION_TYPES.UPDATE_ENVIRONMENTAL_HEALTH, 
+            payload: health
+        })
+    }
+
 }

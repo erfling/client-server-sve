@@ -29,6 +29,12 @@ module.exports = {
               fallback: 'style-loader',
               use: ['css-loader', 'sass-loader']
             })
+          },
+          {
+            test: /\.svg$/,
+            use: ExtractTextPlugin.extract({
+              use: 'svg-inline-loader'
+            })
           }
         ],
         loaders: [
@@ -44,7 +50,8 @@ module.exports = {
         historyApiFallback: true,
         hot: true,
         inline: true,
-        progress: true
+        progress: true,
+        port:443
     },
     resolve: {
       extensions: [ '.tsx', '.ts', '.js' ]

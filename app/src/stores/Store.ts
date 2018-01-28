@@ -12,6 +12,9 @@ export default interface ApplicationStore{
         CurrentPlayer?: IPlayer
         CurrentGame?: IGame;
         Dashboard: any;
+
+        //temp testing value
+        EnvironmentalHealth: number;
     };
     //export type SheetData   
     Application?: {

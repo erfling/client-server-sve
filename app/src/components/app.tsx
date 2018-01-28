@@ -4,10 +4,14 @@ import TeamDetailContainer from '../containers/TeamDetailContainer';
 import AdminRoot from '../components/AdminRoot'
 import { Route, Switch } from 'react-router';
 
+// Icon = require('-!svg-react-loader?name=Icon!../img/si-glyph-leaf.svg');
 import routes from '../routes/routes';
+
 export class App extends React.Component<{}> {
 
   render() {
+    //console.log("image element",<Icon/>);
+
     return (
       <div>
         <Route path="/admin" component={AdminRoot}/>
