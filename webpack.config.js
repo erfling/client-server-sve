@@ -74,6 +74,7 @@ module.exports = {
       hot: true,
       inline: true,
       progress: true,
+      disableHostCheck: true,
       port:443
     },
     resolve: {

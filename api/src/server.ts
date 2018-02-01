@@ -6,6 +6,7 @@ import * as helmet from 'helmet';
 import * as compression from 'compression';
 import * as cors from 'cors';
 import * as http from 'http';
+import * as https from 'https';
 import * as socketIo from 'socket.io';
 import * as crypto from 'crypto';
 //import routers
@@ -140,7 +141,7 @@ export default class Server {
                 this.io.of(t.Slug).on(SocketEvents.CONNECT, (socket) => {
                     if(t.Slug.indexOf("1") == -1) return;
                     //socket.join(t.Slug);
-                    console.log("CONNECTION SUCCESS ON SOCKET FOR GAME " + t.Slug, this.io.of(t.Slug).clients((c:any) => console.log(c)));
+                    //console.log("CONNECTION SUCCESS ON SOCKET FOR GAME " + t.Slug, this.io.of(t.Slug).clients((c:any) => console.log(c)));
                     this.io.to(t.Slug).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + gameId);
                     //console.log(socket.client)
                     GameModel.find().populate("Teams").then((g:Game[])=>{

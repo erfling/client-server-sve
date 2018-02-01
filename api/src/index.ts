@@ -11,7 +11,8 @@ const sport = normalizePort(8443);
 //Server.set('port', port);
 
 console.log(`Server listening on port ${port}`);
-console.log("SERVER IS IN",process.env.);
+const processEnv = process.env.NODE_ENV || "dev";
+console.log("SERVER IS IN",process.env.NODE_ENV);
 /*
 --cert /sapien/certificates/fullchain.pem --key /sapien/certificates/privkey.pem
 */

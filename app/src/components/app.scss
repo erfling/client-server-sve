@@ -14,7 +14,7 @@ body{
     margin:0;
     background: #fff;  
 }
-[class^="ant-col-"] > div {
+.react-parallax-content [class^="ant-col-"] > div {
     background: rgba(255,255,255,.8);
     padding:10px;
 }

@@ -160,7 +160,7 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
                                 strength={500}
                             >                                
                                 <Row type="flex" justify="center" style={{ height:'1500px'}}>
-                                    <Col xs={23} sm={23} lg={20} style={{backround:'rgba(255,255,255,.6)'}}>
+                                    <Col xs={24} sm={23} lg={20} style={{backround:'rgba(255,255,255,.6)'}}>
                                         <h3>{this.props.Team.Name || this.props.Team.Slug || this.props.Team._id}</h3>
                                         <h4>Players: ({players.length})</h4>
                                         <div ref="leaf">
