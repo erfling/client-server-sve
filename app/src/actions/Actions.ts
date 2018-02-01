@@ -12,9 +12,11 @@ import { store } from '../index';
 import { setTimeout } from 'timers';
 
 const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
+const port = window.location.host.includes('sapien') ? ":8443:" : ":4000:";
+const socketPort = window.location.host.includes('sapien') ? ":9443" : ":5000";
 console.log(window.location)
-const baseRestURL = protocol +  "//" + window.location.hostname + ":4000/sapien/api/";
-const socket = socketIo(protocol +  "//" + window.location.hostname + ":5000/" + "Team1");
+const baseRestURL = protocol +  "//" + window.location.hostname + port + "/sapien/api/";
+const socket = socketIo(protocol +  "//" + window.location.hostname + socketPort + "/" + "Team1");
 console.log("BASE",baseRestURL, window.location)
 //console.log("SOCKET ON CONNECT", socket);
 const teamSocket = '';

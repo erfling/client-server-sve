@@ -21,7 +21,6 @@ import formValues from '../../shared/models/FormValues';
 
 //socket auth
 import * as jwt from 'jsonwebtoken';
-console.log(jwt);
 //sheets api
 import  GoogleSheets  from './models/GoogleSheets'; 
 import { resolve } from 'dns';
@@ -37,7 +36,9 @@ import { Player, PlayerModel } from './models/Player';
 //Server class
 export default class Server {
     public static readonly PORT:number = 4000;
+    public static readonly SECURE_PORT:number = 8443;
     public static readonly SOCKET_PORT:number = 5000;
+    public static readonly SECURE_SOCKET_PORT:number = 9443;
 
     // set app to be of type express.Application
     public app: express.Application;
@@ -123,6 +124,10 @@ export default class Server {
         
         //commence to listening
         this.socketServer.listen(Server.SOCKET_PORT, () => {
+            console.log('Running server on port %s', Server.SOCKET_PORT);
+        });
+
+        this.socketServer.listen(Server.SECURE_SOCKET_PORT, () => {
             console.log('Running server on port %s', Server.SOCKET_PORT);
         });
 

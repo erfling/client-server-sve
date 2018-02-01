@@ -6,8 +6,8 @@ import Server from './server';
 
 //debug('ts-express:server');
 const server = new Server();
-const port = normalizePort(4000);
-const sport = normalizePort(8443);
+const port = normalizePort(Server.PORT);
+const sport = normalizePort(Server.SECURE_PORT);
 //Server.set('port', port);
 
 console.log(`Server listening on port ${port}`);
