@@ -25,7 +25,7 @@ if(fs.existsSync('/sapien/certificates/privkey.pem')){
   httpsServer.listen(sport);
   httpsServer.on('error', onError);
   httpsServer.on('listening', onSecureListening);
-
+  console.log("HTTPS SERVER", httpsServer);
   function onSecureListening(): void {
     let addr = httpsServer.address();
     let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
