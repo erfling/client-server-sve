@@ -56,6 +56,10 @@ export default class Server {
 
 
         if(fs.existsSync('/sapien/certificates/privkey.pem')){
+            const onSecureListening = (): void => {
+                let addr =  this.secureSocketServer.address();
+                let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
+            }
             console.log("found SSL key")
             var privateKey  = fs.readFileSync('/sapien/certificates/privkey.pem', 'utf8').toString();
             var certificate = fs.readFileSync('/sapien/certificates/fullchain.pem', 'utf8').toString();
@@ -64,13 +68,10 @@ export default class Server {
             this.secureSocketServer.on('error', onError);
             this.secureSocketServer.on('listening', onSecureListening);
             console.log("HTTPS SERVER",  this.secureSocketServer.address());
-            function onSecureListening(): void {
-              let addr =  this.secureSocketServer.address();
-              let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
-            }
+            
 
             function onError(): void {
-                let addr =  this.secureSocketServer .address();
+                let addr =  this.secureSocketServer.address();
                 let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
               }
           }
