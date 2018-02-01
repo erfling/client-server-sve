@@ -7,7 +7,7 @@ import * as compression from 'compression';
 import * as cors from 'cors';
 import * as http from 'http';
 import * as socketIo from 'socket.io';
-
+import * as crypto from 'crypto';
 //import routers
 import GameRouter from './routers/GameRouter';
 import SheetsRouter from './routers/GoogleSheetsRouter';
@@ -17,6 +17,10 @@ import IGame from '../../shared/models/IGame';
 import ITeam from '../../shared/models/ITeam';
 import formValues from '../../shared/models/FormValues';
 
+
+//socket auth
+import * as jwt from 'jsonwebtoken';
+console.log(jwt);
 //sheets api
 import  GoogleSheets  from './models/GoogleSheets'; 
 import { resolve } from 'dns';
@@ -93,6 +97,25 @@ export default class Server {
         this.app.use('/sapien/api/sheets', SheetsRouter);
         this.app.use('/sapien/api/teams', TeamRouter);
         this.app.use('/sapien/api/player', PlayerRouter);
+
+        //login route
+        this.app.post('/login', (req, res) =>{
+           // const crypto = require("crypto");
+           /*
+            const secret = 'yallberealqueitnow';
+            const hash = crypto.createHmac('sha256', secret)
+                            .update('I love cupcakes')
+                            .digest('hex');
+            console.log(hash);
+            */
+
+            PlayerModel.findOne().then((player:Player)=>{
+                var token = jwt.sign({ player }, 'shhhhh');
+                res.json({test: token, player});
+            })
+
+
+        })
     }
 
     private listenForSocket(): void {
@@ -180,6 +203,8 @@ export default class Server {
             this.io.emit(SocketEvents.SELECT_TEAM, t);
         })
     }
+
+    
 }
     
     // export

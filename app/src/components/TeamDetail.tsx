@@ -17,10 +17,13 @@ import PlayerDetail from './PlayerDetail';
 import PlayerContainer from '../containers/PlayerContainer';
 import { SliderWrapper} from './form-elements/AntdFormWrappers'
 
+import {Parallax, Background} from 'react-parallax'; 
+
 import Leaf from '-!svg-react-loader?name=Icon!../img/si-glyph-leaf.svg';
-import {Sunburst} from 'react-vis';
+import { Sunburst } from 'react-vis';
 
-
+//mport Hurricane from  '../img/hurricane-space-earth-horizontal.jpg';
+const Hurricane = require('../img/hurricane-space-earth-horizontal.jpg');
 export interface TeamDetailProps {
     Team: ITeam;
     Dashboard:any;
@@ -80,60 +83,40 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
 
     }
     render() {
-        const myData = {
-            "title": "analytics",
-            "color": "#12939A",
-            "children": [
-             {
-              "title": "cluster",
-              "children": [
-               {"title": "AgglomerativeCluster", "color": "#12939A", "size": 3938},
-               {"title": "CommunityStructure", "color": "#12939A", "size": 3812},
-               {"title": "HierarchicalCluster", "color": "#12939A", "size": 6714},
-               {"title": "MergeEdge", "color": "#12939A", "size": 743}
-              ]
-             },
-             {
-              "title": "graph",
-              "children": [
-               {"title": "BetweennessCentrality", "color": "#12939A", "size": 3534},
-               {"title": "LinkDistance", "color": "#12939A", "size": 5731},
-               {"title": "MaxFlowMinCut", "color": "#12939A", "size": 7840},
-               {"title": "ShortestPaths", "color": "#12939A", "size": 5914},
-               {"title": "SpanningTree", "color": "#12939A", "size": 3416}
-              ]
-             },
-             {
-              "title": "optimization",
-              "children": [
-               {"title": "AspectRatioBanker", "color": "#12939A", "size": 7074}
-              ]
-             }
-            ]
-           }
+        const pivotArray = (arr:any[]):any[] => {
+            let output:any[] = [];
+            return output;
+        }
+        const DIVERGING_COLOR_SCALE = ['#00939C', '#85C4C8', '#EC9370', '#C22E00'];
 
-          const mapDataForSunburst = (data:string[][]) => {
+        /**{"title": "BetweennessCentrality", "color": "#12939A", "size": 3534}, */
+        const mapDataForSunburst = (data:string[][]) => {
             if(!data)return;
-            console.log(data.slice(8,10))
-            return {
-                title: "Sunburst Test",
-                color:"",
-                children: data.slice(8,10).map(row => {
-                    row.map(d => {
-                        return {
-                            title: d[0],
-                            color: "purple",
-                            size: d[1]
-                        }
-                    })
-                })
-            }
+            let input = data.slice(1,5).concat(data.slice(8,10));
+            let burstData = input.map((row,i) => {
+                return {
+                    title: "test",
+                    size: row[1],
+                    color:DIVERGING_COLOR_SCALE[i]
+                }
+            })
+            console.log('INPUT',input);
 
+            let final =  {
+                title: "Sunburst Test",
+                color:"blue",
+                children: burstData
+            }
+            console.log(final)
+            return final;
           }
 
-          function randomLeaf():any {
+          const randomLeaf = ():any => {
+              console.log(Math.round(Math.random()) + 2, this.props.Dashboard[9])
             return {
-              size: Math.random() * 1000,
+              title: this.props.Dashboard[Math.round(Math.random()) + 8][0].substring(0,6) + "...",
+              size:  this.props.Dashboard[9][Math.round(Math.random()) + 2] * 1000,
+             //size:1000,
               color: Math.random()
             };
           }
@@ -147,15 +130,17 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
               }
               leaves.push(leaf);
             }
+            
+            
             return {
               title: '',
               color: 1,
               children: leaves
             };
           }
-          const DIVERGING_COLOR_SCALE = ['#00939C', '#85C4C8', '#EC9370', '#C22E00'];
 
           if(this.props.Team){ 
+                console.log("HURRICANE", Hurricane)
                 let players:IPlayer[] = this.props.Team.Players as IPlayer[];
                 var data = this.props.Dashboard;
                 return <Layout>
@@ -168,47 +153,59 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
                             </Menu.Item>
                         </Menu>
                         <Content>
-                            <Row type="flex" justify="center">
-                                <Col xs={24} sm={24} lg={20}>
-                                    <h3>{this.props.Team.Name || this.props.Team.Slug || this.props.Team._id}</h3>
-                                    <h4>Players: ({players.length})</h4>
-                                    <div ref="leaf">
-                                        <Slider 
-                                            min={0}
-                                            max={100}
-                                            onChange={(e:number) => this.props.setEnvirontmentalHealth(e)}
+                            <Parallax
+                                
+                                bgImage={Hurricane}
+                                bgImageAlt="this blows"
+                                strength={500}
+                            >                                
+                                <Row type="flex" justify="center" style={{ height:'1500px'}}>
+                                    <Col xs={23} sm={23} lg={20} style={{backround:'rgba(255,255,255,.6)'}}>
+                                        <h3>{this.props.Team.Name || this.props.Team.Slug || this.props.Team._id}</h3>
+                                        <h4>Players: ({players.length})</h4>
+                                        <div ref="leaf">
+                                            <Slider 
+                                                min={0}
+                                                max={100}
+                                                onChange={(e:number) => this.props.setEnvirontmentalHealth(e)}
+                                            />
+                                            <Leaf className="leaf-thing" height={30}/>
+                                            <span className="leaf-value">{this.props.EnvironmentalHealth}</span>
+                                            {data && <Sunburst
+                                                        animation={{damping: 20, stiffness: 300}}
+                                                        data={ updateData() }
+                                                        colorType={'category'}
+                                                        colorRange={DIVERGING_COLOR_SCALE}
+                                                        style={{stroke: '#ccc'}}                                                
+                                                        height={300}
+                                                        width={350}
+                                                        hideRootNode
+                                                        title="hey"
+                                                        getLabel={(d:any) => d.title}
+
+                                                    />
+                                            }
+                                        </div>
+                                        <PlayerContainer 
+                                            Players={players} 
+                                            selectPlayer={this.props.selectPlayer} 
+                                            sumbmitForm={this.props.submitForm}
+                                            submitting={this.props.submitting}
                                         />
-                                        <Leaf className="leaf-thing" height={30}/>
-                                        <span className="leaf-value">{this.props.EnvironmentalHealth}</span>
-                                        {data && <Sunburst
-                                                    animation={{damping: 20, stiffness: 300}}
-                                                    data={mapDataForSunburst( data ) }
-                                                    colorType={'category'}
-                                                    colorRange={DIVERGING_COLOR_SCALE}
-                                                    style={{stroke: '#ccc'}}                                                
-                                                    height={300}
-                                                    width={350}
-                                                    hideRootNode
-                                                />}
-                                    </div>
-                                    <PlayerContainer 
-                                        Players={players} 
-                                        selectPlayer={this.props.selectPlayer} 
-                                        sumbmitForm={this.props.submitForm}
-                                        submitting={this.props.submitting}
-                                    />
-                                    <h1>{data && data[6][1]} {this.props.DashboardUpdating ? "Dashboard updating..." : "" }</h1>
-                                    <div>
-                                        <table style={{width:'60%'}}>
-                                            <tbody>
-                                                {data && data.slice(0,5).concat(data.slice(8,10)).map((d:any[], i:number)=>{
-                                                    return <tr key={i}>{d.map((datum, j:number )=> <td key={i+j}>{datum}</td>)}</tr>
-                                            })}
-                                            </tbody>                                    
-                                        </table>
-                                    </div>
-                                </Col>
-                            </Row>
+                                        <h1>{data && data[6][1]} {this.props.DashboardUpdating ? "Dashboard updating..." : "" }</h1>
+                                        <div>
+                                            <table style={{width:'60%'}}>
+                                                <tbody>
+                                                    {data && data.slice(0,5).concat(data.slice(8,10)).map((d:any[], i:number)=>{
+                                                        return <tr key={i}>{d.map((datum, j:number )=> <td key={i+j}>{datum}</td>)}</tr>
+                                                })}
+                                                </tbody>                                    
+                                            </table>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Parallax>
+
                         </Content> 
                     </Layout>    
             }else{
@@ -221,3 +218,9 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
 
 
 
+/*<Paralax
+                                blur={10}
+                                bgImage={require('../img/hurricane-space-earth-horizontal.jpg')}
+                                bgImageAlt="This blows"
+                                strength={200}
+                            />*/

@@ -12,9 +12,8 @@ import { store } from '../index';
 import { setTimeout } from 'timers';
 
 console.log(window.location)
-
-const baseRestURL =  "http://" + window.location.hostname + ":4000/sapien/api/";
-const socket = socketIo("http://" + window.location.hostname + ":5000/" + "Team1");
+const baseRestURL = window.location.protocol +  "//" + window.location.hostname + ":4000/sapien/api/";
+const socket = socketIo(window.location.protocol +  "//" + window.location.hostname + ":5000/" + "Team1");
 console.log("SOCKET ON CONNECT", socket);
 const teamSocket = '';
 
