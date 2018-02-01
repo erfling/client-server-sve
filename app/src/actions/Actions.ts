@@ -12,7 +12,7 @@ import { store } from '../index';
 import { setTimeout } from 'timers';
 
 const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
-const port = window.location.host.includes('sapien') ? ":8443:" : ":4000:";
+const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
 const socketPort = window.location.host.includes('sapien') ? ":9443" : ":5000";
 console.log(window.location)
 const baseRestURL = protocol +  "//" + window.location.hostname + port + "/sapien/api/";
