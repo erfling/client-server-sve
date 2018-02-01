@@ -65,7 +65,7 @@ export default class Server {
             this.secureSocketServer.on('listening', onSecureListening);
             console.log("HTTPS SERVER",  this.secureSocketServer.address());
             function onSecureListening(): void {
-              let addr =  this.secureSocketServer .address();
+              let addr =  this.secureSocketServer.address();
               let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
             }
 
