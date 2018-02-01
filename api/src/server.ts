@@ -145,12 +145,13 @@ export default class Server {
     private listenForSocket(): void {
         
         //commence to listening
+        /*
         this.socketServer.listen(Server.SOCKET_PORT, () => {
             console.log('Running server on port %s', Server.SOCKET_PORT);
         });
-
+*/
         this.socketServer.listen(Server.SECURE_SOCKET_PORT, () => {
-            console.log('Running server on port %s', Server.SOCKET_PORT);
+            console.log('Running server on port %s', Server.SECURE_SOCKET_PORT);
         });
 
         //TODO: solve for how we will determine desired game
