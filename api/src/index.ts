@@ -17,6 +17,7 @@ console.log("SERVER IS IN",process.env.NODE_ENV);
 --cert /sapien/certificates/fullchain.pem --key /sapien/certificates/privkey.pem
 */
 if(fs.existsSync('/sapien/certificates/privkey.pem')){
+  console.log("found SSL key")
   var privateKey  = fs.readFileSync('/sapien/certificates/privkey.pem', 'utf8').toString();
   var certificate = fs.readFileSync('/sapien/certificates/fullchain.pem', 'utf8').toString();
   var credentials = {key: privateKey, cert: certificate};
