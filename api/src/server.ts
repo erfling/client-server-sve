@@ -44,6 +44,7 @@ export default class Server {
     public app: express.Application;
     private io: SocketIO.Server;
     private socketServer: http.Server;
+    private secureSocketServer: https.Server;
     private port: string | number;
     private socketNameSpaces: string[];
     private gameSockets: Map<string, SocketIO.Namespace> = new Map();
@@ -59,18 +60,17 @@ export default class Server {
             var privateKey  = fs.readFileSync('/sapien/certificates/privkey.pem', 'utf8').toString();
             var certificate = fs.readFileSync('/sapien/certificates/fullchain.pem', 'utf8').toString();
             var credentials = {key: privateKey, cert: certificate};
-            const httpsServer = https.createServer(credentials, this.app);
-            httpsServer.listen(Server.SECURE_SOCKET_PORT);
-            httpsServer.on('error', onError);
-            httpsServer.on('listening', onSecureListening);
-            console.log("HTTPS SERVER", httpsServer.address());
+            this.secureSocketServer = https.createServer(credentials, this.app);
+            this.secureSocketServer .on('error', onError);
+            this.secureSocketServer .on('listening', onSecureListening);
+            console.log("HTTPS SERVER",  this.secureSocketServer .address());
             function onSecureListening(): void {
-              let addr = httpsServer.address();
+              let addr =  this.secureSocketServer .address();
               let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
             }
 
             function onError(): void {
-                let addr = httpsServer.address();
+                let addr =  this.secureSocketServer .address();
                 let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
               }
           }
@@ -81,6 +81,7 @@ export default class Server {
         this.config();
         this.routes();
         this.socketServer = http.createServer(this.app);
+        
         this.io = socketIo(this.socketServer);
         this.listenForSocket();
     }
@@ -150,7 +151,7 @@ export default class Server {
             console.log('Running server on port %s', Server.SOCKET_PORT);
         });
 */
-        this.socketServer.listen(Server.SECURE_SOCKET_PORT, () => {
+        this.secureSocketServer .listen(Server.SECURE_SOCKET_PORT, () => {
             console.log('Running server on port %s', Server.SECURE_SOCKET_PORT);
         });
 
