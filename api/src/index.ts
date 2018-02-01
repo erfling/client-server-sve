@@ -25,6 +25,12 @@ if(fs.existsSync('/sapien/certificates/privkey.pem')){
   httpsServer.listen(sport);
   httpsServer.on('error', onError);
   httpsServer.on('listening', onSecureListening);
+
+  function onSecureListening(): void {
+    let addr = httpsServer.address();
+    let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
+    debug(`Listening on ${bind}`);
+  }
 }
 
 const httpServer = http.createServer(server.app);
@@ -59,12 +65,6 @@ function onError(error: NodeJS.ErrnoException): void {
 }
 
 function onListening(): void {
-  let addr = httpServer.address();
-  let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
-  debug(`Listening on ${bind}`);
-}
-
-function onSecureListening(): void {
   let addr = httpServer.address();
   let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
   debug(`Listening on ${bind}`);
