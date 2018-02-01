@@ -157,7 +157,7 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
                                 
                                 bgImage={Hurricane}
                                 bgImageAlt="this blows"
-                                strength={500}
+                                strength={1000}
                             >                                
                                 <Row type="flex" justify="center" style={{ height:'1500px'}}>
                                     <Col xs={24} sm={23} lg={20} style={{backround:'rgba(255,255,255,.6)'}}>

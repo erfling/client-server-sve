@@ -17,7 +17,7 @@ import PlayerRouter from './routers/PlayerRouter';
 import IGame from '../../shared/models/IGame';
 import ITeam from '../../shared/models/ITeam';
 import formValues from '../../shared/models/FormValues';
-
+import * as fs from 'fs';
 
 //socket auth
 import * as jwt from 'jsonwebtoken';
@@ -52,6 +52,28 @@ export default class Server {
     constructor() {
         this.app = express();
         this.port = process.env.PORT || Server.PORT;
+
+
+        if(fs.existsSync('/sapien/certificates/privkey.pem')){
+            console.log("found SSL key")
+            var privateKey  = fs.readFileSync('/sapien/certificates/privkey.pem', 'utf8').toString();
+            var certificate = fs.readFileSync('/sapien/certificates/fullchain.pem', 'utf8').toString();
+            var credentials = {key: privateKey, cert: certificate};
+            const httpsServer = https.createServer(credentials, this.app);
+            httpsServer.listen(Server.SECURE_SOCKET_PORT);
+            httpsServer.on('error', onError);
+            httpsServer.on('listening', onSecureListening);
+            console.log("HTTPS SERVER", httpsServer.address());
+            function onSecureListening(): void {
+              let addr = httpsServer.address();
+              let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
+            }
+
+            function onError(): void {
+                let addr = httpsServer.address();
+                let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
+              }
+          }
 
         //socket setup
         //const io = socketIo(app); // < Interesting!
