@@ -61,9 +61,9 @@ export default class Server {
             var certificate = fs.readFileSync('/sapien/certificates/fullchain.pem', 'utf8').toString();
             var credentials = {key: privateKey, cert: certificate};
             this.secureSocketServer = https.createServer(credentials, this.app);
-            this.secureSocketServer .on('error', onError);
-            this.secureSocketServer .on('listening', onSecureListening);
-            console.log("HTTPS SERVER",  this.secureSocketServer .address());
+            this.secureSocketServer.on('error', onError);
+            this.secureSocketServer.on('listening', onSecureListening);
+            console.log("HTTPS SERVER",  this.secureSocketServer.address());
             function onSecureListening(): void {
               let addr =  this.secureSocketServer .address();
               let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
@@ -146,11 +146,11 @@ export default class Server {
     private listenForSocket(): void {
         
         //commence to listening
-        /*
+        
         this.socketServer.listen(Server.SOCKET_PORT, () => {
             console.log('Running server on port %s', Server.SOCKET_PORT);
         });
-*/
+
         this.secureSocketServer .listen(Server.SECURE_SOCKET_PORT, () => {
             console.log('Running server on port %s', Server.SECURE_SOCKET_PORT);
         });
