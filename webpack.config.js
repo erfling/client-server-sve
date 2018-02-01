@@ -35,6 +35,18 @@ module.exports = {
             use: ExtractTextPlugin.extract({
               use: 'svg-inline-loader'
             })
+          },
+          {
+            //why?????????????
+            test: /\.(png|jpg|gif)$/,
+            use: [
+              {
+                loader: 'file-loader',
+                options: {
+                  limit: 8192
+                }
+              }
+            ]
           }
         ],
         loaders: [
@@ -42,16 +54,27 @@ module.exports = {
           test: /\.jsx?$/,
           exclude: /node_modules/,
           loaders: ['react-hot'],
+        },
+        {
+          test: /\.(png|jpg|gif)$/,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                limit: 8192
+              }
+            }
+          ]
         }
       ]
     },
     devServer: {
-        contentBase: path.resolve(ROOT_PATH, '/build'),
-        historyApiFallback: true,
-        hot: true,
-        inline: true,
-        progress: true,
-        port:443
+      contentBase: path.resolve(ROOT_PATH, '/build'),
+      historyApiFallback: true,
+      hot: true,
+      inline: true,
+      progress: true,
+      port:443
     },
     resolve: {
       extensions: [ '.tsx', '.ts', '.js' ]

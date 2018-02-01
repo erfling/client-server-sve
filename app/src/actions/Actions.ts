@@ -11,10 +11,12 @@ import IPlayer from '../../../shared/models/IPlayer';
 import { store } from '../index';
 import { setTimeout } from 'timers';
 
+const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
 console.log(window.location)
-const baseRestURL = window.location.protocol +  "//" + window.location.hostname + ":4000/sapien/api/";
-const socket = socketIo(window.location.protocol +  "//" + window.location.hostname + ":5000/" + "Team1");
-console.log("SOCKET ON CONNECT", socket);
+const baseRestURL = protocol +  "//" + window.location.hostname + ":4000/sapien/api/";
+const socket = socketIo(protocol +  "//" + window.location.hostname + ":5000/" + "Team1");
+console.log("BASE",baseRestURL, window.location)
+//console.log("SOCKET ON CONNECT", socket);
 const teamSocket = '';
 
 socket.on(SocketEvents.CONNECT, (data: any) => {
@@ -210,7 +212,7 @@ const gotGames: ActionCreator<Action<IGame[]>> = (type: string, payload:IGame[])
 export const getGames = () => {
     return (dispatch: Dispatch<Action<IGame[]>>) => {
         dispatch(isLoading(ACTION_TYPES.IS_LOADING, true))
-
+        console.log("BASE REST",baseRestURL);
         return fetch(baseRestURL + 'games')
             .then(( res:Response ) => {
                 console.log(res);
@@ -220,7 +222,7 @@ export const getGames = () => {
                 dispatch( gotGames( ACTION_TYPES.GAMES_LOADED, games ) );
                 setTimeout( () => {dispatch(isLoading(ACTION_TYPES.IS_LOADING, false))},200)
             })
-            .catch( ( reason ) => { console.log(reason); alert("LOAD FAILED") } )
+            .catch( ( reason ) => { console.log(reason); alert("LOAD asdf") } )
     }
 }
 
