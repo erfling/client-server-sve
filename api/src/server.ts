@@ -188,6 +188,11 @@ export default class Server {
                 var teamSocket = this.io.of(t.Slug);
                 
                 this.gameSockets.set(t.Slug, teamSocket);
+                this.io.of(t.Slug).use((socket, next) => {
+                    var handshake = socket.handshake;
+                    console.log(handshake);
+                    next();
+                })
                 this.io.of(t.Slug).on(SocketEvents.CONNECT, (socket) => {
                     if(t.Slug.indexOf("1") == -1) return;
                     //socket.join(t.Slug);
