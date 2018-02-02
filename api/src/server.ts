@@ -5,6 +5,7 @@ import * as logger from 'morgan';
 import * as helmet from 'helmet';
 import * as compression from 'compression';
 import * as cors from 'cors';
+import * as net from 'net';
 import * as http from 'http';
 import * as https from 'https';
 import * as socketIo from 'socket.io';
@@ -73,7 +74,8 @@ export default class Server {
             var certificate = fs.readFileSync('/sapien/certificates/fullchain.pem', 'utf8').toString();
             var credentials = {key: privateKey, cert: certificate};
             this.secureSocketServer = https.createServer(credentials, this.app);
-            this.secureSocketServer.on('error', this.onSocketServerError).on('listening', this.onSocketServerListening);
+            this.secureSocketServer.on('error', this.onSocketServerError.bind(this, this.secureSocketServer))
+                .on('listening', this.onSocketServerListening.bind(this, this.secureSocketServer));
             console.log("HTTPS SERVER",  this.secureSocketServer.address());
         }
 
@@ -84,7 +86,8 @@ export default class Server {
         this.routes();
         if (!this.secureSocketServer) {
             this.socketServer = http.createServer(this.app);
-            this.socketServer.on('error', this.onSocketServerError).on('listening', this.onSocketServerListening); 
+            this.socketServer.on('error', this.onSocketServerError.bind(this, this.socketServer))
+                .on('listening', this.onSocketServerListening.bind(this, this.socketServer)); 
             this.io = socketIo(this.socketServer);
         } else {
             this.io = socketIo(this.secureSocketServer);
@@ -98,13 +101,13 @@ export default class Server {
     //
     //----------------------------------------------------------------------
 
-    private onSocketServerError():void {
-        let addr = (this as any)['address'](); // this is scoped to caller and is either this.socketServer or this.secureSocketServer
+    private onSocketServerError(eventTarget:net.Server):void {
+        let addr = eventTarget.address(); // eventTarget is scoped to caller: either this.socketServer or this.secureSocketServer
         let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
     }
 
-    private onSocketServerListening():void {
-        let addr = (this as any)['address'](); // this is scoped to caller and is either this.socketServer or this.secureSocketServer
+    private onSocketServerListening(eventTarget:net.Server):void {
+        let addr = eventTarget.address(); // eventTarget is scoped to caller: either this.socketServer or this.secureSocketServer
         let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
     }
 
