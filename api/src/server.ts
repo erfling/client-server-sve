@@ -75,6 +75,15 @@ export default class Server {
             this.secureSocketServer = https.createServer(credentials, this.app);
             this.secureSocketServer.on('error', this.onSocketError).on('listening', this.onSocketListening);
             console.log("HTTPS SERVER",  this.secureSocketServer.address());
+<<<<<<< HEAD
+=======
+            
+
+            function onError(): void {
+                let addr =  this.secureSocketServer.address();
+                let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
+              }
+>>>>>>> master
         }
 
         //socket setup
@@ -82,9 +91,12 @@ export default class Server {
         
         this.config();
         this.routes();
-        this.socketServer = http.createServer(this.app);
-        
-        this.io = socketIo(this.socketServer);
+        if(!this.secureSocketServer){
+            this.socketServer = http.createServer(this.app);        
+            this.io = socketIo(this.socketServer);
+        }else{
+            this.io = socketIo(this.secureSocketServer);
+        }
         this.listenForSocket();
     }
 
@@ -129,7 +141,12 @@ export default class Server {
 
         // cors
         this.app.use((req, res, next) => {
+<<<<<<< HEAD
             var allowedOrigins = ['http://localhost:443', 'https://planetsapientestsite.com'];
+=======
+
+            var allowedOrigins = ['http://localhost:443', 'https://planetsapientestsite.com', 'https://planetsapientestsite.com:443'];
+>>>>>>> master
             var origin = req.headers.origin;
 
             console.log("ORIGIN IS: ",req.headers.origin);
@@ -142,8 +159,8 @@ export default class Server {
             }
 
             res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-            res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Credentials');
-            res.header('Access-Control-Allow-Credentials', 'true');
+            res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+            res.header('Access-Control-Allow-Credentials', 'false');
             next();
         });
         this.app.use(cors());
@@ -183,11 +200,24 @@ export default class Server {
      * Listen for socket communication
      */
     private listenForSocket(): void {
+<<<<<<< HEAD
         this.socketServer.listen(Server.SOCKET_PORT, () => {
             console.log('Running server on port %s', Server.SOCKET_PORT);
         });
 
         if (this.secureSocketServer) {
+=======
+        
+        //commence to listening
+        if(this.socketServer){
+            this.socketServer.listen(Server.SOCKET_PORT, () => {
+                console.log('Running server on port %s', Server.SOCKET_PORT);
+            });
+        }
+
+        if(this.secureSocketServer){
+            this.io.origins('https://planetsapientestsite.com');
+>>>>>>> master
             this.secureSocketServer.listen(Server.SECURE_SOCKET_PORT, () => {
                 console.log('Running server on port %s', Server.SECURE_SOCKET_PORT);
             });
