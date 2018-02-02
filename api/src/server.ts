@@ -73,17 +73,8 @@ export default class Server {
             var certificate = fs.readFileSync('/sapien/certificates/fullchain.pem', 'utf8').toString();
             var credentials = {key: privateKey, cert: certificate};
             this.secureSocketServer = https.createServer(credentials, this.app);
-            this.secureSocketServer.on('error', this.onSocketError).on('listening', this.onSocketListening);
+            this.secureSocketServer.on('error', this.onSocketServerError).on('listening', this.onSocketServerListening);
             console.log("HTTPS SERVER",  this.secureSocketServer.address());
-<<<<<<< HEAD
-=======
-            
-
-            function onError(): void {
-                let addr =  this.secureSocketServer.address();
-                let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
-              }
->>>>>>> master
         }
 
         //socket setup
@@ -91,10 +82,11 @@ export default class Server {
         
         this.config();
         this.routes();
-        if(!this.secureSocketServer){
-            this.socketServer = http.createServer(this.app);        
+        if (!this.secureSocketServer) {
+            this.socketServer = http.createServer(this.app);
+            this.socketServer.on('error', this.onSocketServerError).on('listening', this.onSocketServerListening); 
             this.io = socketIo(this.socketServer);
-        }else{
+        } else {
             this.io = socketIo(this.secureSocketServer);
         }
         this.listenForSocket();
@@ -106,13 +98,13 @@ export default class Server {
     //
     //----------------------------------------------------------------------
 
-    private onSocketError():void {
-        let addr =  this.secureSocketServer.address();
+    private onSocketServerError():void {
+        let addr = (this as any)['address'](); // this is scoped to caller and is either this.socketServer or this.secureSocketServer
         let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
     }
 
-    private onSocketListening():void {
-        let addr =  this.secureSocketServer.address();
+    private onSocketServerListening():void {
+        let addr = (this as any)['address'](); // this is scoped to caller and is either this.socketServer or this.secureSocketServer
         let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
     }
 
@@ -141,12 +133,7 @@ export default class Server {
 
         // cors
         this.app.use((req, res, next) => {
-<<<<<<< HEAD
-            var allowedOrigins = ['http://localhost:443', 'https://planetsapientestsite.com'];
-=======
-
             var allowedOrigins = ['http://localhost:443', 'https://planetsapientestsite.com', 'https://planetsapientestsite.com:443'];
->>>>>>> master
             var origin = req.headers.origin;
 
             console.log("ORIGIN IS: ",req.headers.origin);
@@ -200,24 +187,16 @@ export default class Server {
      * Listen for socket communication
      */
     private listenForSocket(): void {
-<<<<<<< HEAD
-        this.socketServer.listen(Server.SOCKET_PORT, () => {
-            console.log('Running server on port %s', Server.SOCKET_PORT);
-        });
-
-        if (this.secureSocketServer) {
-=======
         
         //commence to listening
-        if(this.socketServer){
+        if (this.socketServer) {
             this.socketServer.listen(Server.SOCKET_PORT, () => {
                 console.log('Running server on port %s', Server.SOCKET_PORT);
             });
         }
 
-        if(this.secureSocketServer){
+        if (this.secureSocketServer) {
             this.io.origins('https://planetsapientestsite.com');
->>>>>>> master
             this.secureSocketServer.listen(Server.SECURE_SOCKET_PORT, () => {
                 console.log('Running server on port %s', Server.SECURE_SOCKET_PORT);
             });
