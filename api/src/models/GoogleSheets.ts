@@ -130,8 +130,34 @@ export default class GoogleSheets{
         });
       })
       .then(this.authorize)
-      .then()
+      .catch()
      
+    }
+
+    public subscribeToDriveResource (path: string) {
+      return new Promise((resolve, reject)=>{
+        fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
+          if (err) {
+            console.log('Error loading client secret file: ' + err);
+            reject(err);
+          }          // Authorize a client with the loaded credentials, then call the
+          // Google Sheets API.
+          //instance.authorize( JSON.parse(content) );
+          resolve(JSON.parse(content));
+        });
+      })
+      .then(this.authorize)
+      .then(auth => {
+        const drive = google.drive({ version: 'v3', auth: auth });
+        drive.files.list({
+          auth: auth
+        }, (res:any) => {
+          console.log(res)
+        }
+      )
+      .catch()
+
+      })
     }
 
     public commitAnswers( player:IPlayer, formValues:formValues ){
@@ -222,6 +248,7 @@ export default class GoogleSheets{
           })
         })
       })
+      .catch()
     }
 
     /*
