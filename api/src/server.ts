@@ -140,6 +140,12 @@ export default class Server {
         this.app.use('/sapien/api/teams', TeamRouter);
         this.app.use('/sapien/api/player', PlayerRouter);
 
+
+        //google drive verification
+        this.app.get('/google8b116b0e2c1fc48f.html ', function(req, res) {
+            res.sendFile('/google8b116b0e2c1fc48f.html');
+        });
+
         //login route
         this.app.post('/login', (req, res) =>{
            // const crypto = require("crypto");
