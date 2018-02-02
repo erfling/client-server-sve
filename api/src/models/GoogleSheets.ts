@@ -1,3 +1,4 @@
+import { Error } from 'mongoose';
 const fs: any = require('fs');
 const readline: any = require('readline');
 const google: any = require('googleapis');
@@ -148,16 +149,32 @@ export default class GoogleSheets{
       })
       .then(this.authorize)
       .then(auth => {
-        const drive = google.drive({ version: 'v3', auth: auth });
-        drive.files.list({
-          auth: auth
-        }, (res:any) => {
-          console.log(res)
-        }
-      )
-      .catch()
-
+        const drive = google.drive('v2');
+        var jwtClient = new google.auth.JWT(
+          auth.client_email,
+          null,
+          auth.private_key,
+          ['https://www.googleapis.com/auth/drive'], // an array of auth scopes
+          null
+        );
+        
+        jwtClient.authorize(function (err:Error, tokens:any) {
+          if (err) {
+            console.log('error on jwt auth',err);
+            return;
+          }
+        
+          // Make an authorized request to list Drive files.
+          drive.files.list({
+            auth: jwtClient
+          }, function (err:Error, resp:any) {
+            console.log("error", err)
+            console.log("resp", resp)
+          });
+        });
       })
+
+      
     }
 
     public commitAnswers( player:IPlayer, formValues:formValues ){
