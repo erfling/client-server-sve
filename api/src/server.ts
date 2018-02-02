@@ -74,16 +74,19 @@ export default class Server {
                 let addr =  this.secureSocketServer.address();
                 let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
               }
-          }
+        }
 
         //socket setup
         //const io = socketIo(app); // < Interesting!
         
         this.config();
         this.routes();
-        this.socketServer = http.createServer(this.app);
-        
-        this.io = socketIo(this.socketServer);
+        if(!this.secureSocketServer){
+            this.socketServer = http.createServer(this.app);        
+            this.io = socketIo(this.socketServer);
+        }else{
+            this.io = socketIo(this.secureSocketServer);
+        }
         this.listenForSocket();
     }
     
