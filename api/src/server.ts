@@ -24,7 +24,7 @@ import * as jwt from 'jsonwebtoken';
 //sheets api
 import  GoogleSheets  from './models/GoogleSheets'; 
 import { resolve } from 'dns';
-
+//helmet.contentSecurityPolicy
 
 //socket setup
 import { SocketEvents } from './../../shared/models/SocketEvents';
@@ -99,19 +99,32 @@ export default class Server {
         this.app.use(logger('dev'));
         this.app.use(compression());
         this.app.use(helmet());
-        this.app.use(cors());
 
         //global connection object for Google Sheets API
         this.sheets = new GoogleSheets();
 
         // cors
         this.app.use((req, res, next) => {
-            res.header('Access-Control-Allow-Origin', '*');
+
+            var allowedOrigins = ['http://localhost:443', 'https://planetsapientestsite.com'];
+            var origin = req.headers.origin;
+
+            console.log("ORIGIN IS: ",req.headers.origin);
+
+            if(allowedOrigins.indexOf(origin as string) > -1){
+                console.log("header approved")
+                res.setHeader('Access-Control-Allow-Origin', origin);
+            }else{
+                console.log("rejecting header")
+            }
+
             res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
             res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Credentials');
             res.header('Access-Control-Allow-Credentials', 'true');
             next();
         });
+        this.app.use(cors());
+
     
     }
     
@@ -152,9 +165,11 @@ export default class Server {
             console.log('Running server on port %s', Server.SOCKET_PORT);
         });
 
-        this.secureSocketServer .listen(Server.SECURE_SOCKET_PORT, () => {
-            console.log('Running server on port %s', Server.SECURE_SOCKET_PORT);
-        });
+        if(this.secureSocketServer){
+            this.secureSocketServer .listen(Server.SECURE_SOCKET_PORT, () => {
+                console.log('Running server on port %s', Server.SECURE_SOCKET_PORT);
+            });
+        }
 
         //TODO: solve for how we will determine desired game
         let gameId = "5a3328d0a9021e2390a77bb3";
