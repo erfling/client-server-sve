@@ -106,7 +106,7 @@ export default class Server {
         // cors
         this.app.use((req, res, next) => {
 
-            var allowedOrigins = ['http://localhost:443', 'https://planetsapientestsite.com'];
+            var allowedOrigins = ['http://localhost:443', 'https://planetsapientestsite.com', 'https://planetsapientestsite.com:443'];
             var origin = req.headers.origin;
 
             console.log("ORIGIN IS: ",req.headers.origin);
