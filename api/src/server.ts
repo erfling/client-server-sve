@@ -109,7 +109,7 @@ export default class Server {
         // cors
         this.app.use((req, res, next) => {
 
-            var allowedOrigins = ['http://localhost:443', 'https://planetsapientestsite.com', 'https://planetsapientestsite.com:443'];
+            var allowedOrigins = ['http://localhost:443', 'https://planetsapientestsite.com'];
             var origin = req.headers.origin;
 
             console.log("ORIGIN IS: ",req.headers.origin);
@@ -170,7 +170,7 @@ export default class Server {
         }
 
         if(this.secureSocketServer){
-            this.io.origins('https://planetsapientestsite.com');
+            this.io.origins('planetsapientestsite.com');
             this.secureSocketServer.listen(Server.SECURE_SOCKET_PORT, () => {
                 console.log('Running server on port %s', Server.SECURE_SOCKET_PORT);
             });
