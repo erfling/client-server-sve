@@ -168,8 +168,8 @@ export default class GoogleSheets{
           drive.files.list({
             auth: jwtClient
           }, function (err:Error, resp:any) {
-            console.log("error", err)
-            console.log("resp", resp)
+            console.log("error", err);
+            console.log("resp", resp);
           });
         });
       })
