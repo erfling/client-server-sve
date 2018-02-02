@@ -170,7 +170,7 @@ export default class Server {
         }
 
         if(this.secureSocketServer){
-            this.io.origins('planetsapientestsite.com');
+            this.io.origins('https://planetsapientestsite.com:443');
             this.secureSocketServer.listen(Server.SECURE_SOCKET_PORT, () => {
                 console.log('Running server on port %s', Server.SECURE_SOCKET_PORT);
             });
