@@ -15,23 +15,22 @@ class GameRouter{
     }
 
     public async GetGames(req: Request, res: Response):Promise<Game[] | any> {
-        console.log("GET GAMES CALLED")
+        console.log("GET GAMES CALLED");
         
         try {
-            console.log("trying")
-            let games = await GameModel.find().populate('Teams');;
+            console.log("trying");
+            let games = await GameModel.find().populate('Teams');
             if (!games) {
-                res.status(400).json({ error: 'No games' });
+                return res.status(400).json({ error: 'No games' });
             } else {
                 const status = res.status;
-                res.json( games );
+                return res.json( games );
             }
         } catch(err) {
             console.log("ERROR", err);
-            ( err: any ) => res.status(500).json({ error: err })
+            ( err: any ) => res.status(500).json({ error: err });
         }
         
-      
     }
 
     public async GetGame(req: Request, res: Response):Promise<any> {
@@ -46,7 +45,7 @@ class GameRouter{
               res.json(game);
             }
         } catch(err) {
-            ( err: any ) => res.status(500).json({ error: err })
+            ( err: any ) => res.status(500).json({ error: err });
         }
     }
 
@@ -63,7 +62,7 @@ class GameRouter{
               res.json(savedGame);
             }
         } catch(err) {
-            ( err: any ) => res.status(500).json({ error: err })
+            ( err: any ) => res.status(500).json({ error: err });
         }
     }
 
@@ -80,16 +79,16 @@ class GameRouter{
               res.json(savedGame);
             }
         } catch(err) {
-            ( err: any ) => res.status(500).json({ error: err })
+            ( err: any ) => res.status(500).json({ error: err });
         }
     
     }
 
     public async GetTeams(req: Request, res: Response):Promise<any> {
-        console.log("trying to get teams from game")
+        console.log("trying to get teams from game");
         const Slug = req.params.game;
         try {
-            let game = await GameModel.findOne({Slug}).populate("Teams")
+            let game = await GameModel.findOne({Slug}).populate("Teams");
         
             if (!game) {
               res.status(400).json({ error: 'No games' });
@@ -97,17 +96,17 @@ class GameRouter{
               res.json(game.Teams);
             }
         } catch(err) {
-            ( err: any ) => res.status(500).json({ error: err })
+            ( err: any ) => res.status(500).json({ error: err });
         }
     } 
 
     public routes(){
         //this.router.all("*", cors());
-        this.router.get("/", this.GetGames)
-        this.router.get("/:game", this.GetGame)
+        this.router.get("/", this.GetGames);
+        this.router.get("/:game", this.GetGame);
         this.router.post("/", this.CreateGame);
         this.router.put("/:game", this.UpdateGame);
-        this.router.use("/:game/teams", this.GetTeams)
+        this.router.use("/:game/teams", this.GetTeams);
     }
 }
 

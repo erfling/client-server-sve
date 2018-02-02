@@ -10,11 +10,11 @@ import * as ReactDOM from "react-dom";
 
 interface DispatchProps {
     getGames: (slug: string) => {},
-    selectGame: (game: IGame) => {}
-    editGame: (game: IGame) => {}
-    cancelEditGame: (game: IGame) => {}
-    saveGame: (game: any) => {}
-    addGame: () => {};
+    selectGame: (game: IGame) => {},
+    editGame: (game: IGame) => {},
+    cancelEditGame: (game: IGame) => {},
+    saveGame: (game: any) => {},
+    addGame: () => {}
 }
 interface GameListProps{
     Games:IGame[];

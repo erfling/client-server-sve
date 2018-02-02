@@ -4,23 +4,23 @@ import IPlayer from '../../../shared/models/IPlayer';
 
 export default interface ApplicationStore{
     GameData?: {
-        [index:string]:any;
+        [index:string]:any,
         Game?: IGame[],
         Team?: ITeam[],
-        SelectedTeam?: ITeam;
-        Player?: IPlayer[];
-        CurrentPlayer?: IPlayer
-        CurrentGame?: IGame;
-        Dashboard: any;
+        SelectedTeam?: ITeam,
+        Player?: IPlayer[],
+        CurrentPlayer?: IPlayer,
+        CurrentGame?: IGame,
+        Dashboard: any,
 
         //temp testing value
-        EnvironmentalHealth: number;
+        EnvironmentalHealth: number
     };
     //export type SheetData   
     Application?: {
         Loading: boolean,
-        DashboardUpdating:boolean;
-        Submitting: boolean;
+        DashboardUpdating:boolean,
+        Submitting: boolean
     }
     form: any;
     Route?: any;
