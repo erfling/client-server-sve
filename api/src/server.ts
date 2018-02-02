@@ -36,6 +36,12 @@ import { Player, PlayerModel } from './models/Player';
 
 //Server class
 export default class Server {
+    //----------------------------------------------------------------------
+    //
+    //  Properties
+    //
+    //----------------------------------------------------------------------
+
     public static readonly PORT:number = 4000;
     public static readonly SECURE_PORT:number = 8443;
     public static readonly SOCKET_PORT:number = 5000;
@@ -51,28 +57,24 @@ export default class Server {
     private gameSockets: Map<string, SocketIO.Namespace> = new Map();
     private sheets:GoogleSheets;
 
+    //----------------------------------------------------------------------
+    //
+    //  Constructor
+    //
+    //----------------------------------------------------------------------
+
     constructor() {
         this.app = express();
         this.port = process.env.PORT || Server.PORT;
 
         if (fs.existsSync('/sapien/certificates/privkey.pem')) {
-            const onSecureListening = (): void => {
-                let addr =  this.secureSocketServer.address();
-                let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
-            }
             console.log("found SSL key");
             var privateKey  = fs.readFileSync('/sapien/certificates/privkey.pem', 'utf8').toString();
             var certificate = fs.readFileSync('/sapien/certificates/fullchain.pem', 'utf8').toString();
             var credentials = {key: privateKey, cert: certificate};
             this.secureSocketServer = https.createServer(credentials, this.app);
-            this.secureSocketServer.on('error', onError);
-            this.secureSocketServer.on('listening', onSecureListening);
+            this.secureSocketServer.on('error', this.onSocketError).on('listening', this.onSocketListening);
             console.log("HTTPS SERVER",  this.secureSocketServer.address());
-
-            function onError(): void {
-                let addr =  this.secureSocketServer.address();
-                let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
-            }
         }
 
         //socket setup
@@ -85,8 +87,32 @@ export default class Server {
         this.io = socketIo(this.socketServer);
         this.listenForSocket();
     }
+
+    //----------------------------------------------------------------------
+    //
+    //  Event Handlers
+    //
+    //----------------------------------------------------------------------
+
+    private onSocketError():void {
+        let addr =  this.secureSocketServer.address();
+        let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
+    }
+
+    private onSocketListening():void {
+        let addr =  this.secureSocketServer.address();
+        let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
+    }
+
+    //----------------------------------------------------------------------
+    //
+    //  Methods
+    //
+    //----------------------------------------------------------------------
     
-    // application config
+    /**
+     * Application config
+     */
     public config(): void {
         const MONGO_URI: string = 'mongodb://localhost/express-boilerplate'; 
         mongoose.connect(MONGO_URI || process.env.MONGODB_URI);
@@ -109,7 +135,7 @@ export default class Server {
             console.log("ORIGIN IS: ",req.headers.origin);
 
             if (allowedOrigins.indexOf(origin as string) > -1) {
-                console.log("header approved")
+                console.log("header approved");
                 res.setHeader('Access-Control-Allow-Origin', origin);
             } else {
                 console.log("rejecting header");
@@ -123,7 +149,9 @@ export default class Server {
         this.app.use(cors());
     }
     
-    // application routes
+    /**
+     * Build application routes
+     */
     public routes(): void {
         const router: express.Router = express.Router();    
         this.app.use('/', router);
@@ -151,15 +179,16 @@ export default class Server {
         })
     }
 
+    /**
+     * Listen for socket communication
+     */
     private listenForSocket(): void {
-        //commence to listening
-        
         this.socketServer.listen(Server.SOCKET_PORT, () => {
             console.log('Running server on port %s', Server.SOCKET_PORT);
         });
 
         if (this.secureSocketServer) {
-            this.secureSocketServer .listen(Server.SECURE_SOCKET_PORT, () => {
+            this.secureSocketServer.listen(Server.SECURE_SOCKET_PORT, () => {
                 console.log('Running server on port %s', Server.SECURE_SOCKET_PORT);
             });
         }
@@ -233,6 +262,10 @@ export default class Server {
      
     }
 
+    /**
+     * Get team based on slug
+     * @param Slug 
+     */
     private getTeam(Slug: string): void {
         TeamModel.findOne( { Slug } ).populate("Players").then((t:ITeam) => {
             this.io.emit(SocketEvents.SELECT_TEAM, t);
