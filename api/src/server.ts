@@ -166,7 +166,8 @@ export default class Server {
         });
 
         if(this.secureSocketServer){
-            this.secureSocketServer .listen(Server.SECURE_SOCKET_PORT, () => {
+            this.io.origins('https://planetsapientestsite.com');
+            this.secureSocketServer.listen(Server.SECURE_SOCKET_PORT, () => {
                 console.log('Running server on port %s', Server.SECURE_SOCKET_PORT);
             });
         }
