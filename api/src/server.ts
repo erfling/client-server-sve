@@ -163,10 +163,11 @@ export default class Server {
     private listenForSocket(): void {
         
         //commence to listening
-        
-        this.socketServer.listen(Server.SOCKET_PORT, () => {
-            console.log('Running server on port %s', Server.SOCKET_PORT);
-        });
+        if(this.socketServer){
+            this.socketServer.listen(Server.SOCKET_PORT, () => {
+                console.log('Running server on port %s', Server.SOCKET_PORT);
+            });
+        }
 
         if(this.secureSocketServer){
             this.io.origins('https://planetsapientestsite.com');
