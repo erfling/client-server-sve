@@ -155,7 +155,6 @@ export default class GoogleSheets{
           console.log(res)
         }
       )
-      .catch()
 
       })
     }
