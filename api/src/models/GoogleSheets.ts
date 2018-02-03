@@ -1,4 +1,3 @@
-import { Error } from 'mongoose';
 const fs: any = require('fs');
 const readline: any = require('readline');
 const google: any = require('googleapis');
@@ -140,36 +139,40 @@ export default class GoogleSheets{
         fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
           if (err) {
             console.log('Error loading client secret file: ' + err);
-            reject(err);
+            return reject(err);
           }          // Authorize a client with the loaded credentials, then call the
           // Google Sheets API.
           //instance.authorize( JSON.parse(content) );
-          resolve(JSON.parse(content));
+          return resolve(JSON.parse(content));
         });
       })
       .then(this.authorize)
-      .then(auth => {
+      .then((auth: any) => {
         var service = google.drive('v3');
-        service.files.list({
-          auth: auth,
-          pageSize: 10,
-          fields: "nextPageToken, files(id, name)"
-        }, function(err:any, response:any) {
-          if (err) {
-            console.log('The API returned an error: ' + err);
-            return;
-          }
-          var files = response.files;
-          if (files.length == 0) {
-            console.log('No files found.');
-          } else {
-            console.log('Files:');
-            for (var i = 0; i < files.length; i++) {
-              var file = files[i];
-              console.log('%s (%s)', file.name, file.id);
+        return new Promise((resolve, reject) => {
+          service.files.list({
+            auth: auth,
+            pageSize: 10,
+            fields: "nextPageToken, files(id, name)"
+          }, function(err:any, response:any) {
+            if (err) {
+              console.log('The API returned an error: ' + err);
+              return;
             }
-          }
+            var files = response.files;
+            if (files.length == 0) {
+              console.log('No files found.');
+            } else {
+              console.log('Files:');
+              for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                console.log('%s (%s)', file.name, file.id);
+              }
+            }
+          })
         })
+        .catch(e => console.log("promise error is", e))
+        
       })
 
       
