@@ -40,6 +40,7 @@ export default class GoogleSheets{
         .then((auth) => {
           if(!sheetId)sheetId = '1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q'
           return new Promise((resolve, reject) => {
+            if(!auth)return;
             sheets.spreadsheets.values.get({
               auth: auth,            
               spreadsheetId: sheetId ,
@@ -47,7 +48,8 @@ export default class GoogleSheets{
             }, (err:any, response: any) => {
               if(err){
                 console.log(err,"ERROR HERE")
-                return reject(err);
+                reject(err);
+                return;
               }
               return resolve(response.values);
             })
