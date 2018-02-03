@@ -54,7 +54,7 @@ export default class GoogleSheets{
               return resolve(response.values);
             })
           })            
-        }).catch(e => {})
+        })
     }
 
     private storeToken(token: any) {
@@ -112,7 +112,7 @@ export default class GoogleSheets{
             return resolve(oauth2Client);
           }
         });
-      }).catch(e => console.log(e))
+      }).catch(e => {})
       // Check if we have previously stored a token.
       
     }
