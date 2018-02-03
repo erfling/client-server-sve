@@ -165,7 +165,9 @@ export default class Server {
 
         })
 
-        this.sheets.GetSheetValues();
+        this.sheets.GetSheetValues().then((v:any)=>{
+            console.log("going to send values", v);                          
+        }).then().catch((e:any) => console.log(e));
     }
 
     private listenForSocket(): void {

@@ -52,7 +52,7 @@ export default class GoogleSheets{
               return resolve(response.values);
             })
           })            
-        }).catch(e => console.log(e))
+        }).catch(e => {})
     }
 
     private storeToken(token: any) {

@@ -4,7 +4,8 @@ import ITeam from '../../../shared/models/ITeam';
 import { Game } from "../../../api/src/models/Game";
 import BaseForm from './form-elements/Form'
 import TeamList from './TeamList'
-import { Row, Col, Icon } from 'antd';
+import { Row, Col } from 'antd/lib/grid';
+import { Icon } from 'antd/lib';
 import {Layout} from "antd/lib";
 const { Header, Footer, Sider, Content } = Layout;
 import Menu from "antd/lib/menu";
