@@ -47,7 +47,7 @@ export default class GoogleSheets{
               range: 'DECISION MODEL!A:ZZ'
             }, (err:any, response: any) => {
               if(err){
-                console.log(err,"ERROR HERE")
+                //console.log(err,"ERROR HERE")
                 reject(err);
                 return;
               }
