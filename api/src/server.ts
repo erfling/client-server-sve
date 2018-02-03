@@ -191,7 +191,7 @@ export default class Server {
             teams.forEach((t:ITeam) => {
                 //console.log()
                 //if(!this.gameSockets.has(t.Slug)){
-                this.sheets.subscribeToDriveResource("test")
+                //this.sheets.subscribeToDriveResource("test")
                 var teamSocket = this.io.of(t.Slug);
                 
                 this.gameSockets.set(t.Slug, teamSocket);
