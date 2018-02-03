@@ -229,16 +229,13 @@ export default class Server {
     
                     
                     socket.on(SocketEvents.SUBMIT_TO_SHEET, (values:formValues) => { 
-                        console.log("submitted");
                         PlayerModel.findById(values.PlayerId).then((player:Player)=>{
                             console.log(values);
                             var sheets = new GoogleSheets();
                             sheets.commitAnswers(player, values)
                             .then(() => {
-                                console.log("THENNED");
                                 setTimeout(() => {
                                     sheets.GetSheetValues().then((v:any)=>{     
-                                        console.log("returning");                      
                                         this.io.of(t.Slug).emit(SocketEvents.DASHBOARD_UPDATED,v);                            
                                     })
                                 },500)

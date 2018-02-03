@@ -28,7 +28,7 @@ export default class GoogleSheets{
         return new Promise((resolve, reject) => {
           fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
             if (err) {
-              console.log('Error loading client secret file: ' + err);
+              //console.log('Error loading client secret file: ' + err);
               reject(err);
             }          // Authorize a client with the loaded credentials, then call the
             // Google Sheets API.
@@ -152,6 +152,7 @@ export default class GoogleSheets{
       .then((auth: any) => {
         var service = google.drive('v3');
         return new Promise((resolve, reject) => {
+          console.log("hello?");
           service.files.list({
             auth: auth,
             pageSize: 10,
