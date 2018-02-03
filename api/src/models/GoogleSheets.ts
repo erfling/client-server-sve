@@ -152,7 +152,6 @@ export default class GoogleSheets{
       .then((auth: any) => {
         var service = google.drive('v3');
         return new Promise((resolve, reject) => {
-          console.log("hello?");
           service.files.list({
             auth: auth,
             pageSize: 10,
