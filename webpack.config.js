@@ -10,7 +10,7 @@ module.exports = {
     entry: [
       './app/src/index.tsx'
     ],
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
     output: {
       path: path.resolve(ROOT_PATH, '/build'),
       publicPath: '/',
@@ -43,7 +43,7 @@ module.exports = {
               {
                 loader: 'file-loader',
                 options: {
-                  limit: 8192
+                  limit: 400
                 }
               }
             ]
@@ -69,7 +69,7 @@ module.exports = {
       ]
     },
     devServer: {
-      contentBase: path.resolve(ROOT_PATH, '/build'),
+      contentBase: path.resolve(ROOT_PATH, '/build/app'),
       historyApiFallback: true,
       hot: true,
       inline: true,

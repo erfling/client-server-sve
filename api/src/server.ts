@@ -190,6 +190,8 @@ export default class Server {
             })
 
         })
+
+        this.sheets.subscribeToDriveResource("test")
     }
 
     /**
@@ -214,12 +216,12 @@ export default class Server {
         //TODO: solve for how we will determine desired game
         let gameId = "5a3328d0a9021e2390a77bb3";
         GameModel.findById(gameId).populate("Teams").then((game:Game) => {
-            console.log("found game");
+            //this.io.of(SocketEvents.)
             let teams:ITeam[] = game.Teams as ITeam[];
             teams.forEach((t:ITeam) => {
                 //console.log()
                 //if(!this.gameSockets.has(t.Slug)){
-                this.sheets.subscribeToDriveResource("test")
+                //this.sheets.subscribeToDriveResource("test")
                 var teamSocket = this.io.of(t.Slug);
                 
                 this.gameSockets.set(t.Slug, teamSocket);
@@ -255,16 +257,14 @@ export default class Server {
                     })
                     
                     socket.on(SocketEvents.SUBMIT_TO_SHEET, (values:formValues) => { 
-                        console.log("submitted");
-                        PlayerModel.findById(values.PlayerId).then((player:Player) => {
+                        PlayerModel.findById(values.PlayerId).then((player:Player)=>{
                             console.log(values);
                             var sheets = new GoogleSheets();
-                            sheets.commitAnswers(player, values).then(() => {
-                                console.log("THENNED");
+                            sheets.commitAnswers(player, values)
+                            .then(() => {
                                 setTimeout(() => {
-                                    sheets.GetSheetValues().then((v:any) => {     
-                                        console.log("returning");                      
-                                        teamSocket.emit(SocketEvents.DASHBOARD_UPDATED,v);                            
+                                    sheets.GetSheetValues().then((v:any)=>{     
+                                        this.io.of(t.Slug).emit(SocketEvents.DASHBOARD_UPDATED,v);                            
                                     })
                                 }, 500)
                             })                    
