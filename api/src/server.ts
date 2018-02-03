@@ -189,7 +189,6 @@ export default class Server {
         //TODO: solve for how we will determine desired game
         let gameId = "5a3328d0a9021e2390a77bb3";
         GameModel.findById(gameId).populate("Teams").then((game:Game) => {
-            console.log("found game");
             //this.io.of(SocketEvents.)
             let teams:ITeam[] = game.Teams as ITeam[];
             teams.forEach((t:ITeam) => {
