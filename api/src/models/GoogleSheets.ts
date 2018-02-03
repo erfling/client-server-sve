@@ -1,3 +1,4 @@
+import { Error } from 'mongoose';
 const fs: any = require('fs');
 const readline: any = require('readline');
 const google: any = require('googleapis');
@@ -17,7 +18,7 @@ import formValues from '../../../shared/models/FormValues';
 export default class GoogleSheets{
 
     auth: any;
-    static SCOPES:string[] = ['https://www.googleapis.com/auth/spreadsheets'];
+    static SCOPES:string[] = ['https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/drive'];
     static TOKEN_DIR: string = (process.env.HOME || process.env.HOMEPATH ||
         process.env.USERPROFILE) + '/.credentials/';
     static TOKEN_PATH: string = GoogleSheets.TOKEN_DIR + 'sheets.googleapis.sve.json';
@@ -52,7 +53,7 @@ export default class GoogleSheets{
               return resolve(response.values);
             })
           })            
-        })
+        }).catch(e => console.log(e))
     }
 
     private storeToken(token: any) {
@@ -130,8 +131,48 @@ export default class GoogleSheets{
         });
       })
       .then(this.authorize)
-      .then()
+      .catch()
      
+    }
+
+    public subscribeToDriveResource (path: string) {
+      return new Promise((resolve, reject)=>{
+        fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
+          if (err) {
+            console.log('Error loading client secret file: ' + err);
+            reject(err);
+          }          // Authorize a client with the loaded credentials, then call the
+          // Google Sheets API.
+          //instance.authorize( JSON.parse(content) );
+          resolve(JSON.parse(content));
+        });
+      })
+      .then(this.authorize)
+      .then(auth => {
+        var service = google.drive('v3');
+        service.files.list({
+          auth: auth,
+          pageSize: 10,
+          fields: "nextPageToken, files(id, name)"
+        }, function(err:any, response:any) {
+          if (err) {
+            console.log('The API returned an error: ' + err);
+            return;
+          }
+          var files = response.files;
+          if (files.length == 0) {
+            console.log('No files found.');
+          } else {
+            console.log('Files:');
+            for (var i = 0; i < files.length; i++) {
+              var file = files[i];
+              console.log('%s (%s)', file.name, file.id);
+            }
+          }
+        })
+      })
+
+      
     }
 
     public commitAnswers( player:IPlayer, formValues:formValues ){
@@ -222,6 +263,7 @@ export default class GoogleSheets{
           })
         })
       })
+      .catch()
     }
 
     /*

@@ -114,7 +114,7 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
           const randomLeaf = ():any => {
               console.log(Math.round(Math.random()) + 2, this.props.Dashboard[9])
             return {
-              title: this.props.Dashboard[Math.round(Math.random()) + 8][0].substring(0,6) + "...",
+              //title: this.props.Dashboard[Math.round(Math.random()) + 8][0].substring(0,6) + "...",
               size:  this.props.Dashboard[9][Math.round(Math.random()) + 2] * 1000,
              //size:1000,
               color: Math.random()
@@ -140,7 +140,6 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
           }
 
           if(this.props.Team){ 
-                console.log("HURRICANE", Hurricane)
                 let players:IPlayer[] = this.props.Team.Players as IPlayer[];
                 var data = this.props.Dashboard;
                 return <Layout>
@@ -153,8 +152,7 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
                             </Menu.Item>
                         </Menu>
                         <Content>
-                            <Parallax
-                                
+                            <Parallax                                
                                 bgImage={Hurricane}
                                 bgImageAlt="this blows"
                                 strength={1000}

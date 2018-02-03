@@ -167,6 +167,12 @@ export default class Server {
         this.app.use('/sapien/api/teams', TeamRouter);
         this.app.use('/sapien/api/player', PlayerRouter);
 
+
+        //google drive verification
+        this.app.get('/google8b116b0e2c1fc48f.html ', function(req, res) {
+            res.sendFile('/google8b116b0e2c1fc48f.html');
+        });
+
         //login route
         this.app.post('/login', (req, res) => {
            // const crypto = require("crypto");
@@ -198,8 +204,8 @@ export default class Server {
             });
         }
 
-        if (this.secureSocketServer) {
-            this.io.origins('https://planetsapientestsite.com');
+        if(this.secureSocketServer){
+            this.io.origins('https://planetsapientestsite.com:443');
             this.secureSocketServer.listen(Server.SECURE_SOCKET_PORT, () => {
                 console.log('Running server on port %s', Server.SECURE_SOCKET_PORT);
             });
@@ -210,13 +216,20 @@ export default class Server {
         GameModel.findById(gameId).populate("Teams").then((game:Game) => {
             console.log("found game");
             let teams:ITeam[] = game.Teams as ITeam[];
-
             teams.forEach((t:ITeam) => {
+                //console.log()
+                //if(!this.gameSockets.has(t.Slug)){
+                this.sheets.subscribeToDriveResource("test")
                 var teamSocket = this.io.of(t.Slug);
                 
                 this.gameSockets.set(t.Slug, teamSocket);
-                teamSocket.on(SocketEvents.CONNECT, (socket) => {
-                    if (t.Slug.indexOf("1") == -1) return;
+                this.io.of(t.Slug).use((socket, next) => {
+                    var handshake = socket.handshake;
+                    console.log(handshake);
+                    next();
+                })
+                this.io.of(t.Slug).on(SocketEvents.CONNECT, (socket) => {
+                    if(t.Slug.indexOf("1") == -1) return;
                     //socket.join(t.Slug);
                     //console.log("CONNECTION SUCCESS ON SOCKET FOR GAME " + t.Slug, teamSocket.clients((c:any) => console.log(c)));
                     this.io.to(t.Slug).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + gameId);
