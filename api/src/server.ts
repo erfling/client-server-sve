@@ -164,6 +164,8 @@ export default class Server {
 
 
         })
+
+        this.sheets.GetSheetValues();
     }
 
     private listenForSocket(): void {
