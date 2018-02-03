@@ -149,29 +149,27 @@ export default class GoogleSheets{
       })
       .then(this.authorize)
       .then(auth => {
-        const drive = google.drive('v2');
-        var jwtClient = new google.auth.JWT(
-          auth.client_email,
-          null,
-          auth.private_key,
-          ['https://www.googleapis.com/auth/drive'], // an array of auth scopes
-          null
-        );
-        
-        jwtClient.authorize(function (err:Error, tokens:any) {
+        var service = google.drive('v3');
+        service.files.list({
+          auth: auth,
+          pageSize: 10,
+          fields: "nextPageToken, files(id, name)"
+        }, function(err:any, response:any) {
           if (err) {
-            console.log('error on jwt auth',err);
+            console.log('The API returned an error: ' + err);
             return;
           }
-        
-          // Make an authorized request to list Drive files.
-          drive.files.list({
-            auth: jwtClient
-          }, function (err:Error, resp:any) {
-            console.log("error", err);
-            console.log("resp", resp);
-          });
-        });
+          var files = response.files;
+          if (files.length == 0) {
+            console.log('No files found.');
+          } else {
+            console.log('Files:');
+            for (var i = 0; i < files.length; i++) {
+              var file = files[i];
+              console.log('%s (%s)', file.name, file.id);
+            }
+          }
+        })
       })
 
       
