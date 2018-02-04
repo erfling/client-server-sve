@@ -165,7 +165,7 @@ export default class Server {
 
         })
 
-        this.sheets.subscribeToDriveResource("test")
+        this.sheets.testPost();
     }
 
     private listenForSocket(): void {
@@ -198,7 +198,7 @@ export default class Server {
                 this.gameSockets.set(t.Slug, teamSocket);
                 this.io.of(t.Slug).use((socket, next) => {
                     var handshake = socket.handshake;
-                    console.log(handshake);
+                    //console.log(handshake);
                     next();
                 })
                 this.io.of(t.Slug).on(SocketEvents.CONNECT, (socket) => {
@@ -265,6 +265,7 @@ export default class Server {
         })
     }
 
+   
     
 }
     

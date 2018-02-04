@@ -271,6 +271,44 @@ export default class GoogleSheets{
       .catch()
     }
 
+    public testPost ():any {
+      return new Promise((resolve, reject)=>{
+        fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
+          if (err) {
+            console.log('Error loading client secret file: ' + err);
+            return reject(err);
+          }          // Authorize a client with the loaded credentials, then call the
+          // Google Sheets API.
+          //instance.authorize( JSON.parse(content) );
+          return resolve(JSON.parse(content));
+        });
+      })
+      .then(this.authorize)
+      .then((auth: any) => {
+        var service = google.drive('v3');
+        return new Promise((resolve, reject) => {
+          service.files.watch({
+            resource: {
+              id: 'my-chanel',
+              type: 'web_hook',
+              address: 'https://planetsapientestsite.com:4000/login'
+            },
+            fileId: "1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q",
+
+          }, function(err:any, response:any) {
+            if (err) {
+              console.log('The API returned an error: ' + err);
+              return;
+            }
+            var files = response;
+            console.log(response);
+          })
+        })
+        .catch(e => console.log("promise error is", e))
+        
+      })
+    }
+
     /*
 
         sheets.spreadsheets.values.get({
