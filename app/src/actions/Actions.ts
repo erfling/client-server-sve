@@ -16,7 +16,7 @@ const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
 const socketPort = window.location.host.includes('sapien') ? ":9443" : ":5000";
 console.log(window.location)
 const baseRestURL = protocol +  "//" + window.location.hostname + port + "/sapien/api/";
-const socket = socketIo({path: socketPort + "/" + "Team1", transports: ['polling','websocket'] });
+const socket = socketIo({path: socketPort + "/" + "Team1"});//, transports: ['polling','websocket'] 
 console.log("BASE",socket)
 //console.log("SOCKET ON CONNECT", socket);
 const teamSocket = '';
