@@ -298,6 +298,7 @@ export default class GoogleSheets{
           }, function(err:any, response:any) {
             if (err) {
               console.log('The API returned an error: ' + err);
+              reject(err);
               return;
             }
             var files = response;
