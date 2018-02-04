@@ -57,7 +57,6 @@ export default class Server {
 
         if(fs.existsSync('/sapien/certificates/privkey.pem')){
             const onSecureListening = (): void => {
-                console.log("SerVER",this.secureSocketServer);
                 let addr =  this.secureSocketServer.address();
                 let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
             }
