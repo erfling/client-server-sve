@@ -191,7 +191,7 @@ export default class Server {
                 var teamSocket = this.io.of(t.Slug);
                 
                 this.gameSockets.set(t.Slug, teamSocket);
-                this.io.of(t.Slug).use((socket, next) => {
+                this.io.use((socket, next) => {
                     console.log("HELLO?")
                     var handshake = socket.handshake;
                     console.log(socket);
@@ -199,6 +199,7 @@ export default class Server {
                 })
                 //this.io.of(t.Slug).use
                 this.io.of(t.Slug).on(SocketEvents.CONNECT, (socket) => {
+                    console.log("server connect attempt")
                     if(t.Slug.indexOf("1") == -1) return;
                     //socket.join(t.Slug);
                     //console.log("CONNECTION SUCCESS ON SOCKET FOR GAME " + t.Slug, this.io.of(t.Slug).clients((c:any) => console.log(c)));
