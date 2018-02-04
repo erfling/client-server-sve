@@ -57,6 +57,7 @@ export default class Server {
 
         if(fs.existsSync('/sapien/certificates/privkey.pem')){
             const onSecureListening = (): void => {
+                console.log("SerVER",this.secureSocketServer);
                 let addr =  this.secureSocketServer.address();
                 let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
             }
@@ -71,6 +72,7 @@ export default class Server {
             
 
             function onError(): void {
+                console.log("SerVER error",this.secureSocketServer);
                 let addr =  this.secureSocketServer.address();
                 let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
               }
@@ -149,13 +151,7 @@ export default class Server {
         //login route
         this.app.post('/login', (req, res) =>{
            // const crypto = require("crypto");
-           /*
-            const secret = 'yallberealqueitnow';
-            const hash = crypto.createHmac('sha256', secret)
-                            .update('I love cupcakes')
-                            .digest('hex');
-            console.log(hash);
-            */
+           
 
             PlayerModel.findOne().then((player:Player)=>{
                 var token = jwt.sign({ player }, 'shhhhh');
