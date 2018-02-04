@@ -294,6 +294,7 @@ export default class GoogleSheets{
               address: 'https://planetsapientestsite.com:4000/login'
             },
             fileId: "1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q",
+            auth: auth
 
           }, function(err:any, response:any) {
             if (err) {
