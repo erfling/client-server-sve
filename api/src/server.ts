@@ -193,9 +193,10 @@ export default class Server {
                 this.gameSockets.set(t.Slug, teamSocket);
                 this.io.of(t.Slug).use((socket, next) => {
                     var handshake = socket.handshake;
-                    //console.log(handshake);
+                    console.log(socket);
                     next();
                 })
+                //this.io.of(t.Slug).use
                 this.io.of(t.Slug).on(SocketEvents.CONNECT, (socket) => {
                     if(t.Slug.indexOf("1") == -1) return;
                     //socket.join(t.Slug);
