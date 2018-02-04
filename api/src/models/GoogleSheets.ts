@@ -18,8 +18,7 @@ export default class GoogleSheets{
 
     auth: any;
     static SCOPES:string[] = ['https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/drive.readonly'];
-    static TOKEN_DIR: string = (process.env.HOME || process.env.HOMEPATH ||
-        process.env.USERPROFILE) + '/.credentials/';
+    static TOKEN_DIR: string = '/sapien/.credentials/';
     static TOKEN_PATH: string = GoogleSheets.TOKEN_DIR + 'sheets.googleapis.sve.json';
 
     public GetSheetValues(sheetId:string = null): any {
