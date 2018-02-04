@@ -192,6 +192,7 @@ export default class Server {
                 
                 this.gameSockets.set(t.Slug, teamSocket);
                 this.io.of(t.Slug).use((socket, next) => {
+                    console.log("HELLO?")
                     var handshake = socket.handshake;
                     console.log(socket);
                     next();
