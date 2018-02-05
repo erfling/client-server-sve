@@ -89,6 +89,7 @@ export default class Server {
             this.io = socketIo(this.secureSocketServer);
         }
         this.listenForSocket();
+        this.sheets.subscribeToDriveResource("1e9g8X4XIABJtPDPFlMdsTQhk9jOHwQSGunjXaWvz4uU");
     }
     
     // application config
@@ -199,6 +200,7 @@ export default class Server {
                 })
                 //this.io.of(t.Slug).use
                 this.io.of(t.Slug).on(SocketEvents.CONNECT, (socket) => {
+                    this.sheets.testPost();
                     console.log("server connect attempt")
                     if(t.Slug.indexOf("1") == -1) return;
                     //socket.join(t.Slug);
