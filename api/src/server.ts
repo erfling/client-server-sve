@@ -66,9 +66,7 @@ export default class Server {
             var credentials = {key: privateKey, cert: certificate};
             this.secureSocketServer = https.createServer(credentials, this.app);
             this.secureSocketServer.on('error', onError);
-            this.secureSocketServer.on('listening', onSecureListening);
-            console.log("HTTPS SERVER",  this.secureSocketServer.address());
-            
+            this.secureSocketServer.on('listening', onSecureListening);            
 
             function onError(): void {
                 console.log("SerVER error",this.secureSocketServer);
@@ -113,8 +111,6 @@ export default class Server {
 
             var allowedOrigins = ['http://localhost:443', 'https://planetsapientestsite.com'];
             var origin = req.headers.origin;
-
-            console.log("ORIGIN IS: ",req.headers.origin);
 
             if(allowedOrigins.indexOf(origin as string) > -1){
                 console.log("header approved")
@@ -195,7 +191,6 @@ export default class Server {
                 this.io.use((socket, next) => {
                     console.log("HELLO?")
                     var handshake = socket.handshake;
-                    console.log(socket);
                     next();
                 })
                 //this.io.of(t.Slug).use
@@ -230,7 +225,6 @@ export default class Server {
                     
                     socket.on(SocketEvents.SUBMIT_TO_SHEET, (values:formValues) => { 
                         PlayerModel.findById(values.PlayerId).then((player:Player)=>{
-                            console.log(values);
                             var sheets = new GoogleSheets();
                             sheets.commitAnswers(player, values)
                             .then(() => {
