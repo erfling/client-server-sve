@@ -76,7 +76,6 @@ export default class Server {
             this.secureSocketServer = https.createServer(credentials, this.app);
             this.secureSocketServer.on('error', this.onSocketServerError.bind(this, this.secureSocketServer))
                 .on('listening', this.onSocketServerListening.bind(this, this.secureSocketServer));
-            console.log("HTTPS SERVER",  this.secureSocketServer.address());
         }
 
         //socket setup
@@ -93,6 +92,7 @@ export default class Server {
             this.io = socketIo(this.secureSocketServer);
         }
         this.listenForSocket();
+        this.sheets.subscribeToDriveResource("1e9g8X4XIABJtPDPFlMdsTQhk9jOHwQSGunjXaWvz4uU");
     }
 
     //----------------------------------------------------------------------
@@ -102,6 +102,7 @@ export default class Server {
     //----------------------------------------------------------------------
 
     private onSocketServerError(eventTarget:net.Server):void {
+        console.log("SerVER error",this.secureSocketServer);
         let addr = eventTarget.address(); // eventTarget is scoped to caller: either this.socketServer or this.secureSocketServer
         let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
     }
@@ -139,10 +140,8 @@ export default class Server {
             var allowedOrigins = ['http://localhost:443', 'https://planetsapientestsite.com', 'https://planetsapientestsite.com:443'];
             var origin = req.headers.origin;
 
-            console.log("ORIGIN IS: ",req.headers.origin);
-
             if (allowedOrigins.indexOf(origin as string) > -1) {
-                console.log("header approved");
+                console.log("header approved")
                 res.setHeader('Access-Control-Allow-Origin', origin);
             } else {
                 console.log("rejecting header");
@@ -167,7 +166,6 @@ export default class Server {
         this.app.use('/sapien/api/teams', TeamRouter);
         this.app.use('/sapien/api/player', PlayerRouter);
 
-
         //google drive verification
         this.app.get('/google8b116b0e2c1fc48f.html ', function(req, res) {
             res.sendFile('/google8b116b0e2c1fc48f.html');
@@ -176,13 +174,6 @@ export default class Server {
         //login route
         this.app.post('/login', (req, res) => {
            // const crypto = require("crypto");
-           /*
-            const secret = 'yallberealqueitnow';
-            const hash = crypto.createHmac('sha256', secret)
-                            .update('I love cupcakes')
-                            .digest('hex');
-            console.log(hash);
-            */
 
             PlayerModel.findOne().then((player:Player) => {
                 var token = jwt.sign({ player }, 'shhhhh');
@@ -191,14 +182,13 @@ export default class Server {
 
         })
 
-        this.sheets.subscribeToDriveResource("test")
+        //this.sheets.testPost();
     }
 
     /**
      * Listen for socket communication
      */
     private listenForSocket(): void {
-        
         //commence to listening
         if (this.socketServer) {
             this.socketServer.listen(Server.SOCKET_PORT, () => {
@@ -206,7 +196,7 @@ export default class Server {
             });
         }
 
-        if(this.secureSocketServer){
+        if (this.secureSocketServer) {
             this.io.origins('https://planetsapientestsite.com:443');
             this.secureSocketServer.listen(Server.SECURE_SOCKET_PORT, () => {
                 console.log('Running server on port %s', Server.SECURE_SOCKET_PORT);
@@ -219,25 +209,27 @@ export default class Server {
             //this.io.of(SocketEvents.)
             let teams:ITeam[] = game.Teams as ITeam[];
             teams.forEach((t:ITeam) => {
-                //console.log()
                 //if(!this.gameSockets.has(t.Slug)){
                 //this.sheets.subscribeToDriveResource("test")
                 var teamSocket = this.io.of(t.Slug);
                 
                 this.gameSockets.set(t.Slug, teamSocket);
-                this.io.of(t.Slug).use((socket, next) => {
+                this.io.use((socket, next) => {
+                    //console.log("HELLO?")
                     var handshake = socket.handshake;
-                    console.log(handshake);
                     next();
                 })
-                this.io.of(t.Slug).on(SocketEvents.CONNECT, (socket) => {
-                    if(t.Slug.indexOf("1") == -1) return;
+                //teamSocket.use
+                teamSocket.on(SocketEvents.CONNECT, (socket) => {
+                    //this.sheets.testPost();
+                    //console.log("server connect attempt");
+                    if (t.Slug.indexOf("1") == -1) return;
                     //socket.join(t.Slug);
                     //console.log("CONNECTION SUCCESS ON SOCKET FOR GAME " + t.Slug, teamSocket.clients((c:any) => console.log(c)));
                     this.io.to(t.Slug).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + gameId);
                     //console.log(socket.client);
                     GameModel.find().populate("Teams").then((g:Game[]) => {
-                        console.log("say hello");
+                        //console.log("say hello");
                         teamSocket.emit(SocketEvents.HELLO, g);
                     })                       
     
@@ -257,14 +249,13 @@ export default class Server {
                     })
                     
                     socket.on(SocketEvents.SUBMIT_TO_SHEET, (values:formValues) => { 
-                        PlayerModel.findById(values.PlayerId).then((player:Player)=>{
-                            console.log(values);
+                        PlayerModel.findById(values.PlayerId).then((player:Player) => {
                             var sheets = new GoogleSheets();
                             sheets.commitAnswers(player, values)
                             .then(() => {
                                 setTimeout(() => {
-                                    sheets.GetSheetValues().then((v:any)=>{     
-                                        this.io.of(t.Slug).emit(SocketEvents.DASHBOARD_UPDATED,v);                            
+                                    sheets.GetSheetValues().then((v:any) => {     
+                                        teamSocket.emit(SocketEvents.DASHBOARD_UPDATED,v);                            
                                     })
                                 }, 500)
                             })                    
