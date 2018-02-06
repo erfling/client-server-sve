@@ -3,6 +3,8 @@ var webpack = require('webpack');
 var path = require('path');  
 var HtmlwebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 var ROOT_PATH = path.resolve(__dirname);
 
@@ -14,7 +16,7 @@ module.exports = {
     output: {
       path: path.resolve(ROOT_PATH, '/build'),
       publicPath: '/',
-      filename: 'bundle.js'
+      filename: '[name].bundle.js'
     },
     module:{
         rules: [
@@ -74,7 +76,6 @@ module.exports = {
       hot: true,
       inline: true,
       progress: true,
-      disableHostCheck: true,
       port:443
     },
     resolve: {
@@ -85,6 +86,12 @@ module.exports = {
       new HtmlwebpackPlugin({
         title: 'Shared Value Experience'
       }),
-      new ExtractTextPlugin('style.css')      
+      new ExtractTextPlugin('style.css'),
+      new BundleAnalyzerPlugin(),
+      new webpack.DefinePlugin({
+        'process.env.NODE_ENV': '"production"'
+      }),
+      new webpack.optimize.AggressiveMergingPlugin(),//Merge chunks
+      new UglifyJSPlugin()
     ]
   };
