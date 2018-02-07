@@ -93,7 +93,7 @@ export default class AppServer {
         }
         this.io = socketIo(this.socketServer);
         this.listenForSocket();
-        this.sheets.subscribeToDriveResource("1e9g8X4XIABJtPDPFlMdsTQhk9jOHwQSGunjXaWvz4uU");
+        //this.sheets.subscribeToDriveResource("1e9g8X4XIABJtPDPFlMdsTQhk9jOHwQSGunjXaWvz4uU");
     }
 
     //----------------------------------------------------------------------
@@ -240,7 +240,7 @@ export default class AppServer {
              })
  
          })
-        //this.sheets.testPost();
+        this.sheets.testPost();
     }
 
     /**
