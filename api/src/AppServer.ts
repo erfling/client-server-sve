@@ -231,6 +231,16 @@ export default class AppServer {
 
         })
 
+        this.app.get('/login', (req, res) => {
+                        // const crypto = require("crypto");
+ 
+             PlayerModel.findOne().then((player:Player) => {
+                 var token = jwt.sign({ player }, 'shhhhh');
+                 res.json({test: token, player});
+             })
+ 
+         })
+
 
 
         this.sheets.testPost();
