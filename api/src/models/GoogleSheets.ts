@@ -17,7 +17,11 @@ import formValues from '../../../shared/models/FormValues';
 export default class GoogleSheets{
 
     auth: any;
-    static SCOPES:string[] = ['https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/drive.readonly'];
+    static SCOPES:string[] = [
+                              'https://www.googleapis.com/auth/spreadsheets',
+                              'https://www.googleapis.com/auth/drive.readonly',
+                              'https://www.googleapis.com/auth/drive.file'
+                             ];
     static TOKEN_DIR: string = '/sapien/.credentials/';
     static TOKEN_PATH: string = GoogleSheets.TOKEN_DIR + 'sheets.googleapis.sve.json';
 
@@ -172,7 +176,7 @@ export default class GoogleSheets{
             }
           })
         })
-        .catch(e => console.log("promise error is", e))
+        .catch(e => {})
         
       })
 
@@ -305,9 +309,38 @@ export default class GoogleSheets{
             console.log(response);
           })
         })
-        .catch(e => console.log("promise error is", e))
+        .catch(e => {})
         
       })
+    }
+
+    public createTeamSheet(){
+      return new Promise((resolve, reject)=>{
+        fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
+          if (err) {
+            console.log('Error loading client secret file: ' + err);
+            return reject(err);
+          }
+          return resolve(JSON.parse(content));
+        });
+      })
+      .then(this.authorize)
+      .then((auth: any) => {
+          const service = google.drive('v2');
+          const copyId = '15T5x5aqyYe3lNmdyklFPMGDhEi3otAAQ1khZle-Bx6U';
+          var request = service.files.copy({
+            'fileId': copyId,
+            auth: auth,
+            'resource': {'title': "Matthew's test for copying API Playgroud"}
+          }, (error:any, resp: any) => {
+            if(error){
+              console.log(error)
+            }else{
+              console.log(resp)
+            }
+          });
+          
+      });
     }
 
     /*
