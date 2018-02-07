@@ -223,7 +223,7 @@ export default class AppServer {
         //login route
         this.app.post('/login', (req, res) => {
            // const crypto = require("crypto");
-
+            console.log("heard post", req)
             PlayerModel.findOne().then((player:Player) => {
                 var token = jwt.sign({ player }, 'shhhhh');
                 res.json({test: token, player});
