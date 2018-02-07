@@ -278,7 +278,7 @@ export default class GoogleSheets{
       return new Promise((resolve, reject)=>{
         fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
           if (err) {
-            console.log('Error loading client secret file: ' + err);
+            //console.log('Error loading client secret file: ' + err);
             return reject(err);
           }          // Authorize a client with the loaded credentials, then call the
           // Google Sheets API.
@@ -301,7 +301,7 @@ export default class GoogleSheets{
 
           }, function(err:any, response:any) {
             if (err) {
-              console.log('The API returned an error: ' + err);
+              //console.log('The API returned an error: ' + err);
               reject(err);
               return;
             }
