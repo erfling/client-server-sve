@@ -196,8 +196,7 @@ export default class GoogleSheets{
         });
       })
       .then(this.authorize)
-      .then((auth) => {
-        
+      .then((auth) => {       
 
         var values:any[][] = [
           [

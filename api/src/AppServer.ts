@@ -277,6 +277,7 @@ export default class AppServer {
         })
     
         this.app.post('/sapien/api/driveupdate', (req, resp) => {
+            console.log(req);
             var sheets = new GoogleSheets();
             sheets.GetSheetValues().then((v:any) => {     
                 console.log("returning");                      
