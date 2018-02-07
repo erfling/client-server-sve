@@ -116,7 +116,7 @@ export default class AppServer {
     }
 
     private onTeamSocketConnect(eventTarget:SocketIO.Namespace, game:Game, socket:SocketIO.Socket):void {
-        console.log("teamSocket connected...");
+        //console.log("teamSocket connected...");
         if (eventTarget.name.indexOf("1") == -1) return;
         //socket.join(eventTarget.name);
         this.io.to(eventTarget.name).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + game._Id);
