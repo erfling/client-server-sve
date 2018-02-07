@@ -2,12 +2,12 @@ import * as http from 'http';
 import * as https from 'https';
 import * as debug from 'debug';
 import * as fs from 'fs';
-import Server from './server';
+import AppServer from './AppServer';
 
 //debug('ts-express:server');
-const server = new Server();
-const port = normalizePort(Server.PORT);
-const sport = normalizePort(Server.SECURE_PORT);
+const server = new AppServer();
+const port = normalizePort(AppServer.PORT);
+const sport = normalizePort(AppServer.SECURE_PORT);
 //Server.set('port', port);
 
 console.log(`Server listening on port ${port}`);
@@ -16,15 +16,15 @@ console.log("SERVER IS IN",process.env.NODE_ENV);
 /*
 --cert /sapien/certificates/fullchain.pem --key /sapien/certificates/privkey.pem
 */
-if(fs.existsSync('/sapien/certificates/privkey.pem')){
-  console.log("found SSL key")
+if (fs.existsSync('/sapien/certificates/privkey.pem')) {
+  console.log("found SSL key");
   var privateKey  = fs.readFileSync('/sapien/certificates/privkey.pem', 'utf8').toString();
   var certificate = fs.readFileSync('/sapien/certificates/fullchain.pem', 'utf8').toString();
-  var credentials = {key: privateKey, cert: certificate};
-  const httpsServer = https.createServer(credentials, server.app);
+  const httpsServer = https.createServer({key: privateKey, cert: certificate}, server.app);
   httpsServer.listen(sport);
-  httpsServer.on('error', onError);
-  httpsServer.on('listening', onSecureListening);
+  httpsServer
+    .on('error', onError)
+    .on('listening', onSecureListening);
   console.log("HTTPS SERVER", httpsServer.address());
   function onSecureListening(): void {
     let addr = httpsServer.address();
@@ -35,8 +35,9 @@ if(fs.existsSync('/sapien/certificates/privkey.pem')){
 
 const httpServer = http.createServer(server.app);
 httpServer.listen(port);
-httpServer.on('error', onError);
-httpServer.on('listening', onListening);
+httpServer
+  .on('error', onError)
+  .on('listening', onListening);
 
 
 

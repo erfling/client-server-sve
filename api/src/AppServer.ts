@@ -24,7 +24,7 @@ import * as fs from 'fs';
 //socket auth
 import * as jwt from 'jsonwebtoken';
 //sheets api
-import  GoogleSheets  from './models/GoogleSheets'; 
+import  GoogleSheets  from './models/GoogleSheets';
 import { resolve } from 'dns';
 //helmet.contentSecurityPolicy
 
@@ -35,8 +35,8 @@ import { Game, GameModel } from './models/Game';
 import { Team, TeamModel } from './models/Team'; 
 import { Player, PlayerModel } from './models/Player'; 
 
-//Server class
-export default class Server {
+// AppServer class
+export default class AppServer {
     //----------------------------------------------------------------------
     //
     //  Properties
@@ -51,8 +51,9 @@ export default class Server {
     // set app to be of type express.Application
     public app: express.Application;
     private io: SocketIO.Server;
-    private socketServer: http.Server;
-    private secureSocketServer: https.Server;
+    //private socketServer: http.Server;
+    //private secureSocketServer: https.Server;
+    private socketServer: http.Server | https.Server;
     private port: string | number;
     private socketNameSpaces: string[];
     private gameSockets: Map<string, SocketIO.Namespace> = new Map();
@@ -66,31 +67,31 @@ export default class Server {
 
     constructor() {
         this.app = express();
-        this.port = process.env.PORT || Server.PORT;
+        this.port = process.env.PORT || AppServer.PORT;
 
+        //TODO: have this depend on server environment var injected from start scripts
         if (fs.existsSync('/sapien/certificates/privkey.pem')) {
+            // Set up secure socket server
             console.log("found SSL key");
             var privateKey  = fs.readFileSync('/sapien/certificates/privkey.pem', 'utf8').toString();
             var certificate = fs.readFileSync('/sapien/certificates/fullchain.pem', 'utf8').toString();
-            var credentials = {key: privateKey, cert: certificate};
-            this.secureSocketServer = https.createServer(credentials, this.app);
-            this.secureSocketServer.on('error', this.onSocketServerError.bind(this, this.secureSocketServer))
-                .on('listening', this.onSocketServerListening.bind(this, this.secureSocketServer));
+            this.socketServer = https.createServer({key: privateKey, cert: certificate}, this.app);
+            this.socketServer.on('error', this.onSocketServerError.bind(this, this.socketServer))
+                .on('listening', this.onSocketServerListening.bind(this, this.socketServer));
         }
-
         //socket setup
         //const io = socketIo(app); // < Interesting!
         
         this.config();
         this.routes();
-        if (!this.secureSocketServer) {
+        if (!this.socketServer) {
+            // Set up non-secure socket server
             this.socketServer = http.createServer(this.app);
             this.socketServer.on('error', this.onSocketServerError.bind(this, this.socketServer))
                 .on('listening', this.onSocketServerListening.bind(this, this.socketServer)); 
             this.io = socketIo(this.socketServer);
-        } else {
-            this.io = socketIo(this.secureSocketServer);
         }
+        this.io = socketIo(this.socketServer);
         this.listenForSocket();
         this.sheets.subscribeToDriveResource("1e9g8X4XIABJtPDPFlMdsTQhk9jOHwQSGunjXaWvz4uU");
     }
@@ -100,16 +101,63 @@ export default class Server {
     //  Event Handlers
     //
     //----------------------------------------------------------------------
+    // NOTE: eventTarget is a the instance listening for the event.
 
     private onSocketServerError(eventTarget:net.Server):void {
-        console.log("SerVER error",this.secureSocketServer);
-        let addr = eventTarget.address(); // eventTarget is scoped to caller: either this.socketServer or this.secureSocketServer
+        console.log("SerVER error", this.socketServer);
+        let addr = eventTarget.address();
         let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
     }
 
     private onSocketServerListening(eventTarget:net.Server):void {
-        let addr = eventTarget.address(); // eventTarget is scoped to caller: either this.socketServer or this.secureSocketServer
+        console.log("socketServer listening...");
+        let addr = eventTarget.address();
         let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
+    }
+
+    private onTeamSocketConnect(eventTarget:SocketIO.Namespace, game:Game, socket:SocketIO.Socket):void {
+        console.log("teamSocket connected...");
+        if (eventTarget.name.indexOf("1") == -1) return;
+        //socket.join(eventTarget.name);
+        this.io.to(eventTarget.name).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + game._Id);
+        //console.log(socket.client);
+        GameModel.find().populate("Teams").then((g:Game[]) => {
+            //console.log("say hello");
+            eventTarget.emit(SocketEvents.HELLO, g);
+        })
+        // Add socket listeners
+        socket
+            .on(SocketEvents.DISCONNECT, this.onSocketDisconnect.bind(this, socket))
+            .on(SocketEvents.SELECT_TEAM, this.onSocketSelectTeam.bind(this, socket))
+            .on(SocketEvents.SUBMIT_TO_SHEET, this.onSocketSubmitToSheet.bind(this, socket));
+    }
+
+    private onSocketDisconnect(eventTarget:SocketIO.Socket):void {
+        console.log('Client disconnected:', eventTarget.id);
+    }
+
+    private onSocketSelectTeam(eventTarget:SocketIO.Socket, Slug:string):void {
+        console.log("SELECTING TEAM", Slug);
+        TeamModel.findOne( { Slug } ).populate("Players").then((t:ITeam) => {
+            eventTarget.nsp.emit(SocketEvents.SELECT_TEAM, t);
+        })
+        this.sheets.GetSheetValues().then((v:any) => {
+            console.log("going to send values", v);
+            eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, v);                            
+        })
+    }
+
+    private onSocketSubmitToSheet(eventTarget:SocketIO.Socket, values:formValues):void {
+        PlayerModel.findById(values.PlayerId).then((player:Player) => {
+            var sheets = new GoogleSheets();
+            sheets.commitAnswers(player, values).then(() => {
+                setTimeout(() => {
+                    sheets.GetSheetValues().then((v:any) => {     
+                        eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, v);                            
+                    })
+                }, 500);
+            })                    
+        })
     }
 
     //----------------------------------------------------------------------
@@ -122,15 +170,15 @@ export default class Server {
      * Application config
      */
     public config(): void {
-        const MONGO_URI: string = 'mongodb://localhost/express-boilerplate'; 
+        const MONGO_URI: string = 'mongodb://localhost/express-boilerplate';
         mongoose.connect(MONGO_URI || process.env.MONGODB_URI);
 
         // express middleware
-        this.app.use(bodyParser.urlencoded({ extended: true }));
-        this.app.use(bodyParser.json());
-        this.app.use(logger('dev'));
-        this.app.use(compression());
-        this.app.use(helmet());
+        this.app.use(bodyParser.urlencoded({ extended: true }))
+            .use(bodyParser.json())
+            .use(logger('dev'))
+            .use(compression())
+            .use(helmet());
 
         //global connection object for Google Sheets API
         this.sheets = new GoogleSheets();
@@ -147,9 +195,9 @@ export default class Server {
                 console.log("rejecting header");
             }
 
-            res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-            res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-            res.header('Access-Control-Allow-Credentials', 'false');
+            res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+                .header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+                .header('Access-Control-Allow-Credentials', 'false');
             next();
         });
         this.app.use(cors());
@@ -160,11 +208,12 @@ export default class Server {
      */
     public routes(): void {
         const router: express.Router = express.Router();    
-        this.app.use('/', router);
-        this.app.use('/sapien/api/games', GameRouter);
-        this.app.use('/sapien/api/sheets', SheetsRouter);
-        this.app.use('/sapien/api/teams', TeamRouter);
-        this.app.use('/sapien/api/player', PlayerRouter);
+        this.app
+            .use('/', router)
+            .use('/sapien/api/games', GameRouter)
+            .use('/sapien/api/sheets', SheetsRouter)
+            .use('/sapien/api/teams', TeamRouter)
+            .use('/sapien/api/player', PlayerRouter);
 
         //google drive verification
         this.app.get('/google8b116b0e2c1fc48f.html ', function(req, res) {
@@ -190,26 +239,20 @@ export default class Server {
      */
     private listenForSocket(): void {
         //commence to listening
-        if (this.socketServer) {
-            this.socketServer.listen(Server.SOCKET_PORT, () => {
-                console.log('Running server on port %s', Server.SOCKET_PORT);
-            });
-        }
-
-        if (this.secureSocketServer) {
+        var port = AppServer.SOCKET_PORT;
+        if (this.socketServer instanceof https.Server) {
+            port = AppServer.SECURE_SOCKET_PORT;
             this.io.origins('https://planetsapientestsite.com:443');
-            this.secureSocketServer.listen(Server.SECURE_SOCKET_PORT, () => {
-                console.log('Running server on port %s', Server.SECURE_SOCKET_PORT);
-            });
         }
-
+        this.socketServer.listen(port, () => {
+            console.log('Running server on port %s', port);
+        });
+        
         //TODO: solve for how we will determine desired game
         let gameId = "5a3328d0a9021e2390a77bb3";
         GameModel.findById(gameId).populate("Teams").then((game:Game) => {
-            //this.io.of(SocketEvents.)
             let teams:ITeam[] = game.Teams as ITeam[];
             teams.forEach((t:ITeam) => {
-                //if(!this.gameSockets.has(t.Slug)){
                 //this.sheets.subscribeToDriveResource("test")
                 var teamSocket = this.io.of(t.Slug);
                 
@@ -220,50 +263,7 @@ export default class Server {
                     next();
                 })
                 //teamSocket.use
-                teamSocket.on(SocketEvents.CONNECT, (socket) => {
-                    //this.sheets.testPost();
-                    //console.log("server connect attempt");
-                    if (t.Slug.indexOf("1") == -1) return;
-                    //socket.join(t.Slug);
-                    //console.log("CONNECTION SUCCESS ON SOCKET FOR GAME " + t.Slug, teamSocket.clients((c:any) => console.log(c)));
-                    this.io.to(t.Slug).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + gameId);
-                    //console.log(socket.client);
-                    GameModel.find().populate("Teams").then((g:Game[]) => {
-                        //console.log("say hello");
-                        teamSocket.emit(SocketEvents.HELLO, g);
-                    })                       
-    
-                    socket.on(SocketEvents.DISCONNECT, () => {
-                        console.log('Client disconnected');
-                    });                        
-
-                    socket.on(SocketEvents.SELECT_TEAM, (Slug:string) => {
-                        console.log("SELECTING TEAM", Slug);
-                        TeamModel.findOne( { Slug } ).populate("Players").then((t:ITeam) => {
-                            teamSocket.emit(SocketEvents.SELECT_TEAM, t);
-                        })
-                        this.sheets.GetSheetValues().then((v:any) => {
-                            console.log("going to send values", v);
-                            teamSocket.emit(SocketEvents.DASHBOARD_UPDATED,v);                            
-                        })
-                    })
-                    
-                    socket.on(SocketEvents.SUBMIT_TO_SHEET, (values:formValues) => { 
-                        PlayerModel.findById(values.PlayerId).then((player:Player) => {
-                            var sheets = new GoogleSheets();
-                            sheets.commitAnswers(player, values)
-                            .then(() => {
-                                setTimeout(() => {
-                                    sheets.GetSheetValues().then((v:any) => {     
-                                        teamSocket.emit(SocketEvents.DASHBOARD_UPDATED,v);                            
-                                    })
-                                }, 500)
-                            })                    
-                        })                
-                    })
-                      
-                })
-                
+                teamSocket.on(SocketEvents.CONNECT, this.onTeamSocketConnect.bind(this, teamSocket, game));
             })           
         })
     
@@ -271,7 +271,7 @@ export default class Server {
             var sheets = new GoogleSheets();
             sheets.GetSheetValues().then((v:any) => {     
                 console.log("returning");                      
-                this.io.of(req.body.Slug).emit("DRIVE_UPDATE",v);      
+                this.io.of(req.body.Slug).emit("DRIVE_UPDATE", v);      
                 resp.json({test: "hello"});
             })
         })      
@@ -289,6 +289,5 @@ export default class Server {
     }
     
 }
-    
-    // export
-    //export default new Server().app;
+
+    //export default new AppServer().app;

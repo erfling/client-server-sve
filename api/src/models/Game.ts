@@ -7,9 +7,8 @@ import ITeam from '../../../shared/models/ITeam';
 
 //TODO: find out how to save nested teams, not just their refs. Possibly with pre method: https://github.com/szokodiakos/typegoose#pre
 
-export class Game 
-  extends BaseClass 
-  implements IGame{
+export class Game extends BaseClass implements IGame
+{
     
     @prop({default: "Game"})
     CLASS_NAME:string;
