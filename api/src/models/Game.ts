@@ -1,4 +1,4 @@
-import { prop, arrayProp, Typegoose, ModelType, InstanceType, Ref } from 'typegoose';
+import { prop, arrayProp, Typegoose, ModelType, InstanceType, Ref, instanceMethod } from 'typegoose';
 import * as mongoose from 'mongoose';
 import BaseClass from './BaseModel'
 import { Team } from './Team';
@@ -19,6 +19,9 @@ export class Game extends BaseClass implements IGame
     @prop()
     Location?: string;
   
+    @prop()
+    SourceSheetId?: string;
+
     @prop()
     Slug: string;
 

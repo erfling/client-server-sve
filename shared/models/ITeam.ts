@@ -6,7 +6,7 @@ export default interface ITeam extends IBaseClass {
   Location?: string;  
   Name?: string;
   Slug?:string;
-
+  SheetId?: string;
   Players?: Ref<IPlayer>[] | IPlayer[];
   IsSelected?: boolean;
 

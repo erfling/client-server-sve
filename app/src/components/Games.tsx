@@ -11,7 +11,6 @@ const { Header, Footer, Sider, Content } = Layout;
 import Menu from "antd/lib/menu";
 import { Link } from "react-router-dom";
 
-
 export interface GamesList {
     Game: IGame[];
     Team: ITeam[];
