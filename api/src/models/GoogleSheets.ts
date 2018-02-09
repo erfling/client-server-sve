@@ -41,16 +41,16 @@ export default class GoogleSheets{
         })
         .then(this.authorize)
         .then((auth) => {
-          if(!sheetId)sheetId = '1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q'
+          if(!sheetId)sheetId = '1R5Od_XTcwDyOKsLHaABHL8o9cl7Qg7P3zlYyBUUWds8'
           return new Promise((resolve, reject) => {
             if(!auth)return;
             sheets.spreadsheets.values.get({
               auth: auth,            
               spreadsheetId: sheetId ,
-              range: 'DECISION MODEL!A:ZZ'
+              range: 'Shared Value Map!G1:M11'
             }, (err:any, response: any) => {
               if(err){
-                //console.log(err,"ERROR HERE")
+                console.log(err,"ERROR HERE")
                 reject(err);
                 return;
               }
@@ -86,7 +86,7 @@ export default class GoogleSheets{
         rl.close();
         oauth2Client.getToken(code, (err: any, token: any) => {
           if (err) {
-            console.log('Error while trying to retrieve access token', err);
+            //console.log('Error while trying to retrieve access token', err);
             return;
           }
           oauth2Client.credentials = token;
@@ -336,6 +336,7 @@ export default class GoogleSheets{
               console.log(error)
             }else{
               console.log(resp)
+              return resp.id;
             }
           });
           
