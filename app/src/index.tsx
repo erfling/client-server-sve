@@ -14,7 +14,7 @@ import Routes from './routes/Routes'
 import { App } from './components/App'
 import {Layout} from 'antd';
 import { Row, Col } from 'antd/lib/grid';
-import './components/app.scss';
+import './style/app.scss';
 const history  = createBrowserHistory();
 export const store = createStore(reducer, composeWithDevTools(
   applyMiddleware(thunk),

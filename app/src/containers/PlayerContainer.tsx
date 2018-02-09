@@ -10,7 +10,6 @@ import * as Actions from '../actions/Actions';
 import * as ReactDOM from "react-dom";
 import PlayerDetail from '../components/PlayerDetail';
 import { submit } from "redux-form";
-//import './app.scss';
 
 interface DispatchProps {
     selectPlayer: (player: IPlayer) => {}

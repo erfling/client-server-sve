@@ -14,16 +14,16 @@ export class InputWrapper extends React.Component<WrappedFieldProps & GenericFie
     }
 }
 
-export class SliderWrapper extends React.Component<WrappedFieldProps & GenericFieldHTMLAttributes & {min:number, max:number, marks:"hi", defaultValue: number}> {
+export class SliderWrapper extends React.Component<WrappedFieldProps & GenericFieldHTMLAttributes & {min:number, max:number, marks:"hi", defaultValue: number, range?:boolean}> {
     render() {
         //const { input: { value, onChange } } = this.props
         const getMarks = (min:number, max:number):{[index: string]:number} => {
-        var marks:{[index: string]:number} = {}
-        while(max > min-1){
-            marks[max] = max;
-            max--;
-        }
-        return marks;
+            var marks:{[index: string]:number} = {}
+            while(max > min-1){
+                marks[max] = max;
+                max--;
+            }
+            return marks;
         }
 
         return (
@@ -33,6 +33,7 @@ export class SliderWrapper extends React.Component<WrappedFieldProps & GenericFi
                 max={this.props.max}
                 marks={getMarks(this.props.min, this.props.max)}
                 defaultValue={this.props.defaultValue}
+                range={this.props.range || false}
             />
         )
     }

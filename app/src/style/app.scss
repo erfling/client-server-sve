@@ -1,0 +1,44 @@
+@import '~antd/dist/antd.css';
+@import './chart.scss';
+
+.has-button .ant-card-extra {
+    padding: 9.5px 0;
+}
+.ant-btn{
+    margin-right: 8px;
+}
+.ant-card{
+    margin-bottom:10px;
+}
+
+body{
+    padding:0;
+    margin:0;
+    background: #fff;  
+}
+.react-parallax-content [class^="ant-col-"] > div {
+    background: rgba(255,255,255,.99);
+    padding:10px;
+}
+
+
+/* chart tests */
+.rv-xy-plot path{
+    fill: none;
+} 
+.line-chart{
+    position:relative;
+    width: 100% !important;
+
+    .rv-xy-plot__inner{
+        float:left;
+        position:relative;
+    }
+
+    &.rv-discrete-color-legend {
+        position:absolute;
+        left:700px;
+        bottom:100px;
+    }
+
+}

@@ -4,7 +4,7 @@ import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
 import { Game } from "../../../api/src/models/Game";
 import BaseForm from './form-elements/Form'
-import './app.scss';
+import '../style/app.scss';
 import {Row, Col} from 'antd';
 export interface TeamDetailProps {
     Players: IPlayer[];
