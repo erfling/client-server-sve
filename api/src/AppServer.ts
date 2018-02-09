@@ -281,17 +281,19 @@ export default class AppServer {
                 }
             })           
         })
-    
-        this.app.post('/sapien/api/driveupdate', (req, resp) => {
-            console.log("Post Request >", req.body);
-            var sheets = new GoogleSheets();
-            sheets.GetSheetValues().then((v:any) => {     
-                console.log("returning:", req.body.Slug);
-                //this.io.of(req.body.Slug).emit("DRIVE_UPDATE", v);
-                this.io.of("Team1").emit(SocketEvents.DASHBOARD_UPDATED, v); // TODO: "Team1" is hard-coded because "req.body" is empty in testing. Investigate.
-                resp.json({test: "hello folks"});
+        
+        if (this.socketServer instanceof https.Server) {
+            this.app.post('/sapien/api/driveupdate', (req, resp) => {
+                console.log("Post Request >", req.body);
+                var sheets = new GoogleSheets();
+                sheets.GetSheetValues().then((v:any) => {     
+                    console.log("returning:", req.body.Slug);
+                    //this.io.of(req.body.Slug).emit("DRIVE_UPDATE", v);
+                    this.io.of("Team1").emit(SocketEvents.DASHBOARD_UPDATED, v); // TODO: "Team1" is hard-coded because "req.body" is empty in testing. Investigate.
+                    resp.json({test: "hello folks"});
+                })
             })
-        })      
+        }
      
     }
 
