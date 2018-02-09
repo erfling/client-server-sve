@@ -9,4 +9,6 @@ export default interface IGame extends IBaseClass {
     Teams?: Ref<ITeam>[] | ITeam[];
     SheetId?:string;
     IsSelected?:boolean;
+    NumberOfTeams?: number;
+    SourceSheetId?: string
   }  

@@ -4,6 +4,10 @@ import { Game, GameModel } from '../models/Game';
 import IGame from '../../../shared/models/IGame'; 
 import { Error } from 'mongoose';
 import TeamRouter  from './TeamRouter';
+import { Team,TeamModel } from './../models/Team';
+import ITeam from '../../../shared/models/ITeam';
+import Item from 'antd/lib/list/Item';
+import GoogleSheets from '../models/GoogleSheets'
 
 class GameRouter{
     router: Router;
@@ -56,6 +60,9 @@ class GameRouter{
         try {
             await g.save();
             const savedGame = await GameModel.findOne({Slug: game.Slug});
+
+            await this.SaveChildGames(game)
+
             if (!savedGame) {
               res.status(400).json({ error: 'No games' });
             } else {
@@ -98,6 +105,33 @@ class GameRouter{
         } catch(err) {
             ( err: any ) => res.status(500).json({ error: err });
         }
+    } 
+
+    private async SaveChildGames(game: IGame):Promise<any> {
+        console.log("trying to get teams from game");
+        var teamsToSave: ITeam[] = game.Teams as ITeam[];
+        const sheets = new GoogleSheets();
+        if(game.NumberOfTeams && game.NumberOfTeams > teamsToSave.length){
+            var newTeamsToSave:ITeam[] = [];
+            var neededTeams = game.NumberOfTeams - teamsToSave.length;
+            for(var i = 0; i < neededTeams; i++){
+                //const sheetId = await sheets.createTeamSheet(null, " ");
+                newTeamsToSave.push()
+            }
+        }
+
+/*
+        try {
+        
+            if (!game) {
+              res.status(400).json({ error: 'No games' });
+            } else {
+              res.json(game.Teams);
+            }
+        } catch(err) {
+            ( err: any ) => res.status(500).json({ error: err });
+        }
+        */
     } 
 
     public routes(){

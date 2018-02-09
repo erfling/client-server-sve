@@ -12,12 +12,17 @@ import * as googleAuth form 'google-auth-library'
 
 
 import IPlayer from '../../../shared/models/IPlayer';
+import ITeam from '../../../shared/models/ITeam';
 import formValues from '../../../shared/models/FormValues';
 
 export default class GoogleSheets{
 
     auth: any;
-    static SCOPES:string[] = ['https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/drive.readonly'];
+    static SCOPES:string[] = [
+                              'https://www.googleapis.com/auth/spreadsheets',
+                              'https://www.googleapis.com/auth/drive.readonly',
+                              'https://www.googleapis.com/auth/drive.file'
+                             ];
     static TOKEN_DIR: string = '/sapien/.credentials/';
     static TOKEN_PATH: string = GoogleSheets.TOKEN_DIR + 'sheets.googleapis.sve.json';
 
@@ -172,7 +177,7 @@ export default class GoogleSheets{
             }
           })
         })
-        .catch(e => console.log("promise error is", e))
+        .catch(e => {})
         
       })
 
@@ -192,8 +197,7 @@ export default class GoogleSheets{
         });
       })
       .then(this.authorize)
-      .then((auth) => {
-        
+      .then((auth) => {       
 
         var values:any[][] = [
           [
@@ -274,7 +278,7 @@ export default class GoogleSheets{
       return new Promise((resolve, reject)=>{
         fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
           if (err) {
-            console.log('Error loading client secret file: ' + err);
+            //console.log('Error loading client secret file: ' + err);
             return reject(err);
           }          // Authorize a client with the loaded credentials, then call the
           // Google Sheets API.
@@ -288,16 +292,16 @@ export default class GoogleSheets{
         return new Promise((resolve, reject) => {
           service.files.watch({
             resource: {
-              id: 'my-chanel',
+              id: new Date().getMilliseconds().toString(),
               type: 'web_hook',
-              address: 'https://planetsapientestsite.com:8443/login'
+              address: 'https://planetsapientestsite.com:8443/sapien/api/driveupdate'
             },
             fileId: "1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q",
             auth: auth
 
           }, function(err:any, response:any) {
             if (err) {
-              //console.log('The API returned an error: ' + err);
+              console.log('The API returned an error: ' + err);
               reject(err);
               return;
             }
@@ -305,9 +309,38 @@ export default class GoogleSheets{
             console.log(response);
           })
         })
-        .catch(e => console.log("promise error is", e))
+        .catch(e => {})
         
       })
+    }
+
+    public createTeamSheet(){
+      return new Promise((resolve, reject)=>{
+        fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
+          if (err) {
+            console.log('Error loading client secret file: ' + err);
+            return reject(err);
+          }
+          return resolve(JSON.parse(content));
+        });
+      })
+      .then(this.authorize)
+      .then((auth: any) => {
+          const service = google.drive('v2');
+          const copyId = '15T5x5aqyYe3lNmdyklFPMGDhEi3otAAQ1khZle-Bx6U';
+          var request = service.files.copy({
+            'fileId': copyId,
+            auth: auth,
+            'resource': {'title': "Matthew's test for copying API Playgroud"}
+          }, (error:any, resp: any) => {
+            if(error){
+              console.log(error)
+            }else{
+              console.log(resp)
+            }
+          });
+          
+      });
     }
 
     /*

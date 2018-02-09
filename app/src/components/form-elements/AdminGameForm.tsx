@@ -29,11 +29,7 @@ interface FormProps extends InjectedFormProps{
     Submitting: boolean;
     Game:IGame;
     IsSubmitting:boolean;
-    initialValues: {
-        Name: string
-        Slug:string;
-        Location: string;
-    }
+    initialValues: IGame
 }
 class AdminGameForm extends React.Component<FormProps> {
     render(){
@@ -65,6 +61,15 @@ class AdminGameForm extends React.Component<FormProps> {
                             name="Slug"
                             component={InputWrapper}
                             defaultValue={this.props.initialValues.Slug}
+                        />                       
+                    </FormItem>
+
+                    <FormItem>
+                        <label>Source Spreadsheet (will be copied for each team)</label>
+                        <Field
+                            name="SourceSheetId"
+                            component={InputWrapper}
+                            defaultValue={this.props.initialValues.SourceSheetId}
                         />                       
                     </FormItem>
 
