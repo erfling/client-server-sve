@@ -284,7 +284,7 @@ export default class AppServer {
         
         if (this.socketServer instanceof https.Server) {
             this.app.post('/sapien/api/driveupdate', (req, resp) => {
-                console.log("Post Request >", req.body);
+                console.log("Post Request >", req);
                 var sheets = new GoogleSheets();
                 sheets.GetSheetValues().then((v:any) => {     
                     console.log("returning:", req.body.Slug);
