@@ -39,7 +39,7 @@ declare module "react-vis"{
         onMouseLeave?: (e:any) => {};
         orientation?: (e:any) => {};
     }
-    export const DiscreteColorLegend: IDiscreteColorLegend;
+    export const DiscreteColorLegend: any;
 
     export const DiscreteColorLegendItem: any;
     export default reactVis;
