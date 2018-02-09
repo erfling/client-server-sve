@@ -101,7 +101,7 @@ export default class AppServer {
     //  Event Handlers
     //
     //----------------------------------------------------------------------
-    // NOTE: eventTarget is a the instance listening for the event.
+    // NOTE: eventTarget param is a the instance listening for the event.
 
     private onSocketServerError(eventTarget:net.Server):void {
         console.log("SerVER error", this.socketServer);
@@ -294,7 +294,6 @@ export default class AppServer {
                 })
             })
         }
-     
     }
 
     /**
