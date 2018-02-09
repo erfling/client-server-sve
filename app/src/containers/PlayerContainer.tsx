@@ -31,7 +31,7 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
         //selectPlayer: (player: IPlayer) => dispatch(Actions.chooseCurrentPlayer(player)) 
         selectPlayer: (event: React.MouseEvent<HTMLAnchorElement>, player: IPlayer) => {
             event.preventDefault();
-            dispatch(Actions.chooseCurrentPlayer(player))
+            dispatch(Actions.chooseCurrentPlayer(player));
         }    
     }
 }

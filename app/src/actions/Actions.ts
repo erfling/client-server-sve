@@ -169,10 +169,12 @@ const setCurrentPlayer:ActionCreator<Action<string>> = (type:string, payload:str
     }
 }
 export const chooseCurrentPlayer = (player:IPlayer) => {
-    console.log("CHOOSING", player)
+    console.log("CHOOSING PLAYER", player);
     return (dispatch: Dispatch<Action<IPlayer>>) => {
-        socket.on("DRIVE_UPDATE",(dashboardData:any) => dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED, dashboardData)))
-        dispatch(setCurrentPlayer(ACTION_TYPES.CURRENT_PLAYER_SET, player._id))
+        socket.on("DRIVE_UPDATE",(dashboardData:any) => {
+            dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED, dashboardData));
+        })
+        dispatch(setCurrentPlayer(ACTION_TYPES.CURRENT_PLAYER_SET, player._id));
     }
 }
 
@@ -183,9 +185,9 @@ const setCurrentGame:ActionCreator<Action<IGame>> = (type:string, payload: IGame
     }
 }
 export const chooseCurrentGame = (game: IGame) => {
-    console.log("CHOOSING", game)
+    console.log("CHOOSING GAME", game);
     return (dispatch: Dispatch<Action<IPlayer>>) => {
-        dispatch(setCurrentPlayer(ACTION_TYPES.CURRENT_GAME_SET, game))
+        dispatch(setCurrentPlayer(ACTION_TYPES.CURRENT_GAME_SET, game));
     }
 }
 
@@ -205,8 +207,9 @@ export const updateDashboard = () => {
     return (dispatch: Dispatch<Action<any>>) => {
         console.log(socket);
         socket.on(SocketEvents.DASHBOARD_UPDATED, (dashboardData:any) => {
-            dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED, dashboardData))
-            dispatch(appStateChange(ACTION_TYPES.DASHBOARD_UPDATING, false))
+            console.log("DASHBOARD UPDATE");
+            dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED, dashboardData));
+            dispatch(appStateChange(ACTION_TYPES.DASHBOARD_UPDATING, false));
          })         
     }
 }

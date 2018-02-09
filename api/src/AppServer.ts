@@ -151,11 +151,13 @@ export default class AppServer {
         PlayerModel.findById(values.PlayerId).then((player:Player) => {
             var sheets = new GoogleSheets();
             sheets.commitAnswers(player, values).then(() => {
-                setTimeout(() => {
-                    sheets.GetSheetValues().then((v:any) => {     
-                        eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, v);                            
-                    })
-                }, 500);
+                if (this.socketServer instanceof http.Server) {
+                    setTimeout(() => {
+                        sheets.GetSheetValues().then((v:any) => {     
+                            eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, v);                            
+                        })
+                    }, 500);
+                }
             })                    
         })
     }
@@ -189,7 +191,7 @@ export default class AppServer {
             var origin = req.headers.origin;
 
             if (allowedOrigins.indexOf(origin as string) > -1) {
-                console.log("header approved")
+                console.log("header approved");
                 res.setHeader('Access-Control-Allow-Origin', origin);
             } else {
                 console.log("rejecting header");
@@ -223,7 +225,7 @@ export default class AppServer {
         //login route
         this.app.post('/login', (req, res) => {
            // const crypto = require("crypto");
-            console.log("heard post", req)
+            console.log("heard post", req);
             PlayerModel.findOne().then((player:Player) => {
                 var token = jwt.sign({ player }, 'shhhhh');
                 res.json({test: token, player});
@@ -240,7 +242,6 @@ export default class AppServer {
              })
  
          })
-        this.sheets.testPost();
     }
 
     /**
@@ -273,18 +274,26 @@ export default class AppServer {
                 })
                 //teamSocket.use
                 teamSocket.on(SocketEvents.CONNECT, this.onTeamSocketConnect.bind(this, teamSocket, game));
+
+                // TODO: Listen for sheets watch IF we're using secure socketServer
+                if (this.socketServer instanceof https.Server) {
+                    
+                }
             })           
         })
-    
-        this.app.post('/sapien/api/driveupdate', (req, resp) => {
-            console.log(req);
-            var sheets = new GoogleSheets();
-            sheets.GetSheetValues().then((v:any) => {     
-                console.log("returning");                      
-                this.io.of(req.body.Slug).emit("DRIVE_UPDATE", v);      
-                resp.json({test: "hello"});
+        
+        if (this.socketServer instanceof https.Server) {
+            this.app.post('/sapien/api/driveupdate', (req, resp) => {
+                console.log("Post Request >", req.body);
+                var sheets = new GoogleSheets();
+                sheets.GetSheetValues().then((v:any) => {     
+                    console.log("returning:", req.body.Slug);
+                    //this.io.of(req.body.Slug).emit("DRIVE_UPDATE", v);
+                    this.io.of("Team1").emit(SocketEvents.DASHBOARD_UPDATED, v); // TODO: "Team1" is hard-coded because "req.body" is empty in testing. Investigate.
+                    resp.json({test: "hello folks"});
+                })
             })
-        })      
+        }
      
     }
 
