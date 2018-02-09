@@ -23,6 +23,25 @@ declare module "*.jpeg" {
 declare module "react-vis"{
     const reactVis:any;
     export const Sunburst:any;
+    export const XYPlot:any;
+    export const XAxis:any;
+    export const YAxis:any;
+    export const HorizontalGridLines:any;
+    export const VerticalGridLines:any;
+    export const LineSeries:any;
+
+    interface IDiscreteColorLegend{
+        color?: string;
+        disabled?: boolean;
+        title?: boolean;
+        onClick?: (e:any) => {};
+        onMouseEnter?: (e:any) => {};
+        onMouseLeave?: (e:any) => {};
+        orientation?: (e:any) => {};
+    }
+    export const DiscreteColorLegend: IDiscreteColorLegend;
+
+    export const DiscreteColorLegendItem: any;
     export default reactVis;
 }
 
