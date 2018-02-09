@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@types/chai": "^4.0.10",
+    "@types/d3-shape": "^1.2.2",
     "@types/gapi": "^0.0.35",
     "@types/history": "^4.6.2",
     "@types/jsonwebtoken": "^7.2.5",
@@ -31,6 +32,7 @@
     "compression": "^1.7.1",
     "cors": "^2.8.4",
     "crypto": "^1.0.1",
+    "d3-shape": "^1.2.0",
     "express": "^4.16.2",
     "file-loader": "^1.1.6",
     "fs": "^0.0.1-security",

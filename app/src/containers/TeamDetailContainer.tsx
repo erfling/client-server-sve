@@ -10,7 +10,6 @@ import { connect } from 'react-redux';
 import * as Actions from '../actions/Actions';
 import * as ReactDOM from "react-dom";
 import TeamDetail from '../components/TeamDetail';
-//import './app.scss';
 
 interface DispatchProps {
     fetchTeam: (slug: string) => {},

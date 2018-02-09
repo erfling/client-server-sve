@@ -3,7 +3,7 @@ import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
 import { Game } from "../../../api/src/models/Game";
 import BaseForm from './form-elements/Form'
-import './app.scss';
+import '../style/app.scss';
 import { Link } from 'react-router-dom';
 import TeamDetail from './TeamDetail'
 

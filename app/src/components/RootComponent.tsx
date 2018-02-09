@@ -4,7 +4,7 @@ import ITeam from '../../../shared/models/ITeam';
 import { Game } from "../../../api/src/models/Game";
 import BaseForm from './form-elements/Form'
 import Games from './Games'
-import './app.scss';
+import '../style/app.scss';
 
 export interface MasterState {
     Game: IGame[];

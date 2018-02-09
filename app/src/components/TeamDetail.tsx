@@ -6,7 +6,7 @@ import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
 import { Game } from "../../../api/src/models/Game";
 import BaseForm from './form-elements/Form'
-import './app.scss';
+import '../style/app.scss';
 import TeamList from './TeamList'
 import { Row, Col, Icon, Slider } from 'antd';
 import {Layout} from "antd/lib";
@@ -21,7 +21,7 @@ import {Parallax, Background} from 'react-parallax';
 
 import Leaf from '-!svg-react-loader?name=Icon!../img/si-glyph-leaf.svg';
 import { Sunburst } from 'react-vis';
-
+import ChartPlayground from './ChartPlayground';
 //mport Hurricane from  '../img/hurricane-space-earth-horizontal.jpg';
 const Hurricane = require('../img/hurricane-space-earth-horizontal.jpg');
 export interface TeamDetailProps {
@@ -37,8 +37,7 @@ export interface TeamDetailProps {
     EnvironmentalHealth:number;
     setEnvirontmentalHealth: (value:number) => {}
 }
-// 'HelloProps' describes the shape of props.
-// State is never set so we use the '{}' type.
+
 export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
 
     componentDidMount() {
@@ -47,7 +46,6 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
     }
 
     componentDidUpdate(){
-        console.log(this.props.Dashboard);
         const  percentColors = [
             { pct: 0.0, color: { r: 0xff, g: 0x00, b: 0 } },
             { pct: 0.5, color: { r: 0xff, g: 0xff, b: 0 } },
@@ -83,36 +81,23 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
 
     }
     render() {
-        const pivotArray = (arr:any[]):any[] => {
-            let output:any[] = [];
+        const pivotArray = (arr:Array<Array<string>>):Array<Array<string>> => {
+            let output:Array<Array<string>> = [];
+            var innerLength = arr[0].length;
+            arr.forEach((a, idx) => {
+                for(var i = 0; i < a.length; i++){
+                    if(!output[i])output[i] = [];
+                    output[i].push(a[i]);
+                }
+            })       
             return output;
         }
         const DIVERGING_COLOR_SCALE = ['#00939C', '#85C4C8', '#EC9370', '#C22E00'];
 
         /**{"title": "BetweennessCentrality", "color": "#12939A", "size": 3534}, */
-        const mapDataForSunburst = (data:string[][]) => {
-            if(!data)return;
-            let input = data.slice(1,5).concat(data.slice(8,10));
-            let burstData = input.map((row,i) => {
-                return {
-                    title: "test",
-                    size: row[1],
-                    color:DIVERGING_COLOR_SCALE[i]
-                }
-            })
-            console.log('INPUT',input);
-
-            let final =  {
-                title: "Sunburst Test",
-                color:"blue",
-                children: burstData
-            }
-            console.log(final)
-            return final;
-          }
+        
 
           const randomLeaf = ():any => {
-              console.log(Math.round(Math.random()) + 2, this.props.Dashboard[9])
             return {
               //title: this.props.Dashboard[Math.round(Math.random()) + 8][0].substring(0,6) + "...",
               size:  this.props.Dashboard[9][Math.round(Math.random()) + 2] * 1000,
@@ -139,9 +124,9 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
             };
           }
 
-          if(this.props.Team){ 
-                let players:IPlayer[] = this.props.Team.Players as IPlayer[];
-                var data = this.props.Dashboard;
+          if(this.props.Team && this.props.Dashboard){ 
+                let players:IPlayer[] = this.props.Team.Players as IPlayer[];                
+                var data = pivotArray(this.props.Dashboard);
                 return <Layout>
                         <Menu
                             mode="horizontal"
@@ -157,7 +142,7 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
                                 bgImageAlt="this blows"
                                 strength={1000}
                             >                                
-                                <Row type="flex" justify="center" style={{ height:'1500px'}}>
+                                <Row type="flex" justify="center" style={{ minHeight:'100vh'}}>
                                     <Col xs={24} sm={23} lg={20} style={{backround:'rgba(255,255,255,.6)'}}>
                                         <h3>{this.props.Team.Name || this.props.Team.Slug || this.props.Team._id}</h3>
                                         <h4>Players: ({players.length})</h4>
@@ -169,19 +154,10 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
                                             />
                                             <Leaf className="leaf-thing" height={30}/>
                                             <span className="leaf-value">{this.props.EnvironmentalHealth}</span>
-                                            {data && <Sunburst
-                                                        animation={{damping: 20, stiffness: 300}}
-                                                        data={ updateData() }
-                                                        colorType={'category'}
-                                                        colorRange={DIVERGING_COLOR_SCALE}
-                                                        style={{stroke: '#ccc'}}                                                
-                                                        height={300}
-                                                        width={350}
-                                                        hideRootNode
-                                                        title="hey"
-                                                        getLabel={(d:any) => d.title}
-
-                                                    />
+                                            {data && <ChartPlayground
+                                                        Dashboard={data}
+                                                        EnvironmentalHealth={this.props.EnvironmentalHealth}
+                                                     />
                                             }
                                         </div>
                                         <PlayerContainer 
@@ -211,14 +187,3 @@ export default class TeamDetail extends React.Component<TeamDetailProps, {}> {
             }
     }
 }
-//<BaseForm form={this.props.Team.Slug}/>                                       <tr><td></td><td></td><td></td><td></td><td></td></tr>
-                             //<PlayerDetail Players={players} selectPlayer={this.props.selectPlayer}/>
-
-
-
-/*<Paralax
-                                blur={10}
-                                bgImage={require('../img/hurricane-space-earth-horizontal.jpg')}
-                                bgImageAlt="This blows"
-                                strength={200}
-                            />*/
