@@ -277,7 +277,7 @@ export default class AppServer {
 
                 // TODO: Listen for sheets watch IF we're using secure socketServer
                 if (this.socketServer instanceof https.Server) {
-                    
+                    this.sheets.testPost();
                 }
             })           
         })
