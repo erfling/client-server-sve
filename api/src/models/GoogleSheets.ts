@@ -3,7 +3,6 @@ const google: any = require('googleapis');
 const googleAuth: any = require('google-auth-library');
 //import * as token from '../creds/client_secret.json'
 /*
-import * as fs from 'fs';
 import * as readline from 'readline';
 import * as google from 'googleapis';
 import * as googleAuth form 'google-auth-library'
@@ -14,16 +13,44 @@ import IPlayer from '../../../shared/models/IPlayer';
 import ITeam from '../../../shared/models/ITeam';
 import formValues from '../../../shared/models/FormValues';
 
-export default class GoogleSheets{
+export default class GoogleSheets {
+    //----------------------------------------------------------------------
+    //
+    //  Properties
+    //
+    //----------------------------------------------------------------------
 
     auth: any;
     static SCOPES:string[] = [
-                              'https://www.googleapis.com/auth/spreadsheets',
-                              'https://www.googleapis.com/auth/drive.readonly',
-                              'https://www.googleapis.com/auth/drive.file'
+                                'https://www.googleapis.com/auth/spreadsheets',
+                                'https://www.googleapis.com/auth/drive.readonly',
+                                'https://www.googleapis.com/auth/drive.file'
                              ];
     static TOKEN_DIR: string = '/sapien/.credentials/';
     static TOKEN_PATH: string = GoogleSheets.TOKEN_DIR + 'sheets.googleapis.sve.json';
+
+    //----------------------------------------------------------------------
+    //
+    //  Constructor
+    //
+    //----------------------------------------------------------------------
+
+
+
+    //----------------------------------------------------------------------
+    //
+    //  Event Handlers
+    //
+    //----------------------------------------------------------------------
+    // NOTE: eventTarget param is a the instance listening for the event.
+
+
+
+    //----------------------------------------------------------------------
+    //
+    //  Methods
+    //
+    //----------------------------------------------------------------------
 
     public GetSheetValues(sheetId:string = null):any {
         const sheets = google.sheets('v4');
@@ -49,7 +76,7 @@ export default class GoogleSheets{
                     range: 'Shared Value Map!G1:M6'
                 }, (err:any, response: any) => {
                     if (err) {
-                        console.log(err,"ERROR HERE")
+                        console.log(err,"ERROR HERE");
                         reject(err);
                         return;
                     }
@@ -96,7 +123,7 @@ export default class GoogleSheets{
     }
 
     private authorize(credentials:any):Promise<any> {
-        console.log("trying to authorize")
+        console.log("trying to authorize");
         var clientSecret = credentials.installed.client_secret;
         var clientId = credentials.installed.client_id;
         var redirectUrl = credentials.installed.redirect_uris[0];
@@ -323,9 +350,9 @@ export default class GoogleSheets{
                 'resource': {'title': "Matthew's test for copying API Playgroud"}
             }, (error:any, resp: any) => {
                 if (error) {
-                    console.log(error)
+                    console.log(error);
                 } else {
-                    console.log(resp)
+                    console.log(resp);
                     return resp.id;
                 }
             });
