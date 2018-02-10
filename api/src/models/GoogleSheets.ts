@@ -51,20 +51,51 @@ export default class GoogleSheets {
     //  Methods
     //
     //----------------------------------------------------------------------
-
-    public GetSheetValues(sheetId:string = null):any {
-        const sheets = google.sheets('v4');
+    
+    /**
+     * Reads a file and returns a promise
+     * @param path
+     */
+    private readAndAuthFile(path:string):Promise<any> {
         return new Promise((resolve, reject) => {
-            fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
+            fs.readFile(path, function processClientSecrets(err: any, content: any) {
                 if (err) {
-                    //console.log('Error loading client secret file: ' + err);
+                    console.log('Error loading ' + path + ': ' + err);
                     reject(err);
-                }          // Authorize a client with the loaded credentials, then call the
-                // Google Sheets API.
-                //instance.authorize( JSON.parse(content) );
+                }
                 resolve(JSON.parse(content));
             });
         })
+    }
+
+    /**
+     * Authorize a client with the loaded credentials
+     * @param credentials 
+     */
+    private authorize(credentials:any):Promise<any> {
+        console.log("trying to authorize");
+        var clientSecret = credentials.installed.client_secret;
+        var clientId = credentials.installed.client_id;
+        var redirectUrl = credentials.installed.redirect_uris[0];
+        var auth = new googleAuth();
+        var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
+        return new Promise((resolve, reject) => {
+            console.log("TOKEN PATH", GoogleSheets.TOKEN_PATH);
+            fs.readFile(GoogleSheets.TOKEN_PATH, function(err:any, token:any) {
+                if (err) {
+                    new GoogleSheets().getNewToken(oauth2Client);
+                    reject(err)
+                } else {
+                    oauth2Client.credentials = JSON.parse(token);
+                    resolve(oauth2Client);
+                }
+            });
+        }).catch(e => {})
+  }
+
+    public GetSheetValues(sheetId:string = null):any {
+        const sheets = google.sheets('v4');
+        return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth) => {
             if (!sheetId) sheetId = '1R5Od_XTcwDyOKsLHaABHL8o9cl7Qg7P3zlYyBUUWds8'
@@ -90,89 +121,45 @@ export default class GoogleSheets {
         try {
             fs.mkdirSync(GoogleSheets.TOKEN_DIR);
         } catch (err) {
-            if (err.code != 'EEXIST') {
-              throw err;
-            }
+            if (err.code != 'EEXIST') throw err;
         }
         fs.writeFile(GoogleSheets.TOKEN_PATH, JSON.stringify(token), null);
         console.log('Token stored to ' + GoogleSheets.TOKEN_PATH);
     }
 
     private getNewToken(oauth2Client:any):void {
-      var authUrl = oauth2Client.generateAuthUrl({
-          access_type: 'offline',
-          scope: GoogleSheets.SCOPES
-      });
-      console.log('Authorize this app by visiting this url: ', authUrl);
-      var rl = readline.createInterface({
-          input: process.stdin,
-          output: process.stdout
-      });
-      rl.question('Enter the code from that page here: ', (code: any) => {
-          rl.close();
-          oauth2Client.getToken(code, (err: any, token: any) => {
-              if (err) {
-                  //console.log('Error while trying to retrieve access token', err);
-                  return;
-              }
-              oauth2Client.credentials = token;
-              this.storeToken(token);
-              this.auth = oauth2Client;
-          });
-      });
-    }
-
-    private authorize(credentials:any):Promise<any> {
-        console.log("trying to authorize");
-        var clientSecret = credentials.installed.client_secret;
-        var clientId = credentials.installed.client_id;
-        var redirectUrl = credentials.installed.redirect_uris[0];
-        var auth = new googleAuth();
-        var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
-        return new Promise((resolve, reject) => {
-            console.log("TOKEN PATH", GoogleSheets.TOKEN_PATH);
-            fs.readFile(GoogleSheets.TOKEN_PATH, function(err:any, token:any) {
+        var authUrl = oauth2Client.generateAuthUrl({
+            access_type: 'offline',
+            scope: GoogleSheets.SCOPES
+        });
+        console.log('Authorize this app by visiting this url: ', authUrl);
+        var rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+        rl.question('Enter the code from that page here: ', (code: any) => {
+            rl.close();
+            oauth2Client.getToken(code, (err: any, token: any) => {
                 if (err) {
-                    new GoogleSheets().getNewToken(oauth2Client);
-                    return reject(err)
-                } else {
-                    oauth2Client.credentials = JSON.parse(token);
-                    oauth2Client;
-                    return resolve(oauth2Client);
+                    //console.log('Error while trying to retrieve access token', err);
+                    return;
                 }
+                oauth2Client.credentials = token;
+                this.storeToken(token);
+                this.auth = oauth2Client;
             });
-        }).catch(e => {})
+        });
     }
     
     public entryPoint(method:Function, instance:GoogleSheets):Promise<any> {
-        return new Promise((resolve, reject) => {
-            fs.readFile('./src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
-                if (err) {
-                    console.log('Error loading client secret file: ' + err);
-                    reject(err);
-                } // Authorize a client with the loaded credentials, then call the
-                // Google Sheets API.
-                if (!method) method = this.GetSheetValues;
-                //instance.authorize( JSON.parse(content) );
-                resolve(JSON.parse(content));
-            });
-        })
+        if (!method) method = this.GetSheetValues;
+        return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .catch()
     }
 
     public subscribeToDriveResource(path: string):Promise<any> {
-        return new Promise((resolve, reject) => {
-            fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
-                if (err) {
-                    console.log('Error loading client secret file: ' + err);
-                    return reject(err);
-                } // Authorize a client with the loaded credentials, then call the
-                // Google Sheets API.
-                //instance.authorize( JSON.parse(content) );
-                return resolve(JSON.parse(content));
-            });
-        })
+        return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth: any) => {
             var service = google.drive('v3');
@@ -204,17 +191,7 @@ export default class GoogleSheets {
     }
 
     public commitAnswers(player:IPlayer, formValues:formValues):Promise<any> {
-        return new Promise((resolve, reject) => {
-            fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
-                if (err) {
-                    console.log('Error loading client secret file: ' + err);
-                    reject(err);
-                }          // Authorize a client with the loaded credentials, then call the
-                // Google Sheets API.
-                //instance.authorize( JSON.parse(content) );
-                resolve(JSON.parse(content));
-              });
-        })
+        return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth) => {
             var values:any[][] = [
@@ -293,17 +270,7 @@ export default class GoogleSheets {
     }
 
     public setTeamListener(teamSlug:string):Promise<any> {
-        return new Promise((resolve, reject) => {
-            fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
-                if (err) {
-                    //console.log('Error loading client secret file: ' + err);
-                    return reject(err);
-                }          // Authorize a client with the loaded credentials, then call the
-                // Google Sheets API.
-                //instance.authorize( JSON.parse(content) );
-                return resolve(JSON.parse(content));
-            });
-        })
+        return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth: any) => {
             var service = google.drive('v3');
@@ -331,15 +298,7 @@ export default class GoogleSheets {
     }
 
     public createTeamSheet():Promise<any>{
-        return new Promise((resolve, reject) => {
-            fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
-                if (err) {
-                    console.log('Error loading client secret file: ' + err);
-                    return reject(err);
-                }
-                return resolve(JSON.parse(content));
-            });
-        })
+        return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth: any) => {
             const service = google.drive('v2');
