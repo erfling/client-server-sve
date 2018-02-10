@@ -16,6 +16,7 @@ import GameRouter from './routers/GameRouter';
 import SheetsRouter from './routers/GoogleSheetsRouter';
 import TeamRouter from './routers/TeamRouter';
 import PlayerRouter from './routers/PlayerRouter';
+
 import IGame from '../../shared/models/IGame';
 import ITeam from '../../shared/models/ITeam';
 import formValues from '../../shared/models/FormValues';
@@ -58,6 +59,8 @@ export default class AppServer {
     private socketNameSpaces: string[];
     private gameSockets: Map<string, SocketIO.Namespace> = new Map();
     private sheets:GoogleSheets;
+
+    private sheetsRouter: express.Router;
 
     //----------------------------------------------------------------------
     //
@@ -209,9 +212,12 @@ export default class AppServer {
      * Build application routes
      */
     public routes(): void {
-        const router: express.Router = express.Router();    
+        const router: express.Router = express.Router();
+        this.sheetsRouter = express.Router();
+
         this.app
             .use('/', router)
+            .use('/sapien/api/driveupdate', this.sheetsRouter)
             .use('/sapien/api/games', GameRouter)
             .use('/sapien/api/sheets', SheetsRouter)
             .use('/sapien/api/teams', TeamRouter)
@@ -224,24 +230,22 @@ export default class AppServer {
 
         //login route
         this.app.post('/login', (req, res) => {
-           // const crypto = require("crypto");
+            // const crypto = require("crypto");
             console.log("heard post", req);
             PlayerModel.findOne().then((player:Player) => {
                 var token = jwt.sign({ player }, 'shhhhh');
                 res.json({test: token, player});
             })
 
-        })
+        });
 
         this.app.get('/login', (req, res) => {
-                        // const crypto = require("crypto");
- 
+             // const crypto = require("crypto");
              PlayerModel.findOne().then((player:Player) => {
                  var token = jwt.sign({ player }, 'shhhhh');
                  res.json({test: token, player});
              })
- 
-         })
+         });
     }
 
     /**
@@ -277,23 +281,23 @@ export default class AppServer {
 
                 // TODO: Listen for sheets watch IF we're using secure socketServer
                 if (this.socketServer instanceof https.Server) {
-                    this.sheets.testPost();
+                    this.sheets.setTeamListener(t.Slug);
                 }
             })           
         })
         
-        if (this.socketServer instanceof https.Server) {
-            this.app.post('/sapien/api/driveupdate', (req, resp) => {
-                console.log("Post Request >", req.headers);
+        //if (this.socketServer instanceof https.Server) {
+            this.sheetsRouter.post('/:id', (req, resp) => {
+                console.log("Post Request >", req.params, req.headers);
                 var sheets = new GoogleSheets();
                 sheets.GetSheetValues().then((v:any) => {     
                     console.log("returning:", req.body.Slug);
                     //this.io.of(req.body.Slug).emit("DRIVE_UPDATE", v);
-                    this.io.of("Team1").emit(SocketEvents.DASHBOARD_UPDATED, v); // TODO: "Team1" is hard-coded because "req.body" is empty in testing. Investigate.
+                    this.io.of(req.params.id).emit(SocketEvents.DASHBOARD_UPDATED, v); // TODO: "Team1" is hard-coded because "req.body" is empty in testing. Investigate.
                     resp.json({test: "hello folks"});
                 })
             })
-        }
+        //}
     }
 
     /**

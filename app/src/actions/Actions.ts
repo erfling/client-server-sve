@@ -207,7 +207,7 @@ export const updateDashboard = () => {
     return (dispatch: Dispatch<Action<any>>) => {
         console.log(socket);
         socket.on(SocketEvents.DASHBOARD_UPDATED, (dashboardData:any) => {
-            console.log("DASHBOARD UPDATE");
+            console.log("DASHBOARD UPDATE", "dashboardData:", dashboardData);
             dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED, dashboardData));
             dispatch(appStateChange(ACTION_TYPES.DASHBOARD_UPDATING, false));
          })         

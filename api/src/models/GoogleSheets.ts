@@ -1,4 +1,3 @@
-const fs: any = require('fs');
 const readline: any = require('readline');
 const google: any = require('googleapis');
 const googleAuth: any = require('google-auth-library');
@@ -10,7 +9,7 @@ import * as google from 'googleapis';
 import * as googleAuth form 'google-auth-library'
 */
 
-
+import * as fs from 'fs';
 import IPlayer from '../../../shared/models/IPlayer';
 import ITeam from '../../../shared/models/ITeam';
 import formValues from '../../../shared/models/FormValues';
@@ -48,7 +47,7 @@ export default class GoogleSheets{
             sheets.spreadsheets.values.get({
               auth: auth,            
               spreadsheetId: sheetId ,
-              range: 'Shared Value Map!G1:M11'
+              range: 'Shared Value Map!G1:M6'
             }, (err:any, response: any) => {
               if(err){
                 console.log(err,"ERROR HERE")
@@ -69,7 +68,7 @@ export default class GoogleSheets{
           throw err;
         }
       }
-      fs.writeFile(GoogleSheets.TOKEN_PATH, JSON.stringify(token));
+      fs.writeFile(GoogleSheets.TOKEN_PATH, JSON.stringify(token), null);
       console.log('Token stored to ' + GoogleSheets.TOKEN_PATH);
     }
 
@@ -274,7 +273,7 @@ export default class GoogleSheets{
       .catch()
     }
 
-    public testPost ():any {
+    public setTeamListener(teamSlug:string):any {
       return new Promise((resolve, reject)=>{
         fs.readFile('./api/src/creds/client_secret.json', function processClientSecrets(err: any, content: any) {
           if (err) {
@@ -294,7 +293,7 @@ export default class GoogleSheets{
             resource: {
               id: new Date().getMilliseconds().toString(),
               type: 'web_hook',
-              address: 'https://planetsapientestsite.com:8443/sapien/api/driveupdate'
+              address: 'https://planetsapientestsite.com:8443/sapien/api/driveupdate/' + teamSlug
             },
             fileId: "1R5Od_XTcwDyOKsLHaABHL8o9cl7Qg7P3zlYyBUUWds8",
             auth: auth
