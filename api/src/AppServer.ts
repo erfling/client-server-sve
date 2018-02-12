@@ -264,7 +264,7 @@ export default class AppServer {
         var port = AppServer.SOCKET_PORT;
         if (this.socketServer instanceof https.Server) {
             port = AppServer.SECURE_SOCKET_PORT;
-            this.io.origins('https://planetsapientestsite.com:443');
+            this.io.origins('https://planetsapien.com:443');
         }
         this.socketServer.listen(port, () => {
             console.log('Running server on port %s', port);
