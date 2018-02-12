@@ -5,11 +5,10 @@ import { Team } from './Team';
 import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
 
-//TODO: find out how to save nested teams, not just their refs. Possibly with pre method: https://github.com/szokodiakos/typegoose#pre
 
+//TODO: find out how to save nested teams, not just their refs. Possibly with pre method: https://github.com/szokodiakos/typegoose#pre
 export class Game extends BaseClass implements IGame
 {
-    
     @prop({default: "Game"})
     CLASS_NAME:string;
     
@@ -32,7 +31,6 @@ export class Game extends BaseClass implements IGame
     Teams:  Ref<ITeam>[] | ITeam[];
 
   }
-
 
   export const GameModel = new Game().getModelForClass( Game, { existingMongoose: mongoose } )
   

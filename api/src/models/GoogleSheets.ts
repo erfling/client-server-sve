@@ -13,7 +13,8 @@ import IPlayer from '../../../shared/models/IPlayer';
 import ITeam from '../../../shared/models/ITeam';
 import formValues from '../../../shared/models/FormValues';
 
-export default class GoogleSheets {
+export default class GoogleSheets
+{
     //----------------------------------------------------------------------
     //
     //  Properties

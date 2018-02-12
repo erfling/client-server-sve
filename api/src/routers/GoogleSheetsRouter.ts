@@ -2,23 +2,51 @@ import { Router, Request, Response, NextFunction } from 'express';
 import  GoogleSheets  from '../models/GoogleSheets'; 
 import { resolve } from 'dns';
 
-class GoogleSheetsRouter{
-    router: Router;
+
+class GoogleSheetsRouter
+{
+    //----------------------------------------------------------------------
+    //
+    //  Properties
+    //
+    //----------------------------------------------------------------------
+
+    public router: Router;
     
-    constructor(){
+    //----------------------------------------------------------------------
+    //
+    //  Constructor
+    //
+    //----------------------------------------------------------------------
+
+    constructor() {
         this.router = Router();
         this.routes();
     }
 
+    //----------------------------------------------------------------------
+    //
+    //  Event Handlers
+    //
+    //----------------------------------------------------------------------
+
+
+    
+    //----------------------------------------------------------------------
+    //
+    //  Methods
+    //
+    //----------------------------------------------------------------------
+    
     public GetSheetValues(req: Request, res: Response):Promise<any> {
         console.log("GET SHEETS CALLED")
         let sheet = new GoogleSheets();
         
         return sheet.entryPoint(sheet.GetSheetValues, sheet)
         .then( (values) => {
-            if(values){
+            if (values) {
                 res.json(values);
-            }else{
+            } else {
                 res.status(400).json({ error: 'No sheets' });                
             }
         })
@@ -47,9 +75,8 @@ class GoogleSheetsRouter{
       
     }
 
-
     public routes(){
-        this.router.get("/", this.GetSheetValues)
+        this.router.get("/", this.GetSheetValues);
     }
 }
 

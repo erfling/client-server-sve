@@ -9,15 +9,43 @@ import ITeam from '../../../shared/models/ITeam';
 import Item from 'antd/lib/list/Item';
 import GoogleSheets from '../models/GoogleSheets'
 
-class GameRouter{
-    router: Router;
-    GameModel: any;
+
+class GameRouter
+{
+    //----------------------------------------------------------------------
+    //
+    //  Properties
+    //
+    //----------------------------------------------------------------------
+
+    public router: Router;
+    public GameModel: any;
     
-    constructor(){
+    //----------------------------------------------------------------------
+    //
+    //  Constructor
+    //
+    //----------------------------------------------------------------------
+
+    constructor() {
         this.router = Router({mergeParams:true});
         this.routes();
     }
 
+    //----------------------------------------------------------------------
+    //
+    //  Event Handlers
+    //
+    //----------------------------------------------------------------------
+
+
+    
+    //----------------------------------------------------------------------
+    //
+    //  Methods
+    //
+    //----------------------------------------------------------------------
+    
     public async GetGames(req: Request, res: Response):Promise<Game[] | any> {
         console.log("GET GAMES CALLED");
         

@@ -6,15 +6,14 @@ import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
 
 
-
-class GameSockets {
-
+class GameSockets
+{
     initPlayer(p:IPlayer):void{
         this.submitter = p;
     }
 
     /**Identity for payload typesafety */
-    payload<T> (payload:T):T  {
+    payload<T>(payload:T):T  {
         return payload;
     }
 
@@ -25,8 +24,5 @@ class GameSockets {
     submitToSheet<T>(thing:T):void {
         return;
     }
-
-
-
 
 }

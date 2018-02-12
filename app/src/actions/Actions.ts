@@ -11,10 +11,11 @@ import IPlayer from '../../../shared/models/IPlayer';
 import { store } from '../index';
 import { setTimeout } from 'timers';
 
+
 const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
 const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
 const socketPort = window.location.host.includes('sapien') ? ":9443" : ":5000";
-console.log(window.location)
+console.log(window.location);
 const baseRestURL = protocol +  "//" + window.location.hostname + port + "/sapien/api/";
 //const socket = socketIo({path: socketPort + "/" + "Team1", transports: ['websocket'] });
 const socket = socketIo(socketPort + "/" + "Team1");
@@ -23,7 +24,7 @@ console.log("BASE",socket)
 const teamSocket = '';
 
 socket.on(SocketEvents.CONNECT, (data: any) => {
-    console.log("SOCKET RETURNED SOMETHING", data)
+    console.log("SOCKET RETURNED SOMETHING", data);
     console.log("SOCKET THAT RETURNED", socket);
 })
 
@@ -86,8 +87,8 @@ const isLoading: ActionCreator<Action<boolean>> = (type = ACTION_TYPES.IS_LOADIN
         payload
     }
 }
-/*
 
+/*
 export const loadInitialDataSocket = (socket: SocketIOClient.Socket) => {
     return (dispatch: Dispatch<any>) => {
         socket.on('initialList', (data: any) => {
@@ -100,12 +101,12 @@ export const loadInitialDataSocket = (socket: SocketIOClient.Socket) => {
 
 export const fetchGames = () => {
     return (dispatch: Dispatch<GameAction<IGame> | Action<any>>) => {
-        dispatch(isLoading(ACTION_TYPES.IS_LOADING, true))
-        console.log("fetching games")
-        socket.on("HELLO", (res:any)=>{
+        dispatch(isLoading(ACTION_TYPES.IS_LOADING, true));
+        console.log("fetching games");
+        socket.on("HELLO", (res:any) => {
             dispatch(dataInit(ACTION_TYPES.GAMES_LOADED, res));
             dispatch(dataInit(ACTION_TYPES.TEAMS_LOADED_WITH_GAMES, res));    
-            setTimeout(() => dispatch( isLoading(ACTION_TYPES.IS_LOADING, false) ), 300)
+            setTimeout(() => dispatch( isLoading(ACTION_TYPES.IS_LOADING, false) ), 300);
         })
         
     }
@@ -132,7 +133,7 @@ const getPlayersFromTeam:ActionCreator<Action<ITeam>> = (type:string, payload: I
 }
 export const findPlayers = (team:ITeam) => {
     return (dispatch: Dispatch<Action<ITeam>>) => {
-        dispatch(getPlayersFromTeam(ACTION_TYPES.PLAYERS_LOADED_WITH_TEAMS, team))
+        dispatch(getPlayersFromTeam(ACTION_TYPES.PLAYERS_LOADED_WITH_TEAMS, team));
     }
 }
 
@@ -143,15 +144,15 @@ export const fetchTeamDetails = (slug:string) => {
     //const socket = socketIo("http://localhost:5000/" + slug);
 
     return (dispatch: Dispatch<GameAction<ITeam>>) => {
-        dispatch(isLoading(ACTION_TYPES.IS_LOADING, true))
+        dispatch(isLoading(ACTION_TYPES.IS_LOADING, true));
         //socket.on(SocksetTimetEvents.CONNECT,()=>{
         //setTimeout(() => {
-            console.log("getting team", slug)
+            console.log("getting team", slug);
 
         socket.emit(SocketEvents.SELECT_TEAM, slug);
 
         //},2000)
-        socket.on(SocketEvents.SELECT_TEAM, (res:ITeam)=>{ 
+        socket.on(SocketEvents.SELECT_TEAM, (res:ITeam) => { 
 
             dispatch(teamSelected(ACTION_TYPES.TEAM_SELECTED, res));
             //setTimeout(() => dispatch( isLoading(ACTION_TYPES.IS_LOADING, false) ), 10)
@@ -224,9 +225,9 @@ export const getGames = () => {
                 console.log(res);
                 return res.json()
             })
-            .then( (games:IGame[] )=>{
+            .then( (games:IGame[] ) => {
                 dispatch( gotGames( ACTION_TYPES.GAMES_LOADED, games ) );
-                setTimeout( () => {dispatch(isLoading(ACTION_TYPES.IS_LOADING, false))},200)
+                setTimeout( () => {dispatch(isLoading(ACTION_TYPES.IS_LOADING, false))},200);
             })
             .catch( ( reason ) => { console.log(reason); alert("LOAD asdf") } )
     }
@@ -234,12 +235,12 @@ export const getGames = () => {
 
 export const editGame = (game: IGame): Dispatch<Action<string>> => {
     return (dispatch: Dispatch<Action<string>>) => {
-        dispatch({type:ACTION_TYPES.EDIT_GAME, payload: game._id})
+        dispatch({type:ACTION_TYPES.EDIT_GAME, payload: game._id});
     }
 }
 export const cancelEditGame = (game: IGame): Dispatch<Action<string>> => {
     return (dispatch: Dispatch<Action<string>>) => {
-        dispatch({type:ACTION_TYPES.CANCEL_EDIT_GAME, payload: game._id})
+        dispatch({type:ACTION_TYPES.CANCEL_EDIT_GAME, payload: game._id});
     }
 }
 
@@ -255,9 +256,8 @@ export const restSave = (payload: IGame | ITeam | IPlayer) => {
     let url = baseRestURL + payload.REST_URL;
     url = url + (payload._id ? "/" + payload._id : "");
     let body = JSON.stringify(payload);
-    return (dispatch:Dispatch<Action<any>>) => {   
-        
-        dispatch({type:ACTION_TYPES.SUBMITTING, payload: true})
+    return (dispatch:Dispatch<Action<any>>) => {
+        dispatch({type:ACTION_TYPES.SUBMITTING, payload: true});
 
         fetch(
             url, 
@@ -276,14 +276,13 @@ export const restSave = (payload: IGame | ITeam | IPlayer) => {
             setTimeout(() => {
                 dispatch({type:ACTION_TYPES.SUBMITTING, payload: false})
                 dispatch({type:ACTION_TYPES.REST_SAVE_SUCCESS, payload: saved})
-            }, 200)    
-                               
+            }, 200);          
         })
         .catch(reason => {console.log(reason), alert("SAVE FAILED")})
     }
 }
 export const addClientObject = ( objectType:string ) =>{
-    return ( dispatch:Dispatch<Action<any>> ) => dispatch( { type:ACTION_TYPES.ADD_CLIENT_OBJECT, payload:{ CLASS_NAME:objectType, IsSelected:true, REST_URL: objectType.toLowerCase() + 's'} } )
+    return ( dispatch:Dispatch<Action<any>> ) => dispatch( { type:ACTION_TYPES.ADD_CLIENT_OBJECT, payload:{ CLASS_NAME:objectType, IsSelected:true, REST_URL: objectType.toLowerCase() + 's'} } );
 }
 
 
@@ -298,7 +297,7 @@ export const restFetchBySlug = ( type: string, slug:string) => {
                 dispatch( {
                     type: ACTION_TYPES.GOT_OBJECT_BY_SLUG,
                     payload: r
-                })
+                });
                 //dispatch({type:ACTION_TYPES.})
             })
     }
@@ -309,7 +308,7 @@ export const setEnvironmentalHealth = (health: number):Dispatch<Action<number>> 
         dispatch( {
             type: ACTION_TYPES.UPDATE_ENVIRONMENTAL_HEALTH, 
             payload: health
-        })
+        });
     }
 
 }

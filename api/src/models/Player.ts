@@ -7,12 +7,10 @@ import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
 import {Role} from '../../../shared/models/IPlayer';
 
-//TODO: find out how to save nested teams, not just their refs. Possibly with pre method: https://github.com/szokodiakos/typegoose#pre
 
-export class Player
-  extends BaseClass 
-  implements IPlayer
-  {
+//TODO: find out how to save nested teams, not just their refs. Possibly with pre method: https://github.com/szokodiakos/typegoose#pre
+export class Player extends BaseClass implements IPlayer
+{
     @prop({default: "Player"})
     CLASS_NAME:string;
 
@@ -36,8 +34,6 @@ export class Player
 
     @prop()
     SheetRange:string;
-
   }
-
 
   export const PlayerModel = new Player().getModelForClass( Player, { existingMongoose: mongoose } )

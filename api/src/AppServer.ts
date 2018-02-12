@@ -34,10 +34,12 @@ import { SocketEvents } from './../../shared/models/SocketEvents';
 //models
 import { Game, GameModel } from './models/Game'; 
 import { Team, TeamModel } from './models/Team'; 
-import { Player, PlayerModel } from './models/Player'; 
+import { Player, PlayerModel } from './models/Player';
+
 
 // AppServer class
-export default class AppServer {
+export default class AppServer
+{
     //----------------------------------------------------------------------
     //
     //  Properties
