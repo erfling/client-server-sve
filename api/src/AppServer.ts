@@ -72,15 +72,16 @@ export default class AppServer {
         this.port = process.env.PORT || AppServer.PORT;
 
         //TODO: have this depend on server environment var injected from start scripts
-        if (fs.existsSync('/sapien/certificates/privkey.pem')) {
+        if (fs.existsSync('/sapien/certificates/planetsapien.com/fullchain.pem')) {
             // Set up secure socket server
             console.log("found SSL key");
-            var privateKey  = fs.readFileSync('/sapien/certificates/privkey.pem', 'utf8').toString();
-            var certificate = fs.readFileSync('/sapien/certificates/fullchain.pem', 'utf8').toString();
+            var privateKey  = fs.readFileSync('/sapien/certificates/planetsapien.com/privkey.pem', 'utf8').toString();
+            var certificate = fs.readFileSync('/sapien/certificates/planetsapien.com/fullchain.pem', 'utf8').toString();
             this.socketServer = https.createServer({key: privateKey, cert: certificate}, this.app);
             this.socketServer.on('error', this.onSocketServerError.bind(this, this.socketServer))
                 .on('listening', this.onSocketServerListening.bind(this, this.socketServer));
         }
+        
         //socket setup
         //const io = socketIo(app); // < Interesting!
         
