@@ -26,14 +26,11 @@ export interface GameListProps {
     addGame: () => {}
 }
 
-class SapienButton extends Button{
-
-}
 // 'HelloProps' describes the shape of props.
 // State is never set so we use the '{}' type.
 export default class AdminGamesList extends React.Component<GameListProps, {addingGame:boolean}> {
     componentDidMount() {
-        console.log("DETAIL PROPS", this.props, this.state)
+        console.log("DETAIL PROPS", this.props)
         this.props.getGames()
     }
     componentWillMount(){

@@ -1,3 +1,5 @@
+import { selectRole } from './../../app/src/actions/Actions';
+import { Role } from './../../shared/models/IPlayer';
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
@@ -119,7 +121,7 @@ export default class AppServer {
         //console.log("teamSocket connected...");
         if (eventTarget.name.indexOf("1") == -1) return;
         //socket.join(eventTarget.name);
-        this.io.to(eventTarget.name).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + game._Id);
+        this.io.to(eventTarget.name).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + game._id);
         //console.log(socket.client);
         GameModel.find().populate("Teams").then((g:Game[]) => {
             //console.log("say hello");
@@ -223,13 +225,22 @@ export default class AppServer {
         });
 
         //login route
-        this.app.post('/login', (req, res) => {
+        this.app.post('/sapien/api/login', (req, res) => {
            // const crypto = require("crypto");
-            console.log("heard post", req);
-            PlayerModel.findOne().then((player:Player) => {
-                var token = jwt.sign({ player }, 'shhhhh');
-                res.json({test: token, player});
+           console.log(req.body.SelectedTeam.Slug);
+           //req.body.SelectedTeam._id
+            TeamModel.findOne({Slug: req.body.SelectedTeam.Slug}).then((team:Team) => {
+                console.log("FOUND TEAM", team._id)
+                
+                var token = jwt.sign({
+                    team,
+                    chosenRole: req.body.SelectedRole 
+                 }, 'shhhhh');
+                 
+                console.log(token);
+                res.json({token, team, CurrentRole: req.body.SelectedRole});
             })
+            
 
         })
 

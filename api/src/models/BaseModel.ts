@@ -4,7 +4,7 @@ import IBaseClass from '../../../shared/models/BaseModel';
 export default class BaseClass extends Typegoose implements IBaseClass
 {
     @prop()
-    _Id: string; // TODO: Ist this secure? Will this fugg stuff?
+    _id: string; // TODO: Ist this secure? Will this fugg stuff?
 
     @prop()
     Created:Date;
@@ -16,5 +16,7 @@ export default class BaseClass extends Typegoose implements IBaseClass
         super();
         if (props) Object.assign(this, props);
     }
+
+    parent:()=>{}
     
 }

@@ -8,8 +8,9 @@ export default interface ApplicationStore{
         Game?: IGame[],
         Team?: ITeam[],
         SelectedTeam?: ITeam,
+        SelectedRole?: string
         Player?: IPlayer[],
-        CurrentPlayer?: IPlayer,
+        CurrentPlayer?: IPlayer & {CurrentRole: string},
         CurrentGame?: IGame,
         Dashboard: any,
 

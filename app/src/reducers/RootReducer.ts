@@ -1,3 +1,4 @@
+import { Team } from './../../../api/src/models/Team';
 import { ACTION_TYPES, Action} from './../actions/Actions';
 import ApplicationStore from '../stores/Store';
 import IBaseClass from '../../../shared/models/BaseModel';
@@ -126,6 +127,15 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             return newState;
         case ACTION_TYPES.UPDATE_ENVIRONMENTAL_HEALTH:
             return Object.assign({}, state, {EnvironmentalHealth: action.payload})
+
+        case ACTION_TYPES.GOT_TEAMS:
+            return Object.assign({}, state, {Team: action.payload})
+        case ACTION_TYPES.ROLE_SELECTED:
+            return Object.assign({}, state, {SelectedRole: action.payload})
+        case ACTION_TYPES.PLAYER_JOINED:
+            localStorage.setItem('sve_player', action.payload);
+            console.log(action.payload)
+            return Object.assign({}, state, {CurrentPlayer: Object.assign({},action.payload.team, {CurrentRole: action.payload.CurrentRole})})
         default:
             return state;
     }

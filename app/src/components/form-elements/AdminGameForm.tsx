@@ -73,7 +73,7 @@ class AdminGameForm extends React.Component<FormProps> {
                         />                       
                     </FormItem>
 
-                    <Button onClick={e => this.props.handleSubmit(e)}>Submit {this.props.Submitting && <Icon type="loading"/>}</Button>
+                    <Button onClick={e => this.props.handleSubmit(e)}>Save {this.props.Submitting && <Icon type="loading"/>}</Button>
                 </form>
             </div>
     }

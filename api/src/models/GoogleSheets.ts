@@ -307,7 +307,12 @@ export default class GoogleSheets{
             }
             var files = response;
             console.log(response);
+            resolve(auth)
+            return auth;
           })
+        }).then((auth) => {
+          
+
         })
         .catch(e => {})
         

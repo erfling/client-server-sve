@@ -49,6 +49,7 @@ export enum ACTION_TYPES {
     PLAYERS_LOADED_WITH_TEAMS = "PLAYERS_LOADED_WITH_TEAMS",
     GET_TEAM_BY_SLUG = "GET_TEAM_BY_SLUG",
     TEAM_SELECTED = "TEAM_SELECTED",
+    ROLE_SELECTED = "ROLE_SELECTED",
     CURRENT_PLAYER_SET = "CURRENT_PLAYER_SET",
     SUBMIT = "SUBMIT",
     SUBMITTING = "SUBMITTING",
@@ -62,7 +63,10 @@ export enum ACTION_TYPES {
     ADD_CLIENT_OBJECT = "ADD_CLIENT_OBJECT",
     REST_SAVE_SUCCESS = "REST_SAVE_SUCCESS",
     CURRENT_GAME_SET = "CURRENT_GAME_SET",
-    GOT_OBJECT_BY_SLUG = "GOT_OBJECT_BY_SLUG"
+    GOT_OBJECT_BY_SLUG = "GOT_OBJECT_BY_SLUG",
+
+    PLAYER_JOINED = 'PLAYER_JOINED',
+    GOT_TEAMS = "GOT_TEAMS"
 
 }
 
@@ -304,6 +308,26 @@ export const restFetchBySlug = ( type: string, slug:string) => {
     }
 }
 
+export const getTeams = () => {
+    let url = baseRestURL + "teams"
+    return (dispatch:Dispatch<Action<ITeam[]>>) => {
+        dispatch({type: ACTION_TYPES.IS_LOADING, payload: true})
+        console.log("getting teams from", url)
+        return fetch( url )
+            .then( (r: any) => r.json() )
+            .then( ( r: ITeam[] ) => {
+                dispatch( {
+                    type: ACTION_TYPES.GOT_TEAMS,
+                    payload: r
+                })
+                dispatch({type: ACTION_TYPES.IS_LOADING, payload: false})
+                return r;
+
+            })
+    }
+}
+
+
 export const setEnvironmentalHealth = (health: number):Dispatch<Action<number>> => {
     return (dispatch: Dispatch<Action<number>>) => {
         dispatch( {
@@ -312,4 +336,57 @@ export const setEnvironmentalHealth = (health: number):Dispatch<Action<number>> 
         })
     }
 
+}
+
+export const login = (pin: string) => {
+    return (dispatch: Dispatch<Action<IGame[]>>) => {
+        dispatch(isLoading(ACTION_TYPES.IS_LOADING, true))
+        console.log("BASE REST",baseRestURL);
+        const url = baseRestURL + 'login';
+        return fetch(
+                url, 
+                {
+                    method: "POST",
+                    body: JSON.stringify(pin),
+                    headers: new Headers({
+                        'Content-Type': 'application/json'
+                    })
+                }
+            )
+            .then(( res:Response ) => {
+                return res.json()
+            })
+            .then( (jwt:any )=>{
+                console.dir(jwt);
+                dispatch( {
+                    type: ACTION_TYPES.PLAYER_JOINED,
+                    payload: jwt
+                } );
+
+                //TODO STORE TOKEN IN LOCALSTORE OR EQUIVALENT
+                //USE TOKEN TO IDENTIFY AND ASSURE NO TAMPERING WITH PLAYER ON ALL WEBSOCKET SUBMISSIONS
+
+                setTimeout( () => {dispatch(isLoading(ACTION_TYPES.IS_LOADING, false))},1000)
+            })
+            .catch( ( reason ) => { console.log(reason);} )
+    }
+}
+
+export const selectTeam = (team:ITeam) => {
+    return (dispatch: Dispatch<Action<ITeam>>) => {
+        dispatch({
+            type: ACTION_TYPES.TEAM_SELECTED,
+            payload: team
+        })
+    }
+
+}   
+
+export const selectRole = (role: string) => {
+    return (dispatch: Dispatch<Action<ITeam>>) => {
+        dispatch({
+            type: ACTION_TYPES.ROLE_SELECTED,
+            payload: role
+        })
+    }
 }

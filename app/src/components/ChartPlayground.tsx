@@ -1,21 +1,8 @@
 import * as React from "react";
 import * as DOM from 'react-dom'
-
-import IGame from '../../../shared/models/IGame';
-import ITeam from '../../../shared/models/ITeam';
-import IPlayer from '../../../shared/models/IPlayer';
-import { Game } from "../../../api/src/models/Game";
-import BaseForm from './form-elements/Form'
-import '../style/app.scss';
 import TeamList from './TeamList'
-
-
 import {Layout} from "antd/lib";
 const { Header, Footer, Sider, Content } = Layout;
-import Menu from "antd/lib/menu";
-import { Link } from "react-router-dom";
-import PlayerDetail from './PlayerDetail';
-import PlayerContainer from '../containers/PlayerContainer';
 import {Parallax, Background} from 'react-parallax'; 
 import {curveCatmullRom} from 'd3-shape';
 import { Sunburst,
@@ -26,7 +13,8 @@ import { Sunburst,
     VerticalGridLines,
     LineSeries,
     DiscreteColorLegend,
-    DiscreteColorLegendItem } from 'react-vis';
+    DiscreteColorLegendItem,
+    Hint } from 'react-vis';
 import Leaf from '-!svg-react-loader?name=Icon!../img/si-glyph-leaf.svg';
 import { SliderWrapper } from './form-elements/AntdFormWrappers'
 import { Row, Col, Icon, Slider, Form, Input } from 'antd';
@@ -35,12 +23,24 @@ interface ChartPlaygroundProps {
     Dashboard: any[];
     EnvironmentalHealth:number;
 }
+interface ChartState{
+    LandImpact: number;
+    WaterImpact: number;
+    AtmosphereImpact: number;
+    HoveredCell: any
+}
 // 'HelloProps' describes the shape of props.
 // State is never set so we use the '{}' type.
-export default class ChartPlayground extends React.Component<ChartPlaygroundProps, {LandImpact: number, WaterImpact: number, AtmosphereImpact: number   }> {
+export default class ChartPlayground extends React.Component<ChartPlaygroundProps, ChartState> {
 
     componentWillMount() {
-        this.setState(Object.assign({}, {LandImpact: 1, WaterImpact: 1, AtmosphereImpact: 1}))
+        const initialState = {
+                                LandImpact: 1, 
+                                WaterImpact: 1, 
+                                AtmosphereImpact: 1, 
+                                HoveredCell: false
+                            }
+        this.setState(Object.assign({}, initialState))
     }
 
     componentDidUpdate(){
@@ -94,15 +94,14 @@ export default class ChartPlayground extends React.Component<ChartPlaygroundProp
             this.setState(Object.assign(this.state, {AtmosphereImpact: val || 1}))
         }
 
-        const getParsedData = (data: any, state: number) => {
-            console.log(data);
+        const getParsedData = (data: any, state: number, factor: number = null) => {
             return data
                     .slice(0, data.length - 2)
                     .filter((d: number) => !isNaN(d))
                     .map((d:string, i: number) => {
                         return {
                             x: i,
-                            y: parseInt(d) * state/100
+                            y: parseInt(d) * state
                         }
                     })
         }
@@ -117,14 +116,16 @@ export default class ChartPlayground extends React.Component<ChartPlaygroundProp
             var colorIterator = 0;
             let burstData = data.map((row,i) => {
                 return {
-                    title: row[0],
+                    title: row[0] + " total",
                     size: parseInt(row[5]) * 1000,
                     color:DIVERGING_COLOR_SCALE[i],
                     children: [{
                         size: parseInt(row[1]) * 1000,
+                        title: row[0] + " Year One",
                         color: DIVERGING_COLOR_SCALE[i + 1],
                         children: [{
                             size: parseInt(row[2]) * 1000,
+                            title: row[0] + " Year Two",
                             color: DIVERGING_COLOR_SCALE[i + 2],
                         }]
                     }]
@@ -139,51 +140,55 @@ export default class ChartPlayground extends React.Component<ChartPlaygroundProp
 
             return final;
         }
-          
 
-        const randomLeaf = ():any => {
-        return {
-            //title: this.props.Dashboard[Math.round(Math.random()) + 8][0].substring(0,6) + "...",
-            size:  this.props.Dashboard[9][Math.round(Math.random()) + 2] * 1000,
-            //size:1000,
-            color: Math.random()
-        };
+
+        const buildValue = (hoveredCell: any) => {
+            console.log("hovered", hoveredCell)
+            const {radius, angle, angle0} = hoveredCell;
+            const truedAngle = (angle + angle0) / 2;
+            console.log(radius, truedAngle, Math.cos(truedAngle));
+            return {
+              x: radius * Math.cos(truedAngle),
+              y: radius * Math.sin(truedAngle)
+            };
         }
-        function updateData() {
-        const totalLeaves = Math.random() * 20;
-        const leaves = [];
-        for (let i = 0; i < totalLeaves; i++) {
-            const leaf = randomLeaf();
-            if (Math.random() > 0.8) {
-            leaf.children = [...new Array(3)].map(() => randomLeaf());
-            }
-            leaves.push(leaf);
-        }            
-        
-        return {
-            title: '',
-            color: 1,
-            children: leaves
+        const tipStyle = {
+            display: 'flex',
+            color: '#fff',
+            background: '#000',
+            padding: '5px'
         };
-        }
+
+        const boxStyle = {height: '10px', width: '10px'};
+
 
         if(this.props.Dashboard){   
             var data = this.props.Dashboard; 
-            return data && <div>
+            return data && <div style={{position: 'relative'}}>
                                 <Sunburst
                                     animation={{damping: 20, stiffness: 300}}
                                     data={ mapDataForSunburst(data) }
                                     colorType={'category'}
                                     colorRange={DIVERGING_COLOR_SCALE}
-                                    style={{stroke: '#ccc'}}                                                
+                                    style={{stroke: '#ccc', position:'relative'}}                                                
                                     height={400}
                                     width={400}
                                     margin={{left:50, top: 50, right: 50, bottom: 50}}
                                     hideRootNode
                                     title="Environtmental Health"
-                                    getLabel={(d:any) => d.title}
-                                />
+                                    //getLabel={(d:any) => d.title}
+                                    onValueMouseOver={(v:any) => {this.setState(Object.assign(this.state, {HoveredCell: v ? v : false})); console.log(this.state.HoveredCell != false)}}
+                                    onValueMouseOut={(v:{x: number, y:number}) => this.setState({HoveredCell: false})}
+                                >
                                 
+                                </Sunburst>
+                                {this.state.HoveredCell != false ? <div className="sunburst-info">
+                                        <div style={tipStyle}>
+                                            <div style={boxStyle}/>
+                                            {this.state.HoveredCell.title}: {this.state.HoveredCell.size / 1000}
+                                        </div>
+                                    </div> : null
+                                }
                                 <XYPlot
                                     height={300}
                                     width={500}
@@ -195,6 +200,8 @@ export default class ChartPlayground extends React.Component<ChartPlaygroundProp
                                     <XAxis title="Year" />
                                     <YAxis title="Impact" />
                                     {this.state.LandImpact && data && <LineSeries
+                                                                            onSeriesMouseOver={(v:any) => {console.log(v)}}
+                                                                            onNearestXY={(v:any) => {}}
                                                                             strokeWidth={3}
                                                                             color={DIVERGING_COLOR_SCALE[0]}
                                                                             label="test"
@@ -214,7 +221,7 @@ export default class ChartPlayground extends React.Component<ChartPlaygroundProp
 
                                     {this.state.AtmosphereImpact && data && <LineSeries
                                                                                 className="third-series"
-                                                                                color={DIVERGING_COLOR_SCALE[2]}
+                                                                                color={DIVERGING_COLOR_SCALE[4]}
                                                                                 style={{
                                                                                     //strokeDasharray: '10 2'
                                                                                 }}
@@ -225,7 +232,7 @@ export default class ChartPlayground extends React.Component<ChartPlaygroundProp
                                     }
                                     <DiscreteColorLegend
                                         className="impact-chart"
-                                        colors={[DIVERGING_COLOR_SCALE[0],DIVERGING_COLOR_SCALE[1],DIVERGING_COLOR_SCALE[2]]}
+                                        colors={[DIVERGING_COLOR_SCALE[0],DIVERGING_COLOR_SCALE[1],DIVERGING_COLOR_SCALE[4]]}
                                         orientation="horizontal"
                                         items={["Land Impact", "Water Impact", "Atmosphere Impact"]}
                                     />

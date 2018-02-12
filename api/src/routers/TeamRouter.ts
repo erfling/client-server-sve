@@ -17,8 +17,8 @@ class TeamRouter{
         console.log("TEAMS REQ:", req.params)
         try {
             console.log("trying")
-            let teams = await TeamModel.find({}).populate("Players");;
-            console.log("GAMES", teams, Team)
+            let teams = await TeamModel.find({}).populate("Players");
+            console.log("Teams", teams, Team)
             if (!teams) {
                 res.status(400).json({ error: 'No games' });
             } else {
