@@ -6,7 +6,7 @@ import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import * as Actions from '../actions/Actions';
 import * as ReactDOM from "react-dom";
-import Games from '../components/Games';
+import GameWrapper from "../components/GameWrapper";
 
 interface Props extends ApplicationStore {
 }
@@ -31,5 +31,5 @@ const mapDispatchToProps = (dispatch: Dispatch<Props & DispatchProps>, ownProps:
 
 
 
-const Root = connect<Props, any>(mapStateToProps, mapDispatchToProps)(Games);
+const Root = connect<Props, any>(mapStateToProps, mapDispatchToProps)(GameWrapper);
 export default Root;

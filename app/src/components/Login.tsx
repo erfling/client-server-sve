@@ -14,6 +14,10 @@ import { loadavg } from 'os';
 import ITeam from '../../../shared/models/ITeam';
 import Role from '../../../shared/models/IPlayer';
 
+const Logo = require('../img/logo.png');
+
+
+
 interface FormProps{
     login: (loginInfo:any) => {}
     getTeams: () => {}
@@ -64,10 +68,11 @@ export default class LoginFormComponent extends React.Component<FormProps> {
 
         return <Layout>
                 <Content>
-                    <Row type="flex" justify="center">
+                    <Row type="flex" justify="center" className="loginForm">
                         <Col xs={16} sm={12} lg={8}>
-                        {this.props.CurrentTeam && <div>??????????? {this.props.CurrentTeam.CurrentRole} <Redirect to={this.props.CurrentTeam.CurrentRole}/></div>}
-                        {this.props.Teams ? <div className="loginForm">
+                        {this.props.CurrentTeam && <Redirect to={this.props.CurrentTeam.CurrentRole}/>}
+                        {this.props.Teams ? <div>
+                                                <img src={Logo} style={{width:'252px'}}/>
                                                 <label>Join a Team
                                                     <select ref="selectedTeam" className="selectedTeam" onChange={e => this.onChangeSelectTeam()}>
                                                         <option> -- Select Your Team -- </option>

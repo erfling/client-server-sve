@@ -1,6 +1,8 @@
 @import '~antd/dist/antd.css';
 @import './chart.scss';
 
+$breakPoint: 60em;
+
 .has-button .ant-card-extra {
     padding: 9.5px 0;
 }
@@ -16,11 +18,16 @@ body{
     margin:0;
     background: #fff;  
 }
-.react-parallax-content [class^="ant-col-"] > div {
-    background: rgba(255,255,255,.99);
-    padding:10px;
-}
 
+/** MOBILE FIRST FONT SIZES **/
+html{font-size:100%;} 
+@media(min-width: $breakPoint){html{font-size: 100%}}
+body{font-size: 16px;}
+p{font-size:150%;line-height:1.5em;}
+h1{font-size: 250%}
+h2{font-size: 220%}
+h3{font-size: 190%}
+h4{font-size: 160%}
 
 /* chart tests */
 .rv-xy-plot path{
@@ -40,5 +47,36 @@ body{
         left:700px;
         bottom:100px;
     }
+}
 
+.loginForm{
+    display: flex;
+}
+
+
+/** MAIN GAME STYLES **/
+.game-wrapper{
+    .banner{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height:100vh;
+        background: rgba(0,0,0,.1);
+        h1{
+            font-size: 4em;
+            color:white;
+            text-align: center;
+        }
+    }
+    .bottom-arrow{
+        position: absolute;
+        font-size: 5em;
+        top: 84vh;
+        color: white;
+    }
+    .home-content{
+        padding-top:6em;
+        background: white;
+        height: 100vh
+    }
 }
