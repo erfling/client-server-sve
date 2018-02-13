@@ -56,7 +56,8 @@ export default class GameWrapper extends React.Component<GamesList, any> {
                             strength={500}
                             bgStyle={{
                                 marginTop: '-250px',
-                                maxWidth: '250%'
+                                maxWidth: '250%',
+                                maxHeigh: '130vh'
                             }}
                         >  
                             <Row type="flex" justify="center" className="banner">
