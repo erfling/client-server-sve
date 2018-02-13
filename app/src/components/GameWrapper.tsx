@@ -55,9 +55,7 @@ export default class GameWrapper extends React.Component<GamesList, any> {
                             bgImageAlt="this blows"
                             strength={500}
                             bgStyle={{
-                                marginLeft: '100px',
                                 marginTop: '-250px',
-                                maxHeight: '120vh',
                                 maxWidth: '250%'
                             }}
                         >  
