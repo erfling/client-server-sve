@@ -12,7 +12,7 @@ module.exports = {
     entry: [
       './app/src/index.tsx'
     ],
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
     output: {
       path: path.resolve(ROOT_PATH, '/build'),
       publicPath: '/',
@@ -76,7 +76,8 @@ module.exports = {
       hot: true,
       inline: true,
       progress: true,
-      port:443
+      port:443,
+      disableHostCheck: true
     },
     resolve: {
       extensions: [ '.tsx', '.ts', '.js' ]
@@ -91,7 +92,7 @@ module.exports = {
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': '"production"'
       }),
-      //new webpack.optimize.AggressiveMergingPlugin(),//Merge chunks
-      //new UglifyJSPlugin()
+      new webpack.optimize.AggressiveMergingPlugin(),//Merge chunks
+      new UglifyJSPlugin()
     ]
   };

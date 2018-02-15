@@ -30,6 +30,7 @@
     "chai": "^4.1.2",
     "chai-immutable": "^1.6.0",
     "compression": "^1.7.1",
+    "concurrently": "^3.5.1",
     "cors": "^2.8.4",
     "crypto": "^1.0.1",
     "d3-shape": "^1.2.0",
@@ -98,7 +99,9 @@
     "tsc": "tsc -w",
     "webserver": "tsc && node ./build/api/src/index.js",
     "build": "./node_modules/.bin/webpack",
-    "dev": "./node_modules/.bin/webpack-dev-server"
+    "dev": "./node_modules/.bin/webpack-dev-server",
+    "dev_start": "concurrently \"webpack-dev-server\" \"yarn webserver\" ",
+    "sapien_start": ""
   },
   "repository": {
     "type": "git",
