@@ -49,14 +49,13 @@ class WaterFormWrapper extends React.Component<WaterFormProps, { warning:string 
     }
 
     render(){
-        console.log("RENDERING", this.props)
         return <form ref="waterForm" id="waterForm">
                 <h2>Who Gets the Water?</h2>
                 <FormItem>
                     <label>Agriculture</label>
                     <Field
                         name="agriculture"
-                        component="select"
+                        component={SelectWrapper}
                         validate={this.selectChanged}
                     > 
                         <option>No Water</option>
@@ -68,7 +67,7 @@ class WaterFormWrapper extends React.Component<WaterFormProps, { warning:string 
                     <label>Healthcare</label>
                     <Field
                         name="healthcare"
-                        component="select"
+                        component={SelectWrapper}
                         validate={this.selectChanged}
                     > 
                             <option>No Water</option>
@@ -80,7 +79,7 @@ class WaterFormWrapper extends React.Component<WaterFormProps, { warning:string 
                     <label>Industry</label>
                     <Field
                         name="industry"
-                        component="select"
+                        component={SelectWrapper}
                     > 
                             <option>No Water</option>
                             <option value="SOME">Some Water</option>
@@ -91,7 +90,7 @@ class WaterFormWrapper extends React.Component<WaterFormProps, { warning:string 
                     <label>Government</label>
                     <Field
                         name="government"
-                        component="select"
+                        component={SelectWrapper}
                     > 
                             <option>No Water</option>
                             <option value="SOME">Some Water</option>

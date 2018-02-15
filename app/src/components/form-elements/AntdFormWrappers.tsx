@@ -43,13 +43,14 @@ export class SliderWrapper extends React.Component<WrappedFieldProps & GenericFi
 
 export class SelectWrapper extends React.Component<WrappedFieldProps & GenericFieldHTMLAttributes>{
     render() {
-        var children: {props:{children:string}}[] = this.props.children as {props:{children:string}}[];
+        var children: {props:{children:string, value: string}}[] = this.props.children as {props:{children:string, value: string}}[];
         var placeholder:{props:{children:string}} = children[0] as { props:{children:string}};
         return  <Select 
                     onChange={(e) => { this.props.input.onChange(e)} }
                     placeholder={placeholder.props.children}>
                         {children.map((child,i) => {
-                            return <Select.Option value={child.props.children} key={i}>{child.valueOf()}</Select.Option>
+                            console.log(child);
+                            return <Select.Option value={child.props.value || child.props.children} key={i}>{child.props.children || child.props.value}</Select.Option>
                         })}
                 </Select>
     }
