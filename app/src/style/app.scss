@@ -77,6 +77,34 @@ h4{font-size: 160%}
     .home-content{
         padding-top:6em;
         background: white;
-        height: 100vh
+        min-height: 100vh
+    }
+    .role-selection{
+        svg{
+            margin:10px auto;
+            display: block;
+            max-width:400px;
+        }
+        .ant-row-flex{
+            margin-bottom:45px;
+        }
+    }
+}
+
+.game-button{
+    text-transform: uppercase;
+    border: solid 2px black;
+    color: black;
+    padding:0 2em;
+    height:3.2em;
+    font-weight: 600;
+    &:hover, &:focus {
+        color: #fff;
+        background-color: #000;
+        border-color: #000;
+    }
+    &.block{
+        display: block;
+        margin:5px auto;
     }
 }

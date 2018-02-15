@@ -14,13 +14,15 @@ export class InputWrapper extends React.Component<WrappedFieldProps & GenericFie
     }
 }
 
-export class SliderWrapper extends React.Component<WrappedFieldProps & GenericFieldHTMLAttributes & {min:number, max:number, marks:"hi", defaultValue: number, range?:boolean}> {
+export class SliderWrapper extends React.Component<WrappedFieldProps & GenericFieldHTMLAttributes & {min:number, max:number, marks:"hi", defaultValue: number, range?:boolean, increment?: number}> {
     render() {
         //const { input: { value, onChange } } = this.props
         const getMarks = (min:number, max:number):{[index: string]:number} => {
             var marks:{[index: string]:number} = {}
+            var increment = max > 50 ? 10 : 1
+
             while(max > min-1){
-                marks[max] = max;
+                if(max % increment == 0) marks[max] = max;
                 max--;
             }
             return marks;

@@ -12,7 +12,7 @@ module.exports = {
     entry: [
       './app/src/index.tsx'
     ],
-    devtool: 'source-map',
+    devtool: 'inline-source-map',
     output: {
       path: path.resolve(ROOT_PATH, '/build'),
       publicPath: '/',
@@ -45,7 +45,7 @@ module.exports = {
               {
                 loader: 'file-loader',
                 options: {
-                  limit: 400
+                  limit: 5000
                 }
               }
             ]
@@ -87,11 +87,11 @@ module.exports = {
         title: 'Shared Value Experience'
       }),
       new ExtractTextPlugin('style.css'),
-      new BundleAnalyzerPlugin(),
+      //new BundleAnalyzerPlugin(),
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': '"production"'
       }),
-      new webpack.optimize.AggressiveMergingPlugin(),//Merge chunks
-      new UglifyJSPlugin()
+      //new webpack.optimize.AggressiveMergingPlugin(),//Merge chunks
+      //new UglifyJSPlugin()
     ]
   };

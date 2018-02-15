@@ -6,8 +6,10 @@ import { Icon } from 'antd/lib';
 import {Layout} from "antd/lib";
 const { Header, Footer, Sider, Content } = Layout;
 import Menu from "antd/lib/menu";
-import { Link } from "react-router-dom";
+import { Link, Route } from "react-router-dom";
 import {Parallax, Background} from 'react-parallax'; 
+import LoginContainer from '../containers/LoginContainer';
+
 require('smoothscroll-polyfill').polyfill();
 
 export interface GamesList {
@@ -57,7 +59,7 @@ export default class GameWrapper extends React.Component<GamesList, any> {
                             bgStyle={{
                                 marginTop: '-250px',
                                 maxWidth: '250%',
-                                maxHeigh: '130vh'
+                                maxHeight: '130vh'
                             }}
                         >  
                             <Row type="flex" justify="center" className="banner">
@@ -89,8 +91,9 @@ export default class GameWrapper extends React.Component<GamesList, any> {
                                             </em>
                                         </p>
                                     </Row>
-                                </Col>                                                            
-                            </Row>                        
+                                </Col>  
+                                <Route component={LoginContainer}/>
+                            </Row>                      
                         </Parallax>
                     </Content>
                 </Layout>

@@ -19,7 +19,7 @@ interface FormProps extends InjectedFormProps{
 }
 
 
-class LoginFormWrapper extends React.Component<FormProps> {    
+class LoginFormWrapper extends React.Component<FormProps, {options: any[]}> {    
     render(){
         console.log(this);
         return <form ref="login-form" id="login-form">
@@ -33,8 +33,7 @@ class LoginFormWrapper extends React.Component<FormProps> {
                                 console.log("TEAM IN SELECT",t);
                                 return <option value={t.Slug}>{t.Slug}</option>
                             })}
-                        </Field>
-                    
+                        </Field>         
    
                     </FormItem>}    
                     <Button onClick={e => this.props.handleSubmit(e)}>Join {this.props.Submitting && <Icon type="loading"/>}</Button>
