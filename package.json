@@ -100,8 +100,8 @@
     "webserver": "tsc && node ./build/api/src/index.js",
     "build": "./node_modules/.bin/webpack",
     "dev": "./node_modules/.bin/webpack-dev-server",
-    "dev_start": "concurrently \"webpack-dev-server\" \"yarn webserver\" ",
-    "sapien_start": ""
+    "dev-start": "concurrently \"webpack-dev-server\" \"yarn webserver\" ",
+    "sapien-start": "concurrently \"sudo webpack-dev-server --https --hot --host 0.0.0.0 --cert /sapien/certificates/planetsapien.com/fullchain.pem --key /sapien/certificates/planetpien.com/privkey.pem\" \"yarn webserver\" "
   },
   "repository": {
     "type": "git",
