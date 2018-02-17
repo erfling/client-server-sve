@@ -2,23 +2,51 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { Team, TeamModel } from '../models/Team'; 
 import { Error } from 'mongoose';
 
-class TeamRouter{
-    router: Router;
-    TeamModel: any;
+
+class TeamRouter
+{
+    //----------------------------------------------------------------------
+    //
+    //  Properties
+    //
+    //----------------------------------------------------------------------
+
+    public router: Router;
+    public TeamModel: any;
     
-    constructor(){
+    //----------------------------------------------------------------------
+    //
+    //  Constructor
+    //
+    //----------------------------------------------------------------------
+
+    constructor() {
         this.router = Router( { mergeParams: true } );
         this.routes();
     }
 
-    public async GetTeams(req: Request, res: Response):Promise<Team[] | any> {
-        console.log("GET TEAMS CALLED")
+    //----------------------------------------------------------------------
+    //
+    //  Event Handlers
+    //
+    //----------------------------------------------------------------------
+
+
     
-        console.log("TEAMS REQ:", req.params)
+    //----------------------------------------------------------------------
+    //
+    //  Methods
+    //
+    //----------------------------------------------------------------------
+    
+    public async GetTeams(req: Request, res: Response):Promise<Team[] | any> {
+        console.log("GET TEAMS CALLED");
+    
+        console.log("TEAMS REQ:", req.params);
         try {
-            console.log("trying")
+            console.log("trying");
             let teams = await TeamModel.find({}).populate("Players");
-            console.log("Teams", teams, Team)
+            console.log("GAMES", teams, Team);
             if (!teams) {
                 res.status(400).json({ error: 'No games' });
             } else {
@@ -33,7 +61,7 @@ class TeamRouter{
     }
 
     public async GetTeam(req: Request, res: Response):Promise<any> {
-        console.log("TEAMS REQ:", req.params)
+        console.log("TEAMS REQ:", req.params);
         
         const Slug = req.params.team;
         
@@ -60,9 +88,9 @@ class TeamRouter{
             await t.save();
             const savedGame = await TeamModel.findOne({Slug: team.Slug});
             if (!savedGame) {
-              res.status(400).json({ error: 'No games' });
+                res.status(400).json({ error: 'No games' });
             } else {
-              res.json(savedGame);
+                res.json(savedGame);
             }
         } catch(err) {
             ( err: any ) => res.status(500).json({ error: err })
@@ -74,10 +102,10 @@ class TeamRouter{
     }
 
     public routes(){
-        this.router.get("/", this.GetTeams)
+        this.router.get("/", this.GetTeams);
         console.log("yes");
-        this.router.get("/:team", this.GetTeam)
-        this.router.post("/", this.CreateTeam)
+        this.router.get("/:team", this.GetTeam);
+        this.router.post("/", this.CreateTeam);
     }
 }
 

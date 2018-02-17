@@ -2,15 +2,43 @@ import { Player, PlayerModel } from './../models/Player';
 import { Router, Request, Response, NextFunction } from 'express';
 import { Error } from 'mongoose';
 
-class PlayerRouter{
-    router: Router;
-    PlayerModel: any;
+
+class PlayerRouter
+{
+    //----------------------------------------------------------------------
+    //
+    //  Properties
+    //
+    //----------------------------------------------------------------------
+
+    public router: Router;
+    public PlayerModel: any;
     
-    constructor(){
+    //----------------------------------------------------------------------
+    //
+    //  Constructor
+    //
+    //----------------------------------------------------------------------
+
+    constructor() {
         this.router = Router( { mergeParams: true } );
         this.routes();
     }
 
+    //----------------------------------------------------------------------
+    //
+    //  Event Handlers
+    //
+    //----------------------------------------------------------------------
+
+
+    
+    //----------------------------------------------------------------------
+    //
+    //  Methods
+    //
+    //----------------------------------------------------------------------
+    
     public async GetPlayers(req: Request, res: Response):Promise<Player[] | any> {
         console.log("GET players CALLED")
     
@@ -41,9 +69,9 @@ class PlayerRouter{
             let game = await PlayerModel.findOne(Object.assign({Slug}));
         
             if (!game) {
-              res.status(400).json({ error: 'No games' });
+                res.status(400).json({ error: 'No games' });
             } else {
-              res.json(game);
+                res.json(game);
             }
         } catch(err) {
             ( err: any ) => res.status(500).json({ error: err })
@@ -60,9 +88,9 @@ class PlayerRouter{
             await t.save();
             const savedGame = await PlayerModel.findOne({Slug: team.Slug});
             if (!savedGame) {
-              res.status(400).json({ error: 'No games' });
+                res.status(400).json({ error: 'No games' });
             } else {
-              res.json(savedGame);
+                res.json(savedGame);
             }
         } catch(err) {
             ( err: any ) => res.status(500).json({ error: err })
@@ -74,10 +102,10 @@ class PlayerRouter{
     }
 
     public routes(){
-        this.router.get("/", this.GetPlayers)
+        this.router.get("/", this.GetPlayers);
         console.log("yes");
-        this.router.get("/:team", this.GetPlayer)
-        this.router.post("/", this.CreatePlayer)
+        this.router.get("/:team", this.GetPlayer);
+        this.router.post("/", this.CreatePlayer);
     }
 }
 
