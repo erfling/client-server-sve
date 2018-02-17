@@ -30,6 +30,9 @@ export class Team
     
     @arrayProp({ itemsRef: Player })
     Players:  Ref<IPlayer>[] | IPlayer[];
+
+    @prop()
+    CurrentRole: string;
   
   }
 
