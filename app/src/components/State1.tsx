@@ -15,10 +15,22 @@ import ITeam from '../../../shared/models/ITeam';
 import Role from '../../../shared/models/IPlayer';
 import WaterForm from './form-elements/WaterForm'
 interface State1Props{
-   CurrentTeam: ITeam & {CurrentRole: string}
+   CurrentPlayer: ITeam
+   getPlayer: () => {}
 }
-export default class State1 extends React.Component<State1Props> {    
+export default class State1 extends React.Component<State1Props, {PlayerNotFound:boolean}> {
 
+    componentWillMount(){
+        this.setState({PlayerNotFound: false})
+        console.log("LOCAL STORAGE FROM STATE 1 COMPONENT", localStorage)
+        if(!this.props.CurrentPlayer){
+            if(localStorage.getItem("SVE_PLAYER")){
+                this.props.getPlayer()
+            }else{
+                this.setState({PlayerNotFound: true})
+            }
+        }
+    }
 
     render(){
 
@@ -27,9 +39,9 @@ export default class State1 extends React.Component<State1Props> {
                     <Row type="flex" justify="center">
                         <Col xs={24} sm={24} lg={16}>
                             <h3>Welcome to Planet Sapien</h3>
-                            {this.props.CurrentTeam && <h4>
-                                                            You are the CEO of {this.props.CurrentTeam.CurrentRole}.
-                                                       </h4>
+                            {this.props.CurrentPlayer && <h4>
+                                                            You are the CEO of {this.props.CurrentPlayer.ChosenRole}.
+                                                        </h4>
                             }
                         </Col> 
                     </Row>
@@ -42,5 +54,4 @@ export default class State1 extends React.Component<State1Props> {
             </Layout>
     }
 }
-//<Button>Join</Button>
-//                    <Button onClick={e => this.props.handleSubmit(e)}>Join {this.props.Submitting && <Icon type="loading"/>}</Button>
+//                {this.state.PlayerNotFound && <Redirect to="/"/>}

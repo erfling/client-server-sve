@@ -12,9 +12,11 @@ export enum Role{
 
 }
 export default interface IPlayer extends IBaseClass {
-    Role: Role;
-    getSheetRangeByRole(): string;
+    Role?: Role;
+    getSheetRangeByRole?(): string;
     SheetRange?:string;
-    Name:string;
+    Name?:string;
     IsSelected?: boolean;
+    TeamId?:string;
+    SelectedRole?:string;
 }  

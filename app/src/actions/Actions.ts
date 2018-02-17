@@ -66,7 +66,8 @@ export enum ACTION_TYPES {
     GOT_OBJECT_BY_SLUG = "GOT_OBJECT_BY_SLUG",
 
     PLAYER_JOINED = 'PLAYER_JOINED',
-    GOT_TEAMS = "GOT_TEAMS"
+    GOT_TEAMS = "GOT_TEAMS",
+    GOT_PLAYER_FROM_LOCAL_STORAGE = "GOT_PLAYER_FROM_LOCAL_STORAGE"
 
 }
 
@@ -338,7 +339,7 @@ export const setEnvironmentalHealth = (health: number):Dispatch<Action<number>> 
 
 }
 
-export const login = (pin: string) => {
+export const login = (player: IPlayer) => {
     return (dispatch: Dispatch<Action<IGame[]>>) => {
         dispatch(isLoading(ACTION_TYPES.IS_LOADING, true))
         console.log("BASE REST",baseRestURL);
@@ -347,7 +348,7 @@ export const login = (pin: string) => {
                 url, 
                 {
                     method: "POST",
-                    body: JSON.stringify(pin),
+                    body: JSON.stringify(player),
                     headers: new Headers({
                         'Content-Type': 'application/json'
                     })
@@ -362,9 +363,6 @@ export const login = (pin: string) => {
                     type: ACTION_TYPES.PLAYER_JOINED,
                     payload: jwt
                 } );
-
-                //TODO STORE TOKEN IN LOCALSTORE OR EQUIVALENT
-                //USE TOKEN TO IDENTIFY AND ASSURE NO TAMPERING WITH PLAYER ON ALL WEBSOCKET SUBMISSIONS
 
                 setTimeout( () => {dispatch(isLoading(ACTION_TYPES.IS_LOADING, false))},1000)
             })
@@ -383,10 +381,21 @@ export const selectTeam = (team:ITeam) => {
 }   
 
 export const selectRole = (role: string) => {
+    console.log("STORAGE",localStorage.sve_player);
     return (dispatch: Dispatch<Action<ITeam>>) => {
         dispatch({
             type: ACTION_TYPES.ROLE_SELECTED,
             payload: role
+        })
+    }
+}
+
+export const getPlayer = () => {
+    console.log("PLAYER IS", JSON.parse(localStorage.getItem("SVE_PLAYER")))
+    return (dispatch: Dispatch<Action<any>>) => {
+        dispatch({
+            type: ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE,
+            payload: JSON.parse(localStorage.getItem("SVE_PLAYER"))
         })
     }
 }

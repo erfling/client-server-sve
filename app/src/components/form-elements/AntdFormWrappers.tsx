@@ -49,7 +49,6 @@ export class SelectWrapper extends React.Component<WrappedFieldProps & GenericFi
                     onChange={(e) => { this.props.input.onChange(e)} }
                     placeholder={placeholder.props.children}>
                         {children.map((child,i) => {
-                            console.log(child);
                             return <Select.Option value={child.props.value || child.props.children} key={i}>{child.props.children || child.props.value}</Select.Option>
                         })}
                 </Select>

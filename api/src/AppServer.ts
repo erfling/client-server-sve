@@ -226,20 +226,20 @@ export default class AppServer {
         });
 
         //login route
+        mongoose.set('debug', true);
+
         this.app.post('/sapien/api/login', (req, res) => {
            // const crypto = require("crypto");
-           console.log(req.body.SelectedTeam.Slug);
-           //req.body.SelectedTeam._id
-            TeamModel.findOne({Slug: req.body.SelectedTeam.Slug}).then((team:Team) => {
-                console.log("FOUND TEAM", team._id)
-                
+           console.log("searching for team with ID:",TeamModel);
+           //req.body.SelectedTeam._id\
+            TeamModel.findOne({Slug: req.body.TeamId}).then((team) => {
+                var oTeam = Object.assign(team.toObject(), { ChosenRole: req.body.SelectedRole} );
+
                 var token = jwt.sign({
-                    team,
-                    chosenRole: req.body.SelectedRole 
+                    team: oTeam
                  }, 'shhhhh');
-                 
-                console.log(token);
-                res.json({token, team, CurrentRole: req.body.SelectedRole});
+                console.log("TEAM TO SEND", oTeam);
+                res.json({token, team:oTeam});
             })
             
 

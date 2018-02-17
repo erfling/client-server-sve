@@ -59,6 +59,7 @@ export default class GameWrapper extends React.Component<GamesList, any> {
                             bgStyle={{
                                 marginTop: '-250px',
                                 maxWidth: '250%',
+                                minWidth:'110%',
                                 maxHeight: '130vh'
                             }}
                         >  

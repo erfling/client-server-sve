@@ -133,9 +133,12 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
         case ACTION_TYPES.ROLE_SELECTED:
             return Object.assign({}, state, {SelectedRole: action.payload})
         case ACTION_TYPES.PLAYER_JOINED:
-            localStorage.setItem('sve_player', action.payload);
+            localStorage.setItem('SVE_PLAYER', JSON.stringify(action.payload.team));
+            localStorage.setItem('TOKEN', JSON.stringify(action.payload.token));
             console.log(action.payload)
-            return Object.assign({}, state, {CurrentPlayer: Object.assign({},action.payload.team, {CurrentRole: action.payload.CurrentRole})})
+            return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload.team)})
+        case ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE: 
+            return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
         default:
             return state;
     }

@@ -12,6 +12,7 @@ import LoginForm from './form-elements/LoginForm';
 import formValues from '../../../shared/models/FormValues';
 import { loadavg } from 'os';
 import ITeam from '../../../shared/models/ITeam';
+import IPlayer from '../../../shared/models/IPlayer';
 import Role from '../../../shared/models/IPlayer';
 import RoleDetail from './RoleDetail'
 import { Link, Route } from "react-router-dom";
@@ -25,7 +26,7 @@ import AgriIcon from '-!svg-react-loader?name=Icon!../img/agri-icon.svg';
 
 
 interface FormProps{
-    login: (loginInfo:any) => {}
+    joinGame: (player:IPlayer) => {}
     getTeams: () => {}
     Teams: ITeam[];
     LoggingIn: boolean;
@@ -34,6 +35,7 @@ interface FormProps{
     selectRole: (role:string) => {}
     SelectedTeam: ITeam;
     SelectedRole: string;
+    SelectedPlayer: IPlayer;
     CurrentTeam:  ITeam & {CurrentRole: string}
 }
 export default class LoginFormComponent extends React.Component<FormProps> {    
@@ -62,11 +64,11 @@ export default class LoginFormComponent extends React.Component<FormProps> {
 
     prepareJoinGame(){
         if(this.props.SelectedTeam && this.props.SelectedRole){
-            let joinPackage = {
-                SelectedTeam: this.props.SelectedTeam,
+            let joinPackage:IPlayer = {
+                TeamId: this.props.SelectedTeam.Slug,
                 SelectedRole: this.props.SelectedRole
             }
-            this.props.login(joinPackage)
+            this.props.joinGame(joinPackage)
         }
     }
 
@@ -99,7 +101,7 @@ export default class LoginFormComponent extends React.Component<FormProps> {
                         >
                             <Route component={RoleDetail}/>
                         </Modal>    }
-                        {this.props.CurrentTeam && <Redirect to={this.props.CurrentTeam.CurrentRole}/>}
+                        {this.props.CurrentTeam && <Redirect to="/who-gets-the-water"/>}
                         {this.props.Teams ? <Row type="flex" justify="center">
                                                 <Row>Join a Team
                                                     <select ref="selectedTeam" className="selectedTeam" onChange={e => this.onChangeSelectTeam()}>
@@ -166,7 +168,6 @@ export default class LoginFormComponent extends React.Component<FormProps> {
                                             <h1>Getting Teams</h1>                                            
 
                             }  
-                                              
                     </Row>
     }
 }

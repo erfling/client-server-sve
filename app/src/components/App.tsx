@@ -20,7 +20,7 @@ export class App extends React.Component<{}> {
           <Route exact={true} path="/admin" component={AdminRoot}/>
           <Route exact={true} path="/login" component={LoginContainer}/>
           <Route exact={true} path="/" component={Root} key={1}/>
-          <Route exact={false} path="/:roleSlug" component={State1Container} key={1}/>
+          <Route exact={true} path="/who-gets-the-water" component={State1Container} key={1}/>
           <Route exact={false} component={TeamDetailContainer} path="/team-detail/:id" key={2}/>
         </Switch>
       </div>

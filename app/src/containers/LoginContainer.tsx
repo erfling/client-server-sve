@@ -5,9 +5,10 @@ import { connect } from 'react-redux';
 import * as Actions from '../actions/Actions';
 import LoginFormComponent from '../components/Login';
 import ITeam from '../../../shared/models/ITeam';
+import IPlayer from '../../../shared/models/IPlayer';
 
 interface DispatchProps {
-    login: (pin:string) => {}
+    joinGame: (player:IPlayer) => {}
     getTeams: () => {};
     selectTeam: (team: ITeam) => {};
 }
@@ -34,9 +35,9 @@ const mapStateToProps = (state: ApplicationStore, ownProps: {}): LoginFormProps 
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>, ownProps: any) => {
     return {
-        login: (pin: any) => {
-            console.log(pin);
-            dispatch( Actions.login( pin ) )
+        joinGame: (player: IPlayer) => {
+            console.log(player);
+            dispatch( Actions.login( player ) )
         },
         getTeams: () => {
             dispatch( Actions.getTeams() )

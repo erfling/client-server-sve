@@ -5,20 +5,23 @@ import { connect } from 'react-redux';
 import * as Actions from '../actions/Actions';
 import State1 from '../components/State1';
 import ITeam from '../../../shared/models/ITeam';
+import { ACTION_TYPES } from '../actions/Actions';
 
 interface DispatchProps {
+    getPlayer:() => {}
 }
 export interface State1Props{
-    CurrentTeam: ITeam & {CurrentRole: string}
+    CurrentPlayer: ITeam
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): State1Props => {
     return {
-       CurrentTeam: state.GameData.CurrentPlayer
+        CurrentPlayer: state.GameData.CurrentPlayer
     };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>, ownProps: any) => {
     return {
+        getPlayer: () => dispatch( Actions.getPlayer() )
     }
 }
 
