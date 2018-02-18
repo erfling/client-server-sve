@@ -1,7 +1,7 @@
 @import '~antd/dist/antd.css';
 @import './chart.scss';
 
-$breakPoint: 60em;
+$breakPoint: 100em;
 
 .has-button .ant-card-extra {
     padding: 9.5px 0;
@@ -123,13 +123,14 @@ h4{font-size: 160%}
 }
 
 /* MOBILE OVERRIDES FOR ANTD SELECT ELEMENT READABILITY */
-.ant-select-selection{
-    font-size: 2em;
-    height: 50px;
-    padding-top: 11px;
+@media(max-width: $breakPoint){
+    .ant-select-selection{
+        font-size: 2em;
+        height: 50px;
+        padding-top: 11px;
+    }
+    .ant-select-dropdown-menu-item{
+        font-size:2em;
+        padding: 12px;
+    }
 }
-.ant-select-dropdown-menu-item{
-    font-size:2em;
-    padding: 12px;
-}
-
