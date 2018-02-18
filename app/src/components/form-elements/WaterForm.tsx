@@ -23,7 +23,12 @@ class SliderWrapperField extends Field<{increment:number}>{
 class WaterFormWrapper extends React.Component<WaterFormProps, { warning:string }> {
 
     componentWillMount(){
+        console.log("MOUNTED")
         this.setState(Object.assign({}, this.state, {warning:""}));
+    }
+
+    componentDidUpdate(){
+        console.log("Water form updated")
     }
    
     selectChanged(e:any, allValues:any){
@@ -50,7 +55,6 @@ class WaterFormWrapper extends React.Component<WaterFormProps, { warning:string 
 
     render(){
         return <form ref="waterForm" id="waterForm">
-                <h2>Who Gets the Water?</h2>
                 <FormItem>
                     <label>Agriculture</label>
                     <Field
@@ -80,6 +84,7 @@ class WaterFormWrapper extends React.Component<WaterFormProps, { warning:string 
                     <Field
                         name="industry"
                         component={SelectWrapper}
+                        validate={this.selectChanged}
                     > 
                             <option>No Water</option>
                             <option value="SOME">Some Water</option>
@@ -91,6 +96,7 @@ class WaterFormWrapper extends React.Component<WaterFormProps, { warning:string 
                     <Field
                         name="government"
                         component={SelectWrapper}
+                        validate={this.selectChanged}
                     > 
                             <option>No Water</option>
                             <option value="SOME">Some Water</option>

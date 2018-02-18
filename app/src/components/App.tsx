@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Root from "../containers/Root";
+import State0Container from "../containers/State0Container";
 import TeamDetailContainer from '../containers/TeamDetailContainer';
 import AdminRoot from '../components/AdminRoot'
 import { Route, Switch } from 'react-router';
@@ -19,7 +19,7 @@ export class App extends React.Component<{}> {
         <Switch>
           <Route exact={true} path="/admin" component={AdminRoot}/>
           <Route exact={true} path="/login" component={LoginContainer}/>
-          <Route exact={true} path="/" component={Root} key={1}/>
+          <Route exact={true} path="/" component={State0Container} key={1}/>
           <Route exact={true} path="/who-gets-the-water" component={State1Container} key={1}/>
           <Route exact={false} component={TeamDetailContainer} path="/team-detail/:id" key={2}/>
         </Switch>
