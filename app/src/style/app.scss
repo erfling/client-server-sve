@@ -97,15 +97,7 @@ h4{font-size: 160%}
     padding:0 2em;
     height:3.2em;
     font-weight: 600;
-    &:hover, &:focus {
-        color: #fff;
-        background-color: #000;
-        border-color: #000;
-    }
-    &.block{
-        display: block;
-        margin:5px auto;
-    }
+
 }
 .ant-radio-button-wrapper{
     @include buttonStyles();   
@@ -114,6 +106,15 @@ h4{font-size: 160%}
    @include buttonStyles();
    border: solid 2px black;
    color: black;
+   &:hover, &:focus {
+        color: #fff;
+        background-color: #000;
+        border-color: #000;
+    }
+    &.block{
+        display: block;
+        margin:5px auto;
+    }
 }
 
 .form-wrapper{
@@ -132,8 +133,14 @@ h4{font-size: 160%}
     body{
         font-size: 1.1em;
     }
+    label{
+        margin: 40px 0 20px;
+        font-size: 200%;
+        display: block;
+    }
+
     .ant-radio-button-wrapper{
-        font-size: 2em !important;
+        font-size: 2.5em !important;
         height: auto !important;
         padding: .5em 1em !important;
     }
