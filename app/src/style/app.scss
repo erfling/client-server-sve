@@ -133,9 +133,9 @@ h4{font-size: 160%}
         font-size: 1.1em;
     }
     .ant-radio-button-wrapper{
-        font-size:150%;
-        height:auto;
-
+        font-size: 2em !important;
+        height: auto !important;
+        padding: .5em 1em !important;
     }
     .game-button, .ant-radio-button-wrapper{
         font-size: 120%;
@@ -144,6 +144,7 @@ h4{font-size: 160%}
         }
     }
 
+    
     /* MOBILE OVERRIDES FOR ANTD SELECT ELEMENT READABILITY */
     .ant-select-selection{
         font-size: 2.5em;
@@ -157,9 +158,9 @@ h4{font-size: 160%}
         margin-top:9px;
     }
     .ant-select-dropdown-menu-item{
-        font-size: 2em !important;
-        height: auto !important;
-        padding: .5em 1em !important;
+        font-size:2.5em;
+        padding: 12px;
+        line-height: 2.5em;
     }
 
 }
