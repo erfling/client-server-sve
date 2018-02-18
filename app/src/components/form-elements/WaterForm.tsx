@@ -7,7 +7,7 @@ import ApplicationStore from '../../stores/Store';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import * as Actions from '../../actions/Actions';
-import { SelectWrapper } from './AntdFormWrappers';
+import { RadioButtonWrapper } from './AntdFormWrappers';
 import ITeam from '../../../../shared/models/ITeam';
 import { Alert } from 'antd';
 interface WaterFormProps extends InjectedFormProps{
@@ -71,7 +71,7 @@ class WaterFormWrapper extends React.Component<WaterFormProps, { warning:string 
                         <label>Assign Water to Agriculture</label>
                         <Field
                             name="agriculture"
-                            component={SelectWrapper}
+                            component={RadioButtonWrapper}
                             validate={this.selectChanged}
                         > 
                             <option>No Water</option>
@@ -96,7 +96,7 @@ class WaterFormWrapper extends React.Component<WaterFormProps, { warning:string 
                         <label>Assign Water to Healthcare</label>
                         <Field
                             name="healthcare"
-                            component={SelectWrapper}
+                            component={RadioButtonWrapper}
                             validate={this.selectChanged}
                         > 
                                 <option>No Water</option>
@@ -119,7 +119,7 @@ class WaterFormWrapper extends React.Component<WaterFormProps, { warning:string 
                         <label>Assign Water to Industry</label>
                         <Field
                             name="industry"
-                            component={SelectWrapper}
+                            component={RadioButtonWrapper}
                             validate={this.selectChanged}
                         > 
                                 <option>No Water</option>
@@ -143,7 +143,7 @@ class WaterFormWrapper extends React.Component<WaterFormProps, { warning:string 
                         <label>Assign Water to Government</label>
                         <Field
                             name="government"
-                            component={SelectWrapper}
+                            component={RadioButtonWrapper}
                             validate={this.selectChanged}
                         > 
                                 <option>No Water</option>

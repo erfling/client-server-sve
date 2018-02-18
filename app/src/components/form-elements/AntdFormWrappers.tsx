@@ -2,6 +2,8 @@ import { reduxForm, Field, WrappedFieldProps, InjectedFormProps, GenericFieldHTM
 import * as React from 'react';
 import { ReactNode } from 'react-redux';
 import { Form, Input, Radio, Select, Button, Slider } from "antd";
+const RadioButton = Radio.Button;
+const RadioGroup = Radio.Group;
 
 export class InputWrapper extends React.Component<WrappedFieldProps & GenericFieldHTMLAttributes & {defaultValue:string}> {
     render() {
@@ -53,5 +55,21 @@ export class SelectWrapper extends React.Component<WrappedFieldProps & GenericFi
                             return <Select.Option value={child.props.value || child.props.children} key={i}>{child.props.children || child.props.value}</Select.Option>
                         })}
                 </Select>
+    }
+}
+
+export class RadioButtonWrapper extends React.Component<WrappedFieldProps & GenericFieldHTMLAttributes>{
+    render() {
+        console.log("RADIO PROPS",this.props)
+        var children: {props:{children:string, value: string}}[] = this.props.children as {props:{children:string, value: string}}[];
+        var placeholder:{props:{children:string}} = children[0] as { props:{children:string}};
+        return  <RadioGroup defaultValue={placeholder} size="large"
+                    style={{display:'block'}}
+                    onChange={(e) => { this.props.input.onChange(e)} }
+                >
+                    {children.map((child,i) => {
+                            return <RadioButton value={child.props.value || child.props.children} key={i}>{child.props.children || child.props.value}</RadioButton>
+                    })}
+                </RadioGroup>
     }
 }

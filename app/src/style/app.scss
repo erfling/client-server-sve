@@ -1,7 +1,8 @@
 @import '~antd/dist/antd.css';
 @import './chart.scss';
 
-$breakPoint: 70em;
+$breakPoint: 80em;
+
 
 .has-button .ant-card-extra {
     padding: 9.5px 0;
@@ -91,7 +92,7 @@ h4{font-size: 160%}
     }
 }
 
-.game-button{
+@mixin buttonStyles{
     text-transform: uppercase;
     border: solid 2px black;
     color: black;
@@ -107,6 +108,12 @@ h4{font-size: 160%}
         display: block;
         margin:5px auto;
     }
+}
+.ant-radio-button-wrapper{
+    @include buttonStyles();   
+}
+.game-button{
+   @include buttonStyles();
 }
 
 .form-wrapper{
@@ -125,8 +132,12 @@ h4{font-size: 160%}
     body{
         font-size: 1.1em;
     }
-    
-    .game-button{
+    .ant-radio-button-wrapper{
+        font-size:150%;
+        height:auto;
+
+    }
+    .game-button, .ant-radio-button-wrapper{
         font-size: 120%;
         &.block{
             width:100%;
