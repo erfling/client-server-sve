@@ -47,7 +47,7 @@ export default class State0 extends React.Component<GamesList, any> {
                     HeaderText="Planet Sapien"
                     FormComponent={LoginContainer}
                 >
-                    <p>
+                    <p style={{paddingTop:'25px'}}>
                         <em>
                             In a galaxy far, far away, a system of ten planets orbit a central star. 
                             Nine of those planets spin lifelessly, too cold or too hot to support any living thing.

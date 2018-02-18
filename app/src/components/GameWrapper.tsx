@@ -9,13 +9,15 @@ import Menu from "antd/lib/menu";
 import { Link, Route } from "react-router-dom";
 import {Parallax, Background} from 'react-parallax'; 
 import LoginContainer from '../containers/LoginContainer';
+import {StyleHTMLAttributes} from 'react';
 
 require('smoothscroll-polyfill').polyfill();
 
 export interface GamesList {
     ParallaxImg: any;
     HeaderText: string;
-    FormComponent?: any
+    FormComponent?: any;
+    Style?: any
 }
 
 // 'HelloProps' describes the shape of props.

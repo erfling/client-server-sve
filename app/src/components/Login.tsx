@@ -59,6 +59,10 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
         console.log("SELECTED: ", value)
         let selectedTeam = this.props.Teams.filter(t => t.Slug == value)[0] || null;
         if(selectedTeam)this.props.selectTeam(selectedTeam);
+        setTimeout(() => {
+            var scrollTarget = document.querySelector(".role-selection")
+            if(scrollTarget)scrollTarget.scrollIntoView({ behavior: 'smooth' ,block: 'start' });
+        },200);        
     }
 
     handleCancel(){
@@ -114,7 +118,7 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                             <Route component={RoleDetail}/>
                         </Modal>    }
                         {this.props.CurrentTeam && <Redirect to="/who-gets-the-water"/>}
-                        {this.props.Teams.length ? <Row type="flex" justify="center">
+                        {this.props.Teams.length ? <Row type="flex" justify="center" style={{minHeight:'100vh'}}>
                                                 <Col xs={24}>  
                                                     <div className="form-wrapper">                                                  
                                                     <   label>Select Team</label>
@@ -129,7 +133,7 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                                                 <Row className="role-selection">
                                                     <Col xs={24}>
                                                         
-                                                        <Row  type="flex" justify="center">
+                                                        <Row  type="flex" justify="center" style={{paddingTop:'20px'}}>
                                                             <h1>Role Selection</h1>                                                            
                                                         </Row>
 
@@ -161,7 +165,7 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
 
                                                         
                                                         <Row type="flex" justify="center">
-                                                            <Col xs={16}>
+                                                            <Col xs={24}>
                                                                 <GonvernmentIcon height={400}/>
                                                                 <p>The Minister for Environment, representing the region's union of country members who are already exposed to the impact of climate change on their communities.</p>
                                                                 <Button className="game-button block" onClick={e => this.props.selectRole("Government")}>Government</Button>
