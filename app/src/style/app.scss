@@ -133,7 +133,7 @@ h4{font-size: 160%}
     body{
         font-size: 1.2em;
     }
-    label{
+    label:not(.ant-radio-button-wrapper){
         margin: 40px 0 20px !important;
         font-size: 200% !important;
         display: block !important;
