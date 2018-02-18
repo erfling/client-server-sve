@@ -123,14 +123,13 @@ h4{font-size: 160%}
 }
 
 /* MOBILE OVERRIDES FOR ANTD SELECT ELEMENT READABILITY */
-@media(max-width: $breakPoint){
-    .ant-select-selection{
-        font-size: 2em;
-        height: 50px;
-        padding-top: 11px;
-    }
-    .ant-select-dropdown-menu-item{
-        font-size:2em;
-        padding: 12px;
-    }
+.ant-select-selection{
+    font-size: 2em;
+    height: 50px;
+    padding-top: 11px;
 }
+.ant-select-dropdown-menu-item{
+    font-size:2em;
+    padding: 12px;
+}
+
