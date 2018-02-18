@@ -47,28 +47,26 @@ export default class State0 extends React.Component<GamesList, any> {
                     HeaderText="Planet Sapien"
                     FormComponent={LoginContainer}
                 >
-                    <Row>
-                        <p>
-                            <em>
-                                In a galaxy far, far away, a system of ten planets orbit a central star. 
-                                Nine of those planets spin lifelessly, too cold or too hot to support any living thing.
+                    <p>
+                        <em>
+                            In a galaxy far, far away, a system of ten planets orbit a central star. 
+                            Nine of those planets spin lifelessly, too cold or too hot to support any living thing.
+                        </em>
+                    </p>
+                    <p>
+                        <em>
+                            But the fifth planet teems with flora and fauna, abundant and verdant. 
+                            For hundreds of thousands of years, creatures on this planet have thrived due to its perfect distance from its life-giving Star.
                             </em>
-                        </p>
-                        <p>
-                            <em>
-                                But the fifth planet teems with flora and fauna, abundant and verdant. 
-                                For hundreds of thousands of years, creatures on this planet have thrived due to its perfect distance from its life-giving Star.
-                                </em>
-                        </p>
-                        <p>
-                            <em>
-                                Yet now this fortunate planet faces a threat created by its own inhabitants, and they need your help. 
-                                Act boldly and decisively, and you may be able to save this delicate haven. 
-                                If you fail, the only home hospitatable to life in this distant galaxy may join its sister planets, destined to spin in an infinite, silent and dark rotation. 
-                            </em>
-                        </p>
-                    </Row>
-                </GameWrapper>                   
+                    </p>
+                    <p>
+                        <em>
+                            Yet now this fortunate planet faces a threat created by its own inhabitants, and they need your help. 
+                            Act boldly and decisively, and you may be able to save this delicate haven. 
+                            If you fail, the only home hospitatable to life in this distant galaxy may join its sister planets, destined to spin in an infinite, silent and dark rotation. 
+                        </em>
+                    </p>
+                </GameWrapper>                
     }
 }
 

@@ -152,8 +152,10 @@ class WaterFormWrapper extends React.Component<WaterFormProps, { warning:string 
                         </Field>      
                     </FormItem>
                 </div>
-                <Button className="game-button" onClick={e => this.props.handleSubmit(e)} disabled={this.props.invalid}>Distrubute Water {this.props.Submitting && <Icon type="loading"/>}</Button>
-                {this.props.invalid && <Alert style={{marginTop:'15px'}} message="There is only enough water to give some to give all of it to one sector, or some of it to two sectors." type="error"></Alert>}
+                <div className="form-wrapper">
+                    <Button className="game-button" onClick={e => this.props.handleSubmit(e)} disabled={this.props.invalid}>Distrubute Water {this.props.Submitting && <Icon type="loading"/>}</Button>
+                    {this.props.invalid && <Alert style={{marginTop:'15px'}} message="There is only enough water to give some to give all of it to one sector, or some of it to two sectors." type="error"></Alert>}
+                </div>
             </form>
                        
     }

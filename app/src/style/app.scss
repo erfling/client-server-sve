@@ -78,7 +78,6 @@ h4{font-size: 160%}
     .home-content{
         padding-top:20px;
         background: white;
-        min-height: 100vh
     }
     .role-selection{
         svg{
@@ -124,13 +123,21 @@ h4{font-size: 160%}
 
 /* MOBILE OVERRIDES FOR ANTD SELECT ELEMENT READABILITY */
 @media(max-width: $breakPoint){
+    body{
+        font-size: 1.1em;
+    }
     .ant-select-selection{
-        font-size: 2em;
-        height: 50px;
-        padding-top: 11px;
+        font-size: 2.5em;
+        height: 70px;
+        padding-top: 4px;
+    }
+    .ant-select-selection__placeholder{
+        height: 44px;
+        line-height: normal;
     }
     .ant-select-dropdown-menu-item{
-        font-size:2em;
+        font-size:2.5em;
         padding: 12px;
+        line-height: 2.5em;
     }
 }

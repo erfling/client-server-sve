@@ -7,7 +7,7 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 import {Layout, Row, Col} from "antd/lib";
 const { Header, Footer, Sider, Content } = Layout;
-import { InputWrapper } from './form-elements/AntdFormWrappers';
+import { InputWrapper, SelectWrapper } from './form-elements/AntdFormWrappers';
 import LoginForm from './form-elements/LoginForm';
 import formValues from '../../../shared/models/FormValues';
 import { loadavg } from 'os';
@@ -38,15 +38,26 @@ interface FormProps{
     SelectedPlayer: IPlayer;
     CurrentTeam:  ITeam & {CurrentRole: string}
 }
-export default class LoginFormComponent extends React.Component<FormProps> {    
+export default class LoginFormComponent extends React.Component<FormProps, {TeamOptions:any[]}> {
+    
+    componentWillMount(){
+        this.setState({TeamOptions:[]})
+    }
+    
     componentDidMount(){
         console.log(this.props);
-        this.props.getTeams()
+        this.props.getTeams();
     }
 
-    onChangeSelectTeam(){
-        let selectEl:HTMLSelectElement = document.querySelector('.selectedTeam')
-        let selectedTeam = this.props.Teams.filter(t => t.Slug == selectEl.value)[0] || null;
+    getOptions(){
+        this.setState({TeamOptions: this.props.Teams.map((t, i) => {
+            return <option key={i} value={t.Slug}>Team {i + 1}</option>
+        })})
+    }
+
+    onChangeSelectTeam(value: any){
+        console.log("SELECTED: ", value)
+        let selectedTeam = this.props.Teams.filter(t => t.Slug == value)[0] || null;
         if(selectedTeam)this.props.selectTeam(selectedTeam);
     }
 
@@ -90,7 +101,8 @@ export default class LoginFormComponent extends React.Component<FormProps> {
 
     render(){
 
-        return <Row type="flex" justify="center" className="loginForm">
+        return <div>
+                        
                         {this.props.SelectedRole && <Modal
                             title={"The Case for " + this.getTitle(this.props.SelectedRole)}
                             visible={"undefined" != typeof this.props.SelectedRole && this.props.SelectedRole.length > 0}
@@ -102,16 +114,17 @@ export default class LoginFormComponent extends React.Component<FormProps> {
                             <Route component={RoleDetail}/>
                         </Modal>    }
                         {this.props.CurrentTeam && <Redirect to="/who-gets-the-water"/>}
-                        {this.props.Teams ? <Row type="flex" justify="center">
-                                                <Row>Join a Team
-                                                    <select ref="selectedTeam" className="selectedTeam" onChange={e => this.onChangeSelectTeam()}>
-                                                        <option> -- Select Your Team -- </option>
-                                                        {this.props.Teams.map(( t, i) => {
-                                                            return <option key={i} value={t.Slug}>Team {i + 1}</option>
-                                                        })                                
-                                                        }
-                                                    </select>
-                                                </Row>
+                        {this.props.Teams.length ? <Row type="flex" justify="center">
+                                                <Col xs={24}>  
+                                                    <div className="form-wrapper">                                                  
+                                                    <   label>Select Team</label>
+                                                        <Select style={{width:'100%'}} onChange={val => this.onChangeSelectTeam(val)} placeholder="--Select Team--">
+                                                            {this.props.Teams.map(( t, i) => {
+                                                                return <Select.Option key={i+1} value={t.Slug}>Team {i + 1}</Select.Option>
+                                                            })}                                                  
+                                                        </Select>
+                                                    </div>
+                                                </Col>
                                                 {this.props.SelectedTeam &&
                                                 <Row className="role-selection">
                                                     <Col xs={24}>
@@ -121,7 +134,7 @@ export default class LoginFormComponent extends React.Component<FormProps> {
                                                         </Row>
 
                                                         <Row type="flex" justify="center">
-                                                            <Col xs={16}>
+                                                            <Col xs={24}>
                                                                 <AgriIcon height={400}/>
                                                                 <p>The CEO of Warburton, the region's largest agrichemical business faced with growing food production for an escalating population in a time of water scarcity and drought. </p>
                                                                 <Button className="game-button block" onClick={e => this.props.selectRole("Warburton")}>Agriculture</Button>
@@ -130,7 +143,7 @@ export default class LoginFormComponent extends React.Component<FormProps> {
 
                                                         
                                                         <Row type="flex" justify="center">
-                                                            <Col xs={16}>
+                                                            <Col xs={24}>
                                                                 <HealthIcon height={400}/>
                                                                 <p>The CEO of Vanguard Life, the region's largest health care and insurance provider, who is anxious of increased exposure to climate-sensitive diseases and mental health impacts from severe weather-related events</p>
                                                                 <Button className="game-button block" onClick={e => this.props.selectRole("Vanguard")}>Healthcare</Button>
@@ -139,7 +152,7 @@ export default class LoginFormComponent extends React.Component<FormProps> {
 
                                                         
                                                         <Row type="flex" justify="center">
-                                                            <Col xs={16}>
+                                                            <Col xs={24}>
                                                                 <IndustryIcon height={400}/>
                                                                 <p>The CEO of Bennuci, the region's largest food and drink company who believes consumer demand will determine their response to climate change mitigation.</p>
                                                                 <Button className="game-button block" onClick={e => this.props.selectRole("Bennuci")}>Industry</Button>
@@ -168,7 +181,7 @@ export default class LoginFormComponent extends React.Component<FormProps> {
                                             <h1>Getting Teams</h1>                                            
 
                             }  
-                    </Row>
+                    </div>
     }
 }
 //<Button>Join</Button>
