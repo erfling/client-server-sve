@@ -94,8 +94,6 @@ h4{font-size: 160%}
 
 @mixin buttonStyles{
     text-transform: uppercase;
-    border: solid 2px black;
-    color: black;
     padding:0 2em;
     height:3.2em;
     font-weight: 600;
@@ -114,6 +112,8 @@ h4{font-size: 160%}
 }
 .game-button{
    @include buttonStyles();
+   border: solid 2px black;
+   color: black;
 }
 
 .form-wrapper{
@@ -157,9 +157,9 @@ h4{font-size: 160%}
         margin-top:9px;
     }
     .ant-select-dropdown-menu-item{
-        font-size:2.5em;
-        padding: 12px;
-        line-height: 2.5em;
+        font-size: 2em !important;
+        height: auto !important;
+        padding: .5em 1em !important;
     }
 
 }
