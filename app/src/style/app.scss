@@ -134,9 +134,9 @@ h4{font-size: 160%}
         font-size: 1.2em;
     }
     label{
-        margin: 40px 0 20px;
-        font-size: 200%;
-        display: block;
+        margin: 40px 0 20px !important;
+        font-size: 200% !important;
+        display: block !important;
     }
 
     .ant-radio-button-wrapper{
@@ -168,6 +168,10 @@ h4{font-size: 160%}
         font-size:2.5em;
         padding: 12px;
         line-height: 2.5em;
+    }
+
+    .ant-alert{
+        font-size: 1.5em;
     }
 
 }
