@@ -60,7 +60,6 @@ export class SelectWrapper extends React.Component<WrappedFieldProps & GenericFi
 
 export class RadioButtonWrapper extends React.Component<WrappedFieldProps & GenericFieldHTMLAttributes>{
     render() {
-        console.log("RADIO PROPS",this.props)
         var children: {props:{children:string, value: string}}[] = this.props.children as {props:{children:string, value: string}}[];
         var placeholder:{props:{children:string}} = children[0] as { props:{children:string}};
         return  <RadioGroup defaultValue={placeholder} size="large"

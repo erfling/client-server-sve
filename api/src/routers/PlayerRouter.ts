@@ -44,7 +44,6 @@ class PlayerRouter
     
         console.log("players REQ:", req.params)
         try {
-            console.log("trying")
             let players = await PlayerModel.find();
             console.log("GAMES", players, Player)
             if (!players) {

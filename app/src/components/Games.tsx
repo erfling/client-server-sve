@@ -26,7 +26,6 @@ export default class Games extends React.Component<GamesList, any> {
     }
 
     componentWillMount(){
-        console.log("GAME PROPS", this.props)
     }
 
     //onClick={this.props.testUpdate}

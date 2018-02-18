@@ -18,7 +18,7 @@ export interface LoginFormProps{
     Teams: ITeam[];
     SelectedTeam:  ITeam;
     SelectedRole: string;
-    CurrentTeam: ITeam & {CurrentRole: string}
+    CurrentTeam: ITeam
 
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): LoginFormProps => {
@@ -29,7 +29,6 @@ const mapStateToProps = (state: ApplicationStore, ownProps: {}): LoginFormProps 
         SelectedTeam: state.GameData.SelectedTeam,
         SelectedRole: state.GameData.SelectedRole,
         CurrentTeam: state.GameData.CurrentPlayer
-
     };
 };
 

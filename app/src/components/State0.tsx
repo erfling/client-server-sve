@@ -23,18 +23,6 @@ const Hurricane = require('../img/hurricane-space-earth-horizontal.jpg');
 // 'HelloProps' describes the shape of props.
 // State is never set so we use the '{}' type.
 export default class State0 extends React.Component<GamesList, any> {
-    componentDidMount() {
-        console.log("MONOUT")
-        //this.props.fetchGames();
-    }
-
-    componentWillMount(){
-        console.log("GAME PROPS", this.props)
-    }
-
-    componentWillUnmount(){
-        
-    }
 
     scrollDown(e:any){        
         document.querySelector('.home-content').scrollIntoView({ behavior: 'smooth' ,block: 'start' });

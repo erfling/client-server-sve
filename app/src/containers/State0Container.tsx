@@ -14,7 +14,6 @@ interface DispatchProps {
     fetchGames: () => {}
 }
 const mapStateToProps = (state:ApplicationStore, ownProps: {}) => {
-    console.log(state);
     return {
         Game: state.GameData.Game,
         CurrentGame: state.GameData.CurrentGame,

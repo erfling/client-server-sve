@@ -10,7 +10,7 @@ export default interface ApplicationStore{
         SelectedTeam?: ITeam,
         SelectedRole?: string
         Player?: IPlayer[],
-        CurrentPlayer?: IPlayer & {CurrentRole: string},
+        CurrentPlayer?: ITeam,
         CurrentGame?: IGame,
         Dashboard: any,
 

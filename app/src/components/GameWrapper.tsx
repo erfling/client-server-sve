@@ -23,18 +23,6 @@ export interface GamesList {
 // 'HelloProps' describes the shape of props.
 // State is never set so we use the '{}' type.
 export default class GameWrapper extends React.Component<GamesList, any> {
-    componentDidMount() {
-        console.log("MONOUT")
-        //this.props.fetchGames();
-    }
-
-    componentWillMount(){
-        console.log("GAME PROPS", this.props)
-    }
-
-    componentWillUnmount(){
-        
-    }
 
     scrollDown(e:any){        
         document.querySelector('.home-content').scrollIntoView({ behavior: 'smooth' ,block: 'start' });

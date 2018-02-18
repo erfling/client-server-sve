@@ -45,7 +45,6 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
     }
     
     componentDidMount(){
-        console.log(this.props);
         this.props.getTeams();
     }
 
