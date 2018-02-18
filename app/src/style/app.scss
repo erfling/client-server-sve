@@ -75,7 +75,7 @@ h4{font-size: 160%}
         color: white;
     }
     .home-content{
-        padding-top:6em;
+        padding-top:20px;
         background: white;
         min-height: 100vh
     }
@@ -106,5 +106,17 @@ h4{font-size: 160%}
     &.block{
         display: block;
         margin:5px auto;
+    }
+}
+
+.form-wrapper{
+    padding:10px 25px;
+    margin-bottom:25px;
+    h1,h2,h3,h4,h5{
+        text-align: center;
+        padding:15px
+    }
+    &:nth-of-type(even){
+        background: rgba(240, 240, 255, 0.26);
     }
 }
