@@ -23,7 +23,8 @@ body{
 html{font-size:100%;} 
 @media(min-width: $breakPoint){html{font-size: 100%}}
 body{font-size: 16px;}
-p{font-size:150%;line-height:1.5em;}
+p, label{font-size:150%;line-height:1.5em;}
+label{font-weight: 700}
 h1{font-size: 250%}
 h2{font-size: 220%}
 h3{font-size: 190%}
@@ -118,5 +119,18 @@ h4{font-size: 160%}
     }
     &:nth-of-type(even){
         background: rgba(240, 240, 255, 0.26);
+    }
+}
+
+/* MOBILE OVERRIDES FOR ANTD SELECT ELEMENT READABILITY */
+@media(max-width: $breakPoint){
+    .ant-select-selection{
+        font-size: 2em;
+        height: 50px;
+        padding-top: 11px;
+    }
+    .ant-select-dropdown-menu-item{
+        font-size:2em;
+        padding: 12px;
     }
 }
