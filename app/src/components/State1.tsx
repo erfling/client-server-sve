@@ -24,6 +24,7 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
                 this.setState({PlayerNotFound: true})
             }
         }
+        window.scrollTo(0,0);
     }
 
     render(){
