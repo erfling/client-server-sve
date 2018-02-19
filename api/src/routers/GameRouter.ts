@@ -85,6 +85,9 @@ class GameRouter
         const game = new Game(req.body);         
         const g = new GameModel(game);
         
+        g.save()
+            .then((g)=> {console.log(g)})
+/*
         try {
             await g.save();
             const savedGame = await GameModel.findOne({Slug: game.Slug});
@@ -97,7 +100,7 @@ class GameRouter
             }
         } catch(err) {
             ( err: any ) => res.status(500).json({ error: err });
-        }
+        }*/
     }
 
     public async UpdateGame(req: Request, res: Response):Promise<IGame | any> {
