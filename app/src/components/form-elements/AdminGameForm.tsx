@@ -56,7 +56,7 @@ class AdminGameForm extends React.Component<FormProps> {
                     </FormItem> 
 
                     <FormItem>
-                        <label>URL Segment</label>
+                        <label>Game Date</label>
                         <Field
                             name="DatePlayed"
                             component={DateWrapper}
