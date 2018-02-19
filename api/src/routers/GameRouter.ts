@@ -139,7 +139,7 @@ class GameRouter
 
         //ALL GOOGLE SVE GAMES HAVE 6 TEAMS
         let gamesNeeded = 6 - game.Teams.length;
-        console.log(gamesNeeded);
+        console.log(gamesNeeded, game);
         var promises = [];          
         for(let i = 0; i < gamesNeeded; i++){
             console.log(i, game.Location + " " + game.DatePlayed.toISOString() + " Team " + (i + 1));
