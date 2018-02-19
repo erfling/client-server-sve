@@ -81,7 +81,7 @@ class GameRouter
     }
 
     public CreateGame(req: Request, res: Response):Promise<any> {
-        console.log("CREATE GAME CALLED")
+        console.log("CREATE GAME CALLED", this)
         const game = new Game(req.body);         
         const g = new GameModel(game);
         
