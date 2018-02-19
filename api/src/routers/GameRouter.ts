@@ -148,12 +148,21 @@ class GameRouter
         const sheets = new GoogleSheets();
 
         //ALL GOOGLE SVE GAMES HAVE 6 TEAMS
-        let gamesNeeded = 6 - game.Teams.length;            
-        while(gamesNeeded -- ){
+        let gamesNeeded = 6 - game.Teams.length;
+        var promises = [];          
+        for(let i = 1; i <  gamesNeeded; i++){
+            /*
+            promises.push(
+                sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + gamesNeeded)
+                        .then(TeamModel.create(t))
+            )
+
+*/
             console.log(gamesNeeded);
             //Create spreadsheet for team
             try{
                 let sheetId = await sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + gamesNeeded);
+                console.log(sheetId);
                 let t = new Team({GameId: game._id, SheetId: sheetId});
                 let team = await TeamModel.create(t);
                 if(team){
