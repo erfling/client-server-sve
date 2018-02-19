@@ -85,11 +85,11 @@ class GameRouter
         const game = new Game(req.body);         
         const g = new GameModel(game);
         
-
+        const $this = this;
         //
         return g.save()
                 .then(g => g)
-                .then(this.SaveChildGames.bind(this))
+                .then($this.SaveChildGames)
                 .catch(() => res.status(400).json({ error: 'Save Failed' }));
 /*
         try {
