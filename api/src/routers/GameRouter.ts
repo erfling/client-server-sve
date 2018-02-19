@@ -88,7 +88,6 @@ class GameRouter
         const $this = this;
         //
         return g.save()
-                .then(g => g)
                 .then((g) => {this.SaveChildGames(g)})
                 .catch(() => res.status(400).json({ error: 'Save Failed' }));
 /*
