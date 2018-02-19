@@ -140,9 +140,10 @@ class GameRouter
         //ALL GOOGLE SVE GAMES HAVE 6 TEAMS
         let gamesNeeded = 6 - game.Teams.length;
         console.log(gamesNeeded);
-        var promises = [];          
+        //var promises = [];          
         for(let i = 0; i < gamesNeeded; i++){
             console.log(i, this.Sheets.createTeamSheet);
+            /*
             let promise = this.Sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + (i + 1))
                                 .then((sheetId:any) => Promise.resolve(new Team({GameId: game._id, SheetId: sheetId})))
                                 .then((t:ITeam) => TeamModel.create(t))
@@ -151,7 +152,7 @@ class GameRouter
             
             promises.push(promise);
 
-
+*/
 
             //Create spreadsheet for team
             /*
