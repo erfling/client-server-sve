@@ -150,6 +150,7 @@ class GameRouter
         //ALL GOOGLE SVE GAMES HAVE 6 TEAMS
         let gamesNeeded = 6 - game.Teams.length;            
         while(gamesNeeded -- ){
+            console.log(gamesNeeded);
             //Create spreadsheet for team
             try{
                 let sheetId = await sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + gamesNeeded);
@@ -190,11 +191,11 @@ class GameRouter
 
     public routes(){
         //this.router.all("*", cors());
-        this.router.get("/", this.GetGames);
-        this.router.get("/:game", this.GetGame);
+        this.router.get("/", this.GetGames.bind(this));
+        this.router.get("/:game", this.GetGame.bind(this));
         this.router.post("/", this.CreateGame.bind(this));
-        this.router.put("/:game", this.UpdateGame);
-        this.router.use("/:game/teams", this.GetTeams);
+        this.router.put("/:game", this.UpdateGame.bind(this));
+        this.router.use("/:game/teams", this.GetTeams.bind(this));
     }
 }
 
