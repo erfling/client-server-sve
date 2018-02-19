@@ -33,16 +33,16 @@ export class Team extends BaseClass implements ITeam
     CurrentRole: string;
 
     @prop()
-    Government: string;
+    government: string;
 
     @prop()
-    Industry: string;
+    industry: string;
 
     @prop()
-    Healthcare: string;
+    healthcare: string;
 
     @prop()
-    Agriculture: string;
+    agriculture: string;
 
   }
 

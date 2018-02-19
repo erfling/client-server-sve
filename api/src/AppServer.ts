@@ -172,8 +172,8 @@ export default class AppServer
     }
 
     private onSocketSaveTeam(eventTarget:SocketIO.Socket, values:any):void{
-        console.log("MESSAGE FROM CLIENT", eventTarget.nsp.name);
-        TeamModel.findOneAndUpdate({Slug: eventTarget.nsp.name.replace('/', '')}, { WaterDistributions: values }, { new: true }).then((team) => {
+        console.log("MESSAGE FROM CLIENT", eventTarget.nsp.name, values);
+        TeamModel.findOneAndUpdate({Slug: eventTarget.nsp.name.replace('/', '')}, { values }, { new: true }).then((team) => {
             console.log(team);
             eventTarget.nsp.emit(SocketEvents.TEAM_UPDATED, team);
         })

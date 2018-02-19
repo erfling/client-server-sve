@@ -9,6 +9,8 @@ export default interface ITeam extends IBaseClass {
   SheetId?: string;
   Players?: Ref<IPlayer>[] | IPlayer[];
   IsSelected?: boolean;
-  WaterDistributions: any;
-
+  government: string;
+  industry: string;
+  healthcare: string;
+  agriculture: string;
 }  
