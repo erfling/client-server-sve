@@ -81,6 +81,7 @@ class GameRouter
     }
 
     public async CreateGame(req: Request, res: Response):Promise<any> {
+        console.log("CREATE GAME CALLED")
         const game = new Game(req.body);         
         const g = new GameModel(game);
         
@@ -89,7 +90,6 @@ class GameRouter
             const savedGame = await GameModel.findOne({Slug: game.Slug});
 
             const gameWithTeams = await this.SaveChildGames(game);
-            console.log(gameWithTeams);
             if (!gameWithTeams) {
               res.status(400).json({ error: 'No games' });
             } else {
@@ -136,7 +136,7 @@ class GameRouter
     } 
 
     private async SaveChildGames(game: IGame):Promise<any> {
-        console.log("trying to get teams from game");
+        console.log("SAVE CHILD GAMES CALLED");
         const sheets = new GoogleSheets();
 
         //ALL GOOGLE SVE GAMES HAVE 6 TEAMS
