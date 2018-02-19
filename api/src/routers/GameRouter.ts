@@ -172,15 +172,16 @@ class GameRouter
             }
             */
         }
+        /*
 
         return Promise.all(promises).then((promises) => {
             console.log(promises);
-            /*
+            
             return GameModel.findOneAndUpdate({Slug: game.Slug}, { Teams: game.Teamspromises }, {new: true}, ()=>{
 
             })
-            */
-        });
+            
+        });*/
         /*
         try{
             return await GameModel.findOneAndUpdate({Slug: game.Slug}, { Teams: game.Teams }, {new: true}, ()=>{
