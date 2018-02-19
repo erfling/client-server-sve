@@ -5,6 +5,18 @@ import BaseClass from './BaseModel'
 import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
 import { Player } from './Player';
+import { Nation } from './Nation';
+
+export enum Nations{
+  /**
+Australia (BECCS)
+Bangladesh (no refugees)
+China (Next gen nuclear)
+Japan (Reflective tech)
+India (Fossil Fuel CC)
+Vietnam (hydropower)
+ */
+}
 
 export class Team extends BaseClass implements ITeam
 {
@@ -29,6 +41,9 @@ export class Team extends BaseClass implements ITeam
     @arrayProp({ itemsRef: Player })
     Players:  Ref<IPlayer>[] | IPlayer[];
 
+    @prop({ ref: Nation })
+    Nation:  Ref<Nation> | Nation;
+
     @prop()
     CurrentRole: string;
 
@@ -43,6 +58,12 @@ export class Team extends BaseClass implements ITeam
 
     @prop()
     agriculture: string;
+
+    @prop()
+    GameId: string;
+
+    @prop()
+    TeamNumber: number;
 
   }
 

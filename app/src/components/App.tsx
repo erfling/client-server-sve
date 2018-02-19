@@ -11,13 +11,16 @@ import Routes from '../routes/Routes';
 
 export class App extends React.Component<{}> {
 
+  componentWillMount(){
+      console.log("component is mounting")
+  }
+
   render() {
     //console.log("image element",<Icon/>);
-
     return (
       <div>
         <Switch>
-          <Route exact={true} path="/admin" component={AdminRoot}/>
+          <Route exact={false} path="/admin" component={AdminRoot}/>
           <Route exact={true} path="/login" component={LoginContainer}/>
           <Route exact={true} path="/" component={State0Container} key={1}/>
           <Route exact={true} path="/who-gets-the-water" component={State1Container} key={1}/>

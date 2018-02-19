@@ -298,7 +298,7 @@ export default class GoogleSheets
         })
     }
 
-    public createTeamSheet():Promise<any>{
+    public createTeamSheet(sheetName: string):Promise<any>{
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth: any) => {
@@ -307,7 +307,7 @@ export default class GoogleSheets
             var request = service.files.copy({
                 'fileId': copyId,
                 auth: auth,
-                'resource': {'title': "Matthew's test for copying API Playgroud"}
+                'resource': {'title': sheetName}
             }, (error:any, resp: any) => {
                 if (error) {
                     console.log(error);

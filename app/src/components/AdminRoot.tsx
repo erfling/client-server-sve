@@ -16,6 +16,9 @@ import createBrowserHistory from "history/createBrowserHistory";
 // 'HelloProps' describes the shape of props.
 // State is never set so we use the '{}' type.
 export default class AdminRoot extends React.Component<{}, {addingGame:boolean}> {
+    componentWillMount(){
+        console.log("ADMIN COMPONENT WILL MOUNT")
+    }
     render() {
           return(            
             <Layout>
@@ -40,11 +43,3 @@ export default class AdminRoot extends React.Component<{}, {addingGame:boolean}>
           )
     }
 }
-/** <Collapse accordion defaultActiveKey={['0']}>
-                                    {this.props.Games.map((g,i) => {
-                                        return <Panel header={"Location: " + g.Location || g._id} key={i.toString()}>
-                                                    <pre>{JSON.stringify(g, null, 2)}</pre>
-                                                </Panel>
-                                    })}
-                                </Collapse> */
-

@@ -88,12 +88,12 @@ class GameRouter
             await g.save();
             const savedGame = await GameModel.findOne({Slug: game.Slug});
 
-            await this.SaveChildGames(game)
-
-            if (!savedGame) {
+            const gameWithTeams = await this.SaveChildGames(game);
+            console.log(gameWithTeams);
+            if (!gameWithTeams) {
               res.status(400).json({ error: 'No games' });
             } else {
-              res.json(savedGame);
+              res.json(gameWithTeams);
             }
         } catch(err) {
             ( err: any ) => res.status(500).json({ error: err });
@@ -137,15 +137,33 @@ class GameRouter
 
     private async SaveChildGames(game: IGame):Promise<any> {
         console.log("trying to get teams from game");
-        var teamsToSave: ITeam[] = game.Teams as ITeam[];
         const sheets = new GoogleSheets();
-        if(game.NumberOfTeams && game.NumberOfTeams > teamsToSave.length){
-            var newTeamsToSave:ITeam[] = [];
-            var neededTeams = game.NumberOfTeams - teamsToSave.length;
-            for(var i = 0; i < neededTeams; i++){
-                //const sheetId = await sheets.createTeamSheet(null, " ");
-                newTeamsToSave.push()
+
+        //ALL GOOGLE SVE GAMES HAVE 6 TEAMS
+        let gamesNeeded = 6 - game.Teams.length;            
+        while(gamesNeeded -- ){
+            //Create spreadsheet for team
+            try{
+                let sheetId = await sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + gamesNeeded);
+                let t = new Team({GameId: game._id, SheetId: sheetId});
+                let team = await TeamModel.create(t);
+                if(team){
+                    let teams:string[] = game.Teams as string[];
+                    teams.push(team._id);
+                }
+
             }
+            catch{
+
+            }
+        }
+        try{
+            return await GameModel.findOneAndUpdate({Slug: game.Slug}, { Teams: game.Teams }, {new: true}, ()=>{
+
+            })
+        }
+        catch{
+
         }
 
 /*

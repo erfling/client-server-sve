@@ -30,6 +30,9 @@ export class Game extends BaseClass implements IGame
     @arrayProp({ itemsRef: Team })
     Teams:  Ref<ITeam>[] | ITeam[];
 
+    @prop()
+    DatePlayed: Date;
+
   }
 
   export const GameModel = new Game().getModelForClass( Game, { existingMongoose: mongoose } )
