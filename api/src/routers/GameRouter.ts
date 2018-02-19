@@ -89,7 +89,7 @@ class GameRouter
         console.log(saveChildGames);
         //
         return g.save()
-                .then(saveChildGames)
+                .then(this.SaveChildGames)
                 .then((g) => {res.json(g)})
                 .catch(() => res.status(400).json({ error: 'Save Failed' }));
 /*
@@ -192,7 +192,7 @@ class GameRouter
         //this.router.all("*", cors());
         this.router.get("/", this.GetGames);
         this.router.get("/:game", this.GetGame);
-        this.router.post("/", this.CreateGame);
+        this.router.post("/", this.CreateGame.bind(this));
         this.router.put("/:game", this.UpdateGame);
         this.router.use("/:game/teams", this.GetTeams);
     }
