@@ -89,7 +89,7 @@ class GameRouter
         const saveChildGames = this.SaveChildGames;
         //
         return g.save()
-                .then(this.SaveChildGames)
+                .then(this.SaveChildGames.bind(this))
                 .then((g) => {res.json(g)})
                 .catch(() => res.status(400).json({ error: 'Save Failed' }));
     }
@@ -144,8 +144,8 @@ class GameRouter
         for(let i = 0; i < gamesNeeded; i++){
             console.log(i, this);
             let promise = this.Sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + (i + 1))
-                                //.then(sheetId => Promise.resolve(new Team({GameId: game._id, SheetId: sheetId})))
-                                //.then(t => TeamModel.create(t))
+                                .then(sheetId => Promise.resolve(new Team({GameId: game._id, SheetId: sheetId})))
+                                .then(t => TeamModel.create(t))
             
             console.log(promise);
             
