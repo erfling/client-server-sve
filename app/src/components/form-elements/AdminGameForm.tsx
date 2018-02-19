@@ -6,7 +6,7 @@ import Button from "antd/lib/button";
 import Icon from "antd/lib/icon";
 const FormItem = Form.Item;
 import IGame from '../../../../shared/models/IGame';
-import { SelectWrapper, InputWrapper} from './AntdFormWrappers'
+import { SelectWrapper, InputWrapper, DateWrapper } from './AntdFormWrappers'
 import { connect } from 'react-redux';
 import  ApplicationStore from '../../stores/Store';
 
@@ -54,6 +54,15 @@ class AdminGameForm extends React.Component<FormProps> {
                             defaultValue={this.props.initialValues.Location}
                         />                       
                     </FormItem> 
+
+                    <FormItem>
+                        <label>URL Segment</label>
+                        <Field
+                            name="DatePlayed"
+                            component={DateWrapper}
+                            defaultValue={this.props.initialValues.DatePlayed}
+                        />                       
+                    </FormItem>
 
                     <FormItem>
                         <label>URL Segment</label>

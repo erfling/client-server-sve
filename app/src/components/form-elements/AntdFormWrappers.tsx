@@ -1,7 +1,8 @@
 import { reduxForm, Field, WrappedFieldProps, InjectedFormProps, GenericFieldHTMLAttributes } from 'redux-form';
 import * as React from 'react';
 import { ReactNode } from 'react-redux';
-import { Form, Input, Radio, Select, Button, Slider } from "antd";
+import { Form, Input, Radio, Select, Button, Slider, DatePicker } from "antd";
+import * as moment from 'moment';
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 
@@ -70,5 +71,16 @@ export class RadioButtonWrapper extends React.Component<WrappedFieldProps & Gene
                             return <RadioButton value={child.props.value || child.props.children} key={i}>{child.props.children || child.props.value}</RadioButton>
                     })}
                 </RadioGroup>
+    }
+}
+
+export class DateWrapper extends React.Component<WrappedFieldProps & GenericFieldHTMLAttributes & {defaultValue:any}> {
+    render() {
+        return (
+            <DatePicker 
+                onChange={(e) => {this.props.input.onChange(e)}} 
+                defaultValue={this.props.defaultValue}
+            />
+        )
     }
 }

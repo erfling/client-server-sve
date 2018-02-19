@@ -11,4 +11,5 @@ export default interface IGame extends IBaseClass {
     IsSelected?:boolean;
     NumberOfTeams?: number;
     SourceSheetId?: string
+    DatePlayed: Date;
   }  
