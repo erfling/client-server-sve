@@ -81,12 +81,10 @@ class GameRouter
     }
 
     public CreateGame(req: Request, res: Response):Promise<any> {
-        console.log("CREATE GAME CALLED", this)
         const game = new Game(req.body);         
         const g = new GameModel(game);
         
         const saveChildGames = this.SaveChildGames;
-        console.log(saveChildGames);
         //
         return g.save()
                 .then(this.SaveChildGames)
@@ -144,7 +142,7 @@ class GameRouter
     } 
 
     private async SaveChildGames(game: IGame):Promise<any> {
-        console.log("SAVE CHILD GAMES CALLED");
+        console.log("SAVE CHILD GAMES CALLED", game);
         const sheets = new GoogleSheets();
 
         //ALL GOOGLE SVE GAMES HAVE 6 TEAMS
