@@ -298,15 +298,14 @@ export default class GoogleSheets
         })
     }
 
-    public createTeamSheet(sheetName: string):Promise<any>{
+    public createTeamSheet(sheetName: string, sourceId: string):Promise<any>{
         console.log("ATTEMPTING CREATE SHEET", sheetName)
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth: any) => {
             const service = google.drive('v2');
-            const copyId = '15T5x5aqyYe3lNmdyklFPMGDhEi3otAAQ1khZle-Bx6U';
             var request = service.files.copy({
-                'fileId': copyId,
+                'fileId': sourceId,
                 auth: auth,
                 'resource': {'title': sheetName}
             }, (error:any, resp: any) => {

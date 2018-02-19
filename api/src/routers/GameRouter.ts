@@ -144,10 +144,8 @@ class GameRouter
         for(let i = 0; i < gamesNeeded; i++){
             console.log(i, game.Location + " " + " Team " + (i + 1));
             //+ game.DatePlayed.toISOString()
-            let promise = this.Sheets.createTeamSheet(game.Location + " "  + " Team " + (i + 1))
-            promises.push(promise);
 
-            /*
+            
             let promise = this.Sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + (i + 1))
                                 .then((sheetId:any) => Promise.resolve(new Team({GameId: game._id, SheetId: sheetId})))
                                 .then((t:ITeam) => TeamModel.create(t))
@@ -156,7 +154,7 @@ class GameRouter
             
             promises.push(promise);
 
-*/
+
 
             //Create spreadsheet for team
             /*
@@ -176,7 +174,7 @@ class GameRouter
             }
             */
         }
-        /*
+        
 
         return Promise.all(promises).then((promises) => {
             console.log(promises);
@@ -185,7 +183,7 @@ class GameRouter
 
             })
             
-        });*/
+        });
         /*
         try{
             return await GameModel.findOneAndUpdate({Slug: game.Slug}, { Teams: game.Teams }, {new: true}, ()=>{
