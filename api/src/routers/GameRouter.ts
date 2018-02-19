@@ -86,7 +86,7 @@ class GameRouter
         const g = new GameModel(game);
         
         g.save()
-            .then((g)=> {console.log(g)})
+            .then((g)=> {console.log(g); res.json(g)})
 /*
         try {
             await g.save();
