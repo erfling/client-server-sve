@@ -86,6 +86,7 @@ class GameRouter
         const g = new GameModel(game);
         
         const saveChildGames = this.SaveChildGames;
+        console.log(saveChildGames);
         //
         return g.save()
                 .then(saveChildGames)
