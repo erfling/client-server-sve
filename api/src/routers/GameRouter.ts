@@ -136,10 +136,10 @@ class GameRouter
         console.log(gamesNeeded);
         var promises = [];          
         for(let i = 0; i < gamesNeeded; i++){
-            console.log(i);
+            console.log(i, sheets);
             let promise = sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + (i + 1))
-                                .then(sheetId => Promise.resolve(new Team({GameId: game._id, SheetId: sheetId})))
-                                .then(t => TeamModel.create(t))
+                                //.then(sheetId => Promise.resolve(new Team({GameId: game._id, SheetId: sheetId})))
+                                //.then(t => TeamModel.create(t))
             
             console.log(promise);
             
