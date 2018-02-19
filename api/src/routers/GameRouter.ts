@@ -146,7 +146,7 @@ class GameRouter
             //+ game.DatePlayed.toISOString()
 
             
-            let promise = this.Sheets.createTeamSheet(game.Location +  " Team " + (i + 1), game.SheetId)
+            let promise = this.Sheets.createTeamSheet(game.Location +  " Team " + (i + 1), game.SourceSheetId)
                                 .then((sheetId:any) => Promise.resolve(new Team({GameId: game._id, SheetId: sheetId})))
                                 .then((t:ITeam) => TeamModel.create(t))
             
