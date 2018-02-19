@@ -89,7 +89,7 @@ class GameRouter
         //
         return g.save()
                 .then(g => g)
-                .then($this.SaveChildGames)
+                .then(() => {console.log($this);this.SaveChildGames(g)})
                 .catch(() => res.status(400).json({ error: 'Save Failed' }));
 /*
         try {
