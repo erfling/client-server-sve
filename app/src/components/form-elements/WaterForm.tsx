@@ -14,6 +14,7 @@ interface WaterFormProps extends InjectedFormProps{
     Submitting: boolean;
     FormData:any;
     handleSubmit: (formValues:any) => {};
+    setWaterValues: () => {}
 }
 
 class SliderWrapperField extends Field<{increment:number}>{
@@ -163,8 +164,8 @@ class WaterFormWrapper extends React.Component<WaterFormProps, { warning:string 
 
 const mapStateToProps = (state: ApplicationStore, ownProps:WaterFormProps): {} => {
     return {
-        Submitting: state.Application.Submitting,
-        FormData: state.form.waterForm
+        Submitting: state.Application.Loading,
+        FormData: state.form.waterForm,
     };
 };
 

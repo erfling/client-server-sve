@@ -125,9 +125,10 @@ class GameRouter
             let game = await GameModel.findOne({Slug}).populate("Teams");
         
             if (!game) {
-              res.status(400).json({ error: 'No games' });
+                res.status(400).json({ error: 'No games' });
             } else {
-              res.json(game.Teams);
+                let g:IGame = game as IGame;
+                res.json(g.Teams);
             }
         } catch(err) {
             ( err: any ) => res.status(500).json({ error: err });

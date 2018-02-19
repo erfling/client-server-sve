@@ -15,19 +15,20 @@ import { setTimeout } from 'timers';
 const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
 const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
 const socketPort = window.location.host.includes('sapien') ? ":9443" : ":5000";
-console.log(window.location);
 const baseRestURL = protocol +  "//" + window.location.hostname + port + "/sapien/api/";
 //const socket = socketIo({path: socketPort + "/" + "Team1", transports: ['websocket'] });
-const socket = socketIo(socketPort + "/" + "Team1");
+const socket = socketIo(protocol +  "//" + window.location.hostname + socketPort + "/" + "Team1");
 console.log("BASE",socket)
-//console.log("SOCKET ON CONNECT", socket);
+console.log("SOCKET ON CONNECT", socket);
 const teamSocket = '';
 
-socket.on(SocketEvents.CONNECT, (data: any) => {
+
+ //SET UP SOCKET EVENTS
+ socket.on(SocketEvents.CONNECT, (data: any) => {
     console.log("SOCKET RETURNED SOMETHING", data);
     console.log("SOCKET THAT RETURNED", socket);
-})
-
+})/*f
+*/
 export interface Action<T> {
     type: string;
     payload?: T;
@@ -107,13 +108,7 @@ export const loadInitialDataSocket = (socket: SocketIOClient.Socket) => {
 export const fetchGames = () => {
     return (dispatch: Dispatch<GameAction<IGame> | Action<any>>) => {
         dispatch(isLoading(ACTION_TYPES.IS_LOADING, true));
-        console.log("fetching games");
-        socket.on("HELLO", (res:any) => {
-            dispatch(dataInit(ACTION_TYPES.GAMES_LOADED, res));
-            dispatch(dataInit(ACTION_TYPES.TEAMS_LOADED_WITH_GAMES, res));    
-            setTimeout(() => dispatch( isLoading(ACTION_TYPES.IS_LOADING, false) ), 300);
-        })
-        
+        console.log("fetching games");        
     }
     
 }
@@ -357,16 +352,33 @@ export const login = (player: IPlayer) => {
                 return res.json()
             })
             .then( (jwt:any )=>{
-                console.dir(jwt);
+                console.dir("A:LKJSDFLKj",jwt);
                 dispatch( {
                     type: ACTION_TYPES.PLAYER_JOINED,
                     payload: jwt
                 } );
 
                 setTimeout( () => {dispatch(isLoading(ACTION_TYPES.IS_LOADING, false))},1000)
+
+               
+                socket.on(SocketEvents.TEAM_UPDATED, (team:ITeam) => {
+                    dispatch( {
+                        type: ACTION_TYPES.IS_LOADING,
+                        payload: false
+                    } );
+                    dispatch( {
+                        type: ACTION_TYPES.PLAYER_JOINED,
+                        payload: jwt
+                    } );
+                })
+
             })
             .catch( ( reason ) => { console.log(reason);} )
     }
+}
+
+const setUpSocketListeners = () => {
+    
 }
 
 export const selectTeam = (team:ITeam) => {
@@ -396,5 +408,16 @@ export const getPlayer = () => {
             type: ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE,
             payload: JSON.parse(localStorage.getItem("SVE_PLAYER"))
         })
+    }
+}
+
+export const setWaterValues = (team: ITeam) => {
+    console.log("SETTING WATER VALUES", team);
+    socket.emit(SocketEvents.UPDATE_TEAM, team);
+    return (dispatch: Dispatch<Action<ITeam>>) => {
+        dispatch( {
+            type: ACTION_TYPES.IS_LOADING,
+            payload: true
+        } );
     }
 }

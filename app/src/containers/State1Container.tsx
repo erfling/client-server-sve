@@ -9,19 +9,21 @@ import { ACTION_TYPES } from '../actions/Actions';
 
 interface DispatchProps {
     getPlayer:() => {}
+    setWaterValues:(team:ITeam) => {}
 }
 export interface State1Props{
-    CurrentPlayer: ITeam
+    CurrentPlayer: ITeam;
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): State1Props => {
     return {
-        CurrentPlayer: state.GameData.CurrentPlayer
+        CurrentPlayer: state.GameData.CurrentPlayer,
     };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>, ownProps: any) => {
     return {
-        getPlayer: () => dispatch( Actions.getPlayer() )
+        getPlayer: () => dispatch( Actions.getPlayer() ),
+        setWaterValues: (team: ITeam) => {dispatch(Actions.setWaterValues(team))}
     }
 }
 

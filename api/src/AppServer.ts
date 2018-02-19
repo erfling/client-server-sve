@@ -34,7 +34,7 @@ import { resolve } from 'dns';
 //socket setup
 import { SocketEvents } from './../../shared/models/SocketEvents';
 //models
-import { Game, GameModel } from './models/Game'; 
+import { GameModel, Game } from './models/Game'; 
 import { Team, TeamModel } from './models/Team'; 
 import { Player, PlayerModel } from './models/Player';
 
@@ -123,13 +123,13 @@ export default class AppServer
         let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
     }
 
-    private onTeamSocketConnect(eventTarget:SocketIO.Namespace, game:Game, socket:SocketIO.Socket):void {
-        //console.log("teamSocket connected...");
+    private onTeamSocketConnect(eventTarget:SocketIO.Namespace, game:any, socket:SocketIO.Socket):void {
+        console.log("teamSocket connected...");
         if (eventTarget.name.indexOf("1") == -1) return;
-        //socket.join(eventTarget.name);
+        socket.join(eventTarget.name);
         this.io.to(eventTarget.name).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + game._id);
         //console.log(socket.client);
-        GameModel.find().populate("Teams").then((g:Game[]) => {
+        GameModel.find().populate("Teams").then((g) => {
             //console.log("say hello");
             eventTarget.emit(SocketEvents.HELLO, g);
         })
@@ -137,7 +137,8 @@ export default class AppServer
         socket
             .on(SocketEvents.DISCONNECT, this.onSocketDisconnect.bind(this, socket))
             .on(SocketEvents.SELECT_TEAM, this.onSocketSelectTeam.bind(this, socket))
-            .on(SocketEvents.SUBMIT_TO_SHEET, this.onSocketSubmitToSheet.bind(this, socket));
+            .on(SocketEvents.SUBMIT_TO_SHEET, this.onSocketSubmitToSheet.bind(this, socket))
+            .on(SocketEvents.UPDATE_TEAM, this.onSocketSaveTeam.bind(this, socket));
     }
 
     private onSocketDisconnect(eventTarget:SocketIO.Socket):void {
@@ -146,7 +147,7 @@ export default class AppServer
 
     private onSocketSelectTeam(eventTarget:SocketIO.Socket, Slug:string):void {
         console.log("SELECTING TEAM", Slug);
-        TeamModel.findOne( { Slug } ).populate("Players").then((t:ITeam) => {
+        TeamModel.findOne( { Slug } ).populate("Players").then((t:Team) => {
             eventTarget.nsp.emit(SocketEvents.SELECT_TEAM, t);
         })
         this.sheets.GetSheetValues().then((v:any) => {
@@ -156,9 +157,9 @@ export default class AppServer
     }
 
     private onSocketSubmitToSheet(eventTarget:SocketIO.Socket, values:formValues):void {
-        PlayerModel.findById(values.PlayerId).then((player:Player) => {
+        TeamModel.findById(values.PlayerId).then((team:Team) => {
             var sheets = new GoogleSheets();
-            sheets.commitAnswers(player, values).then(() => {
+            sheets.commitAnswers(team, values).then(() => {
                 if (this.socketServer instanceof http.Server) {
                     setTimeout(() => {
                         sheets.GetSheetValues().then((v:any) => {     
@@ -167,6 +168,14 @@ export default class AppServer
                     }, 500);
                 }
             })                    
+        })
+    }
+
+    private onSocketSaveTeam(eventTarget:SocketIO.Socket, values:any):void{
+        console.log("MESSAGE FROM CLIENT", eventTarget.nsp.name);
+        TeamModel.findOneAndUpdate({Slug: eventTarget.nsp.name.replace('/', '')}, { WaterDistributions: values }, { new: true }).then((team) => {
+            console.log(team);
+            eventTarget.nsp.emit(SocketEvents.TEAM_UPDATED, team);
         })
     }
 
@@ -278,19 +287,15 @@ export default class AppServer
         
         //TODO: solve for how we will determine desired game
         let gameId = "5a3328d0a9021e2390a77bb3";
-        GameModel.findById(gameId).populate("Teams").then((game:Game) => {
-            let teams:ITeam[] = game.Teams as ITeam[];
+        GameModel.findOne({Slug: "Game2"}).populate("Teams").then((game) => {
+            let gameDoc: IGame = game as IGame;
+            let teams:ITeam[] = gameDoc.Teams as ITeam[];
             teams.forEach((t:ITeam) => {
                 //this.sheets.subscribeToDriveResource("test")
                 var teamSocket = this.io.of(t.Slug);
                 
                 this.gameSockets.set(t.Slug, teamSocket);
-                this.io.use((socket, next) => {
-                    //console.log("HELLO?")
-                    var handshake = socket.handshake;
-                    next();
-                })
-                //teamSocket.use
+          
                 teamSocket.on(SocketEvents.CONNECT, this.onTeamSocketConnect.bind(this, teamSocket, game));
 
                 // TODO: Listen for sheets watch IF we're using secure socketServer
@@ -319,7 +324,7 @@ export default class AppServer
      * @param Slug 
      */
     private getTeam(Slug: string): void {
-        TeamModel.findOne( { Slug } ).populate("Players").then((t:ITeam) => {
+        TeamModel.findOne( { Slug } ).populate("Players").then((t:Team) => {
             this.io.emit(SocketEvents.SELECT_TEAM, t);
         })
     }

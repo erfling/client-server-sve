@@ -11,6 +11,7 @@ const City = require("../img/Drought_water_city.jpg");
 interface State1Props{
    CurrentPlayer: ITeam
    getPlayer: () => {}
+   setWaterValues: (team:ITeam) => {}
 }
 export default class State1 extends React.Component<State1Props, {PlayerNotFound:boolean}> {
 
@@ -32,7 +33,7 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
                     ParallaxImg={City}
                     HeaderText="Who Gets The Water?"
                 >
-                    <WaterForm form="waterForm"/>
+                    <WaterForm form="waterForm" onSubmit={this.props.setWaterValues}/>
                     {this.state.PlayerNotFound && <Redirect to="/"/>}
                </GameWrapper>
     }
