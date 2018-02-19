@@ -186,7 +186,7 @@ class GameRouter
 
             })
             */
-        }
+        });
         /*
         try{
             return await GameModel.findOneAndUpdate({Slug: game.Slug}, { Teams: game.Teams }, {new: true}, ()=>{
