@@ -312,7 +312,7 @@ export default class GoogleSheets
                 if (error) {
                     console.log(error);
                 } else {
-                    console.log(resp);
+                    console.log("CREATE SHEET RESPONSE", resp);
                     return resp.id;
                 }
             });
