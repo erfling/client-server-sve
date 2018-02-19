@@ -30,6 +30,7 @@ class GameRouter
 
     constructor() {
         this.router = Router({mergeParams:true});
+        this.Sheets = new GoogleSheets();
         this.routes();
     }
 
@@ -135,15 +136,14 @@ class GameRouter
 
     private async SaveChildGames(game: IGame):Promise<any> {
         console.log("SAVE CHILD GAMES CALLED");
-        const sheets = this.getSheets();
 
         //ALL GOOGLE SVE GAMES HAVE 6 TEAMS
         let gamesNeeded = 6 - game.Teams.length;
         console.log(gamesNeeded);
         var promises = [];          
         for(let i = 0; i < gamesNeeded; i++){
-            console.log(i, sheets);
-            let promise = sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + (i + 1))
+            console.log(i, this.Sheets);
+            let promise = this.Sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + (i + 1))
                                 //.then(sheetId => Promise.resolve(new Team({GameId: game._id, SheetId: sheetId})))
                                 //.then(t => TeamModel.create(t))
             
@@ -207,6 +207,7 @@ class GameRouter
 
     public routes(){
         //this.router.all("*", cors());
+        this.getSheets();
         this.router.get("/", this.GetGames.bind(this));
         this.router.get("/:game", this.GetGame.bind(this));
         this.router.post("/", this.CreateGame.bind(this));
