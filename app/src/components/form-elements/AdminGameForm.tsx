@@ -69,7 +69,7 @@ class AdminGameForm extends React.Component<FormProps> {
                         <Field
                             name="SourceSheetId"
                             component={InputWrapper}
-                            defaultValue={this.props.initialValues.SourceSheetId}
+                            defaultValue={this.props.initialValues.SourceSheetId || "1R5Od_XTcwDyOKsLHaABHL8o9cl7Qg7P3zlYyBUUWds8"}
                         />                       
                     </FormItem>
 
