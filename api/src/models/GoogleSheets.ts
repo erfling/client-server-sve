@@ -298,8 +298,9 @@ export default class GoogleSheets
         })
     }
 
-    public createTeamSheet(sheetName: string):Promise<any>{
+    public createTeamSheet(sheetName: string):any{
         console.log("ATTEMPTING CREATE SHEET", sheetName)
+        /*
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth: any) => {
@@ -317,7 +318,7 @@ export default class GoogleSheets
                     return resp.id;
                 }
             });
-        });
+        });*/
     }
 
     /*
