@@ -90,20 +90,6 @@ class GameRouter
                 .then(this.SaveChildGames)
                 .then((g) => {res.json(g)})
                 .catch(() => res.status(400).json({ error: 'Save Failed' }));
-/*
-        try {
-            await g.save();
-            const savedGame = await GameModel.findOne({Slug: game.Slug});
-            console.log("GAME AS INITIALLY SAVED", savedGame)
-            const gameWithTeams = await this.SaveChildGames(savedGame);
-            if (!gameWithTeams) {
-              res.status(400).json({ error: 'No games' });
-            } else {
-              res.json(gameWithTeams);
-            }
-        } catch(err) {
-            ( err: any ) => res.status(500).json({ error: err });
-        }*/
     }
 
     public async UpdateGame(req: Request, res: Response):Promise<IGame | any> {
@@ -142,15 +128,16 @@ class GameRouter
     } 
 
     private async SaveChildGames(game: IGame):Promise<any> {
-        console.log("SAVE CHILD GAMES CALLED", game);
+        console.log("SAVE CHILD GAMES CALLED");
         const sheets = new GoogleSheets();
 
         //ALL GOOGLE SVE GAMES HAVE 6 TEAMS
         let gamesNeeded = 6 - game.Teams.length;
+        console.log(gamesNeeded);
         var promises = [];          
-        for(let i = 1; i <  gamesNeeded; i++){
-            
-            let promise = sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + i)
+        for(let i = 0; i < gamesNeeded; i++){
+            console.log(i);
+            let promise = sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + (i + 1))
                                 .then(sheetId => Promise.resolve(new Team({GameId: game._id, SheetId: sheetId})))
                                 .then(t => TeamModel.create(t))
             
