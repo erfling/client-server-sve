@@ -151,15 +151,17 @@ class GameRouter
         let gamesNeeded = 6 - game.Teams.length;
         var promises = [];          
         for(let i = 1; i <  gamesNeeded; i++){
-            /*
+            
             promises.push(
                 sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + gamesNeeded)
-                        .then(TeamModel.create(t))
+                        .then(sheetId => Promise.resolve(new Team({GameId: game._id, SheetId: sheetId})))
+                        .then(t => TeamModel.create(t))
             )
 
-*/
-            console.log(gamesNeeded);
+
+
             //Create spreadsheet for team
+            /*
             try{
                 let sheetId = await sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + gamesNeeded);
                 console.log(sheetId);
@@ -172,9 +174,20 @@ class GameRouter
 
             }
             catch{
-
+                console.log("ERROR")
             }
+            */
         }
+
+        Promise.all(promises).then((promises) => {
+            console.log(promises);
+            /*
+            return GameModel.findOneAndUpdate({Slug: game.Slug}, { Teams: game.Teamspromises }, {new: true}, ()=>{
+
+            })
+            */
+        }
+        /*
         try{
             return await GameModel.findOneAndUpdate({Slug: game.Slug}, { Teams: game.Teams }, {new: true}, ()=>{
 
@@ -183,6 +196,7 @@ class GameRouter
         catch{
 
         }
+        */
 
 /*
         try {
