@@ -89,7 +89,7 @@ class GameRouter
             await g.save();
             const savedGame = await GameModel.findOne({Slug: game.Slug});
             console.log("GAME AS INITIALLY SAVED", savedGame)
-            const gameWithTeams = await this.SaveChildGames(game);
+            const gameWithTeams = await this.SaveChildGames(savedGame);
             if (!gameWithTeams) {
               res.status(400).json({ error: 'No games' });
             } else {
