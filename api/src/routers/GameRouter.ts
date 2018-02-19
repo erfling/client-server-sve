@@ -86,7 +86,9 @@ class GameRouter
         const g = new GameModel(game);
         
         g.save()
-            .then((g)=> {console.log(g); res.json(g)})
+            .then(g => g)
+            .then(this.SaveChildGames)
+            .catch(() => res.status(400).json({ error: 'Save Failed' }));
 /*
         try {
             await g.save();
