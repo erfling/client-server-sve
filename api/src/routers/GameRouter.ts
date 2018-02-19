@@ -80,15 +80,17 @@ class GameRouter
         }
     }
 
-    public async CreateGame(req: Request, res: Response):Promise<any> {
+    public CreateGame(req: Request, res: Response):Promise<any> {
         console.log("CREATE GAME CALLED")
         const game = new Game(req.body);         
         const g = new GameModel(game);
         
-        g.save()
-            .then(g => g)
-            .then(this.SaveChildGames)
-            .catch(() => res.status(400).json({ error: 'Save Failed' }));
+
+        //
+        return g.save()
+                .then(g => g)
+                .then(this.SaveChildGames.bind(this))
+                .catch(() => res.status(400).json({ error: 'Save Failed' }));
 /*
         try {
             await g.save();
