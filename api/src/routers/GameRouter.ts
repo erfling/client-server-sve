@@ -142,8 +142,9 @@ class GameRouter
         console.log(gamesNeeded, game);
         var promises = [];          
         for(let i = 0; i < gamesNeeded; i++){
-            console.log(i, game.Location + " " + game.DatePlayed.toISOString() + " Team " + (i + 1));
-            let promise = this.Sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + (i + 1))
+            console.log(i, game.Location + " " + " Team " + (i + 1));
+            //+ game.DatePlayed.toISOString()
+            let promise = this.Sheets.createTeamSheet(game.Location + " "  + " Team " + (i + 1))
             promises.push(promise);
 
             /*
