@@ -33,7 +33,17 @@ export class Team extends BaseClass implements ITeam
     CurrentRole: string;
 
     @prop()
-    WaterDistributions: Ref<WaterValues>;
+    Government: string;
+
+    @prop()
+    Industry: string;
+
+    @prop()
+    Healthcare: string;
+
+    @prop()
+    Agriculture: string;
+
   }
 
   export const TeamModel = new Team().getModelForClass( Team, { existingMongoose: mongoose } )
