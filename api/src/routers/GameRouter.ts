@@ -150,7 +150,6 @@ class GameRouter
                                 .then((sheetId:any) => Promise.resolve(new Team({GameId: game._id, SheetId: sheetId})))
                                 .then((t:ITeam) => TeamModel.create(t))
             
-            console.log(promise);
             
             promises.push(promise);
 
