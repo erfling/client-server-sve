@@ -303,20 +303,23 @@ export default class GoogleSheets
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth: any) => {
-            const service = google.drive('v2');
-            var request = service.files.copy({
-                'fileId': sourceId,
-                auth: auth,
-                'resource': {'title': sheetName}
-            }, (error:any, resp: any) => {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log("CREATE SHEET RESPONSE", resp);
-                    return resp.id;
-                }
-            });
-        });
+            return new Promise((resolve, reject)=>{
+                const service = google.drive('v2');
+                var request = service.files.copy({
+                    'fileId': sourceId,
+                    auth: auth,
+                    'resource': {'title': sheetName}
+                }, (error:any, resp: any) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        console.log("CREATE SHEET RESPONSE");
+                        resolve(resp.id)
+                    }
+                });
+            })
+            
+        }).catch(e => console.log("CAUGHT ERROR",e));
     }
 
     /*
