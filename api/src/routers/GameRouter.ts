@@ -20,6 +20,7 @@ class GameRouter
 
     public router: Router;
     public GameModel: any;
+    private Sheets: GoogleSheets;
     
     //----------------------------------------------------------------------
     //
@@ -127,9 +128,14 @@ class GameRouter
         }
     } 
 
+    private getSheets(){
+        if(!this.Sheets)this.Sheets = new GoogleSheets();
+        return this.Sheets;
+    }
+
     private async SaveChildGames(game: IGame):Promise<any> {
         console.log("SAVE CHILD GAMES CALLED");
-        const sheets = new GoogleSheets();
+        const sheets = this.getSheets();
 
         //ALL GOOGLE SVE GAMES HAVE 6 TEAMS
         let gamesNeeded = 6 - game.Teams.length;
