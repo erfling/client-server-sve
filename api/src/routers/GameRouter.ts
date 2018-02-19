@@ -176,9 +176,10 @@ class GameRouter
         
 
         return Promise.all(promises).then((promises) => {
-            console.log(promises);
             
-            return GameModel.findOneAndUpdate({Slug: game.Slug}, { Teams: game.Teamspromises }, {new: true}, ()=>{
+            var teams: string[] = promises.map(p => p._id)
+
+            return GameModel.findOneAndUpdate({Slug: game.Slug}, { Teams: promises }, {new: true}, ()=>{
 
             })
             
