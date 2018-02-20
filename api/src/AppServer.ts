@@ -235,7 +235,13 @@ export default class AppServer
             .use('/sapien/api/games', GameRouter)
             .use('/sapien/api/sheets', SheetsRouter)
             .use('/sapien/api/teams', TeamRouter)
-            .use('/sapien/api/player', PlayerRouter);
+            .use('/sapien/api/player', PlayerRouter)
+            .post('sapien/api/changestate', 
+                (req, res) => {
+                    GameModel.findOneAndUpdate({_id: req.body._id}, {State: req.body.state}, {new: true}, (game) => {
+                        this.io.emit(SocketEvents.GAME_STATE_CHANGED, game.State);
+                    })
+                });
 
         //google drive verification
         this.app.get('/google8b116b0e2c1fc48f.html ', function(req, res) {
@@ -269,6 +275,7 @@ export default class AppServer
              })
          });
     }
+
 
     /**
      * Listen for socket communication

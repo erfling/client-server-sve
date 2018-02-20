@@ -31,6 +31,9 @@ export class Game extends BaseClass implements IGame
     Teams:  Ref<ITeam>[] | ITeam[];
 
     @prop()
+    State: number;
+
+    @prop()
     DatePlayed: Date;
 
   }
