@@ -97,10 +97,9 @@ class GameRouter
     public async UpdateGame(req: Request, res: Response):Promise<IGame | any> {
         const Slug = req.body.Slug;
         const game = new Game(req.body); 
-
+        console.log(req.body);
         try {
             let savedGame = await GameModel.findOneAndUpdate({ _id:req.body._id }, game, {new: true }).populate('Teams');
-            console.log("after save",savedGame);
             if (!savedGame) {
               res.status(400).json({ error: "couldn't but we tried"});
             } else {

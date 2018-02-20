@@ -222,14 +222,14 @@ export const getGames = () => {
         console.log("BASE REST",baseRestURL);
         return fetch(baseRestURL + 'games')
             .then(( res:Response ) => {
-                console.log(res);
                 return res.json()
             })
             .then( (games:IGame[] ) => {
+                console.log("GET GAMES RESPONSE,",games);
                 dispatch( gotGames( ACTION_TYPES.GAMES_LOADED, games ) );
                 setTimeout( () => {dispatch(isLoading(ACTION_TYPES.IS_LOADING, false))},200);
             })
-            .catch( ( reason ) => { console.log(reason); alert("LOAD asdf") } )
+            .catch( ( reason ) => { console.log("GET GAMES FAILE CUZ: ",reason); } )
     }
 }
 
@@ -333,7 +333,7 @@ export const setEnvironmentalHealth = (health: number):Dispatch<Action<number>> 
 
 }
 
-export const login = (player: IPlayer) => {
+export const login = (team: ITeam) => {
     return (dispatch: Dispatch<Action<IGame[]>>) => {
         dispatch(isLoading(ACTION_TYPES.IS_LOADING, true))
         console.log("BASE REST",baseRestURL);
@@ -342,7 +342,7 @@ export const login = (player: IPlayer) => {
                 url, 
                 {
                     method: "POST",
-                    body: JSON.stringify(player),
+                    body: JSON.stringify(team),
                     headers: new Headers({
                         'Content-Type': 'application/json'
                     })

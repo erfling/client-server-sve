@@ -13,6 +13,7 @@ import formValues from '../../../shared/models/FormValues';
 import { loadavg } from 'os';
 import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
+import IGame from '../../../shared/models/IGame';
 import Role from '../../../shared/models/IPlayer';
 import RoleDetail from './RoleDetail'
 import { Link, Route } from "react-router-dom";
@@ -28,7 +29,9 @@ import AgriIcon from '-!svg-react-loader?name=Icon!../img/agri-icon.svg';
 interface FormProps{
     joinGame: (player:IPlayer) => {}
     getTeams: () => {}
+    getGames: () => {}
     Teams: ITeam[];
+    Games: IGame[];
     LoggingIn: boolean;
     Loading: boolean;
     selectTeam: (team: any) => {}
@@ -38,14 +41,15 @@ interface FormProps{
     SelectedPlayer: IPlayer;
     CurrentTeam:  ITeam & {CurrentRole: string}
 }
-export default class LoginFormComponent extends React.Component<FormProps, {TeamOptions:any[]}> {
+export default class LoginFormComponent extends React.Component<FormProps, {TeamOptions:any[], SelectedGame: IGame}> {
     
     componentWillMount(){
-        this.setState({TeamOptions:[]})
+        this.setState({TeamOptions:[], SelectedGame: null})
+        this.props.getTeams();
+        this.props.getGames();
     }
     
     componentDidMount(){
-        this.props.getTeams();
     }
 
     getOptions(){
@@ -57,11 +61,25 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
     onChangeSelectTeam(value: any){
         console.log("SELECTED: ", value)
         let selectedTeam = this.props.Teams.filter(t => t.Slug == value)[0] || null;
-        if(selectedTeam)this.props.selectTeam(selectedTeam);
+        if(selectedTeam){
+            this.props.selectTeam(selectedTeam);
+            console.log(this.props.SelectedTeam)
+            this.props.joinGame(selectedTeam)
+        }
+        /*
         setTimeout(() => {
             var scrollTarget = document.querySelector(".role-selection")
             if(scrollTarget)scrollTarget.scrollIntoView({ behavior: 'smooth' ,block: 'start' });
-        },200);        
+        },200);
+        */        
+    }
+
+    onChangeSelectGame(value: any){
+        let SelectedGame = this.props.Games.filter(g => g.Slug == value)[0] || null;
+        if(SelectedGame){
+            console.log("SELECTING TEAM", value)
+            this.setState(Object.assign(this.state, { SelectedGame }))
+        }
     }
 
     handleCancel(){
@@ -117,17 +135,28 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                             <Route component={RoleDetail}/>
                         </Modal>    }
                         {this.props.CurrentTeam && <Redirect to="/who-gets-the-water"/>}
-                        {this.props.Teams.length ? <Row type="flex" justify="center" style={{minHeight:'100vh'}}>
-                                                <Col xs={24}>  
+                        {this.props.Games.length ? <Row type="flex" justify="center" style={{minHeight:'100vh'}}>
+                                                <Col xs={24} style={{height:0}}>  
                                                     <div className="form-wrapper">                                                  
-                                                    <   label>Select Team</label>
-                                                        <Select style={{width:'100%'}} onChange={val => this.onChangeSelectTeam(val)} placeholder="--Select Team--">
-                                                            {this.props.Teams.map(( t, i) => {
-                                                                return <Select.Option key={i+1} value={t.Slug}>Team {i + 1}</Select.Option>
+                                                        <label>Join a Game</label>
+                                                        <Select style={{width:'100%'}} onChange={val => this.onChangeSelectGame(val)} placeholder="--Select Game--">
+                                                            {this.props.Games.map(( g, i) => {
+                                                                return <Select.Option key={i+1} value={g.Slug}>{g.Location + " " + new Date(g.DatePlayed).toLocaleDateString()}</Select.Option>
                                                             })}                                                  
                                                         </Select>
                                                     </div>
                                                 </Col>
+                                                
+                                                {this.state.SelectedGame && this.props.Teams ? <Col xs={24}>  
+                                                    <div className="form-wrapper" style={{marginTop:'-30px'}}>
+                                                        <label>Select Your Team</label>
+                                                        <Select style={{width:'100%'}} onChange={val => this.onChangeSelectTeam(val)} placeholder="--Select Team--">
+                                                            {this.props.Teams.filter(t => t.GameId == this.state.SelectedGame._id).map(( t, i) => {
+                                                                return <Select.Option key={i+1} value={t.Slug}>Team {i + 1}</Select.Option>
+                                                            })}                                                   
+                                                        </Select>
+                                                    </div>
+                                                </Col> : null}
                                                 {this.props.SelectedTeam &&
                                                 <Row className="role-selection">
                                                     <Col xs={24}>

@@ -249,14 +249,13 @@ export default class AppServer
            // const crypto = require("crypto");
            console.log("searching for team with ID:",TeamModel);
            //req.body.SelectedTeam._id\
-            TeamModel.findOne({Slug: req.body.TeamId}).then((team) => {
-                var oTeam = Object.assign(team.toObject(), { ChosenRole: req.body.SelectedRole} );
+            TeamModel.findOne({Slug: req.body.Slug}).then((team) => {
 
                 var token = jwt.sign({
-                    team: oTeam
+                    team: team
                  }, 'shhhhh');
-                console.log("TEAM TO SEND", oTeam);
-                res.json({token, team:oTeam});
+                console.log("TEAM TO SEND", team);
+                res.json({token, team:team});
             })
             
 
