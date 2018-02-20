@@ -40,6 +40,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
                 return g._id == game._id ? Object.assign(g, game) : state;
             }) : state.Game.concat( [Object.assign( game, { _id: (state.Game.length+1).toString() } ) ] )
         
+        
         case(ACTION_TYPES.GAMES_LOADED):
             var games = action.payload as IGame[];
             var teams:ITeam[] = [];
@@ -81,7 +82,14 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             return newState;
         case(ACTION_TYPES.DASHBOARD_UPDATED):
             return Object.assign({}, state, {Dashboard: action.payload})
-
+        case(ACTION_TYPES.GOT_GAME):
+            return Object.assign({}, state, {SelectedGame: action.payload})
+        case(ACTION_TYPES.GAME_STATE_CHANGED_ADMIN):
+            console.log("REDUCER HANDLING")
+            var ns = JSON.parse(JSON.stringify(state));
+            ns.SelectedGame.State = action.payload.State;
+            return ns;
+            //, Game: state.Game.map(g => g._id == action.payload._id ? Object.assign(action.payload, {IsSelected: true}) :  g)}
         case (ACTION_TYPES.REST_SAVE_SUCCESS):
             var newState = Object.assign({} ,state);
             var objects = newState[action.payload.CLASS_NAME];

@@ -9,7 +9,7 @@ import IGame from '../../../../shared/models/IGame';
 import { SelectWrapper, InputWrapper, DateWrapper } from './AntdFormWrappers'
 import { connect } from 'react-redux';
 import  ApplicationStore from '../../stores/Store';
-
+import * as moment from 'moment';
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): {Submitting: boolean} => {
     return {
         Submitting: state.Application.Submitting
@@ -60,7 +60,7 @@ class AdminGameForm extends React.Component<FormProps> {
                         <Field
                             name="DatePlayed"
                             component={DateWrapper}
-                            defaultValue={this.props.initialValues.DatePlayed}
+                            defaultValue={moment(this.props.initialValues.DatePlayed)}
                         />                       
                     </FormItem>
 
