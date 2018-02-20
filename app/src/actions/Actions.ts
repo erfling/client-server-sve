@@ -16,19 +16,11 @@ const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
 const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
 const socketPort = window.location.host.includes('sapien') ? ":9443" : ":5000";
 const baseRestURL = protocol +  "//" + window.location.hostname + port + "/sapien/api/";
-//const socket = socketIo({path: socketPort + "/" + "Team1", transports: ['websocket'] });
-const socket = socketIo(protocol +  "//" + window.location.hostname + socketPort + "/" + "Team1");
-console.log("BASE",socket)
-console.log("SOCKET ON CONNECT", socket);
 const teamSocket = '';
+//const socket = socketIo({path: socketPort + "/" + "Team1", transports: ['websocket'] });
+var socket:SocketIOClient.Socket;
 
 
- //SET UP SOCKET EVENTS
- socket.on(SocketEvents.CONNECT, (data: any) => {
-    console.log("SOCKET RETURNED SOMETHING", data);
-    console.log("SOCKET THAT RETURNED", socket);
-})/*f
-*/
 export interface Action<T> {
     type: string;
     payload?: T;
@@ -73,6 +65,38 @@ export enum ACTION_TYPES {
 
 }
 
+export const createTeamSocket = (team:ITeam) => {
+    if (socket) {
+        return (dispatch: Dispatch<Action<ITeam>>) => {
+            dispatch( {
+                type: ACTION_TYPES.PLAYER_JOINED,
+                payload: team
+            } );
+        }
+    } else {
+        socket = socketIo(protocol +  "//" + window.location.hostname + socketPort + "/" + team.Slug);
+        console.log("BASE",socket)
+        console.log("SOCKET ON CONNECT", socket);
+        //SET UP SOCKET EVENTS
+        socket.on(SocketEvents.CONNECT, (data: any) => {
+            console.log("SOCKET RETURNED SOMETHING", data);
+            console.log("SOCKET THAT RETURNED", socket);
+        })
+        return (dispatch: Dispatch<Action<ITeam>>) => {
+            socket.on(SocketEvents.TEAM_UPDATED, (team:ITeam) => {
+                console.log(SocketEvents.TEAM_UPDATED, team);
+                dispatch( {
+                    type: ACTION_TYPES.IS_LOADING,
+                    payload: false
+                } );
+                dispatch( {
+                    type: ACTION_TYPES.PLAYER_JOINED,
+                    payload: team
+                } );
+            })
+        }
+    }
+}
 
 const gamePushed: ActionCreator<GameAction<IGame>> = (game: IGame) => {
     return {
@@ -335,7 +359,7 @@ export const setEnvironmentalHealth = (health: number):Dispatch<Action<number>> 
 
 export const login = (team: ITeam) => {
     return (dispatch: Dispatch<Action<IGame[]>>) => {
-        dispatch(isLoading(ACTION_TYPES.IS_LOADING, true))
+        dispatch(isLoading(ACTION_TYPES.IS_LOADING, true));
         console.log("BASE REST",baseRestURL);
         const url = baseRestURL + 'login';
         return fetch(
@@ -351,29 +375,22 @@ export const login = (team: ITeam) => {
             .then(( res:Response ) => {
                 return res.json()
             })
-            .then( (jwt:any )=>{
-                console.dir("A:LKJSDFLKj",jwt);
+            .then( (jwt:any ) => {
                 dispatch( {
                     type: ACTION_TYPES.PLAYER_JOINED,
                     payload: jwt
                 } );
 
-                setTimeout( () => {dispatch(isLoading(ACTION_TYPES.IS_LOADING, false))},1000)
-
+                setTimeout( () => {
+                    dispatch(isLoading(ACTION_TYPES.IS_LOADING, false));
+                }, 1000);
                
-                socket.on(SocketEvents.TEAM_UPDATED, (team:ITeam) => {
-                    dispatch( {
-                        type: ACTION_TYPES.IS_LOADING,
-                        payload: false
-                    } );
-                    dispatch( {
-                        type: ACTION_TYPES.PLAYER_JOINED,
-                        payload: jwt
-                    } );
-                })
+                dispatch(createTeamSocket(team));
 
             })
-            .catch( ( reason ) => { console.log(reason);} )
+            .catch( ( reason ) => { 
+                console.log(reason);
+            })
     }
 }
 
@@ -408,6 +425,7 @@ export const getPlayer = () => {
             type: ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE,
             payload: JSON.parse(localStorage.getItem("SVE_PLAYER"))
         })
+        dispatch( createTeamSocket(JSON.parse(localStorage.getItem("SVE_PLAYER"))) );
     }
 }
 
