@@ -235,7 +235,7 @@ export default class AppServer
             .use('/sapien/api/games', GameRouter)
             .use('/sapien/api/sheets', SheetsRouter)
             .use('/sapien/api/teams', TeamRouter)
-            .use('/sapien/api/player', PlayerRouter);
+            .use('/sapien/api/player', PlayerRouter)            
 
         //google drive verification
         this.app.get('/google8b116b0e2c1fc48f.html ', function(req, res) {
@@ -245,30 +245,42 @@ export default class AppServer
         //login route
         mongoose.set('debug', true);
 
-        this.app.post('/sapien/api/login', (req, res) => {
-           // const crypto = require("crypto");
-           console.log("searching for team with ID:",TeamModel);
-           //req.body.SelectedTeam._id\
-            TeamModel.findOne({Slug: req.body.Slug}).then((team) => {
-
-                var token = jwt.sign({
-                    team: team
-                 }, 'shhhhh');
-                console.log("TEAM TO SEND", team);
-                res.json({token, team:team});
+        this.app.post('/sapien/api/changestate', (req, res) => {
+            console.log(req.body._id);
+            GameModel.findByIdAndUpdate(req.body._id, {State: req.body.State}, {new: true}, (error, game) => {
+                console.log(game);
+                //this.io.emit(SocketEvents.GAME_STATE_CHANGED, game.State);
+                res.json(game);
             })
-            
-
         });
 
-        this.app.get('/login', (req, res) => {
-             // const crypto = require("crypto");
-             PlayerModel.findOne().then((player:Player) => {
-                 var token = jwt.sign({ player }, 'shhhhh');
-                 res.json({test: token, player});
-             })
-         });
+        this.app.post('/sapien/api/login', async (req, res) => {
+            try{
+                var game:Game & mongoose.Document = null;
+                const team = await TeamModel.findOne({Slug: req.body.Slug})
+
+                if(team){
+                    game = await GameModel.findById(team.GameId);
+                }
+
+                if(game){
+                    team.GameState = game.State;
+                    var token = jwt.sign({
+                        team: team
+                     }, 'shhhhh');
+                    console.log("TEAM TO SEND", team);
+                    res.json({token, team:team});
+                } else {
+                    res.json("LOGIN FAILED")
+                }  
+
+            } catch {
+                res.json("LOGIN FAILED")
+            }
+
+        });
     }
+
 
     /**
      * Listen for socket communication

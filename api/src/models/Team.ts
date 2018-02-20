@@ -65,6 +65,9 @@ export class Team extends BaseClass implements ITeam
     @prop()
     TeamNumber: number;
 
+    @prop()
+    GameState: number;
+
   }
 
   export const TeamModel = new Team().getModelForClass( Team, { existingMongoose: mongoose } )

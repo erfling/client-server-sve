@@ -61,7 +61,11 @@ export enum ACTION_TYPES {
 
     PLAYER_JOINED = 'PLAYER_JOINED',
     GOT_TEAMS = "GOT_TEAMS",
-    GOT_PLAYER_FROM_LOCAL_STORAGE = "GOT_PLAYER_FROM_LOCAL_STORAGE"
+    GOT_PLAYER_FROM_LOCAL_STORAGE = "GOT_PLAYER_FROM_LOCAL_STORAGE",
+
+    GAME_STATE_CHANGED       = "GAME_STATE_CHANGED",
+    GAME_STATE_CHANGED_ADMIN = "GAME_STATE_CHANGED_ADMIN",
+    GOT_GAME = "GOT_GAME"
 
 }
 
@@ -327,6 +331,22 @@ export const restFetchBySlug = ( type: string, slug:string) => {
     }
 }
 
+export const getGame = (slug:string) => {
+    let url = baseRestURL + "games/" + slug;
+    return (dispatch:Dispatch<Action<IGame | ITeam | IPlayer>>) => {
+        fetch( url )
+            .then( r => r.json() )
+            .then( ( r: ITeam | IGame | IPlayer ) => {
+                r.IsSelected = true;
+                dispatch( {
+                    type: ACTION_TYPES.GOT_GAME,
+                    payload: r
+                });
+                //dispatch({type:ACTION_TYPES.})
+            })
+    }
+}
+
 export const getTeams = () => {
     let url = baseRestURL + "teams"
     return (dispatch:Dispatch<Action<ITeam[]>>) => {
@@ -394,10 +414,6 @@ export const login = (team: ITeam) => {
     }
 }
 
-const setUpSocketListeners = () => {
-    
-}
-
 export const selectTeam = (team:ITeam) => {
     return (dispatch: Dispatch<Action<ITeam>>) => {
         dispatch({
@@ -437,5 +453,32 @@ export const setWaterValues = (team: ITeam) => {
             type: ACTION_TYPES.IS_LOADING,
             payload: true
         } );
+    }
+}
+
+export const setGameState = (game:IGame, newState: number) => {
+    return (dispatch: Dispatch<Action<number>>) => {
+        const url = baseRestURL + 'changestate';
+
+        return fetch(
+            url, 
+            {
+                method: "POST",
+                body: JSON.stringify(Object.assign(game, {State: newState})),
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            }
+        )
+        .then(( res:Response ) => {
+            return res.json()
+        })
+        .then( (jwt:any )=>{
+            dispatch({
+                type: ACTION_TYPES.GAME_STATE_CHANGED_ADMIN,
+                payload:game
+            })
+        }
+    )
     }
 }

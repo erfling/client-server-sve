@@ -68,7 +68,6 @@ class GameRouter
 
     public async GetGame(req: Request, res: Response):Promise<any> {
         const Slug = req.params.game;
-        console.log(Slug);
         try {
             let game = await GameModel.findOne({Slug}).populate({path : 'Teams', populate : {path : 'Players'}});
         

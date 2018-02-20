@@ -30,6 +30,9 @@ export class Game extends BaseClass implements IGame
     @arrayProp({ itemsRef: Team })
     Teams:  Ref<ITeam>[] | ITeam[];
 
+    @prop({default: 1})
+    State: number;
+
     @prop()
     DatePlayed: Date;
 
