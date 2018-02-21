@@ -78,13 +78,20 @@ export const createTeamSocket = (team:ITeam) => {
             } );
         }
     } else {
-        socket = socketIo(protocol +  "//" + window.location.hostname + socketPort + "/" + team.Slug);
+        socket = socketIo(protocol +  "//" + window.location.hostname + socketPort + "/" + team.GameId);
         console.log("BASE",socket)
         console.log("SOCKET ON CONNECT", socket);
         //SET UP SOCKET EVENTS
+        socket.on(SocketEvents.MESSAGE, (msg: string) => {
+            console.log("SOCKET RETURNED NAMESPACE MESSAGE", msg);
+        })
+        socket.on(SocketEvents.ROOM_MESSAGE, (msg: string) => {
+            console.log("SOCKET RETURNED ROOM MESSAGE", msg);
+        })
         socket.on(SocketEvents.CONNECT, (data: any) => {
             console.log("SOCKET RETURNED SOMETHING", data);
             console.log("SOCKET THAT RETURNED", socket);
+            socket.emit(SocketEvents.JOIN_ROOM, team.Slug);
         })
         return (dispatch: Dispatch<Action<ITeam>>) => {
             socket.on(SocketEvents.TEAM_UPDATED, (team:ITeam) => {
