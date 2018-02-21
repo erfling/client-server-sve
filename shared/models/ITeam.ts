@@ -1,6 +1,7 @@
 import IBaseClass from './BaseModel'
 import {  Ref } from 'typegoose';
 import IPlayer from './IPlayer';
+import INation from './INation';
 
 export default interface ITeam extends IBaseClass {    
   Location?: string;  
@@ -15,4 +16,5 @@ export default interface ITeam extends IBaseClass {
   agriculture: string;
   GameId: string;
   GameState: number | string;
+  Nation: INation;
 }  

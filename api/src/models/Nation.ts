@@ -3,17 +3,11 @@ import * as mongoose from 'mongoose';
 import BaseClass from './BaseModel'
 import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
+import INation from '../../../shared/models/INation';
 import { Player } from './Player';
 
-interface NationShape{
-    Name: string;
-    SellsTo: string;
-    BuysFrom: string;
-    Description:string;
-    Tech: string;
-}
 
-export class Nation extends BaseClass implements NationShape
+export class Nation extends BaseClass implements INation
 {
     @prop({default: "Nation"})
     CLASS_NAME:string;

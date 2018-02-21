@@ -39,6 +39,7 @@ import { GameModel, Game } from './models/Game';
 import { Team, TeamModel } from './models/Team'; 
 import { Player, PlayerModel } from './models/Player';
 import { NationModel, Nation } from './models/Nation';
+import Item from 'antd/lib/list/Item';
 
 
 // AppServer class
@@ -131,15 +132,29 @@ export default class AppServer
             .on(SocketEvents.JOIN_ROOM, this.onSocketJoinRoom.bind(this, socket))
             .on(SocketEvents.TO_ROOM_MESSAGE, this.onSocketRoomToRoomMessage.bind(this, socket))
             .on(SocketEvents.PROPOSE_DEAL, this.respondToDeal.bind(this, socket))
-            .on(SocketEvents.RESPOND_TO_DEAL, this.proposeDeal.bind(this, socket))
+            .on(SocketEvents.RESPOND_TO_DEAL, this.proposeDeal.bind(this, socket));
     }
 
-    private proposeDeal(eventTarget:SocketIO.Socket, deal: {from:string, to: string, deal:string}){
-
+    private proposeDeal(eventTarget:SocketIO.Socket, deal:IDeal):void {
+        GameModel.findById(eventTarget.nsp.name.slice(1)).populate("Teams").then((g) => {
+            let teams:ITeam[] = (<IGame>g).Teams as ITeam[];
+            var toTeam:ITeam = teams.filter(t => t.Nation.Name == deal.to)[0];
+            if (toTeam) {
+                eventTarget.nsp.to(deal.to).emit(SocketEvents.PROPOSE_DEAL, deal);
+                eventTarget.broadcast.to(toTeam.Name).emit(SocketEvents.PROPOSE_DEAL, deal);
+            }
+        });
     }
 
-    private respondToDeal(eventTarget:SocketIO.Socket, thing: {from:string, to: string, deal: string, accept: boolean}){
-
+    private respondToDeal(eventTarget:SocketIO.Socket, deal:IDeal):void {
+        GameModel.findById(eventTarget.nsp.name.slice(1)).populate("Teams").then((g) => {
+            let teams:ITeam[] = (<IGame>g).Teams as ITeam[];
+            var toTeam:ITeam = teams.filter(t => t.Nation.Name == deal.to)[0];
+            if (toTeam) {
+                eventTarget.nsp.to(deal.to).emit(SocketEvents.RESPOND_TO_DEAL, deal);
+                eventTarget.broadcast.to(toTeam.Name).emit(SocketEvents.RESPOND_TO_DEAL, deal);
+            }
+        });
     }
 
     private onSocketJoinRoom(eventTarget:SocketIO.Socket, roomName:string):void {
