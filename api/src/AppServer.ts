@@ -123,6 +123,25 @@ export default class AppServer
         let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
     }
 
+    private onGameSocketConnect(eventTarget:SocketIO.Namespace, game:any, socket:SocketIO.Socket):void {
+        console.log("gameSocket connected...");
+        let gameDoc: IGame = game as IGame;
+        let teams:ITeam[] = gameDoc.Teams as ITeam[];
+        teams.forEach((t:ITeam) => {
+            this.io.to(t.Slug).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + game._id + " IN ROOM " + t.Slug);
+        });
+
+        // Add socket listeners
+        socket.on(SocketEvents.JOIN_ROOM, this.onSocketJoinRoom.bind(this, socket));
+    }
+
+    private onSocketJoinRoom(eventTarget:SocketIO.Socket, Room:string):void {
+        eventTarget.join(Room);
+        console.log('Client ' + eventTarget.id + ' joined room ' + Room);
+        eventTarget.nsp.emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON ROOM " + Room);
+        this.io.of(eventTarget.nsp.name).to(Room).emit(SocketEvents.ROOM_MESSAGE, eventTarget.id + " HAS JOINED ROOM " + Room);
+    }
+
     private onTeamSocketConnect(eventTarget:SocketIO.Namespace, game:any, socket:SocketIO.Socket):void {
         console.log("teamSocket connected...");
         if (eventTarget.name.indexOf("1") == -1) return;
@@ -298,16 +317,13 @@ export default class AppServer
         });
         
         //TODO: solve for how we will determine desired game
-        let gameId = "5a3328d0a9021e2390a77bb3";
         GameModel.findOne({Slug: "Game2"}).populate("Teams").then((game) => {
+            let gameSocket = this.io.of(game._id);
+            gameSocket.on(SocketEvents.CONNECT, this.onGameSocketConnect.bind(this, gameSocket, game));
             let gameDoc: IGame = game as IGame;
             let teams:ITeam[] = gameDoc.Teams as ITeam[];
             teams.forEach((t:ITeam) => {
-                //this.sheets.subscribeToDriveResource("test")
                 var teamSocket = this.io.of(t.Slug);
-                
-                this.gameSockets.set(t.Slug, teamSocket);
-          
                 teamSocket.on(SocketEvents.CONNECT, this.onTeamSocketConnect.bind(this, teamSocket, game));
 
                 // TODO: Listen for sheets watch IF we're using secure socketServer
