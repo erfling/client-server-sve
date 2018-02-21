@@ -128,7 +128,17 @@ export default class AppServer
             .on(SocketEvents.SUBMIT_TO_SHEET, this.onSocketSubmitToSheet.bind(this, socket))
             .on(SocketEvents.UPDATE_TEAM, this.onSocketSaveTeam.bind(this, socket))
             .on(SocketEvents.JOIN_ROOM, this.onSocketJoinRoom.bind(this, socket))
-            .on(SocketEvents.TO_ROOM_MESSAGE, this.onSocketRoomToRoomMessage.bind(this, socket));
+            .on(SocketEvents.TO_ROOM_MESSAGE, this.onSocketRoomToRoomMessage.bind(this, socket))
+            .on(SocketEvents.PROPOSE_DEAL, this.respondToDeal.bind(this, socket))
+            .on(SocketEvents.RESPOND_TO_DEAL, this.proposeDeal.bind(this, socket))
+    }
+
+    private proposeDeal(eventTarget:SocketIO.Socket, thing: {from:string, to: string, package:any}){
+
+    }
+
+    private respondToDeal(eventTarget:SocketIO.Socket, thing: {from:string, to: string, package:any}){
+
     }
 
     private onSocketJoinRoom(eventTarget:SocketIO.Socket, roomName:string):void {
