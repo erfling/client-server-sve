@@ -21,6 +21,7 @@ import PlayerRouter from './routers/PlayerRouter';
 
 import IGame from '../../shared/models/IGame';
 import ITeam from '../../shared/models/ITeam';
+import IDeal from '../../shared/models/IDeal';
 import formValues from '../../shared/models/FormValues';
 import * as fs from 'fs';
 
@@ -133,11 +134,11 @@ export default class AppServer
             .on(SocketEvents.RESPOND_TO_DEAL, this.proposeDeal.bind(this, socket))
     }
 
-    private proposeDeal(eventTarget:SocketIO.Socket, thing: {from:string, to: string, package:any}){
+    private proposeDeal(eventTarget:SocketIO.Socket, deal: {from:string, to: string, deal:string}){
 
     }
 
-    private respondToDeal(eventTarget:SocketIO.Socket, thing: {from:string, to: string, package:any}){
+    private respondToDeal(eventTarget:SocketIO.Socket, thing: {from:string, to: string, deal: string, accept: boolean}){
 
     }
 
