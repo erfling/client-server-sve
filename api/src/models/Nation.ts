@@ -36,6 +36,9 @@ export class Nation extends BaseClass implements NationShape
     @prop({required: true})
     Tech: string;
 
+    @arrayProp({ items: String })
+    TradeOptions: string[];
+
   }
 
   export const NationModel = new Nation().getModelForClass( Nation, { existingMongoose: mongoose } )
