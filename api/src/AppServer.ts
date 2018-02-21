@@ -285,6 +285,7 @@ export default class AppServer
                                 GameState: 2
                             }
                             TeamModel.findByIdAndUpdate(teams[i]._id, update, {new: true}).populate("Nation").then((t) => {
+                                console.log(t);
                                 this.io.of(t.GameId).to(t.Slug).emit(SocketEvents.TEAM_UPDATED, t)
                             });        
                             promises.push(promise);

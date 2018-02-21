@@ -96,7 +96,7 @@ export const createTeamSocket = (team:ITeam) => {
         })
         return (dispatch: Dispatch<Action<ITeam>>) => {
             socket.on(SocketEvents.TEAM_UPDATED, (team:ITeam) => {
-                console.log(SocketEvents.TEAM_UPDATED, team);
+                console.log("HEEYYYYYYYYYYYYYY",SocketEvents.TEAM_UPDATED, team);
                 dispatch( {
                     type: ACTION_TYPES.IS_LOADING,
                     payload: false
