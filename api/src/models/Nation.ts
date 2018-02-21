@@ -38,5 +38,5 @@ export class Nation extends BaseClass implements NationShape
 
   }
 
-  export const TeamModel = new Nation().getModelForClass( Nation, { existingMongoose: mongoose } )
+  export const NationModel = new Nation().getModelForClass( Nation, { existingMongoose: mongoose } )
   

@@ -37,6 +37,7 @@ import { SocketEvents } from './../../shared/models/SocketEvents';
 import { GameModel, Game } from './models/Game'; 
 import { Team, TeamModel } from './models/Team'; 
 import { Player, PlayerModel } from './models/Player';
+import { NationModel, Nation } from './models/Nation';
 
 
 // AppServer class
@@ -266,9 +267,34 @@ export default class AppServer
 
         this.app.post('/sapien/api/changestate', (req, res) => {
             console.log(req.body._id);
-            GameModel.findByIdAndUpdate(req.body._id, {State: req.body.State}, {new: true}, (error, game) => {
-                console.log(game);
+            GameModel.findByIdAndUpdate(req.body._id, {State: req.body.State}, {new: true}).populate("Teams").then(( game ) => {
+                console.log(game.State);
                 //this.io.emit(SocketEvents.GAME_STATE_CHANGED, game.State);
+
+                //Set our countries
+                if(game.State == 2){
+                    console.log("STATE IS 2")
+                    var teams:ITeam[] = game.Teams as ITeam[];
+                    var promises:any[] = [];
+                    var promise = NationModel.find().then((nations) => {
+                        
+                        for(var i = 0; i < nations.length; i++){
+                            var n = nations[i];
+                            var update = {
+                                Nation: n,
+                                GameState: 2
+                            }
+                            TeamModel.findByIdAndUpdate(teams[i]._id, update, {new: true}).populate("Nation").then((t) => {
+                                this.io.of(t.GameId).to(t.Slug).emit(SocketEvents.TEAM_UPDATED, t)
+                            });        
+                            promises.push(promise);
+                        }
+
+                        return nations;
+                    })
+
+                }
+
                 res.json(game);
             })
         });
@@ -283,7 +309,7 @@ export default class AppServer
                 }
 
                 if(game){
-                    var t = team.toObject();
+                    var t:Team = team.toObject() as Team;
                     t.GameState = game.State;
                     var token = jwt.sign({
                         team: t

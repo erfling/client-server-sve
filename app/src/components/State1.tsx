@@ -36,6 +36,10 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
         }
         window.scrollTo(0,0);
     }
+    
+    componentDidUpdate(){
+        console.log("UPDATED")
+    }
 
     render(){
         const d = new Date();

@@ -60,6 +60,7 @@ export enum ACTION_TYPES {
     GOT_OBJECT_BY_SLUG = "GOT_OBJECT_BY_SLUG",
 
     PLAYER_JOINED = 'PLAYER_JOINED',
+    PLAYER_UPDATED = "PLAYER_UPDATED",
     GOT_TEAMS = "GOT_TEAMS",
     GOT_PLAYER_FROM_LOCAL_STORAGE = "GOT_PLAYER_FROM_LOCAL_STORAGE",
 
@@ -101,7 +102,7 @@ export const createTeamSocket = (team:ITeam) => {
                     payload: false
                 } );
                 dispatch( {
-                    type: ACTION_TYPES.PLAYER_JOINED,
+                    type: ACTION_TYPES.PLAYER_UPDATED,
                     payload: team
                 } );
             })

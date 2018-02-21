@@ -145,6 +145,9 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             localStorage.setItem('TOKEN', JSON.stringify(action.payload.token));
             console.log(action.payload)
             return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload.team)})
+        case ACTION_TYPES.PLAYER_UPDATED:
+            localStorage.setItem('SVE_PLAYER', JSON.stringify(action.payload));
+            return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
         case ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE: 
             return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
         default:
