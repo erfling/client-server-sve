@@ -343,7 +343,7 @@ export default class AppServer
         });
         
         //TODO: solve for how we will determine desired game
-        GameModel.findOne({Slug: "Game2"}).populate("Teams").then((game) => {
+        GameModel.findOne({Slug: "test"}).populate("Teams").then((game) => {
             let gameSocket = this.io.of(game._id);
             gameSocket.on(SocketEvents.CONNECT, this.onGameSocketConnect.bind(this, gameSocket, game));
             let gameDoc: IGame = game as IGame;
