@@ -16,6 +16,7 @@ interface DealFormProps extends InjectedFormProps{
     FormData:any;
     handleSubmit: (formValues:any) => {};
     setWaterValues: () => {}
+    CurrentPlayer: ITeam;
 }
 
 class SliderWrapperField extends Field<{increment:number}>{
@@ -73,24 +74,24 @@ class DealFormWrapper extends React.Component<DealFormProps, { warning:string }>
 
     render(){
 
-        return <form ref="waterForm" id="waterForm">
+        return <form ref="dealForm" id="dealForm">
                 <div className="form-wrapper">
+                   
                     <FormItem>
-                        
-                        <Field
-                            name="agriculture"
-                            component={RadioWrapper}
-                            validate={this.selectChanged}
-                            placeholder="Who gets your resources"
-                        > 
-                            {this.getOptionsByTeam().map((o, i) => <option key={i}>{o}</option>)}
-                        </Field>      
+                        {this.props.CurrentPlayer && 
+                            <Field
+                                name="to"
+                                component={RadioWrapper}
+                                validate={this.selectChanged}
+                            > 
+                                {this.props.CurrentPlayer.Nation.TradeOptions.map((o:string, i:number) => <option key={i}>{o}</option>)}
+                            </Field>
+                        }      
                     </FormItem>
                 </div>
                
-                <div className="form-wrapper">
-                    {this.props.invalid && <Alert style={{marginTop:'15px'}} message="There is only enough water to give some to give all of it to one sector, or some of it to two sectors." type="error"></Alert>}
-                    <Button className="game-button block" onClick={e => this.props.handleSubmit(e)} disabled={this.props.invalid}>Share {this.props.Submitting && <Icon type="loading"/>}</Button>
+                <div className="form-wrapper" style={{backgroundColor: 'transparent'}}>
+                    {this.props.FormData && <Button className="game-button block" onClick={e => this.props.handleSubmit(e)} disabled={!this.props.FormData.values}>Propose Deal {this.props.Submitting && <Icon type="loading"/>}</Button>}
                 </div>
             </form>
                        
@@ -100,7 +101,8 @@ class DealFormWrapper extends React.Component<DealFormProps, { warning:string }>
 const mapStateToProps = (state: ApplicationStore, ownProps:DealFormProps): {} => {
     return {
         Submitting: state.Application.Loading,
-        FormData: state.form.waterForm,
+        FormData: state.form.dealForm,
+        CurrentPlayer: state.GameData.CurrentPlayer
     };
 };
 

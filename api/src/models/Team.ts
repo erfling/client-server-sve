@@ -66,7 +66,7 @@ export class Team extends BaseClass implements ITeam
     TeamNumber: number;
 
     @prop()
-    GameState: number;
+    GameState: number | string;
 
   }
 
