@@ -16,7 +16,6 @@ const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
 const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
 const socketPort = window.location.host.includes('sapien') ? ":9443" : ":5000";
 const baseRestURL = protocol +  "//" + window.location.hostname + port + "/sapien/api/";
-const teamSocket = '';
 //const socket = socketIo({path: socketPort + "/" + "Team1", transports: ['websocket'] });
 var socket:SocketIOClient.Socket;
 
@@ -80,18 +79,15 @@ export const createTeamSocket = (team:ITeam) => {
         }
     } else {
         socket = socketIo(protocol +  "//" + window.location.hostname + socketPort + "/" + team.GameId);
-        console.log("BASE",socket)
-        console.log("SOCKET ON CONNECT", socket);
         //SET UP SOCKET EVENTS
         socket.on(SocketEvents.MESSAGE, (msg: string) => {
             console.log("SOCKET RETURNED NAMESPACE MESSAGE", msg);
         })
-        socket.on(SocketEvents.ROOM_MESSAGE, (msg: string) => {
-            console.log("SOCKET RETURNED ROOM MESSAGE", msg);
+        socket.on(SocketEvents.ROOM_MESSAGE, (roomName:string, msg: string) => {
+            console.log("SOCKET RETURNED ROOM " + roomName + "MESSAGE", msg);
         })
         socket.on(SocketEvents.CONNECT, (data: any) => {
-            console.log("SOCKET RETURNED SOMETHING", data);
-            console.log("SOCKET THAT RETURNED", socket);
+            console.log("SOCKET ON CONNECT THAT RETURNED:", socket);
             socket.emit(SocketEvents.JOIN_ROOM, team.Slug);
         })
         return (dispatch: Dispatch<Action<ITeam>>) => {
@@ -177,26 +173,17 @@ const teamSelected:ActionCreator<Action<ITeam>> = (type:string, payload: ITeam) 
     return {type,payload};
 }
 export const fetchTeamDetails = (slug:string) => {
-    //const socket = socketIo("http://localhost:5000/" + slug);
-
     return (dispatch: Dispatch<GameAction<ITeam>>) => {
         dispatch(isLoading(ACTION_TYPES.IS_LOADING, true));
-        //socket.on(SocksetTimetEvents.CONNECT,()=>{
         //setTimeout(() => {
             console.log("getting team", slug);
-
-        socket.emit(SocketEvents.SELECT_TEAM, slug);
-
+            socket.emit(SocketEvents.SELECT_TEAM, slug);
         //},2000)
-        socket.on(SocketEvents.SELECT_TEAM, (res:ITeam) => { 
-
+        socket.on(SocketEvents.SELECT_TEAM, (res:ITeam) => {
             dispatch(teamSelected(ACTION_TYPES.TEAM_SELECTED, res));
             //setTimeout(() => dispatch( isLoading(ACTION_TYPES.IS_LOADING, false) ), 10)
         })
-        //})
-        
     }
-    
 }
 
 const setCurrentPlayer:ActionCreator<Action<string>> = (type:string, payload:string) => {

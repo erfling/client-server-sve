@@ -57,14 +57,9 @@ export default class AppServer
     // set app to be of type express.Application
     public app: express.Application;
     private io: SocketIO.Server;
-    //private socketServer: http.Server;
-    //private secureSocketServer: https.Server;
     private socketServer: http.Server | https.Server;
     private port: string | number;
-    private socketNameSpaces: string[];
-    private gameSockets: Map<string, SocketIO.Namespace> = new Map();
     private sheets:GoogleSheets;
-
     private sheetsRouter: express.Router;
 
     //----------------------------------------------------------------------
@@ -88,21 +83,16 @@ export default class AppServer
                 .on('listening', this.onSocketServerListening.bind(this, this.socketServer));
         }
         
-        //socket setup
-        //const io = socketIo(app); // < Interesting!
-        
         this.config();
         this.routes();
         if (!this.socketServer) {
             // Set up non-secure socket server
             this.socketServer = http.createServer(this.app);
             this.socketServer.on('error', this.onSocketServerError.bind(this, this.socketServer))
-                .on('listening', this.onSocketServerListening.bind(this, this.socketServer)); 
-            this.io = socketIo(this.socketServer);
+                .on('listening', this.onSocketServerListening.bind(this, this.socketServer));
         }
         this.io = socketIo(this.socketServer);
         this.listenForSocket();
-        //this.sheets.subscribeToDriveResource("1e9g8X4XIABJtPDPFlMdsTQhk9jOHwQSGunjXaWvz4uU");
     }
 
     //----------------------------------------------------------------------
@@ -113,52 +103,43 @@ export default class AppServer
     // NOTE: eventTarget param is a the instance listening for the event.
 
     private onSocketServerError(eventTarget:net.Server):void {
-        console.log("SerVER error", this.socketServer);
         let addr = eventTarget.address();
+        console.log("SerVER error", this.socketServer);
         let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
     }
 
     private onSocketServerListening(eventTarget:net.Server):void {
-        console.log("socketServer listening...");
         let addr = eventTarget.address();
+        console.log("socketServer listening on port " + addr.port);
         let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
     }
 
     private onGameSocketConnect(eventTarget:SocketIO.Namespace, game:any, socket:SocketIO.Socket):void {
         console.log("gameSocket connected...");
-        let gameDoc: IGame = game as IGame;
-        let teams:ITeam[] = gameDoc.Teams as ITeam[];
+        let teams:ITeam[] = (<IGame>game).Teams as ITeam[];
         teams.forEach((t:ITeam) => {
-            this.io.to(t.Slug).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + game._id + " IN ROOM " + t.Slug);
+            eventTarget.to(t.Slug).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + game._id + " IN ROOM " + t.Slug);
         });
-
-        // Add socket listeners
-        socket.on(SocketEvents.JOIN_ROOM, this.onSocketJoinRoom.bind(this, socket));
-    }
-
-    private onSocketJoinRoom(eventTarget:SocketIO.Socket, Room:string):void {
-        eventTarget.join(Room);
-        console.log('Client ' + eventTarget.id + ' joined room ' + Room);
-        eventTarget.nsp.emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON ROOM " + Room);
-        this.io.of(eventTarget.nsp.name).to(Room).emit(SocketEvents.ROOM_MESSAGE, eventTarget.id + " HAS JOINED ROOM " + Room);
-    }
-
-    private onTeamSocketConnect(eventTarget:SocketIO.Namespace, game:any, socket:SocketIO.Socket):void {
-        console.log("teamSocket connected...");
-        if (eventTarget.name.indexOf("1") == -1) return;
-        socket.join(eventTarget.name);
-        this.io.to(eventTarget.name).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + game._id);
-        //console.log(socket.client);
-        GameModel.find().populate("Teams").then((g) => {
-            //console.log("say hello");
-            eventTarget.emit(SocketEvents.HELLO, g);
-        })
+        
         // Add socket listeners
         socket
             .on(SocketEvents.DISCONNECT, this.onSocketDisconnect.bind(this, socket))
             .on(SocketEvents.SELECT_TEAM, this.onSocketSelectTeam.bind(this, socket))
             .on(SocketEvents.SUBMIT_TO_SHEET, this.onSocketSubmitToSheet.bind(this, socket))
-            .on(SocketEvents.UPDATE_TEAM, this.onSocketSaveTeam.bind(this, socket));
+            .on(SocketEvents.UPDATE_TEAM, this.onSocketSaveTeam.bind(this, socket))
+            .on(SocketEvents.JOIN_ROOM, this.onSocketJoinRoom.bind(this, socket))
+            .on(SocketEvents.TO_ROOM_MESSAGE, this.onSocketRoomToRoomMessage.bind(this, socket));
+    }
+
+    private onSocketJoinRoom(eventTarget:SocketIO.Socket, roomName:string):void {
+        eventTarget.join(roomName);
+        console.log('Client ' + eventTarget.id + ' joined room ' + roomName);
+        eventTarget.nsp.emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON ROOM " + roomName);
+        eventTarget.nsp.to(roomName).emit(SocketEvents.ROOM_MESSAGE, roomName, "ID " + eventTarget.id + " HAS JOINED ROOM " + roomName);
+    }
+
+    private onSocketRoomToRoomMessage(eventTarget:SocketIO.Socket, fromRoom:string, toRoom:string, msg:string):void {
+        console.log("Client from " + fromRoom + " sent message to " + toRoom + ":", msg);
     }
 
     private onSocketDisconnect(eventTarget:SocketIO.Socket):void {
@@ -183,7 +164,7 @@ export default class AppServer
                 if (this.socketServer instanceof http.Server) {
                     setTimeout(() => {
                         sheets.GetSheetValues().then((v:any) => {     
-                            eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, v);                            
+                            eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, v);                   
                         })
                     }, 500);
                 }
@@ -194,7 +175,6 @@ export default class AppServer
     private onSocketSaveTeam(eventTarget:SocketIO.Socket, values:any):void{
         console.log("MESSAGE FROM CLIENT", eventTarget.nsp.name, values);
         TeamModel.findOneAndUpdate({Slug: eventTarget.nsp.name.replace('/', '')}, { values }, { new: true }).then((team) => {
-            console.log(team);
             eventTarget.nsp.emit(SocketEvents.TEAM_UPDATED, team);
         })
     }
@@ -272,28 +252,25 @@ export default class AppServer
                 //this.io.emit(SocketEvents.GAME_STATE_CHANGED, game.State);
 
                 //Set our countries
-                if(game.State == 2){
+                if (game.State == 2) {
                     console.log("STATE IS 2")
                     var teams:ITeam[] = game.Teams as ITeam[];
                     var promises:any[] = [];
                     var promise = NationModel.find().then((nations) => {
-                        
-                        for(var i = 0; i < nations.length; i++){
-                            var n = nations[i];
+                        for(var i = 0; i < nations.length; i++) {
                             var update = {
-                                Nation: n,
+                                Nation: nations[i],
                                 GameState: 2
                             }
                             TeamModel.findByIdAndUpdate(teams[i]._id, update, {new: true}).populate("Nation").then((t) => {
                                 console.log(t);
-                                this.io.of(t.GameId).to(t.Slug).emit(SocketEvents.TEAM_UPDATED, t)
+                                this.io.of(t.GameId).to(t.Slug).emit(SocketEvents.TEAM_UPDATED, t);
                             });        
                             promises.push(promise);
                         }
 
                         return nations;
                     })
-
                 }
 
                 res.json(game);
@@ -301,33 +278,35 @@ export default class AppServer
         });
 
         this.app.post('/sapien/api/login', async (req, res) => {
-            try{
+            try {
                 var game:Game & mongoose.Document = null;
                 const team = await TeamModel.findOne({Slug: req.body.Slug})
 
-                if(team){
+                if (team) {
                     game = await GameModel.findById(team.GameId);
+
+                    if (game) {
+                        let gameSocketNameSpace = this.io.of(game._id);
+                        gameSocketNameSpace.on(SocketEvents.CONNECT, this.onGameSocketConnect.bind(this, gameSocketNameSpace, game));
+                        
+                        let t:Team = team.toObject() as Team;
+                        t.GameState = game.State;
+                        if (this.socketServer instanceof https.Server) {
+                            this.sheets.setTeamListener(t.Slug);
+                        }
+                        let token = jwt.sign({team: t}, 'shhhhh');
+                        console.log("TEAM TO SEND", team, (<IGame>game).Teams);
+                        res.json({token, team:t});
+                    } else {
+                        res.json("LOGIN FAILED")
+                    }  
                 }
-
-                if(game){
-                    var t:Team = team.toObject() as Team;
-                    t.GameState = game.State;
-                    var token = jwt.sign({
-                        team: t
-                     }, 'shhhhh');
-                    console.log("TEAM TO SEND", team);
-                    res.json({token, team:t});
-                } else {
-                    res.json("LOGIN FAILED")
-                }  
-
             } catch {
                 res.json("LOGIN FAILED")
             }
 
         });
     }
-
 
     /**
      * Listen for socket communication
@@ -339,26 +318,7 @@ export default class AppServer
             port = AppServer.SECURE_SOCKET_PORT;
             this.io.origins('https://planetsapien.com:443');
         }
-        this.socketServer.listen(port, () => {
-            console.log('Running server on port %s', port);
-        });
-        
-        //TODO: solve for how we will determine desired game
-        GameModel.findOne({Slug: "test"}).populate("Teams").then((game) => {
-            let gameSocket = this.io.of(game._id);
-            gameSocket.on(SocketEvents.CONNECT, this.onGameSocketConnect.bind(this, gameSocket, game));
-            let gameDoc: IGame = game as IGame;
-            let teams:ITeam[] = gameDoc.Teams as ITeam[];
-            teams.forEach((t:ITeam) => {
-                var teamSocket = this.io.of(t.Slug);
-                teamSocket.on(SocketEvents.CONNECT, this.onTeamSocketConnect.bind(this, teamSocket, game));
-
-                // TODO: Listen for sheets watch IF we're using secure socketServer
-                if (this.socketServer instanceof https.Server) {
-                    this.sheets.setTeamListener(t.Slug);
-                }
-            })           
-        })
+        this.socketServer.listen(port);
         
         //if (this.socketServer instanceof https.Server) {
             this.sheetsRouter.post('/:id', (req, resp) => {
@@ -366,7 +326,6 @@ export default class AppServer
                 var sheets = new GoogleSheets();
                 sheets.GetSheetValues().then((v:any) => {     
                     console.log("returning:", req.body.Slug);
-                    //this.io.of(req.body.Slug).emit("DRIVE_UPDATE", v);
                     this.io.of(req.params.id).emit(SocketEvents.DASHBOARD_UPDATED, v); // TODO: "Team1" is hard-coded because "req.body" is empty in testing. Investigate.
                     resp.json({test: "hello folks"});
                 })
@@ -385,5 +344,3 @@ export default class AppServer
     }
     
 }
-
-    //export default new AppServer().app;
