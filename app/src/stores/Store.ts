@@ -1,5 +1,6 @@
 import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
+import IDeal from '../../../shared/models/IDeal';
 import IPlayer from '../../../shared/models/IPlayer';
 
 export default interface ApplicationStore{
@@ -13,6 +14,8 @@ export default interface ApplicationStore{
         CurrentPlayer?: ITeam,
         CurrentGame?: IGame,
         Dashboard: any,
+        ReceivedProposedDeals: IDeal[];
+        SentProposedDeals: IDeal[];
 
         //temp testing value
         EnvironmentalHealth: number

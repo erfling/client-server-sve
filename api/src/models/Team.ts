@@ -4,19 +4,10 @@ import * as mongoose from 'mongoose';
 import BaseClass from './BaseModel'
 import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
+import INation from '../../../shared/models/INation';
 import { Player } from './Player';
 import { Nation } from './Nation';
 
-export enum Nations{
-  /**
-Australia (BECCS)
-Bangladesh (no refugees)
-China (Next gen nuclear)
-Japan (Reflective tech)
-India (Fossil Fuel CC)
-Vietnam (hydropower)
- */
-}
 
 export class Team extends BaseClass implements ITeam
 {
@@ -42,7 +33,7 @@ export class Team extends BaseClass implements ITeam
     Players:  Ref<IPlayer>[] | IPlayer[];
 
     @prop({ ref: Nation })
-    Nation:  Ref<Nation> | Nation;
+    Nation:  Ref<Nation> | INation;
 
     @prop()
     CurrentRole: string;

@@ -10,7 +10,7 @@ import BaseClass from '../../../api/src/models/BaseModel';
 import IPlayer from '../../../shared/models/IPlayer';
 import { store } from '../index';
 import { setTimeout } from 'timers';
-
+import IDeal from '../../../shared/models/IDeal'
 
 const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
 const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
@@ -65,7 +65,11 @@ export enum ACTION_TYPES {
 
     GAME_STATE_CHANGED       = "GAME_STATE_CHANGED",
     GAME_STATE_CHANGED_ADMIN = "GAME_STATE_CHANGED_ADMIN",
-    GOT_GAME = "GOT_GAME"
+    GOT_GAME = "GOT_GAME",
+
+    DEAL_PROPOSED = "DEAL_PROPOSED",
+    DEAL_RESPONSE = "DEAL_RESPONSE",
+    
 
 }
 
@@ -90,6 +94,7 @@ export const createTeamSocket = (team:ITeam) => {
             console.log("SOCKET ON CONNECT THAT RETURNED:", socket);
             socket.emit(SocketEvents.JOIN_ROOM, team.Slug);
         })
+        
         return (dispatch: Dispatch<Action<ITeam>>) => {
             socket.on(SocketEvents.TEAM_UPDATED, (team:ITeam) => {
                 dispatch( {
@@ -100,6 +105,17 @@ export const createTeamSocket = (team:ITeam) => {
                     type: ACTION_TYPES.PLAYER_UPDATED,
                     payload: team
                 } );
+            })
+            .on(SocketEvents.PROPOSE_DEAL, (deal:IDeal) => {
+                dispatch( {
+                    type: ACTION_TYPES.DEAL_PROPOSED,
+                    payload: deal
+                } );
+
+                dispatch( {
+                    type: ACTION_TYPES.IS_LOADING,
+                    payload: false
+                } )
             })
         }
     }
@@ -474,5 +490,16 @@ export const setGameState = (game:IGame, newState: number) => {
             })
         }
     )
+    }
+}
+
+export const proposeDeal = (deal: IDeal ) => {
+    console.log("ACTION SAYS DEAL IS", deal, socket)
+    socket.emit(SocketEvents.PROPOSE_DEAL, deal);
+    return (dispatch: Dispatch<Action<boolean>>) => {
+        dispatch({
+            type: ACTION_TYPES.IS_LOADING,
+            payload: true
+        })
     }
 }

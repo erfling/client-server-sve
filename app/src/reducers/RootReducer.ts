@@ -15,7 +15,9 @@ const initialState: ApplicationStore = {
         Team: [],
         SelectedTeam: null,
         Dashboard: null,
-        EnvironmentalHealth:0
+        EnvironmentalHealth:0,
+        ReceivedProposedDeals: [],
+        SentProposedDeals: []
     },
     Application: {
         Loading: false,
@@ -28,6 +30,32 @@ const initialState: ApplicationStore = {
 
 export const GameData = (state = initialState.GameData, action: Action<any>) => {
     switch(action.type) {
+        case (ACTION_TYPES.DEAL_PROPOSED):
+            if(action.payload.from == state.CurrentPlayer.Slug){
+                var found = false;
+                var deals = state.SentProposedDeals.map(deal => {
+                    if(deal.text == action.payload.text){
+                        found = true;
+                        return action.payload
+                    } else{
+                        return deal;
+                    }
+                })
+                if(!found)deals.push(action.payload);
+                return Object.assign({}, state, {ProposedDeals: deals})
+            } else {
+                var found = false;
+                var deals = state.ReceivedProposedDeals.map(deal => {
+                    if(deal.text == action.payload.text){
+                        found = true;
+                        return action.payload
+                    } else{
+                        return deal;
+                    }
+                })
+                if(!found)deals.push(action.payload);
+                return Object.assign({}, state, {ReceivedProposedDeals: deals})
+            }
         case(ACTION_TYPES.GAME_SAVED):
             var game = action.payload as IGame;           
             let IDX = state.Game.map((g) => {

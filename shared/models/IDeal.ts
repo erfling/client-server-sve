@@ -1,6 +1,6 @@
 export default interface IDeal{
     from: string;
     to: string;
-    deal: string;
+    text: string;
     accept?: boolean;
 }

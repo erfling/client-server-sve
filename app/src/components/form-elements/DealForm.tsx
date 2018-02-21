@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import * as Actions from '../../actions/Actions';
 import { RadioWrapper } from './AntdFormWrappers';
 import ITeam from '../../../../shared/models/ITeam';
+import INation from '../../../../shared/models/INation';
 import { Alert } from 'antd';
 
 interface DealFormProps extends InjectedFormProps{
@@ -17,6 +18,7 @@ interface DealFormProps extends InjectedFormProps{
     handleSubmit: (formValues:any) => {};
     setWaterValues: () => {}
     CurrentPlayer: ITeam;
+    Nation:INation
 }
 
 class SliderWrapperField extends Field<{increment:number}>{
@@ -31,7 +33,7 @@ class DealFormWrapper extends React.Component<DealFormProps, { warning:string }>
     }
 
     componentDidUpdate(){
-        console.log("Water form updated")
+       
     }
    
     selectChanged(e:any, allValues:any){
@@ -73,18 +75,18 @@ class DealFormWrapper extends React.Component<DealFormProps, { warning:string }>
     }
 
     render(){
-
+        
         return <form ref="dealForm" id="dealForm">
                 <div className="form-wrapper">
                    
                     <FormItem>
                         {this.props.CurrentPlayer && 
                             <Field
-                                name="to"
+                                name="text"
                                 component={RadioWrapper}
                                 validate={this.selectChanged}
                             > 
-                                {this.props.CurrentPlayer.Nation.TradeOptions.map((o:string, i:number) => <option key={i}>{o}</option>)}
+                                {this.props.CurrentPlayer.Nation && this.props.Nation.TradeOptions.map((o:string, i:number) => <option key={i}>{o}</option>)}
                             </Field>
                         }      
                     </FormItem>
@@ -102,7 +104,8 @@ const mapStateToProps = (state: ApplicationStore, ownProps:DealFormProps): {} =>
     return {
         Submitting: state.Application.Loading,
         FormData: state.form.dealForm,
-        CurrentPlayer: state.GameData.CurrentPlayer
+        CurrentPlayer: state.GameData.CurrentPlayer,
+        Nation: state.GameData.CurrentPlayer.Nation as INation
     };
 };
 

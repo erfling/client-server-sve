@@ -6,15 +6,16 @@ import * as Actions from '../actions/Actions';
 import State2 from '../components/State2';
 import ITeam from '../../../shared/models/ITeam';
 import { ACTION_TYPES } from '../actions/Actions';
+import IDeal from '../../../shared/models/IDeal';
 
 interface DispatchProps {
     getPlayer:() => {}
-    setWaterValues:(team:ITeam) => {}
+    proposeDeal:(deal:{from:string, to: string, deal:string}) => {}
 }
-export interface State1Props{
+export interface State2Props{
     CurrentPlayer: ITeam;
 }
-const mapStateToProps = (state: ApplicationStore, ownProps: {}): State1Props => {
+const mapStateToProps = (state: ApplicationStore, ownProps: {}): State2Props => {
     return {
         CurrentPlayer: state.GameData.CurrentPlayer,
     };
@@ -23,10 +24,12 @@ const mapStateToProps = (state: ApplicationStore, ownProps: {}): State1Props => 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>, ownProps: any) => {
     return {
         getPlayer: () => dispatch( Actions.getPlayer() ),
-        proposeDeal: (team: ITeam) => {console.log("PROPOSED: ", team);}
+        proposeDeal: ( deal: IDeal ) => {
+            dispatch( Actions.proposeDeal(deal) )
+        }
     }
 }
 
-const State2Container = connect<State1Props, {}>(mapStateToProps, mapDispatchToProps)(State2);
+const State2Container = connect<State2Props, {}>(mapStateToProps, mapDispatchToProps)(State2);
 export default State2Container;
 //dispatch(Actions.setWaterValues(team))

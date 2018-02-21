@@ -1,4 +1,4 @@
-import { selectRole } from './../../app/src/actions/Actions';
+import { selectRole, proposeDeal } from './../../app/src/actions/Actions';
 import { Role } from './../../shared/models/IPlayer';
 import * as express from 'express';
 import * as mongoose from 'mongoose';
@@ -40,6 +40,7 @@ import { Team, TeamModel } from './models/Team';
 import { Player, PlayerModel } from './models/Player';
 import { NationModel, Nation } from './models/Nation';
 import Item from 'antd/lib/list/Item';
+import INation from '../../shared/models/INation';
 
 
 // AppServer class
@@ -131,15 +132,29 @@ export default class AppServer
             .on(SocketEvents.UPDATE_TEAM, this.onSocketSaveTeam.bind(this, socket))
             .on(SocketEvents.JOIN_ROOM, this.onSocketJoinRoom.bind(this, socket))
             .on(SocketEvents.TO_ROOM_MESSAGE, this.onSocketRoomToRoomMessage.bind(this, socket))
-            .on(SocketEvents.PROPOSE_DEAL, this.respondToDeal.bind(this, socket))
-            .on(SocketEvents.RESPOND_TO_DEAL, this.proposeDeal.bind(this, socket));
+            .on(SocketEvents.PROPOSE_DEAL, this.proposeDeal.bind(this, socket))
+            .on(SocketEvents.RESPOND_TO_DEAL, this.respondToDeal.bind(this, socket));
     }
 
     private proposeDeal(eventTarget:SocketIO.Socket, deal:IDeal):void {
-        GameModel.findById(eventTarget.nsp.name.slice(1)).populate("Teams").then((g) => {
+        GameModel.findById(eventTarget.nsp.name.slice(1)).populate(
+            {
+                path:'Teams', 
+                model:"Team",
+                populate:{
+                    path:'Nations',
+                    model: "Nation"
+                }
+            }
+        )
+         .then((g) => {
             let teams:ITeam[] = (<IGame>g).Teams as ITeam[];
-            var toTeam:ITeam = teams.filter(t => t.Nation.Name == deal.to)[0];
+            console.log(teams);
+            var toTeam:ITeam = teams.filter(t => {
+                return (<INation>t.Nation).Name == deal.to}
+            )[0];
             if (toTeam) {
+                console.log("FOUND TO TEAM");
                 eventTarget.nsp.to(deal.to).emit(SocketEvents.PROPOSE_DEAL, deal);
                 eventTarget.broadcast.to(toTeam.Name).emit(SocketEvents.PROPOSE_DEAL, deal);
             }
@@ -149,7 +164,7 @@ export default class AppServer
     private respondToDeal(eventTarget:SocketIO.Socket, deal:IDeal):void {
         GameModel.findById(eventTarget.nsp.name.slice(1)).populate("Teams").then((g) => {
             let teams:ITeam[] = (<IGame>g).Teams as ITeam[];
-            var toTeam:ITeam = teams.filter(t => t.Nation.Name == deal.to)[0];
+            var toTeam:ITeam = teams.filter(t => (<INation>t.Nation).Name == deal.to)[0];
             if (toTeam) {
                 eventTarget.nsp.to(deal.to).emit(SocketEvents.RESPOND_TO_DEAL, deal);
                 eventTarget.broadcast.to(toTeam.Name).emit(SocketEvents.RESPOND_TO_DEAL, deal);
@@ -306,7 +321,7 @@ export default class AppServer
         this.app.post('/sapien/api/login', async (req, res) => {
             try {
                 var game:Game & mongoose.Document = null;
-                const team = await TeamModel.findOne({Slug: req.body.Slug})
+                const team = await TeamModel.findOne({Slug: req.body.Slug}).populate("Nation");
 
                 if (team) {
                     game = await GameModel.findById(team.GameId);
