@@ -140,10 +140,8 @@ export default class AppServer
         GameModel.findById(eventTarget.nsp.name.slice(1)).populate(
             {
                 path:'Teams', 
-                model:"Team",
                 populate:{
-                    path:'Nations',
-                    model: "Nation"
+                    path:'Nation'
                 }
             }
         )
