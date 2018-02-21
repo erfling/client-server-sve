@@ -140,7 +140,8 @@ h4{font-size: 160%}
     }
 
     .ant-radio-wrapper{
-        margin: 40px 0 0px !important;
+        display: block;
+        margin: 15px 0 0px !important;
         font-size: 150% !important;
         padding-left: 23px;
         .ant-radio{
@@ -151,7 +152,7 @@ h4{font-size: 160%}
         .ant-radio-inner {
             width: 26px;
             height: 26px;
-            &:after {
+            &:after {   
                 width: 18px;
                 height: 18px;
                 border-radius: 50%;

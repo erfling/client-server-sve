@@ -23,9 +23,10 @@ const mapStateToProps = (state: ApplicationStore, ownProps: {}): State1Props => 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>, ownProps: any) => {
     return {
         getPlayer: () => dispatch( Actions.getPlayer() ),
-        setWaterValues: (team: ITeam) => {dispatch(Actions.setWaterValues(team))}
+        proposeDeal: (team: ITeam) => {console.log("PROPOSED: ", team);}
     }
 }
 
 const State2Container = connect<State1Props, {}>(mapStateToProps, mapDispatchToProps)(State2);
 export default State2Container;
+//dispatch(Actions.setWaterValues(team))

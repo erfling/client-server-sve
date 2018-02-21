@@ -23,7 +23,7 @@ interface AdminGameDetailProps{
     Loading:boolean;
     selectGame:(slug: string)=>{}
     addGame: () => {}
-    setGameState : (game:IGame, newState: number) => {}
+    setGameState : (game:IGame, newState: number | string) => {}
     match:any;
 }
 
@@ -50,11 +50,11 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
         if(game && game.Teams)return game.Teams as ITeam[];
     }   
       
-    stateIsSelected = (buttonIdx: number) => {
+    stateIsSelected = (buttonIdx: number | string) => {
         return this.props.Game.State ? buttonIdx == this.props.Game.State : buttonIdx == 1;
     }
 
-    states = [1,2,3,4,5];
+    states = [1,2,"3A","3B",4,5];
 
     render() {
           
