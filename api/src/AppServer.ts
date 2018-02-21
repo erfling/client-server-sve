@@ -264,12 +264,13 @@ export default class AppServer
                 }
 
                 if(game){
-                    team.GameState = game.State;
+                    var t = team.toObject();
+                    t.GameState = game.State;
                     var token = jwt.sign({
-                        team: team
+                        team: t
                      }, 'shhhhh');
                     console.log("TEAM TO SEND", team);
-                    res.json({token, team:team});
+                    res.json({token, team:t});
                 } else {
                     res.json("LOGIN FAILED")
                 }  

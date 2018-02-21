@@ -30,5 +30,5 @@ const mapDispatchToProps = (dispatch: Dispatch<Props & DispatchProps>, ownProps:
 
 
 
-const Root = connect<Props, any>(mapStateToProps, mapDispatchToProps)(State0);
-export default Root;
+const State0Container = connect<Props, any>(mapStateToProps, mapDispatchToProps)(State0);
+export default State0Container;

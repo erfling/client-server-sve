@@ -74,6 +74,21 @@ export class RadioButtonWrapper extends React.Component<WrappedFieldProps & Gene
     }
 }
 
+export class RadioWrapper extends React.Component<WrappedFieldProps & GenericFieldHTMLAttributes & {defaultValue:any}> {
+    render() {
+        var children: {props:{children:string, value: string}}[] = this.props.children as {props:{children:string, value: string}}[];
+        return (
+            <RadioGroup 
+                onChange={(e) => { this.props.input.onChange(e)} }>
+                {children.map((child,i) => {
+                    return <Radio value={child.props.value || child.props.children} key={i}>{child.props.children || child.props.value}</Radio>
+                })}
+            </RadioGroup>
+        )
+    }
+}
+
+
 export class DateWrapper extends React.Component<WrappedFieldProps & GenericFieldHTMLAttributes & {defaultValue:any}> {
     render() {
         return (

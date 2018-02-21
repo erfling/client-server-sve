@@ -3,7 +3,7 @@ import ApplicationStore from '../stores/Store';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import * as Actions from '../actions/Actions';
-import State1 from '../components/State1';
+import State2 from '../components/State2';
 import ITeam from '../../../shared/models/ITeam';
 import { ACTION_TYPES } from '../actions/Actions';
 
@@ -27,5 +27,5 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
     }
 }
 
-const State1Container = connect<State1Props, {}>(mapStateToProps, mapDispatchToProps)(State1);
-export default State1Container;
+const State2Container = connect<State1Props, {}>(mapStateToProps, mapDispatchToProps)(State2);
+export default State2Container;

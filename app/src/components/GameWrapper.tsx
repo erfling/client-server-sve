@@ -10,14 +10,17 @@ import { Link, Route } from "react-router-dom";
 import {Parallax, Background} from 'react-parallax'; 
 import LoginContainer from '../containers/LoginContainer';
 import {StyleHTMLAttributes} from 'react';
+import {Redirect} from 'react-router-dom';
 
 require('smoothscroll-polyfill').polyfill();
 
 export interface GamesList {
+    CurrentPlayer?:ITeam;
     ParallaxImg: any;
     HeaderText: string;
     FormComponent?: any;
     Style?: any
+    match?: any
 }
 
 // 'HelloProps' describes the shape of props.
@@ -28,8 +31,32 @@ export default class GameWrapper extends React.Component<GamesList, any> {
         document.querySelector('.home-content').scrollIntoView({ behavior: 'smooth' ,block: 'start' });
     }
 
+    goToState(){
+
+    }
+    
+
     //onClick={this.props.testUpdate}
     render() {
+        console.log("PLAYER ACCORDING TO GAMEWRAPPER",this.props.CurrentPlayer)
+        if(this.props.CurrentPlayer){
+            console.log("STATE ACCORDING TO GAMEWRAPPER",this.props.CurrentPlayer.GameState);
+
+            switch (this.props.CurrentPlayer.GameState) {
+                case 1:
+                    if(this.props.match.path.indexOf('who-gets-the-water') == -1)return <div><Redirect to="/who-gets-the-water"/></div>
+                    break;
+                case 2:
+                    console.log("SHOULD GO TO STATE 2")
+                    if(this.props.match.path.indexOf('make-the-trade') == -1)return <div><Redirect to="/make-the-trade"/></div>
+                    break;
+            
+                default:
+                    break;
+            }
+
+        }
+
         return  <Layout style={{minHeight:'100vh'}}>
                     <Menu
                         mode="horizontal"
@@ -40,6 +67,7 @@ export default class GameWrapper extends React.Component<GamesList, any> {
                         </Menu.Item>
                     </Menu>
                     <Content className="game-wrapper">
+                        
                         <Parallax  
                             className="banner-bg"                              
                             bgImage={this.props.ParallaxImg}
