@@ -136,6 +136,7 @@ export default class AppServer
             .on(SocketEvents.RESPOND_TO_DEAL, this.respondToDeal.bind(this, socket));
     }
 
+    // TODO: Refactor both proposeDeal and respondToDeal to use single listener/handler.
     private proposeDeal(eventTarget:SocketIO.Socket, deal:IDeal):void {
         GameModel.findById(eventTarget.nsp.name.slice(1)).populate(
             {
@@ -167,6 +168,28 @@ export default class AppServer
             if (toTeam) {
                 eventTarget.nsp.to(deal.to).emit(SocketEvents.RESPOND_TO_DEAL, deal);
                 eventTarget.broadcast.to(toTeam.Name).emit(SocketEvents.RESPOND_TO_DEAL, deal);
+            }
+        });
+
+        GameModel.findById(eventTarget.nsp.name.slice(1)).populate(
+            {
+                path:'Teams', 
+                populate:{
+                    path:'Nation'
+                }
+            }
+        )
+        .then((g) => {
+            let teams:ITeam[] = (<IGame>g).Teams as ITeam[];
+            console.log("Trying to match to team with nation " + deal.to);
+            var toTeam:ITeam = teams.filter(t => {
+                console.log(t.Name, (<INation>t.Nation).Name);
+                return (<INation>t.Nation).Name == deal.to}
+            )[0];
+            if (toTeam) {
+                console.log("FOUND TO TEAM:", toTeam.Name);
+                eventTarget.nsp.to(deal.to).emit(SocketEvents.RESPOND_TO_DEAL, deal); // Send response to team it's asking
+                eventTarget.nsp.to(deal.from).emit(SocketEvents.RESPOND_TO_DEAL, deal); // Send message back to sender's room to varify response was sent
             }
         });
     }
