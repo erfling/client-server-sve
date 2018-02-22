@@ -132,12 +132,17 @@ export default class AppServer
             .on(SocketEvents.UPDATE_TEAM, this.onSocketSaveTeam.bind(this, socket))
             .on(SocketEvents.JOIN_ROOM, this.onSocketJoinRoom.bind(this, socket))
             .on(SocketEvents.TO_ROOM_MESSAGE, this.onSocketRoomToRoomMessage.bind(this, socket))
-            .on(SocketEvents.PROPOSE_DEAL, this.proposeDeal.bind(this, socket))
-            .on(SocketEvents.RESPOND_TO_DEAL, this.respondToDeal.bind(this, socket));
+            .on(SocketEvents.PROPOSE_DEAL, this.dealExchange.bind(this, socket, SocketEvents.PROPOSE_DEAL))
+            .on(SocketEvents.RESPOND_TO_DEAL, this.dealExchange.bind(this, socket, SocketEvents.RESPOND_TO_DEAL));
     }
 
-    // TODO: Refactor both proposeDeal and respondToDeal to use single listener/handler.
-    private proposeDeal(eventTarget:SocketIO.Socket, deal:IDeal):void {
+    /**
+     * Handles requests from team to country to propose or respond to a trade deal
+     * @param eventTarget The socket instance listening for the event
+     * @param socketEvent The event type
+     * @param deal The deal Object
+     */
+    private dealExchange(eventTarget:SocketIO.Socket, socketEvent:string, deal:IDeal):void {
         GameModel.findById(eventTarget.nsp.name.slice(1)).populate(
             {
                 path:'Teams', 
@@ -155,41 +160,8 @@ export default class AppServer
             )[0];
             if (toTeam) {
                 console.log("FOUND TO TEAM:", toTeam.Name);
-                eventTarget.nsp.to(toTeam.Slug).emit(SocketEvents.PROPOSE_DEAL, deal); // Send proposal to team it's asking
-                eventTarget.nsp.to(deal.from).emit(SocketEvents.PROPOSE_DEAL, deal); // Send message back to sender's room to varify proposal was sent
-            }
-        });
-    }
-
-    private respondToDeal(eventTarget:SocketIO.Socket, deal:IDeal):void {
-        GameModel.findById(eventTarget.nsp.name.slice(1)).populate("Teams").then((g) => {
-            let teams:ITeam[] = (<IGame>g).Teams as ITeam[];
-            var toTeam:ITeam = teams.filter(t => (<INation>t.Nation).Name == deal.to)[0];
-            if (toTeam) {
-                eventTarget.nsp.to(toTeam.Slug).emit(SocketEvents.RESPOND_TO_DEAL, deal);
-                eventTarget.broadcast.to(toTeam.Name).emit(SocketEvents.RESPOND_TO_DEAL, deal);
-            }
-        });
-
-        GameModel.findById(eventTarget.nsp.name.slice(1)).populate(
-            {
-                path:'Teams', 
-                populate:{
-                    path:'Nation'
-                }
-            }
-        )
-        .then((g) => {
-            let teams:ITeam[] = (<IGame>g).Teams as ITeam[];
-            console.log("Trying to match to team with nation " + deal.to);
-            var toTeam:ITeam = teams.filter(t => {
-                console.log(t.Name, (<INation>t.Nation).Name);
-                return (<INation>t.Nation).Name == deal.to}
-            )[0];
-            if (toTeam) {
-                console.log("FOUND TO TEAM:", toTeam.Name);
-                eventTarget.nsp.to(deal.to).emit(SocketEvents.RESPOND_TO_DEAL, deal); // Send response to team it's asking
-                eventTarget.nsp.to(deal.from).emit(SocketEvents.RESPOND_TO_DEAL, deal); // Send message back to sender's room to varify response was sent
+                eventTarget.nsp.to(toTeam.Slug).emit(socketEvent, deal); // Send proposal or response to team it's asking
+                eventTarget.nsp.to(deal.from).emit(socketEvent, deal); // Send message back to sender's room to varify dealExchange was sent
             }
         });
     }
