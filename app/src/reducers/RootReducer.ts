@@ -17,7 +17,8 @@ const initialState: ApplicationStore = {
         Dashboard: null,
         EnvironmentalHealth:0,
         ReceivedProposedDeals: [],
-        SentProposedDeals: []
+        SentProposedDeals: [],
+        PendingDealOffer: null
     },
     Application: {
         Loading: false,
@@ -42,7 +43,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
                     }
                 })
                 if(!found)deals.push(action.payload);
-                return Object.assign({}, state, {ProposedDeals: deals})
+                return Object.assign({}, state, {ProposedDeals: deals, PendingDealOffer: action.payload})
             } else {
                 var found = false;
                 var deals = state.ReceivedProposedDeals.map(deal => {
@@ -54,7 +55,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
                     }
                 })
                 if(!found)deals.push(action.payload);
-                return Object.assign({}, state, {ReceivedProposedDeals: deals})
+                return Object.assign({}, state, {ReceivedProposedDeals: deals, PendingDealOffer: action.payload},)
             }
         case(ACTION_TYPES.GAME_SAVED):
             var game = action.payload as IGame;           

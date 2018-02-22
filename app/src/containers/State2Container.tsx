@@ -11,13 +11,16 @@ import IDeal from '../../../shared/models/IDeal';
 interface DispatchProps {
     getPlayer:() => {}
     proposeDeal:(deal:{from:string, to: string, deal:string}) => {}
+
 }
 export interface State2Props{
     CurrentPlayer: ITeam;
+    PendingDealOffer: IDeal;
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): State2Props => {
     return {
         CurrentPlayer: state.GameData.CurrentPlayer,
+        PendingDealOffer: state.GameData.PendingDealOffer
     };
 };
 

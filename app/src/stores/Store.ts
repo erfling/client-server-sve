@@ -16,6 +16,8 @@ export default interface ApplicationStore{
         Dashboard: any,
         ReceivedProposedDeals: IDeal[];
         SentProposedDeals: IDeal[];
+        PendingDealOffer: IDeal;
+
 
         //temp testing value
         EnvironmentalHealth: number

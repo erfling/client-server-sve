@@ -12,7 +12,8 @@ import {Row, Col} from 'antd';
 const River = require("../img/river-waterfall-cliff-rock-forest-tree.jpg");
 
 interface State2Props{
-   CurrentPlayer: ITeam
+   CurrentPlayer: ITeam;
+   PendingDealOffer: IDeal;
    getPlayer: () => {}
    proposeDeal: (deal: IDeal) => {}
 }
@@ -47,7 +48,8 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
         return this.props.CurrentPlayer &&<GameWrapper
                     ParallaxImg={River}
                     HeaderText="Come Together"
-                >
+                >   
+                    {this.props.PendingDealOffer && <div>DEAL OFFERED</div>}
                     <Row className="form-wrapper">
                         <p>{new Date().toLocaleDateString()}. A reprive.</p>
                         <p>You know the stakes. Work with other nations to build a liveable, sutainable world, as you build a better future for your own nation.</p>
