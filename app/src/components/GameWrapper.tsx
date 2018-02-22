@@ -43,10 +43,10 @@ export default class GameWrapper extends React.Component<GamesList, any> {
             console.log("STATE ACCORDING TO GAMEWRAPPER",this.props.CurrentPlayer.GameState);
 
             switch (this.props.CurrentPlayer.GameState) {
-                case 1:
+                case "1":
                     if(this.props.match.path.indexOf('who-gets-the-water') == -1)return <div><Redirect to="/who-gets-the-water"/></div>
                     break;
-                case 2:
+                case "2":
                     console.log("SHOULD GO TO STATE 2")
                     if(this.props.match.path.indexOf('make-the-trade') == -1)return <div><Redirect to="/make-the-trade"/></div>
                     break;

@@ -145,16 +145,17 @@ export default class AppServer
                 }
             }
         )
-         .then((g) => {
+        .then((g) => {
             let teams:ITeam[] = (<IGame>g).Teams as ITeam[];
-            console.log(teams);
+            console.log("Trying to match to team with nation " + deal.to);
             var toTeam:ITeam = teams.filter(t => {
+                console.log(t.Name, (<INation>t.Nation).Name);
                 return (<INation>t.Nation).Name == deal.to}
             )[0];
             if (toTeam) {
-                console.log("FOUND TO TEAM");
-                eventTarget.nsp.to(deal.to).emit(SocketEvents.PROPOSE_DEAL, deal);
-                eventTarget.broadcast.to(toTeam.Name).emit(SocketEvents.PROPOSE_DEAL, deal);
+                console.log("FOUND TO TEAM:", toTeam.Name);
+                eventTarget.nsp.to(deal.to).emit(SocketEvents.PROPOSE_DEAL, deal); // Send proposal to team it's asking
+                eventTarget.nsp.to(deal.from).emit(SocketEvents.PROPOSE_DEAL, deal); // Send message back to sender's room to varify proposal was sent
             }
         });
     }
@@ -291,7 +292,7 @@ export default class AppServer
                 //this.io.emit(SocketEvents.GAME_STATE_CHANGED, game.State);
 
                 //Set our countries
-                if (game.State == 2) {
+                if (game.State == "2") {
                     console.log("STATE IS 2")
                     var teams:ITeam[] = game.Teams as ITeam[];
                     var promises:any[] = [];
@@ -302,7 +303,7 @@ export default class AppServer
                                 GameState: 2
                             }
                             TeamModel.findByIdAndUpdate(teams[i]._id, update, {new: true}).populate("Nation").then((t) => {
-                                console.log(t);
+                                console.log("Team:", t);
                                 this.io.of(t.GameId).to(t.Slug).emit(SocketEvents.TEAM_UPDATED, t);
                             });        
                             promises.push(promise);
