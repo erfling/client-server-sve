@@ -3,18 +3,19 @@ import * as mongoose from 'mongoose';
 import BaseClass from './BaseModel';
 import INation from '../../../shared/models/INation';
 import { Nation } from './Nation';
+import ITradeOption from '../../../shared/models/ITradeOption';
 
-export class TradeOption extends BaseClass
+export class TradeOption extends BaseClass implements ITradeOption
 {
-    @prop({ ref: Nation })
-    FromNation: Ref<Nation> | INation;
+    @prop()
+    FromNationId: string;
 
-    @prop({ ref: Nation })
-    ToNation: Ref<Nation> | INation;
+    @prop()
+    ToNationId: string;
 
     @prop()
     Message: string;
-  }
+}
 
-  export const TradeOptionModel = new TradeOption().getModelForClass( TradeOption, { existingMongoose: mongoose } )
+export const TradeOptionModel = new TradeOption().getModelForClass( TradeOption, { existingMongoose: mongoose } )
   
