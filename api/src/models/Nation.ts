@@ -5,9 +5,10 @@ import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
 import INation from '../../../shared/models/INation';
 import { Player } from './Player';
+import { TradeOption } from './TradeOption';
 
 
-export class Nation extends BaseClass implements INation
+export class Nation extends BaseClass //implements INation
 {
     @prop({default: "Nation"})
     CLASS_NAME:string;
@@ -30,8 +31,8 @@ export class Nation extends BaseClass implements INation
     @prop({required: true})
     Tech: string;
 
-    @arrayProp({ items: String })
-    TradeOptions: string[];
+    @arrayProp({ itemsRef: TradeOption })
+    TradeOptions: Ref<TradeOption>[];
 
   }
 

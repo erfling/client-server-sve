@@ -1,3 +1,4 @@
+import { TradeOption, TradeOptionModel } from './models/TradeOption';
 import { selectRole, proposeDeal } from './../../app/src/actions/Actions';
 import { Role } from './../../shared/models/IPlayer';
 import * as express from 'express';
@@ -12,7 +13,7 @@ import * as http from 'http';
 import * as https from 'https';
 import * as socketIo from 'socket.io';
 import * as crypto from 'crypto';
-
+import {Ref} from 'typegoose';
 //import routers
 import GameRouter from './routers/GameRouter';
 import SheetsRouter from './routers/GoogleSheetsRouter';
@@ -22,6 +23,8 @@ import PlayerRouter from './routers/PlayerRouter';
 import IGame from '../../shared/models/IGame';
 import ITeam from '../../shared/models/ITeam';
 import IDeal from '../../shared/models/IDeal';
+import ITradeOption from '../../shared/models/ITradeOption';
+
 import formValues from '../../shared/models/FormValues';
 import * as fs from 'fs';
 
@@ -41,6 +44,8 @@ import { Player, PlayerModel } from './models/Player';
 import { NationModel, Nation } from './models/Nation';
 import Item from 'antd/lib/list/Item';
 import INation from '../../shared/models/INation';
+import { ObjectID } from 'bson';
+import { Document } from 'mongoose';
 
 
 // AppServer class
@@ -147,7 +152,10 @@ export default class AppServer
             {
                 path:'Teams', 
                 populate:{
-                    path:'Nation'
+                    path:'Nation',
+                    populate: {
+                        path:"TradeOptions"
+                    }
                 }
             }
         )
@@ -277,6 +285,61 @@ export default class AppServer
             res.sendFile('/google8b116b0e2c1fc48f.html');
         });
 
+        this.app.get('/sapien/api/generatetradeoptions', function(req, res) {
+            NationModel.find().then((nations) => {
+                var options:any[] = [];
+                nations.forEach( (n, i:number, nationsArray) => {
+                    //every nation has the option of trading with each of the five other nations
+                    
+                    var nationalOptions = nations
+                                            .filter(nation => n._id != nation._id)
+                                            .map(nation => {
+                                                return  {
+                                                    ToNationId: nation._id,
+                                                    FromNationId: n._id,
+                                                    Message : "Trade with " + nation.Name
+                                                }
+                                            })
+                    options = options.concat(nationalOptions);
+                    
+                } )
+                return options;
+            }).then((options) => {
+                console.log(options);
+                TradeOptionModel.insertMany(options).then((resp) => {
+                    res.json(resp)
+                })
+            }).catch((reason) => {console.log(reason)})
+            
+        });
+
+
+        this.app.get('/sapien/api/addtradeoptionstonations', function(req, res) {
+            NationModel.find().then((nations) => {          
+                return nations;
+            }).then((nations) => TradeOptionModel.find().then(options => {return {options, nations}}))
+            .then((thing: {nations:INation[], options: ITradeOption[]}) => {
+                console.log(thing)
+                thing.nations.forEach((nation) => {
+                    let options = thing.options
+                                        .filter(o => o.FromNationId == nation._id)//
+                                        .map(o => o._id)
+                    nation.TradeOptions = options as Ref<TradeOption>[];
+                })
+
+                return thing.nations;
+               
+            })
+            .then((nations) => {
+                //NationModel.updateMany({_id: },nations).then(nations => res.json(nations))
+                var promises:any = [];
+                nations.forEach(n => promises.push(NationModel.findByIdAndUpdate(n._id, {TradeOptions: n.TradeOptions}, {new: true} )))
+                Promise.all(promises).then(nations => res.json(nations))
+            })
+            .catch((reason) => {console.log(reason)})
+            
+        });
+
         //login route
         mongoose.set('debug', true);
 
@@ -315,7 +378,14 @@ export default class AppServer
         this.app.post('/sapien/api/login', async (req, res) => {
             try {
                 var game:Game & mongoose.Document = null;
-                const team = await TeamModel.findOne({Slug: req.body.Slug}).populate("Nation");
+                const team = await TeamModel.findOne({Slug: req.body.Slug}).populate(
+                    {
+                        path:"Nation",
+                        populate: {
+                           path:"TradeOptions"     
+                        }
+                    }
+                );
 
                 if (team) {
                     game = await GameModel.findById(team.GameId);

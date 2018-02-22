@@ -10,6 +10,7 @@ import * as Actions from '../../actions/Actions';
 import { RadioWrapper } from './AntdFormWrappers';
 import ITeam from '../../../../shared/models/ITeam';
 import INation from '../../../../shared/models/INation';
+import ITradeOption from '../../../../shared/models/ITradeOption';
 import { Alert } from 'antd';
 
 interface DealFormProps extends InjectedFormProps{
@@ -18,7 +19,7 @@ interface DealFormProps extends InjectedFormProps{
     handleSubmit: (formValues:any) => {};
     setWaterValues: () => {}
     CurrentPlayer: ITeam;
-    Nation:INation
+    Options: ITradeOption[]
 }
 
 class SliderWrapperField extends Field<{increment:number}>{
@@ -86,7 +87,7 @@ class DealFormWrapper extends React.Component<DealFormProps, { warning:string }>
                                 component={RadioWrapper}
                                 validate={this.selectChanged}
                             > 
-                                {this.props.CurrentPlayer.Nation && this.props.Nation.TradeOptions.map((o:string, i:number) => <option key={i}>{o}</option>)}
+                                {this.props.Options && this.props.Options.map((o:ITradeOption, i:number) => <option key={i}>{o.Message}</option>)}
                             </Field>
                         }      
                     </FormItem>
@@ -105,7 +106,7 @@ const mapStateToProps = (state: ApplicationStore, ownProps:DealFormProps): {} =>
         Submitting: state.Application.Loading,
         FormData: state.form.dealForm,
         CurrentPlayer: state.GameData.CurrentPlayer,
-        Nation: state.GameData.CurrentPlayer.Nation as INation
+        Options: (state.GameData.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[]
     };
 };
 

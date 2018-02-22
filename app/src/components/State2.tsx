@@ -6,7 +6,7 @@ import IDeal from '../../../shared/models/IDeal';
 import DealFormWrapper from './form-elements/DealForm'
 import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom'; 
-import {Row, Col} from 'antd';
+import {Row, Col, Modal, Icon, Button} from 'antd';
 
 
 const River = require("../img/river-waterfall-cliff-rock-forest-tree.jpg");
@@ -49,7 +49,20 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                     ParallaxImg={River}
                     HeaderText="Come Together"
                 >   
-                    {this.props.PendingDealOffer && <div>DEAL OFFERED</div>}
+                    {this.props.PendingDealOffer && <Modal
+                            title={
+                                this.props.PendingDealOffer.from == this.props.CurrentPlayer.Slug 
+                                    ? <p>Your team offered a trade deal to {this.props.PendingDealOffer.from}.</p> 
+                                    : <p>{this.props.PendingDealOffer.from} wants to make a trade deal.</p>
+                            }
+                            visible={true}
+                            footer={[
+                                
+                              ]}
+                        >
+                        <pre>{JSON.stringify(this.props.PendingDealOffer, null, 2)}</pre>
+                        
+                        </Modal> }
                     <Row className="form-wrapper">
                         <p>{new Date().toLocaleDateString()}. A reprive.</p>
                         <p>You know the stakes. Work with other nations to build a liveable, sutainable world, as you build a better future for your own nation.</p>
