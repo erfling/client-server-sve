@@ -451,7 +451,7 @@ export const getPlayer = () => {
             type: ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE,
             payload: JSON.parse(localStorage.getItem("SVE_PLAYER"))
         })
-        dispatch( createTeamSocket(JSON.parse(localStorage.getItem("SVE_PLAYER"))) );
+        dispatch( login(JSON.parse(localStorage.getItem("SVE_PLAYER"))) );
     }
 }
 
