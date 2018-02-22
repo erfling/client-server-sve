@@ -155,7 +155,7 @@ export default class AppServer
             )[0];
             if (toTeam) {
                 console.log("FOUND TO TEAM:", toTeam.Name);
-                eventTarget.nsp.to(deal.to).emit(SocketEvents.PROPOSE_DEAL, deal); // Send proposal to team it's asking
+                eventTarget.nsp.to(toTeam.Slug).emit(SocketEvents.PROPOSE_DEAL, deal); // Send proposal to team it's asking
                 eventTarget.nsp.to(deal.from).emit(SocketEvents.PROPOSE_DEAL, deal); // Send message back to sender's room to varify proposal was sent
             }
         });
@@ -166,7 +166,7 @@ export default class AppServer
             let teams:ITeam[] = (<IGame>g).Teams as ITeam[];
             var toTeam:ITeam = teams.filter(t => (<INation>t.Nation).Name == deal.to)[0];
             if (toTeam) {
-                eventTarget.nsp.to(deal.to).emit(SocketEvents.RESPOND_TO_DEAL, deal);
+                eventTarget.nsp.to(toTeam.Slug).emit(SocketEvents.RESPOND_TO_DEAL, deal);
                 eventTarget.broadcast.to(toTeam.Name).emit(SocketEvents.RESPOND_TO_DEAL, deal);
             }
         });
