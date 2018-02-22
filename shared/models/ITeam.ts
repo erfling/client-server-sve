@@ -16,6 +16,6 @@ export default interface ITeam extends IBaseClass {
   healthcare: string;
   agriculture: string;
   GameId: string;
-  GameState: number | string;
+  GameState: string;
   Nation: Ref<Nation> | INation;
-}  
+}

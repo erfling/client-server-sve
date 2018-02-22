@@ -69,7 +69,6 @@ export enum ACTION_TYPES {
 
     DEAL_PROPOSED = "DEAL_PROPOSED",
     DEAL_RESPONSE = "DEAL_RESPONSE",
-    
 
 }
 
@@ -107,6 +106,7 @@ export const createTeamSocket = (team:ITeam) => {
                 } );
             })
             .on(SocketEvents.PROPOSE_DEAL, (deal:IDeal) => {
+                console.log("SOCKET RETURNED DEAL_PROPOSED:", deal);
                 dispatch( {
                     type: ACTION_TYPES.DEAL_PROPOSED,
                     payload: deal
