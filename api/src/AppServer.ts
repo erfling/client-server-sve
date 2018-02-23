@@ -363,12 +363,12 @@ export default class AppServer
             GameModel.findByIdAndUpdate(req.body._id, {State: req.body.State}, {new: true}).populate("Teams").then(( game ) => {
                 console.log(game.State);
                 //this.io.emit(SocketEvents.GAME_STATE_CHANGED, game.State);
+                var promises:any[] = [];
 
                 //Set our countries
                 if (game.State == "2") {
                     console.log("STATE IS 2")
                     var teams:ITeam[] = game.Teams as ITeam[];
-                    var promises:any[] = [];
                     var promise = NationModel.find().then((nations) => {
                         for(var i = 0; i < nations.length; i++) {
                             var update = {
@@ -376,13 +376,25 @@ export default class AppServer
                                 GameState: 2
                             }
                             TeamModel.findByIdAndUpdate(teams[i]._id, update, {new: true}).populate("Nation").then((t) => {
-                                console.log("Team:", t);
                                 this.io.of(t.GameId).to(t.Slug).emit(SocketEvents.TEAM_UPDATED, t);
                             });        
                             promises.push(promise);
                         }
 
                         return nations;
+                    })
+                } else {
+                    console.log("GAME STATE IS NOW", game.State);
+                    (<ITeam[]>game.Teams).forEach((t:ITeam) => {
+                        var promise = TeamModel.findByIdAndUpdate(t._id, {GameState: game.State}, {new: true}).then(t => t)
+                        promises.push(promise)
+                    })
+
+                    Promise.all(promises).then((teams: ITeam[]) => {
+                        console.log(teams);
+                        teams.forEach(t => {
+                            this.io.of(t.GameId).to(t.Slug).emit(SocketEvents.TEAM_UPDATED, t);
+                        })
                     })
                 }
 

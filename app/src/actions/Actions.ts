@@ -11,6 +11,7 @@ import IPlayer from '../../../shared/models/IPlayer';
 import { store } from '../index';
 import { setTimeout } from 'timers';
 import IDeal from '../../../shared/models/IDeal'
+import IRatings from '../../../shared/models/IRatings'
 
 const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
 const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
@@ -96,6 +97,7 @@ export const createTeamSocket = (team:ITeam) => {
         
         return (dispatch: Dispatch<Action<ITeam>>) => {
             socket.on(SocketEvents.TEAM_UPDATED, (team:ITeam) => {
+                console.log("heard team update event from server over socket")
                 dispatch( {
                     type: ACTION_TYPES.IS_LOADING,
                     payload: false
@@ -104,6 +106,10 @@ export const createTeamSocket = (team:ITeam) => {
                     type: ACTION_TYPES.PLAYER_UPDATED,
                     payload: team
                 } );
+                dispatch({
+                    type: ACTION_TYPES.GAME_STATE_CHANGED,
+                    payload:team
+                })
             })
             .on(SocketEvents.PROPOSE_DEAL, (deal:IDeal) => {
                 console.log("SOCKET RETURNED DEAL_PROPOSED:", deal);
@@ -526,4 +532,8 @@ export const acceptOrRejectDeal = (deal: IDeal, accept: boolean) => {
             payload: false
         })
     }
-} 
+}
+
+export const submitRatings = (ratings:IRatings) => {
+
+}

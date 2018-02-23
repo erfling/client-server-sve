@@ -18,6 +18,7 @@ interface State2Props{
    getPlayer: () => {}
    proposeDeal: (deal: IDeal) => {}
    acceptOrRejectDeal: (deal: IDeal, accept: boolean) => {}
+   match: any;
 }
 export default class State2 extends React.Component<State2Props, {PlayerNotFound:boolean, ParallaxByNation: any}> {
 
@@ -94,6 +95,8 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                 <GameWrapper
                     ParallaxImg={require("../img/sydney-opera.jpeg")}
                     HeaderText={(this.props.CurrentPlayer.Nation as INation).Name}
+                    match={this.props.match}
+                    CurrentPlayer={this.props.CurrentPlayer}
                 >   
                     {this.props.PendingDealOffer && <Modal
                             title={
