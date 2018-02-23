@@ -10,8 +10,8 @@ import BaseClass from '../../../api/src/models/BaseModel';
 import IPlayer from '../../../shared/models/IPlayer';
 import { store } from '../index';
 import { setTimeout } from 'timers';
-import IDeal from '../../../shared/models/IDeal'
-import IRatings from '../../../shared/models/IRatings'
+import IDeal from '../../../shared/models/IDeal';
+import IRatings from '../../../shared/models/IRatings';
 
 const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
 const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
@@ -70,6 +70,8 @@ export enum ACTION_TYPES {
 
     DEAL_PROPOSED = "DEAL_PROPOSED",
     DEAL_RESPONSE = "DEAL_RESPONSE",
+
+    RATINGS_SUBMITTED = "RATINGS_SUBMITTED"
 
 }
 
@@ -534,6 +536,36 @@ export const acceptOrRejectDeal = (deal: IDeal, accept: boolean) => {
     }
 }
 
-export const submitRatings = (ratings:IRatings) => {
-
+export const submitRatings = (teamWithRatings: ITeam) => {
+    return (dispatch: Dispatch<Action<ITeam>>) => {
+        const url = baseRestURL + 'teams/ratings';
+        dispatch({
+            type: ACTION_TYPES.IS_LOADING,
+            payload: true
+        })
+        return fetch(
+            url, 
+            {
+                method: "POST",
+                body: JSON.stringify(teamWithRatings),
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            }
+        )
+        .then(( res:Response ) => {
+            return res.json()
+        })
+        .then( (resp:any )=>{
+            dispatch({
+                type: ACTION_TYPES.RATINGS_SUBMITTED,
+                payload:resp
+            })
+            dispatch({
+                type: ACTION_TYPES.IS_LOADING,
+                payload: false
+            })
+        }
+    )
+    }
 }

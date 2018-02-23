@@ -7,6 +7,8 @@ import State2 from '../components/State2';
 import ITeam from '../../../shared/models/ITeam';
 import { ACTION_TYPES } from '../actions/Actions';
 import IDeal from '../../../shared/models/IDeal';
+import INation from '../../../shared/models/INation';
+import ITradeOption from '../../../shared/models/ITradeOption';
 
 interface DispatchProps {
     getPlayer:() => {}
@@ -17,11 +19,13 @@ interface DispatchProps {
 export interface State2Props{
     CurrentPlayer: ITeam;
     PendingDealOffer: IDeal;
+    Options: ITradeOption[]
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): State2Props => {
     return {
         CurrentPlayer: state.GameData.CurrentPlayer,
-        PendingDealOffer: state.GameData.PendingDealOffer
+        PendingDealOffer: state.GameData.PendingDealOffer,
+        Options: (state.GameData.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[]
     };
 };
 

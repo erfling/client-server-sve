@@ -6,6 +6,7 @@ import RatingsForm from './form-elements/RatingsForm'
 import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom'; 
 import {Row, Col} from 'antd';
+import IRatings from '../../../shared/models/IRatings';
 
 const WOTW = require("../img/The-War-of-the-Worlds-Radio-Broadcast.jpg");
 
@@ -42,6 +43,10 @@ export default class State3 extends React.Component<State3Props, {PlayerNotFound
         console.log("UPDATED")
     }
 
+    prepareRatings(formValues: IRatings){
+        this.props.submitRatings(Object.assign(this.props.CurrentPlayer, {Ratings: formValues}))
+    }
+
     render(){
         const d = new Date();
         const year = d.getFullYear();
@@ -58,7 +63,7 @@ export default class State3 extends React.Component<State3Props, {PlayerNotFound
                 >   
                     {this.props.CurrentPlayer.GameState == "3B" 
                         ?                     
-                        <RatingsForm onSubmit={this.props.submitRatings}/>
+                        <RatingsForm onSubmit={this.prepareRatings.bind(this)}/>
                         : 
                         <Row className="form-wrapper" gutter={{lg:"1", xl:"1"}}>
                             <h2>Not the New Yorker logo, but one of a similar publication we make up.</h2>

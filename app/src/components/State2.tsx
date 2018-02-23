@@ -6,7 +6,7 @@ import IDeal from '../../../shared/models/IDeal';
 import DealFormWrapper from './form-elements/DealForm'
 import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom'; 
-import {Row, Col, Modal, Icon, Button} from 'antd';
+import {Row, Col, Modal, Icon, Button, Select} from 'antd';
 import ITradeOption from '../../../shared/models/ITradeOption';
 import INation from '../../../shared/models/INation';
 
@@ -15,6 +15,7 @@ import INation from '../../../shared/models/INation';
 interface State2Props{
    CurrentPlayer: ITeam;
    PendingDealOffer: IDeal;
+   Options: ITradeOption[];
    getPlayer: () => {}
    proposeDeal: (deal: IDeal) => {}
    acceptOrRejectDeal: (deal: IDeal, accept: boolean) => {}
@@ -52,6 +53,10 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
 
     respondToDeal(deal: IDeal, accept: boolean) {
         this.props.acceptOrRejectDeal(deal, accept)
+    }
+
+    forwardDeal(deal: IDeal, newRecipient: INation){
+
     }
 
     componentDidUpdate(){
@@ -130,7 +135,10 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                                     
                                     return  <li>
                                                 <h5>{(d.TradeOption  as ITradeOption).ToNationId} Accepted Your Trade Deal</h5>
-                                                <p>{(d.TradeOption  as ITradeOption).Message}</p>
+                                                <p>
+                                                    {(d.TradeOption  as ITradeOption).Message}
+                                                    <Button type="danger" onClick={e => this.respondToDeal(d, false)}>Cancel Deal</Button>
+                                                </p>
                                             </li>
                                 })}
                             </ul> 
@@ -144,7 +152,20 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                                 {(this.props.CurrentPlayer.DealsProposedBy as IDeal[]).map(d => {
                                         return  <li>
                                                     <h5>You Accepted {(d.TradeOption  as ITradeOption).FromNationId}'s Trade Deal</h5>
-                                                    <p>{(d.TradeOption  as ITradeOption).Message}</p>
+                                                    <p>
+                                                        {(d.TradeOption  as ITradeOption).Message}
+                                                        <Button type="danger" onClick={e => this.respondToDeal(d, false)}>Cancel Deal</Button>
+                                                        Offer deal to 
+                                                        <Select placeholder="Select a Nation">
+                                                            {this.props.Options
+                                                                .filter(o => {
+                                                                    console.log("deal",d)
+                                                                    return o.ToNationId != d.to && o.FromNationId != d.from
+                                                                })
+                                                                .map(o => <Select.Option value={o.ToNationId}>{o.ToNationId}</Select.Option>)
+                                                            }
+                                                        </Select>
+                                                    </p>
                                                 </li>
                                 })}
                             </ul> 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { reduxForm, Field, WrappedFieldProps, InjectedFormProps, GenericFieldHTMLAttributes } from 'redux-form';
 import { ReactNode } from 'react-redux';
-import { Form, Input, Radio, Select, Button, Slider, Icon } from "antd";
+import { Form, Input, Radio, Select, Button, Slider, Icon, Alert } from "antd";
 const FormItem = Form.Item;
 import ApplicationStore from '../../stores/Store';
 import { Dispatch } from 'redux';
@@ -11,7 +11,6 @@ import { SliderWrapper } from './AntdFormWrappers';
 import ITeam from '../../../../shared/models/ITeam';
 import INation from '../../../../shared/models/INation';
 import ITradeOption from '../../../../shared/models/ITradeOption';
-import { Alert } from 'antd';
 
 interface DealFormProps extends InjectedFormProps{
     Submitting: boolean;
@@ -74,6 +73,7 @@ class RatingsFormWrapper extends React.Component<DealFormProps, { warning:string
                
                 <div className="form-wrapper" style={{backgroundColor: 'transparent'}}>
                     {this.props.FormData && <Button className="game-button block" onClick={e => this.props.handleSubmit(e)} disabled={!this.props.FormData.values}>Submit Ratings {this.props.Submitting && <Icon type="loading"/>}</Button>}
+                    {this.props.CurrentPlayer.Ratings && <Alert message="Your ratings have been submitted." type="success" />}
                 </div>
             </form>
                        
