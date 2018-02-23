@@ -117,6 +117,18 @@ export const createTeamSocket = (team:ITeam) => {
                     payload: false
                 } )
             })
+            .on(SocketEvents.RESPOND_TO_DEAL, (deal: IDeal) => {
+                console.log("DEAL RESPONSE IS", deal)
+                dispatch( {
+                    type: ACTION_TYPES.DEAL_RESPONSE,
+                    payload: deal
+                } );
+
+                dispatch( {
+                    type: ACTION_TYPES.IS_LOADING,
+                    payload: false
+                } )
+            })
         }
     }
 }
@@ -503,3 +515,14 @@ export const proposeDeal = (deal: IDeal ) => {
         })
     }
 }
+
+export const acceptOrRejectDeal = (deal: IDeal, accept: boolean) => {
+    deal.accept = accept;
+    return (dispatch: Dispatch<Action<boolean>>) => {
+        socket.emit(SocketEvents.RESPOND_TO_DEAL, deal);
+        dispatch({
+            type: ACTION_TYPES.IS_LOADING,
+            payload: false
+        })
+    }
+} 

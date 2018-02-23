@@ -1,3 +1,4 @@
+import { TradeOption } from './../../../api/src/models/TradeOption';
 import { Team } from './../../../api/src/models/Team';
 import { ACTION_TYPES, Action} from './../actions/Actions';
 import ApplicationStore from '../stores/Store';
@@ -5,9 +6,11 @@ import IBaseClass from '../../../shared/models/BaseModel';
 import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
+import IDeal from '../../../shared/models/IDeal';
 import { combineReducers } from 'redux';
 import { reducer as FormReducer } from 'redux-form';
 import { routerReducer } from 'react-router-redux'
+import ITradeOption from '../../../shared/models/ITradeOption';
 
 const initialState: ApplicationStore = {
     GameData: {
@@ -18,7 +21,7 @@ const initialState: ApplicationStore = {
         EnvironmentalHealth:0,
         ReceivedProposedDeals: [],
         SentProposedDeals: [],
-        PendingDealOffer: null
+        PendingDealOffer: null,
     },
     Application: {
         Loading: false,
@@ -35,7 +38,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             if(action.payload.from == state.CurrentPlayer.Slug){
                 var found = false;
                 var deals = state.SentProposedDeals.map(deal => {
-                    if(deal.text == action.payload.text){
+                    if((deal.TradeOption as ITradeOption).message == action.payload.TradeOption.messaged){
                         found = true;
                         return action.payload
                     } else{
@@ -47,7 +50,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             } else {
                 var found = false;
                 var deals = state.ReceivedProposedDeals.map(deal => {
-                    if(deal.text == action.payload.text){
+                    if((deal.TradeOption as ITradeOption).message == action.payload.TradeOption.messaged){
                         found = true;
                         return action.payload
                     } else{
@@ -57,6 +60,37 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
                 if(!found)deals.push(action.payload);
                 return Object.assign({}, state, {ReceivedProposedDeals: deals, PendingDealOffer: action.payload},)
             }
+        case (ACTION_TYPES.DEAL_RESPONSE):        
+            if(action.payload.from == state.CurrentPlayer.Slug){
+                var found = false;
+                var mappedDeals = (state.CurrentPlayer.DealsProposedTo as IDeal[]).map(( deal:IDeal ) => {
+                    if((deal.TradeOption as ITradeOption).message == action.payload.TradeOption.messaged){
+                        found = true;
+                        return action.payload
+                    } else{
+                        return deal;
+                    }
+                })
+                if(!found)mappedDeals.push(action.payload);
+                console.log("REDUCER SAYS DEALS ARE: ",action.payload, mappedDeals)
+
+                return Object.assign({}, state, {CurrentPlayer: Object.assign({}, state.CurrentPlayer, {DealsProposedTo: mappedDeals}), PendingDealOffer: null})
+            } else {
+                var found = false;
+                console.log(state.CurrentPlayer);
+                var previousDeals = state.CurrentPlayer.DealsProposedBy as IDeal[]
+                var mappedDeals = previousDeals.map(( deal:IDeal ) => {
+                    if((deal.TradeOption as ITradeOption).message == action.payload.TradeOption.messaged){
+                        found = true;
+                        return action.payload
+                    } else{
+                        return deal;
+                    }
+                })
+                if(!found)mappedDeals.push(action.payload);
+                return Object.assign({}, state, {CurrentPlayer: Object.assign({}, state.CurrentPlayer, {DealsProposedBy: mappedDeals}), PendingDealOffer: null})
+            }
+
         case(ACTION_TYPES.GAME_SAVED):
             var game = action.payload as IGame;           
             let IDX = state.Game.map((g) => {

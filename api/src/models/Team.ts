@@ -7,7 +7,8 @@ import IPlayer from '../../../shared/models/IPlayer';
 import INation from '../../../shared/models/INation';
 import { Player } from './Player';
 import { Nation } from './Nation';
-
+import { Deal } from './Deal';
+import IDeal from '../../../shared/models/IDeal';
 
 export class Team extends BaseClass implements ITeam
 {
@@ -58,6 +59,12 @@ export class Team extends BaseClass implements ITeam
 
     @prop()
     GameState: string;
+
+    @arrayProp({items: Deal})
+    DealsProposedBy: Deal[] | IDeal[];
+
+    @arrayProp({items: Deal})
+    DealsProposedTo: Deal[] | IDeal[];
   }
 
   export const TeamModel = new Team().getModelForClass( Team, { existingMongoose: mongoose } )

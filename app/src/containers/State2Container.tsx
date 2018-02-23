@@ -10,7 +10,8 @@ import IDeal from '../../../shared/models/IDeal';
 
 interface DispatchProps {
     getPlayer:() => {}
-    proposeDeal:(deal:{from:string, to: string, deal:string}) => {}
+    proposeDeal:(deal:{from:string, to: string, deal:string}) => {},
+    acceptOrRejectDeal: (deal: IDeal, accept: boolean) => {}
 
 }
 export interface State2Props{
@@ -29,7 +30,9 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
         getPlayer: () => dispatch( Actions.getPlayer() ),
         proposeDeal: ( deal: IDeal ) => {
             dispatch( Actions.proposeDeal(deal) )
-        }
+        },
+        acceptOrRejectDeal: (deal: IDeal, accept: boolean) => dispatch( Actions.acceptOrRejectDeal(deal, accept) )
+
     }
 }
 

@@ -161,15 +161,30 @@ export default class AppServer
         )
         .then((g) => {
             let teams:ITeam[] = (<IGame>g).Teams as ITeam[];
-            console.log("Trying to match to team with nation " + deal.to);
+            console.log("Trying to match to team with nation " + (deal.TradeOption as TradeOption).ToNationId);
             var toTeam:ITeam = teams.filter(t => {
                 console.log(t.Name, (<INation>t.Nation).Name);
-                return (<INation>t.Nation).Name == deal.to}
+                return (<INation>t.Nation).Name == (deal.TradeOption as TradeOption).ToNationId}
             )[0];
             if (toTeam) {
                 console.log("FOUND TO TEAM:", toTeam.Name);
+                deal.to = toTeam.Slug;
                 eventTarget.nsp.to(toTeam.Slug).emit(socketEvent, deal); // Send proposal or response to team it's asking
                 eventTarget.nsp.to(deal.from).emit(socketEvent, deal); // Send message back to sender's room to varify dealExchange was sent
+
+                //save both teams
+                if(deal.accept){
+                    /*
+                    TeamModel.findByIdAndUpdate(toTeam._id,{DealsProposedTo: (toTeam.DealsProposedTo as IDeal[]).push(deal)},{new: true}).populate("DealsProposedTo").then((newToTeam) => {
+                        eventTarget.nsp.to(toTeam.Slug).emit(SocketEvents.PROPOSED_TO, deal); // Send proposal or response to team it's asking
+                    })
+                    TeamModel.findOneAndUpdate({Slug: deal.from}, {DealsProposedBy: (toTeam.DealsProposedBy as IDeal[]).push(deal)}).populate("DealsProposedBy").then((newFromTeam) => {
+                        eventTarget.nsp.to(toTeam.Slug).emit(SocketEvents.PROPOSED_BY, deal); // Send proposal or response to team it's asking
+                    })
+                    */
+                    eventTarget.nsp.to(toTeam.Slug).emit(socketEvent, deal); // Send proposal or response to team it's asking
+                    eventTarget.nsp.to(deal.from).emit(socketEvent, deal);
+                }
             }
         });
     }
@@ -295,8 +310,8 @@ export default class AppServer
                                             .filter(nation => n._id != nation._id)
                                             .map(nation => {
                                                 return  {
-                                                    ToNationId: nation._id,
-                                                    FromNationId: n._id,
+                                                    ToNationId: nation.Name,
+                                                    FromNationId: n.Name,
                                                     Message : "Trade with " + nation.Name
                                                 }
                                             })
@@ -322,7 +337,7 @@ export default class AppServer
                 console.log(thing)
                 thing.nations.forEach((nation) => {
                     let options = thing.options
-                                        .filter(o => o.FromNationId == nation._id)//
+                                        .filter(o => o.FromNationId == nation.Name)//
                                         .map(o => o._id)
                     nation.TradeOptions = options as Ref<TradeOption>[];
                 })
