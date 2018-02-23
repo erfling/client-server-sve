@@ -99,10 +99,26 @@ class TeamRouter
         
     }
 
+    public AddRatings(req: Request, res: Response):void {
+        console.log(req.body);
+        TeamModel.findByIdAndUpdate(req.body._id, {Ratings: req.body.Ratings}, {new: true})
+                    .populate({
+                        path:"Nation",
+                        populate: {
+                            path:"TradeOptions"     
+                        }
+                    })
+                    .then(t => res.json(t))
+                    .catch(e => {
+                        res.status(400);
+                        res.json(e)
+                    })
+    }
+
     public routes(){
         this.router.get("/", this.GetTeams);
-        console.log("yes");
         this.router.get("/:team", this.GetTeam);
+        this.router.post("/ratings", this.AddRatings)
         this.router.post("/", this.CreateTeam);
     }
 }
