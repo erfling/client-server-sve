@@ -60,7 +60,9 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
                 if(!found)deals.push(action.payload);
                 return Object.assign({}, state, {ReceivedProposedDeals: deals, PendingDealOffer: action.payload},)
             }
-        case (ACTION_TYPES.DEAL_RESPONSE):        
+        case (ACTION_TYPES.DEAL_RESPONSE):  
+            console.log("RESPONSE IS: ",action.payload.accept)      
+            if(action.payload.accept === false) return Object.assign({}, state, {PendingDealOffer: null})
             if(action.payload.from == state.CurrentPlayer.Slug){
                 var found = false;
                 var mappedDeals = (state.CurrentPlayer.DealsProposedTo as IDeal[]).map(( deal:IDeal ) => {

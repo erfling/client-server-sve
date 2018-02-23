@@ -11,7 +11,6 @@ import ITradeOption from '../../../shared/models/ITradeOption';
 import INation from '../../../shared/models/INation';
 
 
-const River = require("../img/river-waterfall-cliff-rock-forest-tree.jpg");
 
 interface State2Props{
    CurrentPlayer: ITeam;
@@ -20,7 +19,7 @@ interface State2Props{
    proposeDeal: (deal: IDeal) => {}
    acceptOrRejectDeal: (deal: IDeal, accept: boolean) => {}
 }
-export default class State2 extends React.Component<State2Props, {PlayerNotFound:boolean}> {
+export default class State2 extends React.Component<State2Props, {PlayerNotFound:boolean, ParallaxByNation: any}> {
 
     componentWillMount(){
         this.setState({PlayerNotFound: false})
@@ -54,10 +53,46 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
         this.props.acceptOrRejectDeal(deal, accept)
     }
 
+    componentDidUpdate(){
+        if(this.props.CurrentPlayer && this.props.CurrentPlayer.Nation && !this.state.ParallaxByNation)this.loadImage();
+    }
+
+    loadImage(){
+        if(!this.props.CurrentPlayer.Nation)return;
+        const River = require("../img/river-waterfall-cliff-rock-forest-tree.jpg");
+        var imagePath = "../img/"
+        switch ((this.props.CurrentPlayer.Nation as INation).Name) {
+        
+            case "Australia":
+                return imagePath + "sydney-opera.jpeg";
+            case "Bangladesh":
+                return  imagePath + "Bangladesh_beach.jpeg";            
+            case "China":
+                return imagePath + "china_banner.jpeg";
+            case "India":
+                return imagePath + "India_market.jpeg"; 
+            case "Japan":
+                return imagePath + "japan_fuji.jpeg";
+            case "Vietnam":
+                return imagePath + "vietnam_Paddy.jpeg";
+            default:
+                imagePath = null;
+                break;
+
+            
+        }
+
+        console.log("PATH TO IMAGE IS", imagePath)
+        if(imagePath)this.setState(Object.assign(this.state, {ParallaxByNation: imagePath}))
+        console.log(this.state)
+    }
+
     render(){
         if(!this.props.CurrentPlayer)return <div/>
-        return this.props.CurrentPlayer &&<GameWrapper
-                    ParallaxImg={River}
+        return this.props.CurrentPlayer && 
+                this.props.CurrentPlayer.Nation ? 
+                <GameWrapper
+                    ParallaxImg={require("../img/sydney-opera.jpeg")}
                     HeaderText={(this.props.CurrentPlayer.Nation as INation).Name}
                 >   
                     {this.props.PendingDealOffer && <Modal
@@ -105,7 +140,7 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                             <ul>                                                  
                                 {(this.props.CurrentPlayer.DealsProposedBy as IDeal[]).map(d => {
                                         return  <li>
-                                                    <h5>You Accepted {(d.TradeOption  as ITradeOption).ToNationId}'s Trade Deal</h5>
+                                                    <h5>You Accepted {(d.TradeOption  as ITradeOption).FromNationId}'s Trade Deal</h5>
                                                     <p>{(d.TradeOption  as ITradeOption).Message}</p>
                                                 </li>
                                 })}
@@ -116,6 +151,6 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
 
                     <DealFormWrapper form="dealForm" onSubmit={this.prepDeal.bind(this)}/>
                     {this.state.PlayerNotFound && <Redirect to="/"/>}
-               </GameWrapper>
+               </GameWrapper> : <h1>Loading</h1>
     }
 }

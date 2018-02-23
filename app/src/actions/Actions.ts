@@ -517,9 +517,10 @@ export const proposeDeal = (deal: IDeal ) => {
 }
 
 export const acceptOrRejectDeal = (deal: IDeal, accept: boolean) => {
-    deal.accept = accept;
+
+    let transmittedDeal = Object.assign(deal, {accept})
     return (dispatch: Dispatch<Action<boolean>>) => {
-        socket.emit(SocketEvents.RESPOND_TO_DEAL, deal);
+        socket.emit(SocketEvents.RESPOND_TO_DEAL, transmittedDeal);
         dispatch({
             type: ACTION_TYPES.IS_LOADING,
             payload: false

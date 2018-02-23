@@ -167,13 +167,14 @@ export default class AppServer
                 return (<INation>t.Nation).Name == (deal.TradeOption as TradeOption).ToNationId}
             )[0];
             if (toTeam) {
-                console.log("FOUND TO TEAM:", toTeam.Name);
+                console.log("FOUND TO TEAM:", toTeam.Name, socketEvent);
                 deal.to = toTeam.Slug;
                 eventTarget.nsp.to(toTeam.Slug).emit(socketEvent, deal); // Send proposal or response to team it's asking
                 eventTarget.nsp.to(deal.from).emit(socketEvent, deal); // Send message back to sender's room to varify dealExchange was sent
 
                 //save both teams
-                if(deal.accept){
+                if(deal.accept === true){
+                    console.log("DEAL WAS ACCEPTED")
                     /*
                     TeamModel.findByIdAndUpdate(toTeam._id,{DealsProposedTo: (toTeam.DealsProposedTo as IDeal[]).push(deal)},{new: true}).populate("DealsProposedTo").then((newToTeam) => {
                         eventTarget.nsp.to(toTeam.Slug).emit(SocketEvents.PROPOSED_TO, deal); // Send proposal or response to team it's asking
@@ -182,8 +183,7 @@ export default class AppServer
                         eventTarget.nsp.to(toTeam.Slug).emit(SocketEvents.PROPOSED_BY, deal); // Send proposal or response to team it's asking
                     })
                     */
-                    eventTarget.nsp.to(toTeam.Slug).emit(socketEvent, deal); // Send proposal or response to team it's asking
-                    eventTarget.nsp.to(deal.from).emit(socketEvent, deal);
+                    
                 }
             }
         });
