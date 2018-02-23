@@ -92,9 +92,9 @@ export default class GoogleSheets
                 }
             });
         }).catch(e => {})
-  }
-
-    public GetSheetValues(sheetId:string = null):any {
+    }
+    
+    public GetSheetValues(sheetId:string = null, range: string = null):any {
         const sheets = google.sheets('v4');
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
@@ -104,8 +104,8 @@ export default class GoogleSheets
                 if (!auth) return;
                 sheets.spreadsheets.values.get({
                     auth: auth,            
-                    spreadsheetId: sheetId ,
-                    range: 'Shared Value Map!G1:M6'
+                    spreadsheetId: sheetId,
+                    range: range
                 }, (err:any, response: any) => {
                     if (err) {
                         console.log(err,"ERROR HERE");
@@ -189,6 +189,47 @@ export default class GoogleSheets
           .catch(e => {})
           
         })
+    }
+
+    public submitTradeDealValues(teams: ITeam[]):Promise<any>{
+        return this.readAndAuthFile('./api/src/creds/client_secret.json')
+        .then(this.authorize)
+        .then((auth) => {
+
+            var innerValues = teams.map((t) => {
+                return t.DealsProposedTo.length;
+            })
+            var values:any[][] = [innerValues];
+            var range = "!C12:C17"
+            const sheets = google.sheets('v4');
+            var data = [{
+                range: range,
+                values: values
+            }];
+            var body = {
+                data: data,
+                valueInputOption: 'USER_ENTERED'
+            };
+            var requestBody = {
+                resource: body,
+                spreadsheetId: '1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg',
+                auth:auth,
+            }
+
+            return new Promise((resolve, reject) => {
+                sheets.spreadsheets.values.batchUpdate(
+                    requestBody,
+                    (err:any, result: any) => {
+                    console.log(result);
+                    if (err) {
+                        console.log(err,"ERROR HERE")
+                        return reject(err);
+                    }
+                    console.log("HERE");
+                    return resolve(result.values);
+                })
+            })
+        }).catch(e => {throw(e)})
     }
 
     public commitAnswers(player:IPlayer, formValues:formValues):Promise<any> {
