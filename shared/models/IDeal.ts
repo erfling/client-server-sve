@@ -4,9 +4,9 @@ import ITradeOption from './ITradeOption';
 
 export default interface IDeal {
     TradeOption: Ref<TradeOption> | ITradeOption;
-    FromTeamSlug: string;
-    ToTeamSlug: string;
-    FromNationName: string;
-    ToNationName: string;
+    FromTeamSlug?: string;
+    ToTeamSlug?: string;
+    FromNationName?: string;
+    ToNationName?: string;
     Accept?: boolean;
 }

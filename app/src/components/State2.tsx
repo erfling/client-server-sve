@@ -42,9 +42,8 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
         
         var deal: IDeal = {
             TradeOption: JSON.parse(formValues.chosenDeal),
-            from: this.props.CurrentPlayer.Slug,
-            to  : JSON.parse(formValues.chosenDeal).to,
-            accept: null
+            FromTeamSlug: this.props.CurrentPlayer.Slug,
+            ToNationName  : JSON.parse(formValues.chosenDeal).to
         }
         console.log("WHAT'S THE DEAL?", deal)
         this.props.proposeDeal(deal);
