@@ -4,5 +4,5 @@ export default interface IRatings{
     China?: number;
     India?: number;
     Japan?: number;
-    Vietnam?: number
+    Vietnam?: number;
 }

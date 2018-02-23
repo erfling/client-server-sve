@@ -7,7 +7,7 @@ import * as mongoose from 'mongoose';
 
 export class Deal extends BaseClass implements IDeal {
     
-    @prop({required: true, ref: TradeOption})
+    @prop({ref: TradeOption})
     TradeOption: Ref<TradeOption> | ITradeOption;
 
     @prop()

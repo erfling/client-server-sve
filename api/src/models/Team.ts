@@ -10,6 +10,7 @@ import { Nation } from './Nation';
 import { Deal } from './Deal';
 import IDeal from '../../../shared/models/IDeal';
 import IRatings from '../../../shared/models/IRatings';
+import { Ratings } from './Ratings';
 
 
 export class Team extends BaseClass implements ITeam
@@ -69,7 +70,7 @@ export class Team extends BaseClass implements ITeam
     DealsProposedTo: Deal[] | IDeal[];
 
     @prop()
-    Ratings: IRatings;
+    Ratings: Ratings | IRatings;
 
   }
 
