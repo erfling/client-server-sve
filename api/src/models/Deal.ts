@@ -11,10 +11,16 @@ export class Deal extends BaseClass implements IDeal {
     TradeOption: Ref<TradeOption> | ITradeOption;
 
     @prop()
-    from: string;
+    FromTeamSlug: string;
 
     @prop()
-    to: string;
+    ToTeamSlug: string;
+
+    @prop()
+    FromNationName: string;
+
+    @prop()
+    ToNationName: string;
     
     @prop()
     text: string;
