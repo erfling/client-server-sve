@@ -47,7 +47,7 @@
     "jsonwebtoken": "^8.1.1",
     "less": "^2.7.3",
     "mocha": "^4.0.1",
-    "mongoose": "^4.13.7",
+    "mongoose": "@4.11.1",
     "morgan": "^1.9.0",
     "nodemon": "^1.12.1",
     "react": "^16.2.0",
