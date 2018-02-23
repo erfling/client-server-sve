@@ -148,6 +148,7 @@ export default class AppServer
      * @param deal The deal Object
      */
     private dealExchange(eventTarget:SocketIO.Socket, socketEvent:string, deal:IDeal):void {
+        console.log(deal);
         GameModel.findById(eventTarget.nsp.name.slice(1)).populate(
             {
                 path:'Teams', 
@@ -163,28 +164,33 @@ export default class AppServer
             let teams:ITeam[] = (<IGame>g).Teams as ITeam[];
             console.log("Trying to match to team with nation " + (deal.TradeOption as TradeOption).ToNationId);
             var toTeam:ITeam = teams.filter(t => {
-                console.log(t.Name, (<INation>t.Nation).Name);
+                console.log((<INation>t.Nation).Name, (deal.TradeOption as TradeOption).ToNationId);
                 return (<INation>t.Nation).Name == (deal.TradeOption as TradeOption).ToNationId}
             )[0];
             if (toTeam) {
                 console.log("FOUND TO TEAM:", toTeam.Name, socketEvent);
                 deal.to = toTeam.Slug;
-                eventTarget.nsp.to(toTeam.Slug).emit(socketEvent, deal); // Send proposal or response to team it's asking
-                eventTarget.nsp.to(deal.from).emit(socketEvent, deal); // Send message back to sender's room to varify dealExchange was sent
+                if (deal.accept == true) {
+                    // save both teams
+                    var deals = (toTeam.DealsProposedBy as IDeal[] || []).concat([deal]).map(d => Object.assign(deal, {TradeOption: (deal.TradeOption as ITradeOption)._id }))
+                    console.log("DEAL WAS ACCEPTED", deals);
 
-                //save both teams
-                if(deal.accept === true){
-                    console.log("DEAL WAS ACCEPTED")
-                    /*
-                    TeamModel.findByIdAndUpdate(toTeam._id,{DealsProposedTo: (toTeam.DealsProposedTo as IDeal[]).push(deal)},{new: true}).populate("DealsProposedTo").then((newToTeam) => {
-                        eventTarget.nsp.to(toTeam.Slug).emit(SocketEvents.PROPOSED_TO, deal); // Send proposal or response to team it's asking
+                    TeamModel.findByIdAndUpdate(toTeam._id, {DealsProposedTo: (toTeam.DealsProposedTo as IDeal[]).push(deal)},{new: true}).populate("DealsProposedTo").then((newToTeam) => {
+                        console.log(newToTeam)
+                        eventTarget.nsp.to(deal.to).emit(SocketEvents.PROPOSED_TO, deal); // Send proposal or response to team it's asking
                     })
                     TeamModel.findOneAndUpdate({Slug: deal.from}, {DealsProposedBy: (toTeam.DealsProposedBy as IDeal[]).push(deal)}).populate("DealsProposedBy").then((newFromTeam) => {
-                        eventTarget.nsp.to(toTeam.Slug).emit(SocketEvents.PROPOSED_BY, deal); // Send proposal or response to team it's asking
+                        eventTarget.nsp.to(deal.from).emit(SocketEvents.PROPOSED_BY, deal); // Send message back to sender's room to varify dealExchange was sent
                     })
-                    */
-                    
+                } else if (deal.accept == false) {
+                    // potentially remove deal, if it was previously accepted
+                } else {
+                    // notify teams about proposal (which has yet to be accepted or rejected)
+                    eventTarget.nsp.to(deal.to).emit(socketEvent, deal); // Send proposal or response to team it's asking
+                    eventTarget.nsp.to(deal.from).emit(socketEvent, deal); // Send message back to sender's room to varify dealExchange was sent
                 }
+            } else {
+                console.log("OOPS: No team found with nation " + (<TradeOption>deal.TradeOption).ToNationId);
             }
         });
     }
@@ -348,7 +354,7 @@ export default class AppServer
             .then((nations) => {
                 //NationModel.updateMany({_id: },nations).then(nations => res.json(nations))
                 var promises:any = [];
-                nations.forEach(n => promises.push(NationModel.findByIdAndUpdate(n._id, {TradeOptions: n.TradeOptions}, {new: true} )))
+                nations.forEach(n => promises.push(NationModel.findByIdAndUpdate(n._id, {TradeOptions: n.TradeOptions}, {new: true} ).populate("TradeOptions")))
                 Promise.all(promises).then(nations => res.json(nations))
             })
             .catch((reason) => {console.log(reason)})

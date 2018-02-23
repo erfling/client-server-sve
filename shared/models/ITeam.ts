@@ -6,6 +6,7 @@ import { Nation } from '../../api/src/models/Nation'
 import IDeal from './IDeal';
 import { Deal } from '../../api/src/models/Deal';
 import IRatings from './IRatings';
+import { Ratings } from '../../api/src/models/Ratings';
 
 export default interface ITeam extends IBaseClass {    
   Location?: string;  
@@ -22,6 +23,6 @@ export default interface ITeam extends IBaseClass {
   GameState: string;
   Nation: Ref<Nation> | INation;
   DealsProposedBy: Deal[] | IDeal[];
-  DealsProposedTo: Deal[] | IDeal[];
-  Ratings: IRatings;
+  //DealsProposedTo: Deal[] | IDeal[];
+  Ratings: Ratings | IRatings;
 }
