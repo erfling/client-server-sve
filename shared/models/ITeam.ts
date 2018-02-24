@@ -1,6 +1,12 @@
 import IBaseClass from './BaseModel'
 import {  Ref } from 'typegoose';
 import IPlayer from './IPlayer';
+import INation from './INation';
+import { Nation } from '../../api/src/models/Nation'
+import IDeal from './IDeal';
+import { Deal } from '../../api/src/models/Deal';
+import IRatings from './IRatings';
+import { Ratings } from '../../api/src/models/Ratings';
 
 export default interface ITeam extends IBaseClass {    
   Location?: string;  
@@ -14,5 +20,9 @@ export default interface ITeam extends IBaseClass {
   healthcare: string;
   agriculture: string;
   GameId: string;
-  GameState: number | string;
-}  
+  GameState: string;
+  Nation: Ref<Nation> | INation;
+  DealsProposedBy:Ref<Deal>[] | IDeal[];
+  DealsProposedTo: Ref<Deal>[] | IDeal[];
+  Ratings: Ratings | IRatings;
+}

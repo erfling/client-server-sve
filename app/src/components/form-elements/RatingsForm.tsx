@@ -1,17 +1,16 @@
 import * as React from 'react';
 import { reduxForm, Field, WrappedFieldProps, InjectedFormProps, GenericFieldHTMLAttributes } from 'redux-form';
 import { ReactNode } from 'react-redux';
-import { Form, Input, Radio, Select, Button, Slider, Icon } from "antd";
+import { Form, Input, Radio, Select, Button, Slider, Icon, Alert } from "antd";
 const FormItem = Form.Item;
 import ApplicationStore from '../../stores/Store';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import * as Actions from '../../actions/Actions';
-import { RadioWrapper } from './AntdFormWrappers';
+import { SliderWrapper } from './AntdFormWrappers';
 import ITeam from '../../../../shared/models/ITeam';
 import INation from '../../../../shared/models/INation';
 import ITradeOption from '../../../../shared/models/ITradeOption';
-import { Alert } from 'antd';
 
 interface DealFormProps extends InjectedFormProps{
     Submitting: boolean;
@@ -26,7 +25,7 @@ class SliderWrapperField extends Field<{increment:number}>{
 
 }
 
-class DealFormWrapper extends React.Component<DealFormProps, { warning:string }> {
+class RatingsFormWrapper extends React.Component<DealFormProps, { warning:string }> {
 
     componentWillMount(){
         console.log("MOUNTED")
@@ -39,32 +38,7 @@ class DealFormWrapper extends React.Component<DealFormProps, { warning:string }>
    
     selectChanged(e:any, allValues:any){
         console.log(e);
-        let distributionCount = 0;
-        console.log(allValues);
-        for (let prop in allValues){
-            if(allValues[prop] == "ALL"){
-                distributionCount += 2
-            } else if (allValues[prop] == ["SOME"]){
-                distributionCount += 1
-            }
-        }
-        return distributionCount > 2;       
-    }
-
-    getOptionsByTeam():string[]{
-        return [
-            "China: to get preferential rice import treatment",
-            "Japan: to get tech expertise for hydropower",
-            "Australia: to get preferential treatment on iron ore exports",
-            "Bangladesh: to prevent climate change and not destabilize the region",
-            "India: to get BECCs expertise to develop BECCS locally"
-        ]
-        /*
-         
- 
-
- 
- */
+        console.log(allValues);  
     }
     
     hasErrors(){
@@ -77,23 +51,29 @@ class DealFormWrapper extends React.Component<DealFormProps, { warning:string }>
 
     render(){
         
-        return <form ref="dealForm" id="dealForm">
+        return <form ref="ratingsFrom" id="ratingsForm">
+                <h3>Rate the other teams.</h3>
                 <div className="form-wrapper">
-                   
-                    <FormItem>
-                        {this.props.CurrentPlayer && 
-                            <Field
-                                name="chosenDeal"
-                                component={RadioWrapper}
-                            > 
-                                {this.props.Options && this.props.Options.map((o:ITradeOption, i:number) => <option key={i} value={JSON.stringify(o)}>{o.Message}</option>)}
-                            </Field>
-                        }      
-                    </FormItem>
+                   {this.props.Options && this.props.Options.map(o => {
+                       return <FormItem>
+                                    <label>How did {o.ToNationId} do?</label>
+                                    <Field
+                                        name={o.ToNationId}
+                                        component={SliderWrapper}
+                                        validate={this.selectChanged}
+                                        min={1}
+                                        max={10}
+                                    >                                        
+                                    </Field>
+                                      
+                            </FormItem>
+                   })}
+                    
                 </div>
                
                 <div className="form-wrapper" style={{backgroundColor: 'transparent'}}>
-                    {this.props.FormData && <Button className="game-button block" onClick={e => this.props.handleSubmit(e)} disabled={!this.props.FormData.values}>Propose Deal {this.props.Submitting && <Icon type="loading"/>}</Button>}
+                    {this.props.FormData && <Button className="game-button block" onClick={e => this.props.handleSubmit(e)} disabled={!this.props.FormData.values}>Submit Ratings {this.props.Submitting && <Icon type="loading"/>}</Button>}
+                    {this.props.CurrentPlayer.Ratings && <Alert message="Your ratings have been submitted." type="success" />}
                 </div>
             </form>
                        
@@ -103,7 +83,7 @@ class DealFormWrapper extends React.Component<DealFormProps, { warning:string }>
 const mapStateToProps = (state: ApplicationStore, ownProps:DealFormProps): {} => {
     return {
         Submitting: state.Application.Loading,
-        FormData: state.form.dealForm,
+        FormData: state.form.ratingsForm,
         CurrentPlayer: state.GameData.CurrentPlayer,
         Options: (state.GameData.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[]
     };
@@ -117,10 +97,11 @@ const mapDispatchToProps = () => {
 const ConnectedForm = connect(
     mapStateToProps,
     mapDispatchToProps
-)(DealFormWrapper);
+)(RatingsFormWrapper);
 
-const DealForm = reduxForm({
+const RatingsForm = reduxForm({
     destroyOnUnmount:false,
+    form: "ratingsForm"
 })(ConnectedForm);
 
-export default DealForm;
+export default RatingsForm;

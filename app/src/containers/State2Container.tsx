@@ -6,27 +6,40 @@ import * as Actions from '../actions/Actions';
 import State2 from '../components/State2';
 import ITeam from '../../../shared/models/ITeam';
 import { ACTION_TYPES } from '../actions/Actions';
+import IDeal from '../../../shared/models/IDeal';
+import INation from '../../../shared/models/INation';
+import ITradeOption from '../../../shared/models/ITradeOption';
 
 interface DispatchProps {
     getPlayer:() => {}
-    setWaterValues:(team:ITeam) => {}
+    proposeDeal:(deal:{from:string, to: string, deal:string}) => {},
+    acceptOrRejectDeal: (deal: IDeal, accept: boolean) => {}
+
 }
-export interface State1Props{
+export interface State2Props{
     CurrentPlayer: ITeam;
+    PendingDealOffer: IDeal;
+    //Options: ITradeOption[]
 }
-const mapStateToProps = (state: ApplicationStore, ownProps: {}): State1Props => {
+const mapStateToProps = (state: ApplicationStore, ownProps: {}): State2Props => {
     return {
         CurrentPlayer: state.GameData.CurrentPlayer,
+        PendingDealOffer: state.GameData.PendingDealOffer,
+        //Options: (state.GameData.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[]
     };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>, ownProps: any) => {
     return {
         getPlayer: () => dispatch( Actions.getPlayer() ),
-        proposeDeal: (team: ITeam) => {console.log("PROPOSED: ", team);}
+        proposeDeal: ( deal: IDeal ) => {
+            dispatch( Actions.proposeDeal(deal) )
+        },
+        acceptOrRejectDeal: (deal: IDeal, accept: boolean) => dispatch( Actions.acceptOrRejectDeal(deal, accept) )
+
     }
 }
 
-const State2Container = connect<State1Props, {}>(mapStateToProps, mapDispatchToProps)(State2);
+const State2Container = connect<State2Props, {}>(mapStateToProps, mapDispatchToProps)(State2);
 export default State2Container;
 //dispatch(Actions.setWaterValues(team))

@@ -10,7 +10,8 @@ import BaseClass from '../../../api/src/models/BaseModel';
 import IPlayer from '../../../shared/models/IPlayer';
 import { store } from '../index';
 import { setTimeout } from 'timers';
-
+import IDeal from '../../../shared/models/IDeal';
+import IRatings from '../../../shared/models/IRatings';
 
 const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
 const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
@@ -65,7 +66,12 @@ export enum ACTION_TYPES {
 
     GAME_STATE_CHANGED       = "GAME_STATE_CHANGED",
     GAME_STATE_CHANGED_ADMIN = "GAME_STATE_CHANGED_ADMIN",
-    GOT_GAME = "GOT_GAME"
+    GOT_GAME = "GOT_GAME",
+
+    DEAL_PROPOSED = "DEAL_PROPOSED",
+    DEAL_RESPONSE = "DEAL_RESPONSE",
+
+    RATINGS_SUBMITTED = "RATINGS_SUBMITTED"
 
 }
 
@@ -79,6 +85,9 @@ export const createTeamSocket = (team:ITeam) => {
         }
     } else {
         socket = socketIo(protocol +  "//" + window.location.hostname + socketPort + "/" + team.GameId);
+
+        console.log("OUR SOCKET IS", socket);
+
         //SET UP SOCKET EVENTS
         socket.on(SocketEvents.MESSAGE, (msg: string) => {
             console.log("SOCKET RETURNED NAMESPACE MESSAGE", msg);
@@ -90,8 +99,10 @@ export const createTeamSocket = (team:ITeam) => {
             console.log("SOCKET ON CONNECT THAT RETURNED:", socket);
             socket.emit(SocketEvents.JOIN_ROOM, team.Slug);
         })
+        
         return (dispatch: Dispatch<Action<ITeam>>) => {
             socket.on(SocketEvents.TEAM_UPDATED, (team:ITeam) => {
+                console.log("heard team update event from server over socket")
                 dispatch( {
                     type: ACTION_TYPES.IS_LOADING,
                     payload: false
@@ -100,6 +111,34 @@ export const createTeamSocket = (team:ITeam) => {
                     type: ACTION_TYPES.PLAYER_UPDATED,
                     payload: team
                 } );
+                dispatch({
+                    type: ACTION_TYPES.GAME_STATE_CHANGED,
+                    payload:team
+                })
+            })
+            .on(SocketEvents.PROPOSE_DEAL, (deal:IDeal) => {
+                console.log("SOCKET RETURNED DEAL_PR   OPOSED:", deal);
+                dispatch( {
+                    type: ACTION_TYPES.DEAL_PROPOSED,
+                    payload: deal
+                } );
+
+                dispatch( {
+                    type: ACTION_TYPES.IS_LOADING,
+                    payload: false
+                } )
+            })
+            .on(SocketEvents.RESPOND_TO_DEAL || SocketEvents.FORWARD_DEAL, (deal: IDeal) => {
+                console.log("DEAL RESPONSE IS", deal)
+                dispatch( {
+                    type: ACTION_TYPES.DEAL_RESPONSE,
+                    payload: deal
+                } );
+
+                dispatch( {
+                    type: ACTION_TYPES.IS_LOADING,
+                    payload: false
+                } )
             })
         }
     }
@@ -435,7 +474,7 @@ export const getPlayer = () => {
             type: ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE,
             payload: JSON.parse(localStorage.getItem("SVE_PLAYER"))
         })
-        dispatch( createTeamSocket(JSON.parse(localStorage.getItem("SVE_PLAYER"))) );
+        dispatch( login(JSON.parse(localStorage.getItem("SVE_PLAYER"))) );
     }
 }
 
@@ -471,6 +510,76 @@ export const setGameState = (game:IGame, newState: number) => {
             dispatch({
                 type: ACTION_TYPES.GAME_STATE_CHANGED_ADMIN,
                 payload:game
+            })
+        }
+    )
+    }
+}
+
+export const proposeDeal = (deal: IDeal ) => {
+    console.log("ACTION SAYS DEAL IS", deal, socket)
+    socket.emit(SocketEvents.PROPOSE_DEAL, deal);
+    return (dispatch: Dispatch<Action<boolean>>) => {
+        dispatch({
+            type: ACTION_TYPES.IS_LOADING,
+            payload: true
+        })
+    }
+}
+
+export const acceptOrRejectDeal = (deal: IDeal, Accept: boolean) => {
+
+    let transmittedDeal = Object.assign(deal, {Accept});
+    console.log("About to transmit",transmittedDeal);
+
+    return (dispatch: Dispatch<Action<boolean>>) => {
+        socket.emit(SocketEvents.RESPOND_TO_DEAL, transmittedDeal);
+        dispatch({
+            type: ACTION_TYPES.IS_LOADING,
+            payload: false
+        })
+    }
+}
+
+export const forwardDeal = (deal: IDeal) => {
+
+    return (dispatch: Dispatch<Action<boolean>>) => {
+        socket.emit(SocketEvents.FORWARD_DEAL, deal);
+        dispatch({
+            type: ACTION_TYPES.IS_LOADING,
+            payload: false
+        })
+    }
+}
+
+export const submitRatings = (teamWithRatings: ITeam) => {
+    return (dispatch: Dispatch<Action<ITeam>>) => {
+        const url = baseRestURL + 'teams/ratings';
+        dispatch({
+            type: ACTION_TYPES.IS_LOADING,
+            payload: true
+        })
+        return fetch(
+            url, 
+            {
+                method: "POST",
+                body: JSON.stringify(teamWithRatings),
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            }
+        )
+        .then(( res:Response ) => {
+            return res.json()
+        })
+        .then( (resp:any )=>{
+            dispatch({
+                type: ACTION_TYPES.RATINGS_SUBMITTED,
+                payload:resp
+            })
+            dispatch({
+                type: ACTION_TYPES.IS_LOADING,
+                payload: false
             })
         }
     )

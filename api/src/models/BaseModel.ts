@@ -2,7 +2,6 @@ import { prop, pre, Typegoose, ModelType, InstanceType } from 'typegoose';
 import IBaseClass from '../../../shared/models/BaseModel';
 
 @pre<BaseClass>('save', function(next) { // or @pre(this: Car, 'save', ...
-    console.log("IN PRE_SAVE METHOD")
     this.Modified = null;
     next();
 })

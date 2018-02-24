@@ -4,19 +4,14 @@ import * as mongoose from 'mongoose';
 import BaseClass from './BaseModel'
 import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
+import INation from '../../../shared/models/INation';
 import { Player } from './Player';
 import { Nation } from './Nation';
+import { Deal } from './Deal';
+import IDeal from '../../../shared/models/IDeal';
+import IRatings from '../../../shared/models/IRatings';
+import { Ratings } from './Ratings';
 
-export enum Nations{
-  /**
-Australia (BECCS)
-Bangladesh (no refugees)
-China (Next gen nuclear)
-Japan (Reflective tech)
-India (Fossil Fuel CC)
-Vietnam (hydropower)
- */
-}
 
 export class Team extends BaseClass implements ITeam
 {
@@ -42,7 +37,7 @@ export class Team extends BaseClass implements ITeam
     Players:  Ref<IPlayer>[] | IPlayer[];
 
     @prop({ ref: Nation })
-    Nation:  Ref<Nation> | Nation;
+    Nation:  Ref<Nation> | INation;
 
     @prop()
     CurrentRole: string;
@@ -66,7 +61,16 @@ export class Team extends BaseClass implements ITeam
     TeamNumber: number;
 
     @prop()
-    GameState: number | string;
+    GameState: string;
+
+    @arrayProp({itemsRef: Deal})
+    DealsProposedBy: Ref<Deal>[] | IDeal[];
+
+    @arrayProp({itemsRef: Deal})
+    DealsProposedTo: Ref<Deal>[] | IDeal[];
+
+    @prop()
+    Ratings: Ratings | IRatings;
 
   }
 

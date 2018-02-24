@@ -44,7 +44,7 @@ class TeamRouter
     
         console.log("TEAMS REQ:", req.params);
         try {
-            let teams = await TeamModel.find({}).populate("Players");
+            let teams = await TeamModel.find({}).populate("Players").populate("Nation");
             if (!teams) {
                 res.status(400).json({ error: 'No games' });
             } else {
@@ -64,7 +64,7 @@ class TeamRouter
         const Slug = req.params.team;
         
         try {
-            let game = await TeamModel.findOne(Object.assign({Slug})).populate("Players");
+            let game = await TeamModel.findOne(Object.assign({Slug})).populate("Players").populate("Nation");
         
             if (!game) {
               res.status(400).json({ error: 'No games' });
@@ -84,7 +84,7 @@ class TeamRouter
         
         try {
             await t.save();
-            const savedGame = await TeamModel.findOne({Slug: team.Slug});
+            const savedGame = await TeamModel.findOne({Slug: team.Slug}).populate("Nation");;
             if (!savedGame) {
                 res.status(400).json({ error: 'No games' });
             } else {
@@ -99,10 +99,26 @@ class TeamRouter
         
     }
 
+    public AddRatings(req: Request, res: Response):void {
+        console.log(req.body);
+        TeamModel.findByIdAndUpdate(req.body._id, {Ratings: req.body.Ratings}, {new: true})
+                    .populate({
+                        path:"Nation",
+                        populate: {
+                            path:"TradeOptions"     
+                        }
+                    })
+                    .then(t => res.json(t))
+                    .catch(e => {
+                        res.status(400);
+                        res.json(e)
+                    })
+    }
+
     public routes(){
         this.router.get("/", this.GetTeams);
-        console.log("yes");
         this.router.get("/:team", this.GetTeam);
+        this.router.post("/ratings", this.AddRatings)
         this.router.post("/", this.CreateTeam);
     }
 }

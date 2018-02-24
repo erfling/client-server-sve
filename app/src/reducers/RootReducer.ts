@@ -1,3 +1,4 @@
+import { TradeOption } from './../../../api/src/models/TradeOption';
 import { Team } from './../../../api/src/models/Team';
 import { ACTION_TYPES, Action} from './../actions/Actions';
 import ApplicationStore from '../stores/Store';
@@ -5,9 +6,11 @@ import IBaseClass from '../../../shared/models/BaseModel';
 import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
+import IDeal from '../../../shared/models/IDeal';
 import { combineReducers } from 'redux';
 import { reducer as FormReducer } from 'redux-form';
 import { routerReducer } from 'react-router-redux'
+import ITradeOption from '../../../shared/models/ITradeOption';
 
 const initialState: ApplicationStore = {
     GameData: {
@@ -15,7 +18,10 @@ const initialState: ApplicationStore = {
         Team: [],
         SelectedTeam: null,
         Dashboard: null,
-        EnvironmentalHealth:0
+        EnvironmentalHealth:0,
+        ReceivedProposedDeals: [],
+        SentProposedDeals: [],
+        PendingDealOffer: null,
     },
     Application: {
         Loading: false,
@@ -28,6 +34,42 @@ const initialState: ApplicationStore = {
 
 export const GameData = (state = initialState.GameData, action: Action<any>) => {
     switch(action.type) {
+        case (ACTION_TYPES.DEAL_PROPOSED):
+            if(action.payload.from == state.CurrentPlayer.Slug){
+                var found = false;
+                var deals = state.SentProposedDeals.map(deal => {
+                    if((deal.TradeOption as ITradeOption).message == action.payload.TradeOption.messaged){
+                        found = true;
+                        return action.payload
+                    } else{
+                        return deal;
+                    }
+                })
+                if(!found)deals.push(action.payload);
+                return Object.assign({}, state, {ProposedDeals: deals, PendingDealOffer: action.payload})
+            } else {
+                var found = false;
+                var deals = state.ReceivedProposedDeals.map(deal => {
+                    if((deal.TradeOption as ITradeOption).message == action.payload.TradeOption.messaged){
+                        found = true;
+                        return action.payload
+                    } else{
+                        return deal;
+                    }
+                })
+                if(!found)deals.push(action.payload);
+                return Object.assign({}, state, {ReceivedProposedDeals: deals, PendingDealOffer: action.payload},)
+            }
+        case (ACTION_TYPES.DEAL_RESPONSE):        
+            console.log("Deal response in reducer", action.payload)
+            return Object.assign({}, state, {CurrentPlayer: Object.assign(
+                {}, state.CurrentPlayer, {
+                    DealsProposedTo: action.payload.DealsProposedTo,
+                    DealsProposedBy: action.payload.DealsProposedBy,
+                }
+            ), PendingDealOffer: null})
+           
+
         case(ACTION_TYPES.GAME_SAVED):
             var game = action.payload as IGame;           
             let IDX = state.Game.map((g) => {
@@ -148,7 +190,13 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
         case ACTION_TYPES.PLAYER_UPDATED:
             localStorage.setItem('SVE_PLAYER', JSON.stringify(action.payload));
             return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
+        case ACTION_TYPES.GAME_STATE_CHANGED: 
+            localStorage.setItem('SVE_PLAYER', JSON.stringify(action.payload));
+            return Object.assign({}, state, {CurrenPlayer: Object.assign({}, state.CurrentPlayer, {GameState: action.payload.GameState})})
         case ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE: 
+            return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
+        case ACTION_TYPES.RATINGS_SUBMITTED:
+            localStorage.setItem('SVE_PLAYER', JSON.stringify(action.payload));
             return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
         default:
             return state;
