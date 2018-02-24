@@ -43,6 +43,7 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
         var deal: IDeal = {
             TradeOption: JSON.parse(formValues.chosenDeal),
             FromTeamSlug: this.props.CurrentPlayer.Slug,
+            FromNationName: (this.props.CurrentPlayer.Nation as INation).Name,
             ToNationName  : JSON.parse(formValues.chosenDeal).to
         }
         console.log("WHAT'S THE DEAL?", deal)
@@ -104,14 +105,14 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                 >   
                     {this.props.PendingDealOffer && <Modal
                             title={
-                                this.props.PendingDealOffer.from == this.props.CurrentPlayer.Slug 
+                                this.props.PendingDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug 
                                     ? <p>Your team offered a trade deal to {(this.props.PendingDealOffer.TradeOption as ITradeOption).ToNationId}.</p> 
                                     : <p>{(this.props.PendingDealOffer.TradeOption as ITradeOption).FromNationId} wants to make a trade deal.</p>
                             }
                             visible={true}
                             width="95%"
                             footer={
-                                this.props.PendingDealOffer.from == this.props.CurrentPlayer.Slug 
+                                this.props.PendingDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug 
                                 ? null
                                 : [
                                     <Button type="primary" size="large" onClick={e => {this.respondToDeal(this.props.PendingDealOffer, true)}}>Accept Deal</Button>,
@@ -159,7 +160,7 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                                                             {this.props.Options
                                                                 .filter(o => {
                                                                     console.log("deal",d)
-                                                                    return o.ToNationId != d.to && o.FromNationId != d.from
+                                                                    return o.ToNationId != d.ToNationName && o.FromNationId != d.FromNationName
                                                                 })
                                                                 .map(o => <Select.Option value={o.ToNationId}>{o.ToNationId}</Select.Option>)
                                                             }

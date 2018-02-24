@@ -169,25 +169,26 @@ export default class AppServer
             )[0];
             if (toTeam) {
                 console.log("FOUND TO TEAM:", toTeam.Name, socketEvent);
-                deal.to = toTeam.Slug;
-                if (deal.accept == true) {
+                deal.ToTeamSlug = toTeam.Slug;
+
+                if (deal.Accept == true) {
                     // save both teams
                     var deals = (toTeam.DealsProposedBy as IDeal[] || []).concat([deal]).map(d => Object.assign(deal, {TradeOption: (deal.TradeOption as ITradeOption)._id }))
                     console.log("DEAL WAS ACCEPTED", deals);
 
                     TeamModel.findByIdAndUpdate(toTeam._id, {DealsProposedTo: (toTeam.DealsProposedTo as IDeal[]).push(deal)},{new: true}).populate("DealsProposedTo").then((newToTeam) => {
                         console.log(newToTeam)
-                        eventTarget.nsp.to(deal.to).emit(SocketEvents.PROPOSED_TO, deal); // Send proposal or response to team it's asking
+                        eventTarget.nsp.to(deal.ToTeamSlug).emit(SocketEvents.PROPOSED_TO, deal); // Send proposal or response to team it's asking
                     })
-                    TeamModel.findOneAndUpdate({Slug: deal.from}, {DealsProposedBy: (toTeam.DealsProposedBy as IDeal[]).push(deal)}).populate("DealsProposedBy").then((newFromTeam) => {
-                        eventTarget.nsp.to(deal.from).emit(SocketEvents.PROPOSED_BY, deal); // Send message back to sender's room to varify dealExchange was sent
+                    TeamModel.findOneAndUpdate({Slug: deal.FromTeamSlug}, {DealsProposedBy: (toTeam.DealsProposedBy as IDeal[]).push(deal)}).populate("DealsProposedBy").then((newFromTeam) => {
+                        eventTarget.nsp.to(deal.FromTeamSlug).emit(SocketEvents.PROPOSED_BY, deal); // Send message back to sender's room to varify dealExchange was sent
                     })
-                } else if (deal.accept == false) {
+                } else if (deal.Accept == false) {
                     // potentially remove deal, if it was previously accepted
                 } else {
                     // notify teams about proposal (which has yet to be accepted or rejected)
-                    eventTarget.nsp.to(deal.to).emit(socketEvent, deal); // Send proposal or response to team it's asking
-                    eventTarget.nsp.to(deal.from).emit(socketEvent, deal); // Send message back to sender's room to varify dealExchange was sent
+                    eventTarget.nsp.to(deal.ToTeamSlug).emit(socketEvent, deal); // Send proposal or response to team it's asking
+                    eventTarget.nsp.to(deal.FromTeamSlug).emit(socketEvent, deal); // Send message back to sender's room to varify dealExchange was sent
                 }
             } else {
                 console.log("OOPS: No team found with nation " + (<TradeOption>deal.TradeOption).ToNationId);
