@@ -23,10 +23,7 @@ export class Deal extends BaseClass implements IDeal {
     ToNationName: string;
     
     @prop()
-    text: string;
-    
-    @prop()
-    accept?: boolean;
+    Accept?: boolean;
     
 }
 

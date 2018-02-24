@@ -22,7 +22,7 @@ export default interface ITeam extends IBaseClass {
   GameId: string;
   GameState: string;
   Nation: Ref<Nation> | INation;
-  DealsProposedBy: Deal[] | IDeal[];
-  //DealsProposedTo: Deal[] | IDeal[];
+  DealsProposedBy:Ref<Deal>[] | IDeal[];
+  DealsProposedTo: Ref<Deal>[] | IDeal[];
   Ratings: Ratings | IRatings;
 }

@@ -85,6 +85,9 @@ export const createTeamSocket = (team:ITeam) => {
         }
     } else {
         socket = socketIo(protocol +  "//" + window.location.hostname + socketPort + "/" + team.GameId);
+
+        console.log("OUR SOCKET IS", socket);
+
         //SET UP SOCKET EVENTS
         socket.on(SocketEvents.MESSAGE, (msg: string) => {
             console.log("SOCKET RETURNED NAMESPACE MESSAGE", msg);
@@ -125,7 +128,7 @@ export const createTeamSocket = (team:ITeam) => {
                     payload: false
                 } )
             })
-            .on(SocketEvents.RESPOND_TO_DEAL, (deal: IDeal) => {
+            .on(SocketEvents.RESPOND_TO_DEAL || SocketEvents.FORWARD_DEAL, (deal: IDeal) => {
                 console.log("DEAL RESPONSE IS", deal)
                 dispatch( {
                     type: ACTION_TYPES.DEAL_RESPONSE,
@@ -527,8 +530,21 @@ export const proposeDeal = (deal: IDeal ) => {
 export const acceptOrRejectDeal = (deal: IDeal, Accept: boolean) => {
 
     let transmittedDeal = Object.assign(deal, {Accept});
+    console.log("About to transmit",transmittedDeal);
+
     return (dispatch: Dispatch<Action<boolean>>) => {
         socket.emit(SocketEvents.RESPOND_TO_DEAL, transmittedDeal);
+        dispatch({
+            type: ACTION_TYPES.IS_LOADING,
+            payload: false
+        })
+    }
+}
+
+export const forwardDeal = (deal: IDeal) => {
+
+    return (dispatch: Dispatch<Action<boolean>>) => {
+        socket.emit(SocketEvents.FORWARD_DEAL, deal);
         dispatch({
             type: ACTION_TYPES.IS_LOADING,
             payload: false

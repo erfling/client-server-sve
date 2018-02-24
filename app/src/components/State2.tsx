@@ -55,13 +55,14 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
         this.props.acceptOrRejectDeal(deal, accept)
     }
 
-    forwardDeal(deal: IDeal, newRecipient: INation){
-
+    prepareToForwardDeal(deal: IDeal, newRecipient: string){
+        console.log(deal, newRecipient)
     }
 
     componentDidUpdate(){
         if(this.props.CurrentPlayer && this.props.CurrentPlayer.Nation && !this.state.ParallaxByNation)this.loadImage();
     }
+    
 
     loadImage(){
         if(!this.props.CurrentPlayer.Nation)return;
@@ -106,8 +107,8 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                     {this.props.PendingDealOffer && <Modal
                             title={
                                 this.props.PendingDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug 
-                                    ? <p>Your team offered a trade deal to {(this.props.PendingDealOffer.TradeOption as ITradeOption).ToNationId}.</p> 
-                                    : <p>{(this.props.PendingDealOffer.TradeOption as ITradeOption).FromNationId} wants to make a trade deal.</p>
+                                    ? <p>Your team offered a trade deal to {this.props.PendingDealOffer.ToNationName}.</p> 
+                                    : <p>{this.props.PendingDealOffer.FromNationName} wants to make a trade deal.</p>
                             }
                             visible={true}
                             width="95%"
@@ -134,22 +135,10 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                                 {(this.props.CurrentPlayer.DealsProposedTo as IDeal[]).map(d => {
                                     
                                     return  <li>
-                                                <h5>You Accepted {d.ToNationName}'s' Trade Deal</h5>
+                                                <h5>{d.FromNationName} Accepted Your Trade Deal</h5>
                                                 <p>
                                                     {(d.TradeOption  as ITradeOption).Message}
                                                     <Button type="danger" onClick={e => this.respondToDeal(d, false)}>Cancel Deal</Button>
-                                                    Offer deal to 
-                                                    {this.props.CurrentPlayer.Nation && (this.props.CurrentPlayer.Nation as INation).TradeOptions ?
-                                                    <Select placeholder="Select a Nation" style={{width:'300px;'}}>
-                                                        {((this.props.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[])
-                                                            .filter(o => {
-                                                                console.log("deal",o)
-                                                                return o.ToNationId != d.ToNationName && o.FromNationId != d.FromNationName
-                                                            })
-                                                            .map(o => <Select.Option value={o.ToNationId}>{o.ToNationId}</Select.Option>)
-                                                        }
-                                                    </Select>
-                                                     : null}
                                                 </p>
                                             </li>
                                 })}
@@ -163,31 +152,32 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                             <ul>                                                  
                                 {(this.props.CurrentPlayer.DealsProposedBy as IDeal[]).map(d => {
                                         return  <li>
-                                                    <h5>{d.FromNationName} Accepted Your Trade Deal</h5>
-                                                    <p>
+                                                    <h5>You Accepted {d.ToNationName}'s' Trade Deal</h5>
                                                         {(d.TradeOption  as ITradeOption).Message}
                                                         <Button type="danger" onClick={e => this.respondToDeal(d, false)}>Cancel Deal</Button>
-                                                    </p>
+                                                        Offer deal to
+                                                        {this.props.CurrentPlayer.Nation && (this.props.CurrentPlayer.Nation as INation).TradeOptions ?   
+                                                            <Row>
+                                                                {((this.props.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[])
+                                                                    .filter(o => {
+                                                                        console.log("deal",o, d)
+                                                                        return o.ToNationId != d.ToNationName
+                                                                    })
+                                                                    .map(o => <Button onClick={e => this.prepareToForwardDeal(d, o.ToNationId)}>{o.ToNationId}</Button>)
+                                                                }
+                                                            </Row>
+                                                            : <h1>hey</h1>
+                                                        }
                                                 </li>
                                 })}
                             </ul> 
                             : null
                         }
                     </Row>
-                    {this.props.CurrentPlayer && <pre>{JSON.stringify(this.props.CurrentPlayer, null, 2)}</pre>}
 
                     <DealFormWrapper form="dealForm" onSubmit={this.prepDeal.bind(this)}/>
                     {this.state.PlayerNotFound && <Redirect to="/"/>}
                </GameWrapper> : <h1>Loading</h1>
     }
 }
-/*
-<Select placeholder="Select a Nation">
-                                                            {this.props.Options
-                                                                .filter(o => {
-                                                                    console.log("deal",d)
-                                                                    return o.ToNationId != d.ToNationName && o.FromNationId != d.FromNationName
-                                                                })
-                                                                .map(o => <Select.Option value={o.ToNationId}>{o.ToNationId}</Select.Option>)
-                                                            }
-                                                        </Select>*/
+//                    {this.props.CurrentPlayer && <pre>{JSON.stringify(this.props.CurrentPlayer, null, 2)}</pre>}

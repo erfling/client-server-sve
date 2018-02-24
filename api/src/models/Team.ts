@@ -63,11 +63,11 @@ export class Team extends BaseClass implements ITeam
     @prop()
     GameState: string;
 
-    @arrayProp({items: Deal})
-    DealsProposedBy: Deal[] | IDeal[];
+    @arrayProp({itemsRef: Deal})
+    DealsProposedBy: Ref<Deal>[] | IDeal[];
 
-    @arrayProp({items: Deal})
-    DealsProposedTo: Deal[] | IDeal[];
+    @arrayProp({itemsRef: Deal})
+    DealsProposedTo: Ref<Deal>[] | IDeal[];
 
     @prop()
     Ratings: Ratings | IRatings;
