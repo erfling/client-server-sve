@@ -114,7 +114,7 @@ export const createTeamSocket = (team:ITeam) => {
                 })
             })
             .on(SocketEvents.PROPOSE_DEAL, (deal:IDeal) => {
-                console.log("SOCKET RETURNED DEAL_PROPOSED:", deal);
+                console.log("SOCKET RETURNED DEAL_PR   OPOSED:", deal);
                 dispatch( {
                     type: ACTION_TYPES.DEAL_PROPOSED,
                     payload: deal
@@ -524,9 +524,9 @@ export const proposeDeal = (deal: IDeal ) => {
     }
 }
 
-export const acceptOrRejectDeal = (deal: IDeal, accept: boolean) => {
+export const acceptOrRejectDeal = (deal: IDeal, Accept: boolean) => {
 
-    let transmittedDeal = Object.assign(deal, {accept})
+    let transmittedDeal = Object.assign(deal, {Accept});
     return (dispatch: Dispatch<Action<boolean>>) => {
         socket.emit(SocketEvents.RESPOND_TO_DEAL, transmittedDeal);
         dispatch({

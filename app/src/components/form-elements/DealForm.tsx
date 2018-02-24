@@ -85,7 +85,6 @@ class DealFormWrapper extends React.Component<DealFormProps, { warning:string }>
                             <Field
                                 name="chosenDeal"
                                 component={RadioWrapper}
-                                validate={this.selectChanged}
                             > 
                                 {this.props.Options && this.props.Options.map((o:ITradeOption, i:number) => <option key={i} value={JSON.stringify(o)}>{o.Message}</option>)}
                             </Field>

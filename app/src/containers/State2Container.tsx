@@ -19,13 +19,13 @@ interface DispatchProps {
 export interface State2Props{
     CurrentPlayer: ITeam;
     PendingDealOffer: IDeal;
-    Options: ITradeOption[]
+    //Options: ITradeOption[]
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): State2Props => {
     return {
         CurrentPlayer: state.GameData.CurrentPlayer,
         PendingDealOffer: state.GameData.PendingDealOffer,
-        Options: (state.GameData.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[]
+        //Options: (state.GameData.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[]
     };
 };
 

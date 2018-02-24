@@ -167,25 +167,68 @@ export default class AppServer
                 console.log((<INation>t.Nation).Name, (deal.TradeOption as TradeOption).ToNationId);
                 return (<INation>t.Nation).Name == (deal.TradeOption as TradeOption).ToNationId}
             )[0];
-            if (toTeam) {
+
+            var fromTeam:ITeam = teams.filter(t => {
+                console.log((<INation>t.Nation).Name, (deal.TradeOption as TradeOption).ToNationId);
+                return (<INation>t.Nation).Name == (deal.TradeOption as TradeOption).FromNationId}
+            )[0];
+
+            if (toTeam && fromTeam) {
                 console.log("FOUND TO TEAM:", toTeam.Name, socketEvent);
                 deal.ToTeamSlug = toTeam.Slug;
 
                 if (deal.Accept == true) {
                     // save both teams
-                    var deals = (toTeam.DealsProposedBy as IDeal[] || []).concat([deal]).map(d => Object.assign(deal, {TradeOption: (deal.TradeOption as ITradeOption)._id }))
-                    console.log("DEAL WAS ACCEPTED", deals);
+                    var toDeals = (toTeam.DealsProposedTo as IDeal[] || [])
+                        .filter(d => d.TradeOption != (deal.TradeOption as ITradeOption)._id)
+                        .concat([deal])
+                        .map(d => Object.assign(d, {TradeOption: (d.TradeOption as ITradeOption)._id }))
 
-                    TeamModel.findByIdAndUpdate(toTeam._id, {DealsProposedTo: (toTeam.DealsProposedTo as IDeal[]).push(deal)},{new: true}).populate("DealsProposedTo").then((newToTeam) => {
-                        console.log(newToTeam)
-                        eventTarget.nsp.to(deal.ToTeamSlug).emit(SocketEvents.PROPOSED_TO, deal); // Send proposal or response to team it's asking
+                    TeamModel.findByIdAndUpdate(toTeam._id, {DealsProposedTo: toDeals},{new: true}).populate(
+                        [{
+                            path:"DealsProposedTo",
+                            populate: {
+                                path:"TradeOption"
+                            }                            
+                        },
+                        {
+                            path:"DealsProposedBy",
+                            populate: {
+                                path:"TradeOption"
+                            }                            
+                        }]
+                    ).then((newToTeam) => {
+                        eventTarget.nsp.to(deal.ToTeamSlug).emit(socketEvent, newToTeam); // Send proposal or response to team it's asking
                     })
-                    TeamModel.findOneAndUpdate({Slug: deal.FromTeamSlug}, {DealsProposedBy: (toTeam.DealsProposedBy as IDeal[]).push(deal)}).populate("DealsProposedBy").then((newFromTeam) => {
-                        eventTarget.nsp.to(deal.FromTeamSlug).emit(SocketEvents.PROPOSED_BY, deal); // Send message back to sender's room to varify dealExchange was sent
-                    })
+
+                    console.log("DEAL'S TRADE OPTION IS: ",deal.TradeOption)
+                    var fromDeals = (fromTeam.DealsProposedBy as IDeal[] || [])
+                                    .filter(d => d.TradeOption != (deal.TradeOption as ITradeOption)._id)
+                                    .concat([deal])
+                                    .map(d => Object.assign(d, {TradeOption: (d.TradeOption as ITradeOption)._id || d.TradeOption }))
+                    console.log("DEAL WAS ACCEPTED", fromDeals);
+
+                    TeamModel.findOneAndUpdate({Slug: deal.FromTeamSlug}, {DealsProposedBy: fromDeals}).populate(
+                        [{
+                            path:"DealsProposedTo",
+                            populate: {
+                                path:"TradeOption"
+                            }                            
+                        },
+                        {
+                            path:"DealsProposedBy",
+                            populate: {
+                                path:"TradeOption"
+                            }                            
+                        }])
+                        .then((newFromTeam) => {
+                            
+                            eventTarget.nsp.to(deal.FromTeamSlug).emit(socketEvent, newFromTeam); // Send message back to sender's room to varify dealExchange was sent
+                        })
                 } else if (deal.Accept == false) {
                     // potentially remove deal, if it was previously accepted
                 } else {
+                    console.log(deal)
                     // notify teams about proposal (which has yet to be accepted or rejected)
                     eventTarget.nsp.to(deal.ToTeamSlug).emit(socketEvent, deal); // Send proposal or response to team it's asking
                     eventTarget.nsp.to(deal.FromTeamSlug).emit(socketEvent, deal); // Send message back to sender's room to varify dealExchange was sent
@@ -413,12 +456,26 @@ export default class AppServer
             try {
                 var game:Game & mongoose.Document = null;
                 const team = await TeamModel.findOne({Slug: req.body.Slug}).populate(
-                    {
+                    [
+                        {
                         path:"Nation",
                         populate: {
                            path:"TradeOptions"     
                         }
-                    }
+                        },
+                        {
+                            path:"DealsProposedBy",
+                            populate: {
+                                path:"TradeOption"     
+                            }
+                        },
+                        {
+                            path:"DealsProposedTo",
+                            populate: {
+                                path:"TradeOption"     
+                            }
+                        }
+                    ]
                 );
 
                 if (team) {
@@ -434,7 +491,7 @@ export default class AppServer
                             this.sheets.setTeamListener(t.Slug);
                         }
                         let token = jwt.sign({team: t}, 'shhhhh');
-                        console.log("TEAM TO SEND", team, (<IGame>game).Teams);
+                        console.log("TEAM TO SEND", team);
                         res.json({token, team:t});
                     } else {
                         res.json("LOGIN FAILED")

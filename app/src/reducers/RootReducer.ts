@@ -60,38 +60,15 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
                 if(!found)deals.push(action.payload);
                 return Object.assign({}, state, {ReceivedProposedDeals: deals, PendingDealOffer: action.payload},)
             }
-        case (ACTION_TYPES.DEAL_RESPONSE):  
-            console.log("RESPONSE IS: ",action.payload.accept)      
-            if(action.payload.accept === false) return Object.assign({}, state, {PendingDealOffer: null})
-            if(action.payload.from == state.CurrentPlayer.Slug){
-                var found = false;
-                var mappedDeals = (state.CurrentPlayer.DealsProposedTo as IDeal[]).map(( deal:IDeal ) => {
-                    if((deal.TradeOption as ITradeOption).message == action.payload.TradeOption.messaged){
-                        found = true;
-                        return action.payload
-                    } else{
-                        return deal;
-                    }
-                })
-                if(!found)mappedDeals.push(action.payload);
-                console.log("REDUCER SAYS DEALS ARE: ",action.payload, mappedDeals)
-
-                return Object.assign({}, state, {CurrentPlayer: Object.assign({}, state.CurrentPlayer, {DealsProposedTo: mappedDeals}), PendingDealOffer: null})
-            } else {
-                var found = false;
-                console.log(state.CurrentPlayer);
-                var previousDeals = state.CurrentPlayer.DealsProposedBy as IDeal[]
-                var mappedDeals = previousDeals.map(( deal:IDeal ) => {
-                    if((deal.TradeOption as ITradeOption).message == action.payload.TradeOption.messaged){
-                        found = true;
-                        return action.payload
-                    } else{
-                        return deal;
-                    }
-                })
-                if(!found)mappedDeals.push(action.payload);
-                return Object.assign({}, state, {CurrentPlayer: Object.assign({}, state.CurrentPlayer, {DealsProposedBy: mappedDeals}), PendingDealOffer: null})
-            }
+        case (ACTION_TYPES.DEAL_RESPONSE):        
+            console.log("Deal response in reducer", action.payload)
+            return Object.assign({}, state, {CurrentPlayer: Object.assign(
+                {}, state.CurrentPlayer, {
+                    DealsProposedTo: action.payload.DealsProposedTo,
+                    DealsProposedBy: action.payload.DealsProposedBy,
+                }
+            ), PendingDealOffer: null})
+           
 
         case(ACTION_TYPES.GAME_SAVED):
             var game = action.payload as IGame;           
