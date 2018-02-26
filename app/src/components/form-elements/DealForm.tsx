@@ -7,7 +7,7 @@ import ApplicationStore from '../../stores/Store';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import * as Actions from '../../actions/Actions';
-import { RadioWrapper } from './AntdFormWrappers';
+import { SelectWrapper } from './AntdFormWrappers';
 import ITeam from '../../../../shared/models/ITeam';
 import INation from '../../../../shared/models/INation';
 import ITradeOption from '../../../../shared/models/ITradeOption';
@@ -19,7 +19,7 @@ interface DealFormProps extends InjectedFormProps{
     handleSubmit: (formValues:any) => {};
     setWaterValues: () => {}
     CurrentPlayer: ITeam;
-    Options: ITradeOption[]
+    Options: any
 }
 
 class SliderWrapperField extends Field<{increment:number}>{
@@ -53,12 +53,13 @@ class DealFormWrapper extends React.Component<DealFormProps, { warning:string }>
 
     getOptionsByTeam():string[]{
         return [
-            "China: to get preferential rice import treatment",
-            "Japan: to get tech expertise for hydropower",
-            "Australia: to get preferential treatment on iron ore exports",
-            "Bangladesh: to prevent climate change and not destabilize the region",
-            "India: to get BECCs expertise to develop BECCS locally"
-        ]
+            "Australia",
+            "Bangladesh",
+            "China",
+            "India",
+            "Japan",
+            "Vietnam"
+        ].filter(s => s != (this.props.CurrentPlayer.Nation as INation).Name)
         /*
          
  
@@ -79,14 +80,15 @@ class DealFormWrapper extends React.Component<DealFormProps, { warning:string }>
         
         return <form ref="dealForm" id="dealForm">
                 <div className="form-wrapper">
-                   
-                    <FormItem>
+                     <FormItem>
                         {this.props.CurrentPlayer && 
                             <Field
                                 name="chosenDeal"
-                                component={RadioWrapper}
+                                component={SelectWrapper}
+                                placeholder="Select A Nation"
                             > 
-                                {this.props.Options && this.props.Options.map((o:ITradeOption, i:number) => <option key={i} value={JSON.stringify(o)}>{o.Message}</option>)}
+                                <option value={null}>Select a Nation</option>
+                                {this.getOptionsByTeam().map((o:string, i:number) => <option key={i} value={o}>{o}</option>)}
                             </Field>
                         }      
                     </FormItem>
@@ -105,7 +107,7 @@ const mapStateToProps = (state: ApplicationStore, ownProps:DealFormProps): {} =>
         Submitting: state.Application.Loading,
         FormData: state.form.dealForm,
         CurrentPlayer: state.GameData.CurrentPlayer,
-        Options: (state.GameData.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[]
+        Options: (state.GameData.CurrentPlayer.Nation as INation).Content[0]
     };
 };
 
@@ -124,3 +126,5 @@ const DealForm = reduxForm({
 })(ConnectedForm);
 
 export default DealForm;
+/**                   
+                     */

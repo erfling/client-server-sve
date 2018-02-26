@@ -261,7 +261,6 @@ export default class AppServer
                     //emit the values to all the teams
                     setTimeout(() => {
                         sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
-                            console.log("we got these values", r)
                             eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, r);
                         })
                     },10)
@@ -379,7 +378,6 @@ export default class AppServer
                         //emit the values to all the teams
                         setTimeout(() => {
                             sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
-                                console.log("we got these values", r)
                                 eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, r);
                             })
                         },10)
@@ -545,6 +543,11 @@ export default class AppServer
             res.sendFile('/google8b116b0e2c1fc48f.html');
         });
 
+        this.app.get('/sapien/api/getWaterResuls', (req, res) => {
+            const sheets = new GoogleSheets();
+            sheets.GetSheetValues(null, "Round 1 Results!A:ZZ").then((r:any) => res.json(r))
+        })
+
         this.app.get('/sapien/api/generatetradeoptions', function(req, res) {
             NationModel.find().then((nations) => {
                 var options:any[] = [];
@@ -636,7 +639,6 @@ export default class AppServer
     
                         //emit the values to all the teams
                         sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y2:Y103").then((r:any) => {
-                            console.log("we got these values", r)
                             this.io.of(game._id).emit(SocketEvents.DASHBOARD_UPDATED, r);
                         })
    
@@ -669,8 +671,8 @@ export default class AppServer
                     [
                         {
                             path:"Nation",
-                            populate: {
-                                path:"TradeOptions"     
+                            populate:{
+                                path:"TradeOptions"
                             }
                         },
                         {
@@ -686,9 +688,13 @@ export default class AppServer
                             }
                         }
                     ]
-                );
+                ).then(t => t);
 
                 if (team) {
+                    const sheets = new GoogleSheets();
+                    const content = await sheets.GetNationContent((team.Nation as INation).Name);
+                    if(content) (team.Nation as INation).Content = content;
+                    console.log("NATION IS",(content));
                     game = await GameModel.findById(team.GameId);
                     if (game) {
                         let gameSocketNameSpace = this.io.of(game._id);
@@ -704,7 +710,6 @@ export default class AppServer
 
                         //emit the values to all the teams
                         new GoogleSheets().GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
-                            console.log("we got these values", r)
                             this.io.of(game._id).to(t.Slug).emit(SocketEvents.DASHBOARD_UPDATED, r);
                         })
 

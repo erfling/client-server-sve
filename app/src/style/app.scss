@@ -222,3 +222,30 @@ h4{font-size: 160%}
     }
 }
 
+.state1results{
+    display: table;
+    .ant-row{
+        &:nth-of-type(even){
+            background:#f7f7f7;
+        }
+        display: table-row;
+        svg{
+            float:left;
+            margin:10px auto;
+            max-width:75%;
+        }
+        svg, p{
+           display: table-cell;
+           vertical-align: middle;
+           padding:10px; 
+           transition: opacity 2s;
+        }
+    }
+    
+    .winner{
+        svg{
+            opacity:.1;
+        }
+    }
+}
+

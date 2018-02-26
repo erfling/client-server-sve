@@ -34,7 +34,7 @@ interface State2Props{
    match: any;
    Dashboard: any;
 }
-export default class State2 extends React.Component<State2Props, {PlayerNotFound:boolean, ParallaxByNation: any, ShowChart:boolean}> {
+export default class State2 extends React.Component<State2Props, {PlayerNotFound:boolean, ParallaxByNation: any, ShowChart:boolean, ChosenCountry: string}> {
 
     componentWillMount(){
         this.setState({PlayerNotFound: false, ShowChart: false})
@@ -49,15 +49,14 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
         window.scrollTo(0,0);
     }
 
-    prepDeal(formValues: any){
-        console.log(JSON.parse(formValues.chosenDeal))
+    prepDeal(){
         //formValues.fromId = this.props.
         
         var deal: IDeal = {
-            TradeOption: JSON.parse(formValues.chosenDeal),
+            TradeOption: null,
             FromTeamSlug: this.props.CurrentPlayer.Slug,
             FromNationName: (this.props.CurrentPlayer.Nation as INation).Name,
-            ToNationName  : JSON.parse(formValues.chosenDeal).ToNationId
+            ToNationName: this.state.ChosenCountry
         }
         console.log("WHAT'S THE DEAL?", deal)
         this.props.proposeDeal(deal);
@@ -155,6 +154,19 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
         if(imagePath)this.setState(Object.assign(this.state, {ParallaxByNation: imagePath}))
         console.log(this.state)
     }
+
+    getOptionsByTeam():string[]{
+        return [
+            "Australia",
+            "Bangladesh",
+            "China",
+            "India",
+            "Japan",
+            "Vietnam"
+        ].filter(s => s != (this.props.CurrentPlayer.Nation as INation).Name)
+         .map(s => "Invest $" + this.props.CurrentPlayer.DealsProposedTo.length ? (this.props.CurrentPlayer.DealsProposedTo.length * 10).toString() : "10" + " billion in " + s)
+    }
+    
 
     getParsedData(data:number[] | string[] | number){
         var parsedData:any[] = [];
@@ -293,9 +305,28 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                     }
                     <Row className="form-wrapper">
                         <p>{new Date().toLocaleDateString()}. A reprive.</p>
-                        <p>You know the stakes. Work with other nations to build a liveable, sutainable world, as you build a better future for your own nation.</p>
+                        <p>You know the stakes. Work with other nations to build a liveable, sutainable world, as you build a better future for your own nation.</p>                        
                     </Row>
-
+    
+                    
+                    <pre>{JSON.stringify(this.props.CurrentPlayer, null, 2)}</pre>
+                    <Row className="form-wrapper">
+                        <Select
+                            style={{width:'100%'}}
+                            placeholder="--Select Nation--"
+                            onChange={e => this.setState(Object.assign({}, this.state, {ChosenCountry: e}))}
+                        >
+                            {this.getOptionsByTeam().map((o, i) => <Select.Option key={i} value={o}>{o}</Select.Option>)}
+                        </Select>                    
+                    </Row>
+                   
+                    <Row className="form-wrapper">
+                        <div className="form-wrapper" style={{backgroundColor: 'transparent'}}>
+                            {this.state && <Button className="game-button block" onClick={e => this.prepDeal()} disabled={!this.state.ChosenCountry}>Propose Deal </Button>}
+                        </div>                  
+                    </Row>
+                    
+                  
                     <Row>      
                         {this.props.CurrentPlayer.DealsProposedTo.length ?    
                             <ul>                 
@@ -341,11 +372,18 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                         }
                     </Row>
 
-                    <DealFormWrapper form="dealForm" onSubmit={this.prepDeal.bind(this)}/>
                     {this.state.PlayerNotFound && <Redirect to="/"/>}
                </GameWrapper> : <h1>Loading</h1>
     }
 }
 //                    {this.props.CurrentPlayer && <pre>{JSON.stringify(this.props.CurrentPlayer, null, 2)}</pre>}
-/*
+/*                    
+{this.props.Submitting && <Icon type="loading"/>}
+<Row className="form-wrapper">
+                        <p>{(this.props.CurrentPlayer.Nation as INation).Content[0][6]}</p>                        
+                    </Row>
+
+                    <Row className="form-wrapper">
+                        {(this.props.CurrentPlayer.Nation as INation).Content[0].filter((c:string, i: number) => i != 0 && i < 6).map((content: string) => <p>{content.replace(/\#([^}]+)\#/,"")}</p>)}
+                    </Row>
 */

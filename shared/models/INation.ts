@@ -9,5 +9,6 @@ export default interface INation extends IBaseClass{
     BuysFrom: string;
     Description:string;
     Tech: string;
+    Content?: any;
     TradeOptions: Ref<TradeOption>[] | ITradeOption[];
 }

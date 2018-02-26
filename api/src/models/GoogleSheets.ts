@@ -100,7 +100,7 @@ export default class GoogleSheets
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth) => {
-            if (!sheetId) sheetId = '1R5Od_XTcwDyOKsLHaABHL8o9cl7Qg7P3zlYyBUUWds8'
+            if (!sheetId) sheetId = '1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg'
             return new Promise((resolve, reject) => {
                 if (!auth) return;
                 sheets.spreadsheets.values.get({
@@ -369,6 +369,31 @@ export default class GoogleSheets
             
         }).catch(e => console.log("CAUGHT ERROR",e));
     }
+
+    public GetNationContent(name: string) {
+        const sheets = google.sheets('v4');
+        return this.readAndAuthFile('./api/src/creds/client_secret.json')
+        .then(this.authorize)
+        .then((auth) => {
+            const sheetId = '1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg'
+            return new Promise((resolve, reject) => {
+                if (!auth) return;
+                sheets.spreadsheets.values.get({
+                    auth: auth,            
+                    spreadsheetId: sheetId,
+                    range: "Round 2 Offers"
+                }, (err:any, response: any) => {
+                    if (err) {
+                        console.log(err,"ERROR HERE");
+                        reject(err);
+                        return;
+                    }
+
+                    var values = response.values.filter((r: any) => r[0] == name);
+                    return resolve(values);
+                })
+            })
+        })    }
 
     /*
         sheets.spreadsheets.values.get({
