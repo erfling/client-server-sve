@@ -10,4 +10,10 @@ export default interface IDeal extends IBaseClass{
     ToTeamSlug?: string;
     ToNationName?: string;
     Accept?: boolean;
+
+    TransferFromTeamSlug?: string;
+    TransferFromNationName?: string;
+    TransferToTeamSlug?: string;
+    TransferToNationName?: string;
+    TransferAccepted?: boolean;
 }

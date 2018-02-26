@@ -140,6 +140,9 @@ export const createTeamSocket = (team:ITeam) => {
                     payload: false
                 } )
             })
+            .on(SocketEvents.DASHBOARD_UPDATED,(dashboardData:any) => {
+                dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED, dashboardData));
+            })
         }
     }
 }
@@ -542,7 +545,7 @@ export const acceptOrRejectDeal = (deal: IDeal, Accept: boolean) => {
 }
 
 export const forwardDeal = (deal: IDeal) => {
-
+    console.log("about to tell server to forward", deal);
     return (dispatch: Dispatch<Action<boolean>>) => {
         socket.emit(SocketEvents.FORWARD_DEAL, deal);
         dispatch({
