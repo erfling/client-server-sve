@@ -24,6 +24,18 @@ export class Deal extends BaseClass implements IDeal {
     
     @prop()
     Accept?: boolean;
+
+    @prop()
+    TransferFromTeamSlug?: string;
+
+    @prop()
+    TransferFromNationName?: string;
+
+    @prop()
+    TransferToTeamSlug?: string;
+
+    @prop()
+    TransferToNationName?: string;
     
 }
 

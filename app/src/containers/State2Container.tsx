@@ -14,17 +14,19 @@ interface DispatchProps {
     getPlayer:() => {}
     proposeDeal:(deal:{from:string, to: string, deal:string}) => {},
     acceptOrRejectDeal: (deal: IDeal, accept: boolean) => {}
-
+    forwardDeal: (deal: IDeal) => {}
 }
 export interface State2Props{
     CurrentPlayer: ITeam;
     PendingDealOffer: IDeal;
+    Dashboard: any;
     //Options: ITradeOption[]
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): State2Props => {
     return {
         CurrentPlayer: state.GameData.CurrentPlayer,
         PendingDealOffer: state.GameData.PendingDealOffer,
+        Dashboard: state.GameData.Dashboard
         //Options: (state.GameData.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[]
     };
 };
@@ -35,7 +37,8 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
         proposeDeal: ( deal: IDeal ) => {
             dispatch( Actions.proposeDeal(deal) )
         },
-        acceptOrRejectDeal: (deal: IDeal, accept: boolean) => dispatch( Actions.acceptOrRejectDeal(deal, accept) )
+        acceptOrRejectDeal: (deal: IDeal, accept: boolean) => dispatch( Actions.acceptOrRejectDeal(deal, accept) ),
+        forwardDeal: (deal:IDeal) => dispatch( Actions.forwardDeal(deal) ) 
 
     }
 }

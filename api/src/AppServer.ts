@@ -138,7 +138,9 @@ export default class AppServer
             .on(SocketEvents.JOIN_ROOM, this.onSocketJoinRoom.bind(this, socket))
             .on(SocketEvents.TO_ROOM_MESSAGE, this.onSocketRoomToRoomMessage.bind(this, socket))
             .on(SocketEvents.PROPOSE_DEAL, this.dealExchange.bind(this, socket, SocketEvents.PROPOSE_DEAL))
-            .on(SocketEvents.RESPOND_TO_DEAL, this.dealExchange.bind(this, socket, SocketEvents.RESPOND_TO_DEAL));
+            .on(SocketEvents.RESPOND_TO_DEAL, this.dealExchange.bind(this, socket, SocketEvents.RESPOND_TO_DEAL))
+            .on(SocketEvents.FORWARD_DEAL, this.forwardDeal.bind(this, socket, SocketEvents.FORWARD_DEAL))
+            
     }
 
     /**
@@ -222,8 +224,163 @@ export default class AppServer
             } else {
                 console.log("OOPS: No team found with nation " + (<TradeOption>deal.TradeOption).ToNationId);
             }
+
+
+
         });
     }
+
+    private async forwardDeal(eventTarget: SocketIO.Socket, socketEvent:string, deal:IDeal){
+
+        const teamPopulateRules =  [
+            {
+                path: "Nation"
+            },
+            {
+                path:"DealsProposedTo",
+                populate: {
+                    path:"TradeOption"
+                }                            
+            },
+            {
+                path:"DealsProposedBy",
+                populate: {
+                    path:"TradeOption"
+                }                            
+            }];
+
+        
+        const transferringTeam = await TeamModel.findOne({Slug: deal.TransferFromTeamSlug})
+                                                    .populate(teamPopulateRules)
+                                                    .then(t => t)
+        
+        console.log("TEAM INITIATING TRANSER", transferringTeam);
+        //first get the team we're transferring to, so we can set the deal's prop
+        const destinationTeam = await NationModel.findOne({Name: deal.TransferToNationName})
+                                                    .then(n => {
+                                                        return TeamModel.findOne({
+                                                            Nation: n,
+                                                            GameId: transferringTeam.GameId
+                                                        })
+                                                        .populate(teamPopulateRules)
+                                                        .then(t => t)
+                                                    })
+        
+
+        if(destinationTeam && transferringTeam){     
+                    
+            deal.TransferToNationName = (<INation>destinationTeam.Nation).Name;
+            deal.TransferToTeamSlug = destinationTeam.Slug;
+            const nudeEel = await DealModel.findByIdAndUpdate(deal._id, deal, {new: true})
+
+            //Deal has been accepted 
+            if(deal.TransferAccepted === true){
+                console.log("DEAL WAS ACCEPTED")
+
+                destinationTeam.DealsProposedTo = (destinationTeam.DealsProposedTo as IDeal[])            
+                            .filter(d => JSON.stringify(d._id) != JSON.stringify(nudeEel._id))
+                            .map(d => d._id)
+                            .concat([nudeEel._id])
+
+
+                //remove the transferred deal from the transferring team's DealsProposedBy
+                transferringTeam.DealsProposedTo = (transferringTeam.DealsProposedTo as IDeal[])            
+                                                        .filter(d => JSON.stringify(d._id) != JSON.stringify(nudeEel._id))
+
+                
+
+                //if(transferringTeam.DealsProposedTo.length)transferringTeam.DealsProposedTo = transferringTeam.DealsProposedTo.map(d => d._id)
+
+                //add the transferred deal to the transferring team's DealsProposedBy
+                transferringTeam.DealsProposedBy = (destinationTeam.DealsProposedBy as IDeal[])            
+                                                        .filter(d => JSON.stringify(d._id) != JSON.stringify(nudeEel._id))
+                                                        .map(d => d._id)
+                                                        .concat([nudeEel._id])
+
+
+                //when a deal is accepted, the original team that first proposed it can no longer cancel it, so we update it for them, too
+                const originatingTeam = await TeamModel.findOne({Slug: deal.FromTeamSlug}).populate(teamPopulateRules).then(t => t);
+                originatingTeam.DealsProposedBy = (originatingTeam.DealsProposedBy as IDeal[])
+                                                                                        .filter(d => JSON.stringify(d._id) != JSON.stringify(nudeEel._id))
+
+                const updatedDestinationTeam  = await TeamModel.findOneAndUpdate({Slug: destinationTeam.Slug},  destinationTeam,  {new: true}).populate(teamPopulateRules).then(t => t);
+                const updatedTransferringTeam = await TeamModel.findOneAndUpdate({Slug: transferringTeam.Slug}, transferringTeam, {new: true}).populate(teamPopulateRules).then(t => t);
+                const updatedOriginatingTeam  = await TeamModel.findOneAndUpdate({Slug: originatingTeam.Slug},  originatingTeam,  {new: true}).populate(teamPopulateRules).then(t => t);
+
+                if(updatedDestinationTeam && updatedTransferringTeam && updatedOriginatingTeam){
+                    eventTarget.nsp.to(deal.TransferToTeamSlug).emit(SocketEvents.RESPOND_TO_DEAL, updatedDestinationTeam); // Send proposal or response to team it's asking
+                    eventTarget.nsp.to(deal.TransferFromTeamSlug).emit(SocketEvents.RESPOND_TO_DEAL, updatedTransferringTeam); // Send proposal or response to team it's asking
+                    eventTarget.nsp.to(deal.FromTeamSlug).emit(SocketEvents.RESPOND_TO_DEAL, updatedOriginatingTeam); // Send proposal or response to team it's asking
+
+
+                    //update the SpreadSheet
+                    const game = await GameModel.findById(updatedDestinationTeam.GameId).populate(
+                        [
+                            {
+                                path: "Teams",
+                                populate: teamPopulateRules
+                            }
+                        ]
+                    )
+                    if(game){
+                        const sheets = new GoogleSheets();
+                        const sheetsResponse = await sheets.submitTradeDealValues(game.Teams as ITeam[])
+                        if(sheetsResponse){
+                            //emit the values to all the teams
+                            setTimeout(() => {
+                                sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y2:Y103").then((r:any) => {
+                                    eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, r);
+                                })
+                            },1000)
+                        }
+                    }
+
+                }
+            }
+            //Deal has been rejected
+            else if(deal.TransferAccepted === false){
+
+
+                deal.TransferToNationName = deal.TransferFromNationName = deal.TransferToTeamSlug = deal.TransferFromTeamSlug = null;
+                const nudeEel = await DealModel.findByIdAndUpdate(deal._id, deal, {new: true});
+
+                destinationTeam.DealsProposedTo = (destinationTeam.DealsProposedTo as IDeal[])            
+                                                    .filter(d => JSON.stringify(d._id) != JSON.stringify(nudeEel._id))
+                                                    .map(d => d._id)
+
+
+                //add the transferred deal to the transferring team's DealsProposedBy
+                transferringTeam.DealsProposedTo = (destinationTeam.DealsProposedTo as IDeal[])            
+                                                    .filter(d => JSON.stringify(d._id) != JSON.stringify(nudeEel._id))
+                                                    .concat([nudeEel])
+                                                    .map(d => d._id)
+
+                //remove the transferred deal from the transferring team's DealsProposedBy
+                transferringTeam.DealsProposedBy = (destinationTeam.DealsProposedBy as IDeal[])            
+                                                    .filter(d => JSON.stringify(d._id) != JSON.stringify(nudeEel._id))
+                                                    .map(d => d._id)
+
+
+                const updatedDestinationTeam  = await TeamModel.findOneAndUpdate({Slug: destinationTeam.Slug}, destinationTeam, {new: true}).populate(teamPopulateRules).then(t => t);
+                const updatedTransferringTeam = await TeamModel.findOneAndUpdate({Slug: transferringTeam.Slug}, transferringTeam, {new: true}).populate(teamPopulateRules).then(t => t);
+
+                eventTarget.nsp.to(destinationTeam.Slug).emit(SocketEvents.RESPOND_TO_DEAL, updatedDestinationTeam); // Send proposal or response to team it's asking
+                eventTarget.nsp.to(transferringTeam.Slug).emit(SocketEvents.RESPOND_TO_DEAL, updatedTransferringTeam); // Send proposal or response to team it's asking
+
+            }
+            //Deal has been proposed, but hasn't been accepted or rejected yet
+            else{
+                console.log("DEAL HAD NO ACCEPTED PROP SET")
+
+                //notify the two teams that a transfer has been proposed
+                eventTarget.nsp.to(deal.TransferToTeamSlug).emit(SocketEvents.PROPOSE_DEAL, deal); // Send proposal or response to team it's asking
+                eventTarget.nsp.to(deal.TransferFromTeamSlug).emit(SocketEvents.PROPOSE_DEAL, deal); // Send proposal or response to team it's asking
+            }
+        }
+
+
+    }
+    
 
     private onSocketJoinRoom(eventTarget:SocketIO.Socket, roomName:string):void {
         eventTarget.leave(roomName);
@@ -410,7 +567,14 @@ export default class AppServer
                                 Nation: nations[i],
                                 GameState: 2
                             }
-                            TeamModel.findByIdAndUpdate(teams[i]._id, update, {new: true}).populate("Nation").then((t) => {
+                            TeamModel.findByIdAndUpdate(teams[i]._id, update, {new: true}).populate(
+                                {
+                                    path:"Nation",
+                                    populate: {
+                                        path:"TradeOptions"
+                                    }
+                                }
+                            ).then((t) => {
                                 this.io.of(t.GameId).to(t.Slug).emit(SocketEvents.TEAM_UPDATED, t);
                             });        
                             promises.push(promise);

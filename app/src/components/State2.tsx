@@ -19,7 +19,9 @@ interface State2Props{
    getPlayer: () => {}
    proposeDeal: (deal: IDeal) => {}
    acceptOrRejectDeal: (deal: IDeal, accept: boolean) => {}
+   forwardDeal: (deal: IDeal) => {}
    match: any;
+   Dashboard: any;
 }
 export default class State2 extends React.Component<State2Props, {PlayerNotFound:boolean, ParallaxByNation: any}> {
 
@@ -55,8 +57,39 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
         this.props.acceptOrRejectDeal(deal, accept)
     }
 
-    prepareToForwardDeal(deal: IDeal, newRecipient: string){
+    prepareToForwardDeal(deal: IDeal, newRecipient: string, accept: boolean = null){
         console.log(deal, newRecipient)
+
+        let dealChanges:Partial<IDeal> = {
+            TradeOption: deal.TradeOption as ITradeOption,
+            TransferFromNationName: (this.props.CurrentPlayer.Nation as INation).Name,
+            TransferFromTeamSlug: this.props.CurrentPlayer.Slug,
+            TransferToNationName: newRecipient,
+            TransferAccepted: accept != undefined ? accept : null
+        }
+        let transferDeal = Object.assign(
+            {},
+            deal,
+            dealChanges
+        )
+
+        console.log(transferDeal);
+        this.props.forwardDeal(transferDeal);
+    }
+
+    prepareAcceptOrRejectForwardDeal(deal: IDeal, accept: boolean = null){
+
+        let dealChanges:Partial<IDeal> = {
+            TransferAccepted: accept
+        }
+        let transferDeal = Object.assign(
+            {},
+            deal,
+            dealChanges
+        )
+
+        console.log(transferDeal);
+        this.props.forwardDeal(transferDeal);
     }
 
     componentDidUpdate(){
@@ -104,7 +137,28 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                     match={this.props.match}
                     CurrentPlayer={this.props.CurrentPlayer}
                 >   
-                    {this.props.PendingDealOffer && <Modal
+                    {this.props.PendingDealOffer ? 
+                        this.props.PendingDealOffer.TransferFromNationName  ? 
+                        <Modal
+                            title={
+                                this.props.PendingDealOffer.TransferFromTeamSlug == this.props.CurrentPlayer.Slug 
+                                    ? <p>Your team offered {this.props.PendingDealOffer.FromNationName}'s trade deal to {this.props.PendingDealOffer.TransferToNationName}.</p> 
+                                    : <p>{this.props.PendingDealOffer.TransferFromNationName} has offered {this.props.PendingDealOffer.FromNationName}'s' trade deal to you.</p>
+                            }
+                            visible={true}
+                            width="95%"
+                            footer={
+                                this.props.PendingDealOffer.TransferFromTeamSlug == this.props.CurrentPlayer.Slug 
+                                ? null
+                                : [
+                                    <Button type="primary" size="large" onClick={e => {this.prepareAcceptOrRejectForwardDeal(this.props.PendingDealOffer, true)}}>Accept Deal</Button>,
+                                    <Button type="danger" size="large" onClick={e => {this.prepareAcceptOrRejectForwardDeal(this.props.PendingDealOffer,  false)}}>Reject Deal</Button>         
+                                ]
+                            }
+                        >
+                            <p>{(this.props.PendingDealOffer.TradeOption as ITradeOption).Message}</p>                        
+                        </Modal> :
+                        <Modal
                             title={
                                 this.props.PendingDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug 
                                     ? <p>Your team offered a trade deal to {this.props.PendingDealOffer.ToNationName}.</p> 
@@ -121,9 +175,11 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                                 ]
                             }
                         >
-                        <p>{(this.props.PendingDealOffer.TradeOption as ITradeOption).Message}</p>
-                        
-                        </Modal> }
+                            <p>{(this.props.PendingDealOffer.TradeOption as ITradeOption).Message}</p>                        
+                        </Modal> : null
+                            
+                            
+                    }
                     <Row className="form-wrapper">
                         <p>{new Date().toLocaleDateString()}. A reprive.</p>
                         <p>You know the stakes. Work with other nations to build a liveable, sutainable world, as you build a better future for your own nation.</p>
@@ -134,13 +190,23 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                             <ul>                 
                                 {(this.props.CurrentPlayer.DealsProposedTo as IDeal[]).map(d => {
                                     
-                                    return  <li>
-                                                <h5>{d.FromNationName} Accepted Your Trade Deal</h5>
-                                                <p>
-                                                    {(d.TradeOption  as ITradeOption).Message}
-                                                    <Button type="danger" onClick={e => this.respondToDeal(d, false)}>Cancel Deal</Button>
-                                                </p>
-                                            </li>
+                                    return <li>
+                                            <h5>You Accepted {d.TransferFromNationName || d.FromNationName}'s' Trade Deal</h5>
+                                                {(d.TradeOption  as ITradeOption).Message}
+                                                <Button type="danger" onClick={e => this.respondToDeal(d, false)}>Cancel Deal</Button>
+                                                Offer deal to
+                                                {this.props.CurrentPlayer.Nation && (this.props.CurrentPlayer.Nation as INation).TradeOptions ?   
+                                                    <Row>
+                                                        {((this.props.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[])
+                                                            .filter(o => {
+                                                                return o.ToNationId != d.ToNationName
+                                                            })
+                                                            .map(o => <Button onClick={e => this.prepareToForwardDeal(d, o.ToNationId)}>{o.ToNationId}</Button>)
+                                                        }
+                                                    </Row>
+                                                    : <h1>hey</h1>
+                                                }
+                                        </li>
                                 })}
                             </ul> 
                             : null
@@ -151,24 +217,13 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                         {this.props.CurrentPlayer.DealsProposedBy.length ? 
                             <ul>                                                  
                                 {(this.props.CurrentPlayer.DealsProposedBy as IDeal[]).map(d => {
-                                        return  <li>
-                                                    <h5>You Accepted {d.ToNationName}'s' Trade Deal</h5>
-                                                        {(d.TradeOption  as ITradeOption).Message}
-                                                        <Button type="danger" onClick={e => this.respondToDeal(d, false)}>Cancel Deal</Button>
-                                                        Offer deal to
-                                                        {this.props.CurrentPlayer.Nation && (this.props.CurrentPlayer.Nation as INation).TradeOptions ?   
-                                                            <Row>
-                                                                {((this.props.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[])
-                                                                    .filter(o => {
-                                                                        console.log("deal",o, d)
-                                                                        return o.ToNationId != d.ToNationName
-                                                                    })
-                                                                    .map(o => <Button onClick={e => this.prepareToForwardDeal(d, o.ToNationId)}>{o.ToNationId}</Button>)
-                                                                }
-                                                            </Row>
-                                                            : <h1>hey</h1>
-                                                        }
-                                                </li>
+                                    return  <li>
+                                                <h5>{d.TransferToNationName || d.ToNationName} Accepted Your Trade Deal</h5>
+                                                <p>
+                                                    {(d.TradeOption  as ITradeOption).Message}
+                                                    <Button type="danger" onClick={e => this.respondToDeal(d, false)}>Cancel Deal</Button>
+                                                </p>
+                                            </li>
                                 })}
                             </ul> 
                             : null
