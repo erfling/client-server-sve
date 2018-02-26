@@ -1,4 +1,6 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+
 import { reduxForm, Field, WrappedFieldProps, InjectedFormProps, GenericFieldHTMLAttributes } from 'redux-form';
 import { InputWrapper, SliderWrapper } from './form-elements/AntdFormWrappers';
 import ITeam from '../../../shared/models/ITeam';
@@ -10,7 +12,16 @@ import {Row, Col, Modal, Icon, Button, Select} from 'antd';
 import ITradeOption from '../../../shared/models/ITradeOption';
 import INation from '../../../shared/models/INation';
 
-
+import {
+    XYPlot,
+    XAxis,
+    YAxis,
+    HorizontalGridLines,
+    VerticalGridLines,
+    LineSeries,
+    DiscreteColorLegend,
+    DiscreteColorLegendItem,
+    Hint } from 'react-vis';
 
 interface State2Props{
    CurrentPlayer: ITeam;
@@ -23,10 +34,10 @@ interface State2Props{
    match: any;
    Dashboard: any;
 }
-export default class State2 extends React.Component<State2Props, {PlayerNotFound:boolean, ParallaxByNation: any}> {
+export default class State2 extends React.Component<State2Props, {PlayerNotFound:boolean, ParallaxByNation: any, ShowChart:boolean}> {
 
     componentWillMount(){
-        this.setState({PlayerNotFound: false})
+        this.setState({PlayerNotFound: false, ShowChart: false})
         console.log("LOCAL STORAGE FROM STATE 1 COMPONENT", localStorage)
         if(!this.props.CurrentPlayer){
             if(localStorage.getItem("SVE_PLAYER")){
@@ -96,6 +107,24 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
         if(this.props.CurrentPlayer && this.props.CurrentPlayer.Nation && !this.state.ParallaxByNation)this.loadImage();
     }
     
+    getColor(){
+        var temp = this.props.Dashboard[100];
+
+        if(temp <= 0){
+            return "green";
+        }else if(temp >= 2){
+            return "red";
+        } else {
+            return "orange";
+        }
+    }
+
+    showOrHideChart(){  
+        this.setState(Object.assign({}, this.state, {ShowChart: !this.state.ShowChart}));
+        var element:HTMLElement = document.querySelector(".tempTracker");
+        element.classList.toString().indexOf("show") == -1 ? element.classList.add("show") : element.classList.remove("show")
+    }
+
 
     loadImage(){
         if(!this.props.CurrentPlayer.Nation)return;
@@ -127,6 +156,21 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
         console.log(this.state)
     }
 
+    getParsedData(data:number[] | string[] | number){
+        var parsedData:any[] = [];
+        
+        for(var i = 2000; i < 2101; i++){
+            
+            let value = typeof data == "number" ? data : data[i - 2000];
+            parsedData.push({
+                x: i.toString() + " ",
+                y: value
+            })
+        }
+        console.log("PARSED DATA:", parsedData)
+        return parsedData;
+    }
+
     render(){
         if(!this.props.CurrentPlayer)return <div/>
         return this.props.CurrentPlayer && 
@@ -137,6 +181,73 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                     match={this.props.match}
                     CurrentPlayer={this.props.CurrentPlayer}
                 >   
+                    {this.props.Dashboard &&  
+                        this.props.Dashboard.length > 100 ? 
+                        <Row ref="tempTracker" className="tempTracker">
+                            Global Temp difference in 2100: <span style={{color: this.getColor()}}>{this.props.Dashboard[100]}</span> 
+                            <Button onClick={e => this.showOrHideChart()} type="primary" shape="circle"><Icon type="line-chart" /></Button>
+                            <Modal 
+                                width="95%"
+                                visible={this.state.ShowChart}
+                                footer={<Button onClick={e => this.showOrHideChart()}>Close <Icon type="close-circle-o" /></Button>}
+                            >
+                                <XYPlot
+                                    height={400}
+                                    width={700}
+                                    className="line-chart"
+                                >
+                                    <HorizontalGridLines />
+                                    <VerticalGridLines />      
+                                    
+                                    <XAxis title="Year" />
+                                    <YAxis title="Temperature" />
+                                    <LineSeries
+                                            strokeWidth={3}
+                                            color="red"
+                                            label="test"
+                                            className="first-series"
+                                            style={{
+                                                strokeDasharray: '10 2'
+                                            }}
+                                            data={this.getParsedData(2)}                                                                           
+                                        />
+                                    
+
+                                   <LineSeries
+                                        strokeWidth={3}
+                                        color="orange"
+                                        className="second-series"
+                                        style={{
+                                            strokeDasharray: '10 2'
+                                        }}
+                                        data={this.getParsedData(0)}
+                                    />
+                                        
+                                    
+
+                                   <LineSeries
+                                        className="third-series"
+                                        color={this.getColor()}
+                                        style={{
+                                            //strokeDasharray: '10 2'
+                                        }}
+                                        strokeWidth={3}
+                                        data={this.getParsedData(this.props.Dashboard)}
+                                    />
+                                        
+                                    
+                                    <DiscreteColorLegend
+                                        className="impact-chart"
+                                        colors={["red", "orange", this.getColor()]}
+                                        orientation="horizontal"
+                                        items={["Paris Accord", "Preindustrial Level", "Adjusted Temp Increase"]}
+                                    />
+                                </XYPlot>
+                            </Modal>
+                            
+                            
+                        </Row> : null
+                    }
                     {this.props.PendingDealOffer ? 
                         this.props.PendingDealOffer.TransferFromNationName  ? 
                         <Modal
@@ -236,3 +347,5 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
     }
 }
 //                    {this.props.CurrentPlayer && <pre>{JSON.stringify(this.props.CurrentPlayer, null, 2)}</pre>}
+/*
+*/

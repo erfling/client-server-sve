@@ -12,6 +12,7 @@ import * as fs from 'fs';
 import IPlayer from '../../../shared/models/IPlayer';
 import ITeam from '../../../shared/models/ITeam';
 import formValues from '../../../shared/models/FormValues';
+import INation from '../../../shared/models/INation';
 
 export default class GoogleSheets
 {
@@ -196,11 +197,17 @@ export default class GoogleSheets
         .then(this.authorize)
         .then((auth) => {
 
-            var innerValues = teams.map((t) => {
-                return t.DealsProposedTo.length;
+            var values = teams.sort((a, b) => {
+                return (a.Nation as INation).Name > (b.Nation as INation).Name ? 1 : 0
+            }
+            ).map((t) => {
+                console.log((t.Nation as INation).Name, t.DealsProposedTo.length)
+                return [t.DealsProposedTo.length];
             })
-            var values:any[][] = [innerValues];
-            var range = "!C12:C17"
+            console.log("VALUES we want to submit");
+            console.log(values);
+
+            var range = "Country Impact!C12:C17"
             const sheets = google.sheets('v4');
             var data = [{
                 range: range,
@@ -228,7 +235,7 @@ export default class GoogleSheets
                     console.log("HERE");
                     return resolve(result.values);
                 })
-            })
+            }).then(values => values)
         }).catch(e => {throw(e)})
     }
 

@@ -149,8 +149,27 @@ export default class AppServer
      * @param socketEvent The event type
      * @param deal The deal Object
      */
-    private dealExchange(eventTarget:SocketIO.Socket, socketEvent:string, deal:IDeal):void {
+    private async dealExchange(eventTarget:SocketIO.Socket, socketEvent:string, deal:IDeal):Promise<any> {
         var dealPromise;
+
+        const teamPopulateRules =  [
+            {
+                path: "Nation"
+            },
+            {
+                path:"DealsProposedTo",
+                populate: {
+                    path:"TradeOption"
+                }                            
+            },
+            {
+                path:"DealsProposedBy",
+                populate: {
+                    path:"TradeOption"
+                }                            
+            }
+        ];
+
         var promises:Promise<any>[] = [];
         let newDeal = Object.assign({}, deal, {TradeOption: (deal.TradeOption as ITradeOption)._id})
 
@@ -174,8 +193,8 @@ export default class AppServer
                 }
         )
 
-        Promise.all([gamePromise, dealPromise])
-        .then((gameAndDeal) => {
+        return Promise.all([gamePromise, dealPromise])
+        .then(async (gameAndDeal) => {
             let g = gameAndDeal[0];
             let deal = gameAndDeal[1];
             let teams:ITeam[] = (<IGame>g).Teams as ITeam[];
@@ -210,6 +229,8 @@ export default class AppServer
                     }).catch(e => {throw(e)})
 
                     if (isTo) saveTeamDeal(isAccepted, false); // Run again to save fromTeam
+
+                    
                 }
 
                 if (deal.Accept == true || deal.Accept == false) {
@@ -221,6 +242,32 @@ export default class AppServer
                     eventTarget.nsp.to(deal.ToTeamSlug).emit(socketEvent, deal); // Send proposal or response to team it's asking
                     eventTarget.nsp.to(deal.FromTeamSlug).emit(socketEvent, deal); // Send message back to sender's room to varify dealExchange was sent
                 }
+
+
+                //update the SpreadSheet
+                const game = await GameModel.findById(g._id).populate(
+                    [
+                        {
+                            path: "Teams",
+                            populate: teamPopulateRules
+                        }
+                    ]
+                )
+                if(game){
+                    const sheets = new GoogleSheets();
+                    const sheetsResponse = await sheets.submitTradeDealValues(game.Teams as ITeam[])
+                    console.log(sheetsResponse);
+
+                    //emit the values to all the teams
+                    setTimeout(() => {
+                        sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
+                            console.log("we got these values", r)
+                            eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, r);
+                        })
+                    },10)
+                    
+                }
+
             } else {
                 console.log("OOPS: No team found with nation " + (<TradeOption>deal.TradeOption).ToNationId);
             }
@@ -278,9 +325,9 @@ export default class AppServer
                 console.log("DEAL WAS ACCEPTED")
 
                 destinationTeam.DealsProposedTo = (destinationTeam.DealsProposedTo as IDeal[])            
-                            .filter(d => JSON.stringify(d._id) != JSON.stringify(nudeEel._id))
-                            .map(d => d._id)
-                            .concat([nudeEel._id])
+                                                    .filter(d => JSON.stringify(d._id) != JSON.stringify(nudeEel._id))
+                                                    .map(d => d._id)
+                                                    .concat([nudeEel._id])
 
 
                 //remove the transferred deal from the transferring team's DealsProposedBy
@@ -302,6 +349,9 @@ export default class AppServer
                 const originatingTeam = await TeamModel.findOne({Slug: deal.FromTeamSlug}).populate(teamPopulateRules).then(t => t);
                 originatingTeam.DealsProposedBy = (originatingTeam.DealsProposedBy as IDeal[])
                                                                                         .filter(d => JSON.stringify(d._id) != JSON.stringify(nudeEel._id))
+                                                                                        .map(d => d._id)
+                                                                                        .concat([nudeEel._id])
+                                
 
                 const updatedDestinationTeam  = await TeamModel.findOneAndUpdate({Slug: destinationTeam.Slug},  destinationTeam,  {new: true}).populate(teamPopulateRules).then(t => t);
                 const updatedTransferringTeam = await TeamModel.findOneAndUpdate({Slug: transferringTeam.Slug}, transferringTeam, {new: true}).populate(teamPopulateRules).then(t => t);
@@ -325,14 +375,15 @@ export default class AppServer
                     if(game){
                         const sheets = new GoogleSheets();
                         const sheetsResponse = await sheets.submitTradeDealValues(game.Teams as ITeam[])
-                        if(sheetsResponse){
-                            //emit the values to all the teams
-                            setTimeout(() => {
-                                sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y2:Y103").then((r:any) => {
-                                    eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, r);
-                                })
-                            },1000)
-                        }
+                        console.log(sheetsResponse);
+                        //emit the values to all the teams
+                        setTimeout(() => {
+                            sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
+                                console.log("we got these values", r)
+                                eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, r);
+                            })
+                        },10)
+                        
                     }
 
                 }
@@ -580,6 +631,16 @@ export default class AppServer
                             promises.push(promise);
                         }
 
+
+                        const sheets = new GoogleSheets();
+    
+                        //emit the values to all the teams
+                        sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y2:Y103").then((r:any) => {
+                            console.log("we got these values", r)
+                            this.io.of(game._id).emit(SocketEvents.DASHBOARD_UPDATED, r);
+                        })
+   
+
                         return nations;
                     })
                 } else {
@@ -640,6 +701,13 @@ export default class AppServer
                         }
                         let token = jwt.sign({team: t}, 'shhhhh');
                         console.log("TEAM TO SEND", team);
+
+                        //emit the values to all the teams
+                        new GoogleSheets().GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
+                            console.log("we got these values", r)
+                            this.io.of(game._id).to(t.Slug).emit(SocketEvents.DASHBOARD_UPDATED, r);
+                        })
+
                         res.json({token, team:t});
                     } else {
                         res.json("LOGIN FAILED")
