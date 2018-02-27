@@ -567,7 +567,6 @@ export default class AppServer
                 } )
                 return options;
             }).then((options) => {
-                console.log(options);
                 TradeOptionModel.insertMany(options).then((resp) => {
                     res.json(resp)
                 })
@@ -580,7 +579,6 @@ export default class AppServer
                 return nations;
             }).then((nations) => TradeOptionModel.find().then(options => {return {options, nations}}))
             .then((thing: {nations:INation[], options: ITradeOption[]}) => {
-                console.log(thing)
                 thing.nations.forEach((nation) => {
                     let options = thing.options
                                         .filter(o => o.FromNationId == nation.Name)//
@@ -653,7 +651,6 @@ export default class AppServer
                     })
 
                     Promise.all(promises).then((teams: ITeam[]) => {
-                        console.log(teams);
                         teams.forEach(t => {
                             this.io.of(t.GameId).to(t.Slug).emit(SocketEvents.TEAM_UPDATED, t);
                         })
@@ -694,7 +691,7 @@ export default class AppServer
                     const sheets = new GoogleSheets();
                     const content = await sheets.GetNationContent((team.Nation as INation).Name);
                     if(content) (team.Nation as INation).Content = content;
-                    console.log("NATION IS",(content));
+                   // console.log("NATION IS",(content));
                     game = await GameModel.findById(team.GameId);
                     if (game) {
                         let gameSocketNameSpace = this.io.of(game._id);
