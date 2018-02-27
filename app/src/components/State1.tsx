@@ -146,7 +146,7 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
                         {this.state.Decided &&
                             this.state.FeedBack ?
                             <Row className="state1results">
-                                <h5>You Chose {this.state.ChosenHorse}</h5>
+                                <h5 style={{display: 'block'}}>You Chose {this.state.ChosenHorse}</h5>
                                     {this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.state.ChosenHorse.toUpperCase())
                                         .map(f => {
                                             return f.filter((c, i) => i != 0).map((c) => {
