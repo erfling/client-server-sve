@@ -744,7 +744,7 @@ export default class AppServer
         var port = AppServer.SOCKET_PORT;
         if (this.socketServer instanceof https.Server) {
             port = AppServer.SECURE_SOCKET_PORT;
-            this.io.origins('*');
+            this.io.origins('https://planetsapien.com:443');
             
             console.log("ORIGINS HAVE BEEN SET");
         }
