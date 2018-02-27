@@ -15,16 +15,21 @@ interface DispatchProps {
     proposeDeal:(deal:{from:string, to: string, deal:string}) => {},
     acceptOrRejectDeal: (deal: IDeal, accept: boolean) => {}
     forwardDeal: (deal: IDeal) => {}
+    acknowledgeDealRejection: () => {}
 }
 export interface State2Props{
     CurrentPlayer: ITeam;
     PendingDealOffer: IDeal;
+    RejectedDealOffer: IDeal;
     Dashboard: any;
+    AcceptedDealOffer: IDeal;
     //Options: ITradeOption[]
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): State2Props => {
     return {
         CurrentPlayer: state.GameData.CurrentPlayer,
+        RejectedDealOffer: state.GameData.RejectedDealOffer,
+        AcceptedDealOffer: state.GameData.AcceptedDealOffer,
         PendingDealOffer: state.GameData.PendingDealOffer,
         Dashboard: state.GameData.Dashboard
         //Options: (state.GameData.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[]
@@ -38,7 +43,8 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
             dispatch( Actions.proposeDeal(deal) )
         },
         acceptOrRejectDeal: (deal: IDeal, accept: boolean) => dispatch( Actions.acceptOrRejectDeal(deal, accept) ),
-        forwardDeal: (deal:IDeal) => dispatch( Actions.forwardDeal(deal) ) 
+        forwardDeal: (deal:IDeal) => dispatch( Actions.forwardDeal(deal) ),
+        acknowledgeDealRejection: () => dispatch( Actions.acknowledgeDealRejection() )
 
     }
 }

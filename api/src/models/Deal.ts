@@ -4,11 +4,12 @@ import ITradeOption from "../../../shared/models/ITradeOption";
 import { TradeOption } from './TradeOption';
 import { Typegoose, prop, Ref } from 'typegoose';
 import * as mongoose from 'mongoose';
+import value from "*.json";
 
 export class Deal extends BaseClass implements IDeal {
     
     @prop({ref: TradeOption})
-    TradeOption: Ref<TradeOption> | ITradeOption;
+    TradeOption?: Ref<TradeOption> | ITradeOption;
 
     @prop()
     FromTeamSlug: string;
@@ -19,11 +20,20 @@ export class Deal extends BaseClass implements IDeal {
     @prop()
     FromNationName: string;
 
+    @prop({default: 10})
+    Value: number;
+
     @prop()
     ToNationName: string;
     
     @prop()
     Accept?: boolean;
+
+    @prop()
+    CanAccept: boolean;
+
+    @prop()
+    Message: string;
 
     @prop()
     TransferFromTeamSlug?: string;

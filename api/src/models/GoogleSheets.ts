@@ -388,8 +388,10 @@ export default class GoogleSheets
                         reject(err);
                         return;
                     }
-
-                    var values = response.values.filter((r: any) => r[0] == name);
+                    
+                    var values = response.values.filter((r: any) => {
+                        return r[0] == name
+                    });
                     return resolve(values);
                 })
             })

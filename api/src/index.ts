@@ -10,7 +10,6 @@ const port = normalizePort(AppServer.PORT);
 const sport = normalizePort(AppServer.SECURE_PORT);
 //Server.set('port', port);
 
-console.log(`Server listening on port ${port}`);
 const processEnv = process.env.NODE_ENV || "dev";
 console.log("SERVER IS IN",process.env.NODE_ENV);
 /*

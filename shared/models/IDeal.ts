@@ -4,12 +4,15 @@ import ITradeOption from './ITradeOption';
 import IBaseClass from './BaseModel';
 
 export default interface IDeal extends IBaseClass{
-    TradeOption: Ref<TradeOption> | ITradeOption;
+    TradeOption?: Ref<TradeOption> | ITradeOption;
     FromTeamSlug: string;
     FromNationName: string;
     ToTeamSlug?: string;
     ToNationName?: string;
     Accept?: boolean;
+    Message: string;
+    CanAccept?:boolean;
+    Value?:number;
 
     TransferFromTeamSlug?: string;
     TransferFromNationName?: string;

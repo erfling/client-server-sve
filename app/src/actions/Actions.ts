@@ -12,6 +12,7 @@ import { store } from '../index';
 import { setTimeout } from 'timers';
 import IDeal from '../../../shared/models/IDeal';
 import IRatings from '../../../shared/models/IRatings';
+import { Socket } from 'dgram';
 
 const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
 const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
@@ -70,6 +71,9 @@ export enum ACTION_TYPES {
 
     DEAL_PROPOSED = "DEAL_PROPOSED",
     DEAL_RESPONSE = "DEAL_RESPONSE",
+    DEAL_REJECTED = "DEAL_REJECTED",
+    DEAL_ACCEPTED = "DEAL_ACCEPTED",
+    ACKNOWLEDGE_DEAL_REJECTION  = "ACKNOWLEDGE_DEAL_REJECTION",
 
     RATINGS_SUBMITTED = "RATINGS_SUBMITTED"
 
@@ -133,6 +137,26 @@ export const createTeamSocket = (team:ITeam) => {
                 dispatch( {
                     type: ACTION_TYPES.DEAL_RESPONSE,
                     payload: deal
+                } );
+
+                dispatch( {
+                    type: ACTION_TYPES.IS_LOADING,
+                    payload: false
+                } )
+            })
+            .on(SocketEvents.DEAL_REJECTED, () => {
+                dispatch( {
+                    type: ACTION_TYPES.DEAL_REJECTED
+                } );
+
+                dispatch( {
+                    type: ACTION_TYPES.IS_LOADING,
+                    payload: false
+                } )
+            })
+            .on(SocketEvents.DEAL_ACCEPTED, () => {
+                dispatch( {
+                    type: ACTION_TYPES.DEAL_ACCEPTED
                 } );
 
                 dispatch( {
@@ -520,7 +544,6 @@ export const setGameState = (game:IGame, newState: number) => {
 }
 
 export const proposeDeal = (deal: IDeal ) => {
-    console.log("ACTION SAYS DEAL IS", deal, socket)
     socket.emit(SocketEvents.PROPOSE_DEAL, deal);
     return (dispatch: Dispatch<Action<boolean>>) => {
         dispatch({
@@ -586,5 +609,11 @@ export const submitRatings = (teamWithRatings: ITeam) => {
             })
         }
     )
+    }
+}
+
+export const acknowledgeDealRejection = () => {
+    return (dispatch: Dispatch<Action<null>>) => {
+        dispatch({type: ACTION_TYPES.ACKNOWLEDGE_DEAL_REJECTION})
     }
 }

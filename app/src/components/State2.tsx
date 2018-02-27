@@ -26,15 +26,23 @@ import {
 interface State2Props{
    CurrentPlayer: ITeam;
    PendingDealOffer: IDeal;
+   RejectedDealOffer: IDeal;
+   AcceptedDealOffer: IDeal;
    //Options: ITradeOption[];
    getPlayer: () => {}
    proposeDeal: (deal: IDeal) => {}
    acceptOrRejectDeal: (deal: IDeal, accept: boolean) => {}
    forwardDeal: (deal: IDeal) => {}
+   acknowledgeDealRejection: () => {}
    match: any;
    Dashboard: any;
 }
-export default class State2 extends React.Component<State2Props, {PlayerNotFound:boolean, ParallaxByNation: any, ShowChart:boolean, ChosenCountry: string}> {
+
+interface IClientTradeOption {
+    value: string;
+    text:string;
+}
+export default class State2 extends React.Component<State2Props, {PlayerNotFound:boolean, ParallaxByNation: any, ShowChart:boolean, ChosenCountry: string, TradeOptions:string[], SelectionOptions:IClientTradeOption[], RejectedDeal: boolean}> {
 
     componentWillMount(){
         this.setState({PlayerNotFound: false, ShowChart: false})
@@ -50,14 +58,18 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
     }
 
     prepDeal(){
-        //formValues.fromId = this.props.
-        
+
+        var chosenOption = this.state.TradeOptions.filter(o => o.toUpperCase().indexOf( this.state.ChosenCountry.toUpperCase()) != -1)[0] || null
+
         var deal: IDeal = {
-            TradeOption: null,
             FromTeamSlug: this.props.CurrentPlayer.Slug,
             FromNationName: (this.props.CurrentPlayer.Nation as INation).Name,
-            ToNationName: this.state.ChosenCountry
+            ToNationName: this.state.ChosenCountry,
+            Message: chosenOption
+            
         }
+
+        deal.Value = deal.Message.startsWith("#") && !isNaN(parseInt(deal.Message.substr(1))) ? parseInt(deal.Message.substr(1)) : null
         console.log("WHAT'S THE DEAL?", deal)
         this.props.proposeDeal(deal);
         
@@ -83,7 +95,6 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
             dealChanges
         )
 
-        console.log(transferDeal);
         this.props.forwardDeal(transferDeal);
     }
 
@@ -104,6 +115,8 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
 
     componentDidUpdate(){
         if(this.props.CurrentPlayer && this.props.CurrentPlayer.Nation && !this.state.ParallaxByNation)this.loadImage();
+        console.log("COMPONENT UPDATED");
+  
     }
     
     getColor(){
@@ -150,13 +163,12 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
             
         }
 
-        console.log("PATH TO IMAGE IS", imagePath)
         if(imagePath)this.setState(Object.assign(this.state, {ParallaxByNation: imagePath}))
         console.log(this.state)
     }
 
-    getOptionsByTeam():string[]{
-        return [
+    getOptionsByTeam():{value: string, text: string}[]{
+        var options = [
             "Australia",
             "Bangladesh",
             "China",
@@ -164,7 +176,14 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
             "Japan",
             "Vietnam"
         ].filter(s => s != (this.props.CurrentPlayer.Nation as INation).Name)
-         .map(s => "Invest $" + this.props.CurrentPlayer.DealsProposedTo.length ? (this.props.CurrentPlayer.DealsProposedTo.length * 10).toString() : "10" + " billion in " + s)
+         .map(s => {
+             return {
+                        text:"Invest $" + (this.props.CurrentPlayer.DealsProposedTo.length ? ((((this.props.CurrentPlayer.DealsProposedTo[0]) as IDeal).Value + 1) * 10) : "10") + " billion in " + s,
+                        value:s
+                    }
+        })
+        this.setState(Object.assign({}, this.state, {SelectionOptions: options}))
+         return options;
     }
     
 
@@ -179,8 +198,20 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                 y: value
             })
         }
-        console.log("PARSED DATA:", parsedData)
         return parsedData;
+    }
+
+    parseMessage(message: string){
+        return message.startsWith("#") ? message.substring(3) : message;
+    }
+
+    getTradeOptionContent(){
+        var options = (this.props.CurrentPlayer.Nation as INation).Content[0].filter((c:string[], i:number) => {
+            return i > 0 && i < 6 && c.length > 0;
+        })
+        this.setState(Object.assign({}, this.state, {TradeOptions: options}));
+
+        return options;
     }
 
     render(){
@@ -193,11 +224,14 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                     match={this.props.match}
                     CurrentPlayer={this.props.CurrentPlayer}
                 >   
-                    {this.props.Dashboard &&  
+                    {this.props.Dashboard &&
                         this.props.Dashboard.length > 100 ? 
                         <Row ref="tempTracker" className="tempTracker">
-                            Global Temp difference in 2100: <span style={{color: this.getColor()}}>{this.props.Dashboard[100]}</span> 
-                            <Button onClick={e => this.showOrHideChart()} type="primary" shape="circle"><Icon type="line-chart" /></Button>
+                            Temp  in 2100: <span style={{color: this.getColor()}}>{this.props.Dashboard[100]}</span>
+                            {this.props.CurrentPlayer.DealsProposedTo.length && <span>Your Trade Bank: ${((this.props.CurrentPlayer.DealsProposedTo[0] as IDeal).Value + 1 )* 10} Billion</span>}
+                            <Button onClick={e => this.showOrHideChart()} type="primary">
+                                Chart {this.state.ShowChart ? <Icon type="close" /> : <Icon type="line-chart" />}
+                            </Button>
                             <Modal 
                                 width="95%"
                                 visible={this.state.ShowChart}
@@ -261,26 +295,7 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                         </Row> : null
                     }
                     {this.props.PendingDealOffer ? 
-                        this.props.PendingDealOffer.TransferFromNationName  ? 
-                        <Modal
-                            title={
-                                this.props.PendingDealOffer.TransferFromTeamSlug == this.props.CurrentPlayer.Slug 
-                                    ? <p>Your team offered {this.props.PendingDealOffer.FromNationName}'s trade deal to {this.props.PendingDealOffer.TransferToNationName}.</p> 
-                                    : <p>{this.props.PendingDealOffer.TransferFromNationName} has offered {this.props.PendingDealOffer.FromNationName}'s' trade deal to you.</p>
-                            }
-                            visible={true}
-                            width="95%"
-                            footer={
-                                this.props.PendingDealOffer.TransferFromTeamSlug == this.props.CurrentPlayer.Slug 
-                                ? null
-                                : [
-                                    <Button type="primary" size="large" onClick={e => {this.prepareAcceptOrRejectForwardDeal(this.props.PendingDealOffer, true)}}>Accept Deal</Button>,
-                                    <Button type="danger" size="large" onClick={e => {this.prepareAcceptOrRejectForwardDeal(this.props.PendingDealOffer,  false)}}>Reject Deal</Button>         
-                                ]
-                            }
-                        >
-                            <p>{(this.props.PendingDealOffer.TradeOption as ITradeOption).Message}</p>                        
-                        </Modal> :
+                        
                         <Modal
                             title={
                                 this.props.PendingDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug 
@@ -298,33 +313,80 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                                 ]
                             }
                         >
-                            <p>{(this.props.PendingDealOffer.TradeOption as ITradeOption).Message}</p>                        
+                            <p>{this.parseMessage(this.props.PendingDealOffer.Message)}</p>                        
                         </Modal> : null
                             
                             
                     }
+
+                    {this.props.RejectedDealOffer ? 
+                        
+                        <Modal
+                            title={
+                                this.props.RejectedDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug 
+                                    ? <p>Your trade deal with {this.props.RejectedDealOffer.ToNationName} was rejected.</p> 
+                                    : <p>Your trade deal with {this.props.RejectedDealOffer.FromNationName} was rejected.</p>
+                            }
+                            visible={true}
+                            width="80%"
+                            footer={<Button type="primary" size="large" onClick={e => this.props.acknowledgeDealRejection()}>OK</Button>}
+                        >
+                            <p>{this.parseMessage(this.props.RejectedDealOffer.Message)}</p>                        
+                        </Modal> : null                            
+                            
+                    }
+
+                    {this.props.AcceptedDealOffer ? 
+                        
+                        <Modal
+                            title={
+                                this.props.AcceptedDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug 
+                                    ? <p>Your trade deal with {this.props.AcceptedDealOffer.ToNationName} was accepted.</p> 
+                                    : <p>Your trade deal with {this.props.AcceptedDealOffer.FromNationName} was accepted.</p>
+                            }
+                            visible={true}
+                            width="80%"
+                            footer={<Button type="primary" size="large" onClick={e => this.props.acknowledgeDealRejection()}>OK</Button>}
+                        >
+                            <p>{this.parseMessage(this.props.AcceptedDealOffer.Message)}</p>                        
+                        </Modal> : null                            
+                            
+                    }
+
                     <Row className="form-wrapper">
                         <p>{new Date().toLocaleDateString()}. A reprive.</p>
                         <p>You know the stakes. Work with other nations to build a liveable, sutainable world, as you build a better future for your own nation.</p>                        
                     </Row>
-    
-                    
-                    <pre>{JSON.stringify(this.props.CurrentPlayer, null, 2)}</pre>
+
+
                     <Row className="form-wrapper">
+                        {(this.props.CurrentPlayer.Nation as INation).Content[0][7].split('\n').map((c:string) => {
+                            return c == c.toUpperCase() ? <h4>{c}</h4> : <p>{c}</p>
+                        })}
+                    </Row>
+    
+
+                    <Row className="form-wrapper">
+                        {(this.state.TradeOptions ? this.state.TradeOptions : this.getTradeOptionContent()).map((o:string) => <p>{this.parseMessage(o)}</p>)}                        
+                    </Row>
+
+                    {!this.props.CurrentPlayer.DealsProposedBy.length&& <Row className="form-wrapper">
+                        <label>Propose a Trade</label>
                         <Select
                             style={{width:'100%'}}
                             placeholder="--Select Nation--"
                             onChange={e => this.setState(Object.assign({}, this.state, {ChosenCountry: e}))}
                         >
-                            {this.getOptionsByTeam().map((o, i) => <Select.Option key={i} value={o}>{o}</Select.Option>)}
+                            {this.getOptionsByTeam().map((o, i) => <Select.Option key={i} value={o.value}>{o.text}</Select.Option>)}
                         </Select>                    
-                    </Row>
+                    </Row>}
                    
-                    <Row className="form-wrapper">
+                    {!this.props.CurrentPlayer.DealsProposedBy.length && <Row className="form-wrapper">
                         <div className="form-wrapper" style={{backgroundColor: 'transparent'}}>
                             {this.state && <Button className="game-button block" onClick={e => this.prepDeal()} disabled={!this.state.ChosenCountry}>Propose Deal </Button>}
                         </div>                  
-                    </Row>
+                    </Row>}
+
                     
                   
                     <Row>      
@@ -334,21 +396,9 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                                     
                                     return <li>
                                             <h5>You Accepted {d.TransferFromNationName || d.FromNationName}'s' Trade Deal</h5>
-                                                {(d.TradeOption  as ITradeOption).Message}
-                                                <Button type="danger" onClick={e => this.respondToDeal(d, false)}>Cancel Deal</Button>
-                                                Offer deal to
-                                                {this.props.CurrentPlayer.Nation && (this.props.CurrentPlayer.Nation as INation).TradeOptions ?   
-                                                    <Row>
-                                                        {((this.props.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[])
-                                                            .filter(o => {
-                                                                return o.ToNationId != d.ToNationName
-                                                            })
-                                                            .map(o => <Button onClick={e => this.prepareToForwardDeal(d, o.ToNationId)}>{o.ToNationId}</Button>)
-                                                        }
-                                                    </Row>
-                                                    : <h1>hey</h1>
-                                                }
-                                        </li>
+                                                
+                                                {this.parseMessage(d.Message)}
+                                            </li>
                                 })}
                             </ul> 
                             : null
@@ -362,8 +412,7 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                                     return  <li>
                                                 <h5>{d.TransferToNationName || d.ToNationName} Accepted Your Trade Deal</h5>
                                                 <p>
-                                                    {(d.TradeOption  as ITradeOption).Message}
-                                                    <Button type="danger" onClick={e => this.respondToDeal(d, false)}>Cancel Deal</Button>
+                                                    {this.parseMessage(d.Message)}
                                                 </p>
                                             </li>
                                 })}

@@ -17,6 +17,8 @@ export default interface ApplicationStore{
         ReceivedProposedDeals: IDeal[];
         SentProposedDeals: IDeal[];
         PendingDealOffer: IDeal;
+        RejectedDealOffer: IDeal;
+        AcceptedDealOffer: IDeal;
 
 
         //temp testing value

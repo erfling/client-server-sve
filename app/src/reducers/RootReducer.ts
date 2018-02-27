@@ -22,6 +22,8 @@ const initialState: ApplicationStore = {
         ReceivedProposedDeals: [],
         SentProposedDeals: [],
         PendingDealOffer: null,
+        RejectedDealOffer: null,
+        AcceptedDealOffer: null
     },
     Application: {
         Loading: false,
@@ -58,7 +60,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
                     }
                 })
                 if(!found)deals.push(action.payload);
-                return Object.assign({}, state, {ReceivedProposedDeals: deals, PendingDealOffer: action.payload},)
+                return Object.assign({}, state, {ReceivedProposedDeals: deals, PendingDealOffer: action.payload})
             }
         case (ACTION_TYPES.DEAL_RESPONSE):        
             console.log("Deal response in reducer", action.payload)
@@ -68,7 +70,12 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
                     DealsProposedBy: action.payload.DealsProposedBy,
                 }
             ), PendingDealOffer: null})
-           
+
+        case (ACTION_TYPES.DEAL_REJECTED):
+            return Object.assign({}, state, {RejectedDealOffer: state.PendingDealOffer, AcceptedDealOffer: null, PendingDealOffer: null})
+
+        case (ACTION_TYPES.DEAL_ACCEPTED):
+            return Object.assign({}, state, {RejectedDealOffer: null, AcceptedDealOffer: state.PendingDealOffer, PendingDealOffer: null})
 
         case(ACTION_TYPES.GAME_SAVED):
             var game = action.payload as IGame;           
@@ -82,6 +89,8 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
                 return g._id == game._id ? Object.assign(g, game) : state;
             }) : state.Game.concat( [Object.assign( game, { _id: (state.Game.length+1).toString() } ) ] )
         
+        case(ACTION_TYPES.ACKNOWLEDGE_DEAL_REJECTION):
+            return Object.assign({}, state, {RejectedDealOffer: null, AcceptedDealOffer: null})
         
         case(ACTION_TYPES.GAMES_LOADED):
             var games = action.payload as IGame[];

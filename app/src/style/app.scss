@@ -210,12 +210,24 @@ h4{font-size: 160%}
     top: 0;
     height:50px;
     overflow: hidden;
+    z-index: 9999;
+    box-shadow: 0 0 10px 0 rgba(0,0,0,.2);
+    text-align: center;
+    >span{
+        margin-left:3px;
+        margin-right:15px;
+    }
+    .ant-button{
+        position: absolute !important;
+        top: 10px !important;
+        right: 3px !important;
+    }
+
     .chart{
         display: none;
     }
 
     &.show{
-        height: 100vh;
         .chart{
             display: "block";
         }

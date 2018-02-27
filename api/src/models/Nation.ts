@@ -32,6 +32,9 @@ export class Nation extends BaseClass //implements INation
     Tech: string;
 
     @prop()
+    Content: string | string[]
+
+    @prop()
     TradeOptions: Ref<TradeOption>[];
   }
 

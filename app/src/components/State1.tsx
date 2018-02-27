@@ -123,7 +123,7 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
                         </div>            
                     </Row> : null}
                     {this.props.CurrentPlayer.GameState == "1B" || this.props.CurrentPlayer.GameState == "1C" ? 
-                    <Row>
+                    <Row style={{minHeight: '25vh', paddingTop:'20px'}}>
                         {!this.state.Decided && 
 
                             <Row className="formWrapper">
