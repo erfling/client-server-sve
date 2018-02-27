@@ -78,6 +78,7 @@ export default class AppServer
     constructor() {
         this.app = express();
         this.port = process.env.PORT || AppServer.PORT;
+        this.config();
 
         //TODO: have this depend on server environment var injected from start scripts
         if (fs.existsSync('/sapien/certificates/planetsapien.com/fullchain.pem')) {
@@ -90,7 +91,6 @@ export default class AppServer
                 .on('listening', this.onSocketServerListening.bind(this, this.socketServer));
         }
         
-        this.config();
         this.routes();
         if (!this.socketServer) {
             // Set up non-secure socket server
