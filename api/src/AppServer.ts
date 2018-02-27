@@ -93,6 +93,7 @@ export default class AppServer
         
         this.routes();
         if (!this.socketServer) {
+            console.log("SOCKET SERVER IS INSECURE")
             // Set up non-secure socket server
             this.socketServer = http.createServer(this.app);
             this.socketServer.on('error', this.onSocketServerError.bind(this, this.socketServer))
