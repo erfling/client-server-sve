@@ -83,7 +83,7 @@ export default class AppServer
         //TODO: have this depend on server environment var injected from start scripts
         if (fs.existsSync('/sapien/certificates/planetsapien.com/fullchain.pem')) {
             // Set up secure socket server
-            console.log("found SSL key");
+            console.log("found SSL key FOR SOCKET SERVER");
             var privateKey  = fs.readFileSync('/sapien/certificates/planetsapien.com/privkey.pem', 'utf8').toString();
             var certificate = fs.readFileSync('/sapien/certificates/planetsapien.com/fullchain.pem', 'utf8').toString();
             this.socketServer = https.createServer({key: privateKey, cert: certificate}, this.app);
