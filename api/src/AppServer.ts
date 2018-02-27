@@ -695,7 +695,8 @@ export default class AppServer
                     game = await GameModel.findById(team.GameId);
                     if (game) {
                         let gameSocketNameSpace = this.io.of(game._id);
-                        gameSocketNameSpace.removeAllListeners().on(SocketEvents.CONNECT, this.onGameSocketConnect.bind(this, gameSocketNameSpace, game));
+                        gameSocketNameSpace.removeAllListeners()
+                            .on(SocketEvents.CONNECT, this.onGameSocketConnect.bind(this, gameSocketNameSpace, game));
                         
                         let t:Team = team.toObject() as Team;
                         t.GameState = game.State;
@@ -729,7 +730,7 @@ export default class AppServer
         var port = AppServer.SOCKET_PORT;
         if (this.socketServer instanceof https.Server) {
             port = AppServer.SECURE_SOCKET_PORT;
-            this.io.origins('https://planetsapien.com:443');
+            this.io.origins('https://planetsapien.com');
         }
         this.socketServer.listen(port);
         
