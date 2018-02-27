@@ -732,11 +732,11 @@ export default class AppServer
         var port = AppServer.SOCKET_PORT;
         if (this.socketServer instanceof https.Server) {
             port = AppServer.SECURE_SOCKET_PORT;
-            this.io.origins('https://planetsapien.com');
+            this.io.origins('*');
             
             console.log("ORIGINS HAVE BEEN SET");
         }
-        //this.socketServer.listen(port);
+        this.socketServer.listen(port);
         console.log("THE SOCKET SERVER HAS BEEN SET UP IN THE listenForSocket METHOD ON PORT " + port);
         if (this.socketServer instanceof https.Server) {
             this.sheetsRouter.post('/:id', (req, resp) => {
