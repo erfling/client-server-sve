@@ -227,7 +227,7 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                         this.props.Dashboard.length > 100 ? 
                         <Row ref="tempTracker" className="tempTracker">
                             Temp  in 2100: <span style={{color: this.getColor()}}>{this.props.Dashboard[100]}</span>
-                            {this.props.CurrentPlayer.DealsProposedTo.length && <span>Your Trade Bank: ${((this.props.CurrentPlayer.DealsProposedTo[0] as IDeal).Value + 1 )* 10} Billion</span>}
+                            <span>Your Trade Bank: ${this.props.CurrentPlayer.DealsProposedTo.length ? ((this.props.CurrentPlayer.DealsProposedTo[0] as IDeal).Value + 1 )* 10 : "10"} Billion</span>
                             <Button onClick={e => this.showOrHideChart()} type="primary">
                                 Chart {this.state.ShowChart ? <Icon type="close" /> : <Icon type="line-chart" />}
                             </Button>
