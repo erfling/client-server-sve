@@ -182,7 +182,6 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
                         value:s
                     }
         })
-        this.setState(Object.assign({}, this.state, {SelectionOptions: options}))
          return options;
     }
     
