@@ -726,6 +726,7 @@ export default class AppServer
      * Listen for socket communication
      */
     private listenForSocket(): void {
+        
         //commence to listening
         var port = AppServer.SOCKET_PORT;
         if (this.socketServer instanceof https.Server) {
@@ -733,7 +734,7 @@ export default class AppServer
             this.io.origins('https://planetsapien.com');
         }
         this.socketServer.listen(port);
-        
+        console.log("THE SOCKET SERVER HAS BEEN SET UP IN THE listenForSocket METHOD")
         //if (this.socketServer instanceof https.Server) {
             this.sheetsRouter.post('/:id', (req, resp) => {
                 console.log("Post Request >", req.params, req.headers);
