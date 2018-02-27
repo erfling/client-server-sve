@@ -490,6 +490,7 @@ export default class AppServer
      * Application config
      */
     public config(): void {
+        console.log("CONFIG CALLED")
         const MONGO_URI: string = 'mongodb://localhost/express-boilerplate';
         mongoose.connect(MONGO_URI || process.env.MONGODB_URI);
 
