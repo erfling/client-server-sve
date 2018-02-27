@@ -36,32 +36,9 @@ const initialState: ApplicationStore = {
 
 export const GameData = (state = initialState.GameData, action: Action<any>) => {
     switch(action.type) {
-        case (ACTION_TYPES.DEAL_PROPOSED):
-            if(action.payload.from == state.CurrentPlayer.Slug){
-                var found = false;
-                var deals = state.SentProposedDeals.map(deal => {
-                    if((deal.TradeOption as ITradeOption).message == action.payload.TradeOption.messaged){
-                        found = true;
-                        return action.payload
-                    } else{
-                        return deal;
-                    }
-                })
-                if(!found)deals.push(action.payload);
-                return Object.assign({}, state, {ProposedDeals: deals, PendingDealOffer: action.payload})
-            } else {
-                var found = false;
-                var deals = state.ReceivedProposedDeals.map(deal => {
-                    if((deal.TradeOption as ITradeOption).message == action.payload.TradeOption.messaged){
-                        found = true;
-                        return action.payload
-                    } else{
-                        return deal;
-                    }
-                })
-                if(!found)deals.push(action.payload);
-                return Object.assign({}, state, {ReceivedProposedDeals: deals, PendingDealOffer: action.payload})
-            }
+        case (ACTION_TYPES.DEAL_PROPOSED):            
+            return Object.assign({}, state, {PendingDealOffer: action.payload})
+           
         case (ACTION_TYPES.DEAL_RESPONSE):        
             console.log("Deal response in reducer", action.payload)
             return Object.assign({}, state, {CurrentPlayer: Object.assign(
