@@ -733,11 +733,12 @@ export default class AppServer
         if (this.socketServer instanceof https.Server) {
             port = AppServer.SECURE_SOCKET_PORT;
             this.io.origins('https://planetsapien.com');
+            
             console.log("ORIGINS HAVE BEEN SET");
         }
-        this.socketServer.listen(port);
+        //this.socketServer.listen(port);
         console.log("THE SOCKET SERVER HAS BEEN SET UP IN THE listenForSocket METHOD ON PORT " + port);
-        //if (this.socketServer instanceof https.Server) {
+        if (this.socketServer instanceof https.Server) {
             this.sheetsRouter.post('/:id', (req, resp) => {
                 console.log("Post Request >", req.params, req.headers);
                 var sheets = new GoogleSheets();
@@ -747,7 +748,7 @@ export default class AppServer
                     resp.json({test: "hello folks"});
                 })
             })
-        //}
+        }
     }
 
     /**
