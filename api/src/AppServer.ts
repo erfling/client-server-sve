@@ -657,7 +657,10 @@ export default class AppServer
                                     }
                                 }
                             ).then((t) => {
-                                this.io.of(t.GameId).to(t.Slug).emit(SocketEvents.TEAM_UPDATED, t);
+                                this.sheets.GetNationContent((t.Nation as INation).Name).then(c => {
+                                    (t.Nation as INation).Content = c;
+                                    this.io.of(t.GameId).to(t.Slug).emit(SocketEvents.TEAM_UPDATED, t);
+                                })
                             });        
                             promises.push(promise);
                         }
