@@ -99,6 +99,9 @@ export default class AppServer
             this.socketServer.on('error', this.onSocketServerError.bind(this, this.socketServer))
                 .on('listening', this.onSocketServerListening.bind(this, this.socketServer));
         }
+
+        
+
         this.io = socketIo(this.socketServer);
         this.listenForSocket();
     }
@@ -509,9 +512,9 @@ export default class AppServer
         this.app.use((req, res, next) => {
             var allowedOrigins = ['http://localhost:443', 'https://planetsapientestsite.com', 'https://planetsapientestsite.com:443', 'https://planetsapien.com', 'https://planetsapien.com:443'];
             var origin = req.headers.origin;
-
+            console.log("ORIGIN OF REQUEST IS:", req.headers.origin);
             if (allowedOrigins.indexOf(origin as string) > -1) {
-                console.log("header approved");
+                console.log("header " + origin + " approved");
                 res.setHeader('Access-Control-Allow-Origin', origin);
             } else {
                 console.log("rejecting header");
