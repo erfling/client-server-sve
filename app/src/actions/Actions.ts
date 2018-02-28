@@ -52,7 +52,9 @@ export enum ACTION_TYPES {
     DASHBOARD_UPDATED = "DASHBOARD_UPDATED",
     EDIT_GAME = "EDIT_GAME",
     CANCEL_EDIT_GAME = "CANCEL_EDIT_GAME",
-
+    SET_CURRENT_GAME = "SET_CURRENT_GAME",
+    CURRENT_GAME_SAVED = "CURRENT_GAME_SAVED",
+    GOT_CURRENT_GAME = "GOT_CURRENT_GAME",
 
     UPDATE_ENVIRONMENTAL_HEALTH = "UPDATE_ENVIRONMENTAL_HEALTH",
     ADD_CLIENT_OBJECT = "ADD_CLIENT_OBJECT",
@@ -191,16 +193,6 @@ const isLoading: ActionCreator<Action<boolean>> = (type = ACTION_TYPES.IS_LOADIN
     }
 }
 
-/*
-export const loadInitialDataSocket = (socket: SocketIOClient.Socket) => {
-    return (dispatch: Dispatch<any>) => {
-        socket.on('initialList', (data: any) => {
-            console.dir(data)
-            dispatch(reduxAction(data))
-        })
-    }
-}
-*/
 
 export const fetchGames = () => {
     return (dispatch: Dispatch<GameAction<IGame> | Action<any>>) => {
@@ -338,6 +330,34 @@ const gameSaved: ActionCreator<GameAction<IGame>> = (game: IGame):GameAction<IGa
         payload: game
     }
 }
+
+export const setGameCurrent = (game: IGame) => {
+    return (dispatch:Dispatch<Action<IGame[]>>) => {
+        dispatch({type:ACTION_TYPES.SUBMITTING, payload: true});
+        const url = baseRestURL + "games/setcurrent"
+        fetch(
+            url, 
+            {
+                method: "POST",
+                body: JSON.stringify(game), 
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            }
+        )
+        .then( (res:Response) => {
+            return res.json()//.then(r => r);
+        })
+        .then( (savedGames: IGame[]) => {
+            setTimeout(() => {
+                dispatch({type:ACTION_TYPES.SUBMITTING, payload: false})
+                dispatch({type:ACTION_TYPES.CURRENT_GAME_SAVED, payload: savedGames})
+            }, 200);          
+        })
+        .catch(reason => {console.log(reason), alert("SAVE FAILED")})
+    }
+}
+
 
 export const restSave = (payload: IGame | ITeam | IPlayer) => {
     let method = payload._id ? "PUT" : "POST";
@@ -615,5 +635,31 @@ export const submitRatings = (teamWithRatings: ITeam) => {
 export const acknowledgeDealRejection = () => {
     return (dispatch: Dispatch<Action<null>>) => {
         dispatch({type: ACTION_TYPES.ACKNOWLEDGE_DEAL_REJECTION})
+    }
+}
+
+export const getCurrentGame = () => {
+    return (dispatch:Dispatch<Action<IGame[]>>) => {
+        dispatch({type:ACTION_TYPES.SUBMITTING, payload: true});
+        const url = baseRestURL + "games/req/getcurrentgame"
+        fetch(
+            url, 
+            {
+                method: "GET",
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            }
+        )
+        .then( (res:Response) => {
+            return res.json()//.then(r => r);
+        })
+        .then( (game: IGame) => {
+            setTimeout(() => {
+                dispatch({type:ACTION_TYPES.SUBMITTING, payload: false})
+                dispatch({type:ACTION_TYPES.GOT_CURRENT_GAME, payload: game})
+            }, 200);          
+        })
+        .catch(reason => {console.log(reason), alert("SAVE FAILED")})
     }
 }

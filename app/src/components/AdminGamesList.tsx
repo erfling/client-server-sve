@@ -9,7 +9,7 @@ const { Header, Footer, Sider, Content } = Layout;
 
 import Collapse  from "antd/lib/collapse"
 import Menu from "antd/lib/menu"
-import { Button } from "antd/";
+import { Button, Tooltip } from "antd/";
 import { Link } from "react-router-dom";
 
 const Panel = Collapse.Panel;
@@ -24,6 +24,7 @@ export interface GameListProps {
     cancelEditGame: (game:IGame) => {}
     saveGame: () => {}
     addGame: () => {}
+    setGameCurrent : (game:IGame) => {}
 }
 
 // 'HelloProps' describes the shape of props.
@@ -49,6 +50,21 @@ export default class AdminGamesList extends React.Component<GameListProps, {addi
                             if(!g.IsSelected){
                                 return <Card key={i} title={g.Name} className="has-button"
                                         extra={ <div>
+                                                    {g.IsCurrentGame ? 
+                                                        <Tooltip placement="topLeft" title="This is the current game" arrowPointAtCenter>
+                                                            <Button type={"primary"} shape="circle">
+                                                                <Icon type="star" />                                                       
+                                                            </Button>                                                  
+                                                        </Tooltip>
+                                                        
+                                                    : 
+                                                        <Tooltip placement="topLeft" title="Make this the current game" arrowPointAtCenter>
+                                                            <Button type={"dashed"} shape="circle" onClick={e => this.props.setGameCurrent(g)}>
+                                                                <Icon type="star-o" />                                                       
+                                                            </Button>                                                  
+                                                        </Tooltip>
+                                                    }
+                                                    
                                                     <Button type="dashed" shape="circle" onClick={e => this.props.editGame(g)}><Icon type="edit" /></Button>
                                                     <Button type="dashed" shape="circle">
                                                         <Link to={'/admin/games/'+g.Slug}><Icon type="info" /></Link>

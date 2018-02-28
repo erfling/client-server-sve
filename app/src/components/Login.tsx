@@ -31,7 +31,7 @@ interface FormProps{
     getTeams: () => {}
     getGames: () => {}
     Teams: ITeam[];
-    Games: IGame[];
+    CurrentGame: IGame;
     LoggingIn: boolean;
     Loading: boolean;
     selectTeam: (team: any) => {}
@@ -74,14 +74,6 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
         */        
     }
 
-    onChangeSelectGame(value: any){
-        let SelectedGame = this.props.Games.filter(g => g.Slug == value)[0] || null;
-        if(SelectedGame){
-            console.log("SELECTING TEAM", value)
-            this.setState(Object.assign(this.state, { SelectedGame }))
-        }
-    }
-
     handleCancel(){
        console.log(this);
        this.props.selectRole(null)
@@ -122,42 +114,50 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
 
     render(){
 
-        return <div>
-                        
-                        {this.props.SelectedRole && <Modal
-                            title={"The Case for " + this.getTitle(this.props.SelectedRole)}
-                            visible={"undefined" != typeof this.props.SelectedRole && this.props.SelectedRole.length > 0}
-                            footer={[
-                                <Button key="back" className="game-button" onClick={e => this.props.selectRole(undefined)}>Close</Button>,
-                                <Button key="go" className="game-button go" onClick={e => this.prepareJoinGame()}>Play as {this.props.SelectedRole}</Button>,
-                              ]}
-                        >
-                            <Route component={RoleDetail}/>
-                        </Modal>    }
-                        {this.props.CurrentTeam && <Redirect to="/who-gets-the-water"/>}
-                        {this.props.Games.length ? <Row type="flex" justify="center" style={{minHeight:'100vh'}}>
-                                                <Col xs={24} style={{height:0}}>  
-                                                    <div className="form-wrapper">                                                  
-                                                        <label>Join a Game</label>
-                                                        <Select style={{width:'100%'}} onChange={val => this.onChangeSelectGame(val)} placeholder="--Select Game--">
-                                                            {this.props.Games.map(( g, i) => {
-                                                                return <Select.Option key={i+1} value={g.Slug}>{g.Location + " " + new Date(g.DatePlayed).toLocaleDateString()}</Select.Option>
-                                                            })}                                                  
-                                                        </Select>
-                                                    </div>
-                                                </Col>
-                                                
-                                                {this.state.SelectedGame && this.props.Teams ? <Col xs={24}>  
-                                                    <div className="form-wrapper" style={{marginTop:'-30px'}}>
-                                                        <label>Select Your Team</label>
-                                                        <Select style={{width:'100%'}} onChange={val => this.onChangeSelectTeam(val)} placeholder="--Select Team--">
-                                                            {this.props.Teams.filter(t => t.GameId == this.state.SelectedGame._id).map(( t, i) => {
-                                                                return <Select.Option key={i+1} value={t.Slug}>Team {i + 1}</Select.Option>
-                                                            })}                                                   
-                                                        </Select>
-                                                    </div>
-                                                </Col> : null}
-                                                {this.props.SelectedTeam &&
+        return <div>                        
+                    {this.props.SelectedRole && <Modal
+                        title={"The Case for " + this.getTitle(this.props.SelectedRole)}
+                        visible={"undefined" != typeof this.props.SelectedRole && this.props.SelectedRole.length > 0}
+                        footer={[
+                            <Button key="back" className="game-button" onClick={e => this.props.selectRole(undefined)}>Close</Button>,
+                            <Button key="go" className="game-button go" onClick={e => this.prepareJoinGame()}>Play as {this.props.SelectedRole}</Button>,
+                            ]}
+                    >
+                        <Route component={RoleDetail}/>
+                    </Modal>    }  
+
+                    {this.props.CurrentTeam && <Redirect to="/who-gets-the-water"/>}
+
+                    {this.props.CurrentGame && 
+                        <Row type="flex" justify="center" style={{height:'100vh', justifyContent: 'center'}}>                                            
+                            <Col xs={24} sm={16} lg={12} xl={12}>
+                                <div className="form-wrapper">
+                                    <label>Select Your Team</label>
+                                    <Select style={{width:'100%'}} onChange={val => this.onChangeSelectTeam(val)} placeholder="--Select Team--">
+                                        {(this.props.CurrentGame.Teams as ITeam[]).map(( t, i) => {
+                                            return <Select.Option key={i+1} value={t.Slug}>Team {i + 1}</Select.Option>
+                                        })}                                                   
+                                    </Select>
+                                </div>
+                            </Col>                                                   
+                        </Row>
+
+                    }  
+                </div>
+    }
+}
+//<Button>Join</Button>
+/*
+<select ref="selectedRole" className="selectedRole" onChange={e => this.onChangeSelectRole()}>
+                                                                <option> -- Select Your Role -- </option>
+                                                                <option value="Cape Banking">Cape Banking</option>
+                                                                <option value="Warburton">Warburton</option>
+                                                                <option value="Vanguard">Vanguard</option>
+                                                                <option value="Demeter">Demeter</option>
+                                                            </select>
+                                                            
+                                                            
+                                                            {this.props.SelectedTeam &&
                                                 <Row className="role-selection">
                                                     <Col xs={24}>
                                                         
@@ -207,21 +207,4 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                                                         }
                                                     </Col>                                       
                                                 </Row>
-                                                }
-                                            </Row>
-                                            :
-                                            <h1>Getting Teams</h1>                                            
-
-                            }  
-                    </div>
-    }
-}
-//<Button>Join</Button>
-/*
-<select ref="selectedRole" className="selectedRole" onChange={e => this.onChangeSelectRole()}>
-                                                                <option> -- Select Your Role -- </option>
-                                                                <option value="Cape Banking">Cape Banking</option>
-                                                                <option value="Warburton">Warburton</option>
-                                                                <option value="Vanguard">Vanguard</option>
-                                                                <option value="Demeter">Demeter</option>
-                                                            </select>*/
+                                                }*/

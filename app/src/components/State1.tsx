@@ -6,6 +6,7 @@ import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom'; 
 import {Row, Col, Select, Button} from 'antd';
 import Horse from '-!svg-react-loader?name=Icon!../img/horse.svg';
+require('smoothscroll-polyfill').polyfill();
 
 const City = require("../img/Drought_water_city.jpg");
 
@@ -37,6 +38,12 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
         this.getResults();
     }
     
+    setDecisionState(e: string){
+        this.setState( Object.assign({}, this.state, {Decided: true}));
+        console.log(document.querySelector(".decided-messaged"));
+        setTimeout(() => document.querySelector(".decided-messaged").scrollIntoView({behavior:"smooth"}), 500);
+    }
+
     componentDidUpdate(){
         console.log("UPDATED")
     }
@@ -120,45 +127,63 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
                             <p>Mass migration begins as millions head for cities which have more reliable source water</p>
                             <p>Refugee crisis and civil unrest lead to mass anti-government demonstrations</p>
                             <p>Military occupies streets</p><p>Governments are toppled after a state of emergency is introduced</p>
-                        </div>            
+                        </div>  
+                       
+ 
+                        <Row className="formWrapper">
+                            <Select
+                                style={{width: '100%'}}
+                                onChange={e => this.setState(Object.assign({}, this.state, {ChosenHorse:e}))}
+                                placeholder="Who gets the water?"
+                            >
+                                <Select.Option value="Agriculture">Agriculture</Select.Option>
+                                <Select.Option value="Government">Government</Select.Option>
+                                <Select.Option value="Healthcare">Healthcare</Select.Option>
+                                <Select.Option value="Industry">Industry</Select.Option>
+                            </Select>
+                            <Button style={{margin: "10px 0 50px"}} className="game-button block" onClick={e =>  this.setDecisionState(this.state.ChosenHorse)}>Commit Decision</Button>
+                            <h5 className="decided-messaged" style={{margin: "10px 0 20px"}}>{this.state.Decided && <span>You selected {this.state.ChosenHorse}. Change your mind? If so, simply choose again</span>}</h5>
+                        </Row>
+                                 
                     </Row> : null}
-                    {this.props.CurrentPlayer.GameState == "1B" || this.props.CurrentPlayer.GameState == "1C" ? 
-                    <Row style={{minHeight: '25vh', paddingTop:'20px'}}>
-                        {!this.state.Decided && 
 
-                            <Row className="formWrapper">
-                                <Select
-                                    style={{width: '100%'}}
-                                    onChange={e => this.setState(Object.assign({}, this.state, {ChosenHorse:e}))}
-                                    placeholder="Who gets the water?"
-                                >
-                                    <Select.Option value="Agriculture">Agriculture</Select.Option>
-                                    <Select.Option value="Government">Government</Select.Option>
-                                    <Select.Option value="Healthcare">Healthcare</Select.Option>
-                                    <Select.Option value="Industry">Industry</Select.Option>
-                                </Select>
-                                <Button className="game-button block" onClick={e =>  this.setState(Object.assign({}, this.state, {Decided: true}))}>Commit Decision</Button>
-                            </Row>
+                    {this.props.CurrentPlayer.GameState == "1B" &&
+                        <Row style={{minHeight: '25vh', paddingTop:'20px'}}>                        
+                            {this.state.Decided &&
+                                this.state.FeedBack ?
+                                    <Row className="state1results">
+                                            {this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.state.ChosenHorse.toUpperCase())
+                                                .map(f => {
+                                                    return f.filter((c, i) => i != 0).map((c) => {
+                                                        return <Row className={c.charAt(0) == "^" && this.props.CurrentPlayer.GameState != "1C" ? "winner" : null}>
+                                                                    <Horse  /><p>{c.substring(1, c.length)}</p>
+                                                                </Row>
+                                                    })
+                                                }) }
+                                    </Row> : null}
+                        </Row>
+                    }    
+      
+                    {this.props.CurrentPlayer.GameState == "1C" &&
+                        <Row style={{minHeight: '25vh', paddingTop:'20px'}}>                        
+                            {this.state.Decided &&
+                                this.state.FeedBack ?
+                                    <Row>
+                                        <h5 style={{display: 'block'}}>You Chose {this.state.ChosenHorse}</h5>
 
-                        }
-                        
-
-                        {this.state.Decided &&
-                            this.state.FeedBack ?
-                            <Row className="state1results">
-                                <h5 style={{display: 'block'}}>You Chose {this.state.ChosenHorse}</h5>
-                                    {this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.state.ChosenHorse.toUpperCase())
-                                        .map(f => {
-                                            return f.filter((c, i) => i != 0).map((c) => {
-                                                return <Row className={c.charAt(0) == "^" && this.props.CurrentPlayer.GameState != "1C" ? "winner" : null}>
-                                                            <Horse  /><p>{c.substring(1, c.length)}</p>
-                                                        </Row>
-                                            })
-                                        }) }
-                            </Row> : null}
-
-                    </Row>
-                    : null}
+                                        <Row className="state1results">
+                                                {this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.state.ChosenHorse.toUpperCase())
+                                                    .map(f => {
+                                                        return f.filter((c, i) => i != 0).map((c) => {
+                                                            return <Row className={c.charAt(0) == "^" && this.props.CurrentPlayer.GameState != "1C" ? "winner" : null}>
+                                                                        <Horse  /><p>{c.substring(1, c.length)}</p>
+                                                                    </Row>
+                                                        })
+                                                    }) }
+                                        </Row>
+                                    </Row> : null}
+                        </Row>
+                    }    
                     
                </GameWrapper>
             )

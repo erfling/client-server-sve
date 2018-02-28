@@ -36,6 +36,9 @@ export class Game extends BaseClass implements IGame
     @prop()
     DatePlayed: Date;
 
+    @prop({default: false})
+    IsCurrentGame: boolean;
+
   }
 
   export const GameModel = new Game().getModelForClass( Game, { existingMongoose: mongoose } )

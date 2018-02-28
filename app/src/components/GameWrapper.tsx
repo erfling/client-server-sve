@@ -71,7 +71,7 @@ export default class GameWrapper extends React.Component<GamesList, any> {
                         </Menu.Item>
                     </Menu>
                     <Content className="game-wrapper">
-                        
+                        {this.props.ParallaxImg && 
                         <Parallax  
                             className="banner-bg"                              
                             bgImage={this.props.ParallaxImg}
@@ -100,7 +100,7 @@ export default class GameWrapper extends React.Component<GamesList, any> {
                                     <Route component={this.props.FormComponent}/>
                                 </Col>  
                             </Row> }                    
-                        </Parallax>
+                        </Parallax>}
                     </Content>
                 </Layout>
     }

@@ -3,6 +3,7 @@ import * as cors from 'cors';
 import { Game, GameModel } from '../models/Game'; 
 import IGame from '../../../shared/models/IGame'; 
 import { Error } from 'mongoose';
+import * as mongoose from 'mongoose';
 import TeamRouter  from './TeamRouter';
 import { Team,TeamModel } from './../models/Team';
 import ITeam from '../../../shared/models/ITeam';
@@ -207,12 +208,56 @@ class GameRouter
         */
     } 
 
+    private async setCurrentGame(req: Request, res: Response):Promise<any> {
+        const game = new Game(req.body);         
+        const g = new GameModel(game);
+        try{
+            const allGames = await GameModel.find()
+            //build update all query ids
+            const ids = allGames.map(g => g.toObject()._id);
+            console.log(ids)
+            const updatedGames = await GameModel.updateMany({_id: {$in: ids}}, {IsCurrentGame: false}, {new: true})
+            console.log(updatedGames);
+
+            const updatedGame  = await GameModel.findByIdAndUpdate(g._id, {IsCurrentGame: true})
+            const newAllGames = await GameModel.find()
+
+            if(newAllGames){
+                console.log(newAllGames)
+                res.json(newAllGames)
+            } else {
+                res.status(400);
+                res.json("couldn't save games")
+            }
+        } 
+        catch{
+            throw("UH OH")
+        }
+    }
+
+    private async getCurrentGame(req: Request, res: Response){
+        console.log("we calling this")
+        try{
+            const currentGame = await GameModel.findOne({IsCurrentGame: true}).populate("Teams")
+            if(currentGame){
+                res.json(currentGame)
+            }else{
+                res.status(400);
+                res.json("Couldn't find the current game")
+            }
+        }catch{
+            throw("OH NO")
+        }
+    }
+
     public routes(){
         //this.router.all("*", cors());
         this.getSheets();
         this.router.get("/", this.GetGames.bind(this));
         this.router.get("/:game", this.GetGame.bind(this));
+        this.router.get("/req/getcurrentgame", this.getCurrentGame.bind(this));
         this.router.post("/", this.CreateGame.bind(this));
+        this.router.post("/setcurrent", this.setCurrentGame.bind(this));
         this.router.put("/:game", this.UpdateGame.bind(this));
         this.router.use("/:game/teams", this.GetTeams.bind(this));
     }

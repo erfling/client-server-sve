@@ -15,6 +15,7 @@ interface DispatchProps {
     cancelEditGame: (game: IGame) => {},
     saveGame: (game: any) => {},
     addGame: () => {}
+    setGameCurrent : (game:IGame) => {}
 }
 interface GameListProps{
     Games:IGame[];
@@ -33,7 +34,9 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
         editGame: (game: IGame) => dispatch( Actions.editGame(game) ),
         cancelEditGame: (game: IGame) => dispatch( Actions.cancelEditGame(game) ),
         saveGame: (game: IGame) => dispatch( Actions.restSave(game) ),
-        addGame: () => dispatch( Actions.addClientObject("Game") )
+        addGame: () => dispatch( Actions.addClientObject("Game") ),
+        setGameCurrent : (game:IGame) => dispatch( Actions.setGameCurrent(game) )
+
     }
 }
 

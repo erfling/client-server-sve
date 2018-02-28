@@ -214,6 +214,7 @@ export default class AppServer
                 if( isNaN(  dealAmount  ) || dealAmount != fromTeam.DealsProposedTo.length + 1){
                      console.log("DEAL WILL BE REJECTED BECAUSE AMOUNT IS", dealAmount, " AND IT SHOULD BE", fromTeam.DealsProposedTo.length + 1)
                      deal.Accept = false;
+                     deal.CanAccept = false;
                 }else{
                     deal.Value = dealAmount;
                 }

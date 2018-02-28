@@ -24,7 +24,7 @@ export class App extends React.Component<{}> {
         <Switch>
           <Route exact={false} path="/admin" component={AdminRoot}/>
           <Route exact={true} path="/login" component={LoginContainer}/>
-          <Route exact={true} path="/" component={State0Container} key={1}/>
+          <Route exact={true} path="/" component={LoginContainer} key={1}/>
           <Route exact={true} path="/who-gets-the-water" component={State1Container} key={1}/>
           <Route exact={true} path="/make-the-trade" component={State2Container} key={2}/>
           <Route exact={true} path="/war-of-the-worlds" component={State3Container} key={2}/>

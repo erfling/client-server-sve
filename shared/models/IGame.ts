@@ -13,4 +13,5 @@ export default interface IGame extends IBaseClass {
     SourceSheetId?: string
     DatePlayed: Date;
     State: string;
+    IsCurrentGame:boolean;
   }  
