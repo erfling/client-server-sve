@@ -1,7 +1,6 @@
 import { DealModel, Deal } from './models/Deal';
 import { TradeOption, TradeOptionModel } from './models/TradeOption';
 import { selectRole, proposeDeal } from './../../app/src/actions/Actions';
-import { Role } from './../../shared/models/IPlayer';
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
@@ -163,7 +162,7 @@ export default class AppServer
                 path:"DealsProposedTo",
                 populate: {
                     path:"TradeOption"
-                }                            
+                }
             },
             {
                 path:"DealsProposedBy",
