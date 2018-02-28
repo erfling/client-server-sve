@@ -142,7 +142,56 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                             </Col>                                                   
                         </Row>
 
-                    }  
+                    } 
+                    <Row className="role-selection">
+                        <Col xs={24}>
+                            
+                            <Row  type="flex" justify="center" style={{paddingTop:'20px'}}>
+                                <h1>Role Selection</h1>                                                            
+                            </Row>
+
+                            <Row type="flex" justify="center">
+                                <Col xs={24}>
+                                    <AgriIcon height={400}/>
+                                    <p>The CEO of Warburton, the region's largest agrichemical business faced with growing food production for an escalating population in a time of water scarcity and drought. </p>
+                                    <Button className="game-button block" onClick={e => this.props.selectRole("Warburton")}>Agriculture</Button>
+                                </Col>
+                            </Row>
+
+                            
+                            <Row type="flex" justify="center">
+                                <Col xs={24}>
+                                    <HealthIcon height={400}/>
+                                    <p>The CEO of Vanguard Life, the region's largest health care and insurance provider, who is anxious of increased exposure to climate-sensitive diseases and mental health impacts from severe weather-related events</p>
+                                    <Button className="game-button block" onClick={e => this.props.selectRole("Vanguard")}>Healthcare</Button>
+                                </Col>
+                            </Row>
+
+                            
+                            <Row type="flex" justify="center">
+                                <Col xs={24}>
+                                    <IndustryIcon height={400}/>
+                                    <p>The CEO of Bennuci, the region's largest food and drink company who believes consumer demand will determine their response to climate change mitigation.</p>
+                                    <Button className="game-button block" onClick={e => this.props.selectRole("Bennuci")}>Industry</Button>
+                                </Col>
+                            </Row>
+
+                            
+                            <Row type="flex" justify="center">
+                                <Col xs={24}>
+                                    <GonvernmentIcon height={400}/>
+                                    <p>The Minister for Environment, representing the region's union of country members who are already exposed to the impact of climate change on their communities.</p>
+                                    <Button className="game-button block" onClick={e => this.props.selectRole("Government")}>Government</Button>
+                                </Col>
+                            </Row>
+
+                            {this.props.SelectedRole && 
+                                <div>
+                                    <Button onClick={e => this.prepareJoinGame()}>Join {this.props.LoggingIn && <Icon type="loading"/>}</Button>
+                                </div>
+                            }
+                        </Col>                                       
+                    </Row> 
                 </div>
     }
 }
