@@ -388,14 +388,18 @@ export default class GoogleSheets
                         reject(err);
                         return;
                     }
-                    
                     var values = response.values.filter((r: any) => {
                         return r[0] == name
-                    });
+                    })
+
+                    console.log("HOPEFULLY GENERIC CONTENT IS", response.values[9][1])
+
+                    values[0][7] = values[0][7] + "\n" +  response.values[9][1];
                     return resolve(values);
                 })
             })
-        })    }
+        })    
+    }
 
     /*
         sheets.spreadsheets.values.get({

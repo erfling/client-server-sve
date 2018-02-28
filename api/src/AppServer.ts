@@ -217,9 +217,14 @@ export default class AppServer
                      deal.CanAccept = false;
                 }else{
                     deal.Value = dealAmount;
+                    deal.CanAccept = true;
                 }
             } else if( deal.Accept ) {
                 deal.Accept = false;
+                deal.CanAccept = false;
+            } else if( deal.FromNationName == deal.ToNationName && deal.FromNationName != "India"){
+                deal.Accept = false;
+                deal.CanAccept = false;
             }
 
             if (toTeam && fromTeam) {
