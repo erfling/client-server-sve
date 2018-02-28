@@ -59,8 +59,11 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
 
     prepDeal(){
 
-        var chosenOption = this.state.TradeOptions.filter(o => o.toUpperCase().indexOf( this.state.ChosenCountry.toUpperCase()) != -1)[0] || null
-
+        var chosenOption = this.state.TradeOptions.filter(o => {
+            console.log(o.toUpperCase(), this.state.ChosenCountry.toUpperCase())
+            return o.toUpperCase().indexOf( this.state.ChosenCountry.toUpperCase()) != -1
+        })[0] || null
+        console.log(chosenOption, this.state.ChosenCountry.toUpperCase())
         var deal: IDeal = {
             FromTeamSlug: this.props.CurrentPlayer.Slug,
             FromNationName: (this.props.CurrentPlayer.Nation as INation).Name,
@@ -206,7 +209,7 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
 
     getTradeOptionContent(){
         var options = (this.props.CurrentPlayer.Nation as INation).Content[0].filter((c:string[], i:number) => {
-            return i > 0 && i < 6 && c.length > 0;
+            return i > 0 && i < 7 && c.length > 0;
         })
         this.setState(Object.assign({}, this.state, {TradeOptions: options}));
 
@@ -215,6 +218,8 @@ export default class State2 extends React.Component<State2Props, {PlayerNotFound
 
     render(){
         if(!this.props.CurrentPlayer)return <div/>
+        const image = this.loadImage();
+
         return this.props.CurrentPlayer && 
                 this.props.CurrentPlayer.Nation ? 
                 <GameWrapper
