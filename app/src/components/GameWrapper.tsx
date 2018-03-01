@@ -83,12 +83,12 @@ export default class GameWrapper extends React.Component<GamesList, any> {
                                 <a className="bottom-arrow" onClick={e => this.scrollDown(e)}><Icon type="down" /></a>
                             </Row>
                             {this.props.children && <Row type="flex" justify="center" className="home-content">
-                                <Col xs={20}>
+                                <Col xs={24}>
                                     {this.props.children}
                                 </Col>  
                             </Row> }
                             {this.props.FormComponent && <Row type="flex" justify="center" className="home-content">
-                                <Col xs={20}>
+                                <Col xs={24}>
                                     <Route component={this.props.FormComponent}/>
                                 </Col>  
                             </Row> }                    

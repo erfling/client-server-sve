@@ -684,7 +684,7 @@ export default class AppServer
                         const sheets = new GoogleSheets();
     
                         //emit the values to all the teams
-                        sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y2:Y103").then((r:any) => {
+                        sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
                             console.log("SHOULD BE EMITTING TO TEAMS")
                             this.io.of(game._id).emit(SocketEvents.DASHBOARD_UPDATED, r);
                         })

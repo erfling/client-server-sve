@@ -80,77 +80,80 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
                     match={this.props.match}
                     CurrentPlayer={this.props.CurrentPlayer}
                 >  
-                    {this.props.CurrentPlayer.GameState == "1A" 
-                    ? <Row>
-                        {this.state.FeedBack && this.state.FeedBack[12][2]
-                                                            .split("\n")
-                                                            .filter(content => content.length)
-                                                            .map( (content:string) => {
-                                                                return content == content.toUpperCase() ? <h3>{content}</h3> : <p>{content}</p>
-                                                            })}
+                    <Row>
+                        <Col xs={22}>
+                            {this.props.CurrentPlayer.GameState == "1A" 
+                            ? <Row>
+                                {this.state.FeedBack && this.state.FeedBack[12][2]
+                                                                    .split("\n")
+                                                                    .filter(content => content.length)
+                                                                    .map( (content:string) => {
+                                                                        return content == content.toUpperCase() ? <h3>{content}</h3> : <p>{content}</p>
+                                                                    })}
 
-                        <Row className="formWrapper">
-                            <h4 className="decided-messaged" style={{margin: "10px 0 20px"}}>{this.state.Decided && <span>You selected {this.state.ChosenHorse}. Change your mind? If so, simply choose again</span>}</h4>
-                            <Select
-                                style={{width: '100%'}}
-                                onChange={e => this.setState(Object.assign({}, this.state, {ChosenHorse:e, Decided: false}))}
-                                placeholder="Who gets the water?"
-                            >
-                                <Select.Option value="Agriculture">Agriculture</Select.Option>
-                                <Select.Option value="Government">Government</Select.Option>
-                                <Select.Option value="Healthcare">Healthcare</Select.Option>
-                                <Select.Option value="Industry">Industry</Select.Option>
-                            </Select>
-                            <Button style={{margin: "10px 0 50px"}} className="game-button block" onClick={e =>  this.setDecisionState(this.state.ChosenHorse)}>Commit Decision</Button>
-                        </Row>
-                                 
-                    </Row> : null}
+                                <Row className="formWrapper">
+                                    <h4 className="decided-messaged" style={{margin: "10px 0 20px"}}>{this.state.Decided && <span>You selected {this.state.ChosenHorse}. Change your mind? If so, simply choose again</span>}</h4>
+                                    <Select
+                                        style={{width: '100%'}}
+                                        onChange={e => this.setState(Object.assign({}, this.state, {ChosenHorse:e, Decided: false}))}
+                                        placeholder="Who gets the water?"
+                                    >
+                                        <Select.Option value="Agriculture">Agriculture</Select.Option>
+                                        <Select.Option value="Government">Government</Select.Option>
+                                        <Select.Option value="Healthcare">Healthcare</Select.Option>
+                                        <Select.Option value="Industry">Industry</Select.Option>
+                                    </Select>
+                                    <Button style={{margin: "10px 0 50px"}} className="game-button block" onClick={e =>  this.setDecisionState(this.state.ChosenHorse)}>Commit Decision</Button>
+                                </Row>
+                                        
+                            </Row> : null}
 
-                    {this.props.CurrentPlayer.GameState == "1B" &&
-                        <Row style={{minHeight: '25vh', paddingTop:'20px'}}>                        
-                            {this.state.Decided &&
-                                this.state.FeedBack ?
-                                    <Row className="state1results">
-                                            {this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.state.ChosenHorse.toUpperCase())
-                                                .map(f => {
-                                                    return f.filter((c, i) => i != 0 && i != 5).map((c) => {
-                                                        return <Row className={c.charAt(0) == "^" && this.props.CurrentPlayer.GameState != "1C" ? "winner" : null}>
-                                                                    <div>
-                                                                        <Horse  />
-                                                                    </div>
-                                                                    <div>
-                                                                        <p>{c.substring(1, c.length)}</p>
-                                                                    </div>
-                                                                </Row>
-                                                    })
-                                                }) }
-                                    </Row> : null}
-                        </Row>
-                    }    
-      
-                    {this.props.CurrentPlayer.GameState == "1C" &&
-                        <Row style={{minHeight: '25vh', paddingTop:'20px'}}>                        
-                            {this.state.Decided &&
-                                this.state.FeedBack ?
-                                    <Row>
-                                        <Row className="state1results">
-                                                {this.replaceWinner()
-                                                    .map((c:string) => {
-                                                            return <Row className={c.charAt(0) != "#" ? "former-winner" : null}>
-                                                                        <div>
-                                                                            <Horse  />
-                                                                        </div>
-                                                                        <div>
-                                                                            <p>{c}</p>
-                                                                        </div>
-                                                                    </Row>
-                                                        
-                                                    }) }
-                                        </Row>
-                                    </Row> : null}
-                        </Row>
-                    }    
-                    
+                            {this.props.CurrentPlayer.GameState == "1B" &&
+                                <Row style={{minHeight: '25vh', paddingTop:'20px'}}>                        
+                                    {this.state.Decided &&
+                                        this.state.FeedBack ?
+                                            <Row className="state1results">
+                                                    {this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.state.ChosenHorse.toUpperCase())
+                                                        .map(f => {
+                                                            return f.filter((c, i) => i != 0 && i != 5).map((c) => {
+                                                                return <Row className={c.charAt(0) == "^" && this.props.CurrentPlayer.GameState != "1C" ? "winner" : null}>
+                                                                            <div>
+                                                                                <Horse  />
+                                                                            </div>
+                                                                            <div>
+                                                                                <p>{c.substring(1, c.length)}</p>
+                                                                            </div>
+                                                                        </Row>
+                                                            })
+                                                        }) }
+                                            </Row> : null}
+                                </Row>
+                            }    
+            
+                            {this.props.CurrentPlayer.GameState == "1C" &&
+                                <Row style={{minHeight: '25vh', paddingTop:'20px'}}>                        
+                                    {this.state.Decided &&
+                                        this.state.FeedBack ?
+                                            <Row>
+                                                <Row className="state1results">
+                                                        {this.replaceWinner()
+                                                            .map((c:string) => {
+                                                                    return <Row className={c.charAt(0) != "#" ? "former-winner" : null}>
+                                                                                <div>
+                                                                                    <Horse  />
+                                                                                </div>
+                                                                                <div>
+                                                                                    <p>{c}</p>
+                                                                                </div>
+                                                                            </Row>
+                                                                
+                                                            }) }
+                                                </Row>
+                                            </Row> : null}
+                                </Row>
+                            }  
+                        </Col>  
+                    </Row>
                </GameWrapper>
             )
                
