@@ -80,7 +80,7 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
                     match={this.props.match}
                     CurrentPlayer={this.props.CurrentPlayer}
                 >  
-                    <Row>
+                    <Row type="flex" justify="center">
                         <Col xs={22}>
                             {this.props.CurrentPlayer.GameState == "1A" 
                             ? <Row>
