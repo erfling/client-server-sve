@@ -127,9 +127,22 @@ export default class AppServer
 
     private onGameSocketConnect(eventTarget:SocketIO.Namespace, game:any, socket:SocketIO.Socket):void {
         console.log("gameSocket connected...");
+
+
+        
+
+        
+
         let teams:ITeam[] = (<IGame>game).Teams as ITeam[];
         teams.forEach((t:ITeam) => {
             eventTarget.to(t.Slug).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + game._id + " IN ROOM " + t.Slug);
+            if(game.State == 2){
+                //emit the values to all the teams
+                this.sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
+                    console.log("trying to emit to ", game._id)
+                    eventTarget.to(t.Slug).emit(SocketEvents.DASHBOARD_UPDATED, r);
+                })
+            }
         });
         
         // Add socket listeners
