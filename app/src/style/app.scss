@@ -36,18 +36,18 @@ h4{font-size: 160%}
     fill: none;
 } 
 .line-chart{
-    position:relative;
-    width: 100% !important;
+   
+    
+}
 
-    .rv-xy-plot__inner{
-        float:left;
-        position:relative;
-    }
-
-    &.rv-discrete-color-legend {
-        position:absolute;
-        left:700px;
-        bottom:100px;
+.rv-discrete-color-legend {
+    width:100%;
+    display: block;
+    height:40px;
+    text-align: center;
+    .rv-discrete-color-legend-item{
+        display: inline-block;
+        font-size:200%;
     }
 }
 
@@ -189,13 +189,15 @@ h4{font-size: 160%}
         padding: 12px;
         line-height: 2.5em;
     }
-
+    .ant-select-dropdown-menu{
+        max-height: 50vh !important;
+    }
     .ant-alert{
         font-size: 1.5em;
     }
 
     .ant-slider-mark-text {
-        font-size: 200%;
+        font-size: 220%;
     }
 
 }
@@ -205,13 +207,13 @@ h4{font-size: 160%}
     right: 0;
     width: 100%;
     left: 0;
-    background: white;
-    border-top: 1px solid #ddd;
+    background:rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid #ddd;
     top: 0;
     height:50px;
     overflow: hidden;
     z-index: 9999;
-    box-shadow: 0 0 10px 0 rgba(0,0,0,.2);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
     text-align: center;
     >span{
         margin-left:3px;
@@ -258,6 +260,12 @@ h4{font-size: 160%}
         svg{
             opacity:.1;
         }
+    }
+}
+
+.trades{
+    h1,h2,h3,h4,h5{
+        text-align: center
     }
 }
 

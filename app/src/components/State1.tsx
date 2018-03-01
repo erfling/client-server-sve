@@ -79,7 +79,8 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
                 >  
                     {this.props.CurrentPlayer.GameState == "1A" 
                     ? <Row>
-                        {this.state.FeedBack && this.state.FeedBack[12]
+                        {this.state.FeedBack && this.state.FeedBack[12][2]
+                                                            .split("\n")
                                                             .filter(content => content.length)
                                                             .map( (content:string) => {
                                                                 return content == content.toUpperCase() ? <h3>{content}</h3> : <p>{content}</p>

@@ -62,14 +62,6 @@ export default class GameWrapper extends React.Component<GamesList, any> {
         }
 
         return  <Layout style={{minHeight:'100vh'}}>
-                    <Menu
-                        mode="horizontal"
-                        theme="dark"
-                    >
-                        <Menu.Item>
-                            <Link to="/admin/games"><Icon type="bars" />Games List</Link>
-                        </Menu.Item>
-                    </Menu>
                     <Content className="game-wrapper">
                         {this.props.ParallaxImg && 
                         <Parallax  
