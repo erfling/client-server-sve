@@ -7,6 +7,7 @@ import * as mongoose from 'mongoose';
 import IRatings from "../../../shared/models/IRatings";
 import { CriteriaName } from "../../../shared/models/CriteriaName";
 
+
 export class Ratings extends BaseClass implements IRatings {
     
     @prop()
@@ -29,4 +30,4 @@ export class Ratings extends BaseClass implements IRatings {
     
 }
 
-export const DealModel = new Ratings().getModelForClass( Ratings, { existingMongoose: mongoose } )
+export const RatingsModel = new Ratings().getModelForClass( Ratings, { existingMongoose: mongoose } )
