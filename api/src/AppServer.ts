@@ -491,7 +491,7 @@ export default class AppServer
             sheets.commitAnswers(team, values).then(() => {
                 if (this.socketServer instanceof http.Server) {
                     setTimeout(() => {
-                        sheets.GetSheetValues().then((v:any) => {     
+                        sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((v:any) => {     
                             eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, v);                   
                         })
                     }, 500);
@@ -676,6 +676,7 @@ export default class AppServer
     
                         //emit the values to all the teams
                         sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y2:Y103").then((r:any) => {
+                            console.log("SHOULD BE EMITTING TO TEAMS")
                             this.io.of(game._id).emit(SocketEvents.DASHBOARD_UPDATED, r);
                         })
    
@@ -747,6 +748,7 @@ export default class AppServer
 
                         //emit the values to all the teams
                         new GoogleSheets().GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
+                            console.log("trying to emit to ", game._id)
                             this.io.of(game._id).to(t.Slug).emit(SocketEvents.DASHBOARD_UPDATED, r);
                         })
 
@@ -777,12 +779,15 @@ export default class AppServer
         this.socketServer.listen(port);
         console.log("THE SOCKET SERVER HAS BEEN SET UP IN THE listenForSocket METHOD ON PORT " + port);
         if (this.socketServer instanceof https.Server) {
-            this.sheetsRouter.post('/:id', (req, resp) => {
+            this.sheetsRouter.post('/:id', async (req, resp) => {
                 console.log("Post Request >", req.params, req.headers);
+
+                const game = await GameModel.findOne({IsCurrentGame: true}).then(g => g);
+                console.log("FOUND THIS TEAM", game)
                 var sheets = new GoogleSheets();
-                sheets.GetSheetValues().then((v:any) => {     
+                sheets.GetSheetValues(null, "Country Impact").then((v:any) => {     
                     console.log("returning:", req.body.Slug);
-                    this.io.of(req.params.id).emit(SocketEvents.DASHBOARD_UPDATED, v);
+                    this.io.of(game.toObject()._id).emit(SocketEvents.DASHBOARD_UPDATED, v);
                     resp.json({test: "hello folks"});
                 })
             })

@@ -330,7 +330,7 @@ export default class GoogleSheets
                       type: 'web_hook',
                       address: 'https://planetsapientestsite.com:8443/sapien/api/driveupdate/' + teamSlug
                     },
-                    fileId: "1R5Od_XTcwDyOKsLHaABHL8o9cl7Qg7P3zlYyBUUWds8",
+                    fileId: "1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg",
                     auth: auth
                 }, function(err:any, response:any) {
                     if (err) {
@@ -391,9 +391,6 @@ export default class GoogleSheets
                     var values = response.values.filter((r: any) => {
                         return r[0] == name
                     })
-
-                    console.log("HOPEFULLY GENERIC CONTENT IS", response.values[9][1])
-
                     values[0][7] = values[0][7] + "\n" +  response.values[9][1];
                     return resolve(values);
                 })
