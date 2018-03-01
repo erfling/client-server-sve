@@ -747,9 +747,9 @@ export default class AppServer
                         console.log("TEAM TO SEND", team);
 
                         //emit the values to all the teams
-                        new GoogleSheets().GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
+                        this.sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
                             console.log("trying to emit to ", game._id)
-                            this.io.of(game._id).to(t.Slug).emit(SocketEvents.DASHBOARD_UPDATED, r);
+                            this.io.of(game._id).emit(SocketEvents.DASHBOARD_UPDATED, r);
                         })
 
                         res.json({token, team:t});
