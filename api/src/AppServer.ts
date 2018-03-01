@@ -138,7 +138,6 @@ export default class AppServer
             .removeAllListeners()         
             .on(SocketEvents.DISCONNECT, this.onSocketDisconnect.bind(this, socket))
             .on(SocketEvents.SELECT_TEAM, this.onSocketSelectTeam.bind(this, socket))
-            .on(SocketEvents.SUBMIT_TO_SHEET, this.onSocketSubmitToSheet.bind(this, socket))
             .on(SocketEvents.UPDATE_TEAM, this.onSocketSaveTeam.bind(this, socket))
             .on(SocketEvents.JOIN_ROOM, this.onSocketJoinRoom.bind(this, socket))
             .on(SocketEvents.TO_ROOM_MESSAGE, this.onSocketRoomToRoomMessage.bind(this, socket))
@@ -483,21 +482,6 @@ export default class AppServer
         this.sheets.GetSheetValues().then((v:any) => {
             console.log("going to send values", v);
             eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, v);                            
-        })
-    }
-
-    private onSocketSubmitToSheet(eventTarget:SocketIO.Socket, values:formValues):void {
-        TeamModel.findById(values.PlayerId).then((team:Team) => {
-            var sheets = new GoogleSheets();
-            sheets.commitAnswers(team, values).then(() => {
-                if (this.socketServer instanceof http.Server) {
-                    setTimeout(() => {
-                        sheets.GetSheetValues().then((v:any) => {     
-                            eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, v);                   
-                        })
-                    }, 500);
-                }
-            })                    
         })
     }
 

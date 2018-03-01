@@ -1,8 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Team, TeamModel } from '../models/Team'; 
 import { Error } from 'mongoose';
-
-
+import INation from '../../../shared/models/INation';
+import { CriteriaName } from '../../../shared/models/CriteriaName';
+import GoogleSheets from '../models/GoogleSheets';
+import IRatings from '../../../shared/models/IRatings';
 class TeamRouter
 {
     //----------------------------------------------------------------------
@@ -99,20 +101,66 @@ class TeamRouter
         
     }
 
-    public AddRatings(req: Request, res: Response):void {
+    public async AddRatings(req: Request, res: Response):Promise<any> {
         console.log(req.body);
-        TeamModel.findByIdAndUpdate(req.body._id, {Ratings: req.body.Ratings}, {new: true})
-                    .populate({
-                        path:"Nation",
-                        populate: {
-                            path:"TradeOptions"     
+        try {
+            const savedTeam = await TeamModel.findByIdAndUpdate(req.body._id, {Ratings: req.body.Ratings}, {new: true})
+                    .populate("Nation")
+                    .then(t => t);
+
+            const gameTeams = await TeamModel.find({GameId: {$in: savedTeam.GameId}})
+            var numRatings = gameTeams.filter(t => t.Ratings && (<any>t.Ratings)[(<INation>savedTeam.Nation).Name]).length;
+            var ratingsHolder:number[] = [];
+            var teamRatingForMyNation:any = {};
+            var ratings:{ [C in CriteriaName]:number } = null;
+            const sheets = new GoogleSheets();
+            var sheetSubmitVals:string[][] = [];
+            gameTeams.forEach((t:Team, i) => {
+                var averagedRating:any = {};
+                gameTeams
+                    .filter(team => team.Slug != t.Slug && team.Ratings != undefined)
+                    .forEach(team => {
+                        console.log(team.Ratings);
+
+                        teamRatingForMyNation = (<any>team.Ratings)[(<INation>t.Nation).Name];
+                        if(teamRatingForMyNation){
+                            if (teamRatingForMyNation["Compelling Emotional Content"]) {
+                                teamRatingForMyNation["Compelling Emotional Content"] = parseInt(teamRatingForMyNation["Compelling Emotional Content"] || 0);
+                                averagedRating["Compelling Emotional Content"] = parseInt(averagedRating["Compelling Emotional Content"] || 0);
+                                averagedRating["Compelling Emotional Content"] += teamRatingForMyNation["Compelling Emotional Content"] / 5;
+                            }
+                            if (teamRatingForMyNation["Demonstrated Systemic Impact"]) {
+                                teamRatingForMyNation["Demonstrated Systemic Impact"] = parseInt(teamRatingForMyNation["Demonstrated Systemic Impact"] || 0);
+                                averagedRating["Demonstrated Systemic Impact"] = parseInt(averagedRating["Demonstrated Systemic Impact"] || 0);
+                                averagedRating["Demonstrated Systemic Impact"] += teamRatingForMyNation["Demonstrated Systemic Impact"] / 5;
+                            }
+                            if (teamRatingForMyNation["Strong Executive Presence"]) {
+                                teamRatingForMyNation["Strong Executive Presence"] = parseInt(teamRatingForMyNation["Strong Executive Presence"] || 0);
+                                averagedRating["Strong Executive Presence"] = parseInt(averagedRating["Strong Executive Presence"] || 0);
+                                averagedRating["Strong Executive Presence"] += teamRatingForMyNation["Strong Executive Presence"] / 5;
+                            }
                         }
-                    })
-                    .then(t => res.json(t))
-                    .catch(e => {
-                        res.status(400);
-                        res.json(e)
-                    })
+                    });
+                
+
+                    TeamModel.findOneAndUpdate({Slug: t.Slug}, {Ratings: averagedRating});
+
+                   sheetSubmitVals[i] = [averagedRating["Compelling Emotional Content"], averagedRating["Demonstrated Systemic Impact"], averagedRating["Strong Executive Presence"]];
+                   console.log("SOME", sheetSubmitVals[i])
+            })
+
+            console.log( "ALL",sheetSubmitVals)
+
+
+            //sheets.commitAnswers([["10", "10", "10"]],"Round 3 Criteria!B2:D7")
+
+            res.json(savedTeam);
+
+        } catch(error) {
+            console.log("Blew up:", error);
+            res.status(400);
+            res.json(error);
+        }
     }
 
     public routes(){

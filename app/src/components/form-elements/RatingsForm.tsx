@@ -13,6 +13,7 @@ import INation from '../../../../shared/models/INation';
 import ITradeOption from '../../../../shared/models/ITradeOption';
 import GoogleSheets from '../../../../api/src/models/GoogleSheets';
 import IDeal from '../../../../shared/models/IDeal';
+import { CriteriaName } from '../../../../shared/models/CriteriaName';
 
 interface DealFormProps extends InjectedFormProps{
     Submitting: boolean;
@@ -31,16 +32,7 @@ class RatingsFormWrapper extends React.Component<DealFormProps, { warning:string
 {
 
     getCriteria() {
-        const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
-        const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
-        const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/getCriteria";
-
-        fetch(URL)
-        .then( r => r.json() )
-        .then(r => {
-            console.log("DIG!!!:", r, typeof r, Array.isArray(r));
-            this.setState(Object.assign({}, this.state, {Criteria: r}));
-        })
+        this.setState(Object.assign({}, this.state, {Criteria: Object.keys(CriteriaName)}));
     }
 
     getOptionsByTeam():{value: string, text: string}[] {
@@ -92,9 +84,9 @@ class RatingsFormWrapper extends React.Component<DealFormProps, { warning:string
                    {this.props.CurrentPlayer && this.state.Criteria ? this.getOptionsByTeam().map(o => {
                        return <div><label>How did {o.value} do?</label>
 
-                       {this.state.Criteria.map(c => {
+                       {this.state.Criteria.map((c:any) => {
                            return <FormItem>
-                                        <label>{c}</label>
+                                        <label>{CriteriaName[c]}</label>
                                         <Field
                                             name={o.value+'_'+c}
                                             component={SliderWrapper}
