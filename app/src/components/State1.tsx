@@ -44,10 +44,6 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
         setTimeout(() => document.querySelector(".decided-messaged").scrollIntoView({behavior:"smooth"}), 500);
     }
 
-    componentDidUpdate(){
-        console.log("UPDATED")
-    }
-
     getResults() {
         const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
         const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
@@ -60,6 +56,13 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
         .then(r => {
             this.setState(Object.assign({}, this.state, {FeedBack: r}))
         })
+    }
+
+    replaceWinner(){
+        const teamFeedBack = this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.state.ChosenHorse.toUpperCase())
+        console.log(teamFeedBack);
+        return teamFeedBack[0].filter((content, i) => i != 0 && i < 5)
+                                .map(content => content.startsWith("^") ? teamFeedBack[0][5] : content.substr(1))
     }
 
 
@@ -87,9 +90,10 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
                                                             })}
 
                         <Row className="formWrapper">
+                            <h4 className="decided-messaged" style={{margin: "10px 0 20px"}}>{this.state.Decided && <span>You selected {this.state.ChosenHorse}. Change your mind? If so, simply choose again</span>}</h4>
                             <Select
                                 style={{width: '100%'}}
-                                onChange={e => this.setState(Object.assign({}, this.state, {ChosenHorse:e}))}
+                                onChange={e => this.setState(Object.assign({}, this.state, {ChosenHorse:e, Decided: false}))}
                                 placeholder="Who gets the water?"
                             >
                                 <Select.Option value="Agriculture">Agriculture</Select.Option>
@@ -98,7 +102,6 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
                                 <Select.Option value="Industry">Industry</Select.Option>
                             </Select>
                             <Button style={{margin: "10px 0 50px"}} className="game-button block" onClick={e =>  this.setDecisionState(this.state.ChosenHorse)}>Commit Decision</Button>
-                            <h5 className="decided-messaged" style={{margin: "10px 0 20px"}}>{this.state.Decided && <span>You selected {this.state.ChosenHorse}. Change your mind? If so, simply choose again</span>}</h5>
                         </Row>
                                  
                     </Row> : null}
@@ -110,9 +113,14 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
                                     <Row className="state1results">
                                             {this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.state.ChosenHorse.toUpperCase())
                                                 .map(f => {
-                                                    return f.filter((c, i) => i != 0).map((c) => {
+                                                    return f.filter((c, i) => i != 0 && i != 5).map((c) => {
                                                         return <Row className={c.charAt(0) == "^" && this.props.CurrentPlayer.GameState != "1C" ? "winner" : null}>
-                                                                    <Horse  /><p>{c.substring(1, c.length)}</p>
+                                                                    <div>
+                                                                        <Horse  />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p>{c.substring(1, c.length)}</p>
+                                                                    </div>
                                                                 </Row>
                                                     })
                                                 }) }
@@ -125,16 +133,18 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
                             {this.state.Decided &&
                                 this.state.FeedBack ?
                                     <Row>
-                                        <h5 style={{display: 'block'}}>You Chose {this.state.ChosenHorse}</h5>
-
                                         <Row className="state1results">
-                                                {this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.state.ChosenHorse.toUpperCase())
-                                                    .map(f => {
-                                                        return f.filter((c, i) => i != 0).map((c) => {
-                                                            return <Row className={c.charAt(0) == "^" && this.props.CurrentPlayer.GameState != "1C" ? "winner" : null}>
-                                                                        <Horse  /><p>{c.substring(1, c.length)}</p>
+                                                {this.replaceWinner()
+                                                    .map((c:string) => {
+                                                            return <Row className={c.charAt(0) != "#" ? "former-winner" : null}>
+                                                                        <div>
+                                                                            <Horse  />
+                                                                        </div>
+                                                                        <div>
+                                                                            <p>{c}</p>
+                                                                        </div>
                                                                     </Row>
-                                                        })
+                                                        
                                                     }) }
                                         </Row>
                                     </Row> : null}
