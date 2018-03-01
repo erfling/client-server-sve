@@ -11,6 +11,8 @@ import { Deal } from './Deal';
 import IDeal from '../../../shared/models/IDeal';
 import IRatings from '../../../shared/models/IRatings';
 import { Ratings } from './Ratings';
+import { RoleName } from '../../../shared/models/RoleName';
+import { Role } from './Role';
 
 
 export class Team extends BaseClass implements ITeam
@@ -71,6 +73,9 @@ export class Team extends BaseClass implements ITeam
 
     @prop()
     Ratings: Ratings | IRatings;
+
+    @prop()
+    Roles:{ [R in RoleName]: Role };
 
   }
 

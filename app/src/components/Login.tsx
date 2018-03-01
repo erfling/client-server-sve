@@ -17,6 +17,7 @@ import IGame from '../../../shared/models/IGame';
 import Role from '../../../shared/models/IPlayer';
 import RoleDetail from './RoleDetail'
 import { Link, Route } from "react-router-dom";
+import {RoleName} from '../../../shared/models/RoleName';
 
 const Logo = require('../img/logo.png');
 import HealthIcon from '-!svg-react-loader?name=Icon!../img/health-icon.svg';
@@ -154,7 +155,7 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                                 <Col xs={24}>
                                     <AgriIcon height={400}/>
                                     <p>The CEO of Warburton, the region's largest agrichemical business faced with growing food production for an escalating population in a time of water scarcity and drought. </p>
-                                    <Button className="game-button block" onClick={e => this.props.selectRole("Warburton")}>Agriculture</Button>
+                                    <Button className="game-button block" onClick={e => this.props.selectRole("Warburton")}>{RoleName.Agriculture}</Button>
                                 </Col>
                             </Row>
 
@@ -163,7 +164,7 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                                 <Col xs={24}>
                                     <HealthIcon height={400}/>
                                     <p>The CEO of Vanguard Life, the region's largest health care and insurance provider, who is anxious of increased exposure to climate-sensitive diseases and mental health impacts from severe weather-related events</p>
-                                    <Button className="game-button block" onClick={e => this.props.selectRole("Vanguard")}>Healthcare</Button>
+                                    <Button className="game-button block" onClick={e => this.props.selectRole("Vanguard")}>{RoleName.Healthcare}</Button>
                                 </Col>
                             </Row>
 
@@ -172,7 +173,7 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                                 <Col xs={24}>
                                     <IndustryIcon height={400}/>
                                     <p>The CEO of Bennuci, the region's largest food and drink company who believes consumer demand will determine their response to climate change mitigation.</p>
-                                    <Button className="game-button block" onClick={e => this.props.selectRole("Bennuci")}>Industry</Button>
+                                    <Button className="game-button block" onClick={e => this.props.selectRole("Bennuci")}>{RoleName.Industry}</Button>
                                 </Col>
                             </Row>
 
@@ -181,7 +182,7 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                                 <Col xs={24}>
                                     <GonvernmentIcon height={400}/>
                                     <p>The Minister for Environment, representing the region's union of country members who are already exposed to the impact of climate change on their communities.</p>
-                                    <Button className="game-button block" onClick={e => this.props.selectRole("Government")}>Government</Button>
+                                    <Button className="game-button block" onClick={e => this.props.selectRole("Government")}>{RoleName.Government}</Button>
                                 </Col>
                             </Row>
 

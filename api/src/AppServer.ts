@@ -45,6 +45,8 @@ import Item from 'antd/lib/list/Item';
 import INation from '../../shared/models/INation';
 import { ObjectID } from 'bson';
 import { Document } from 'mongoose';
+import { Role } from './models/Role';
+import { Ratings } from './models/Ratings';
 
 // AppServer class
 export default class AppServer
@@ -626,11 +628,21 @@ export default class AppServer
                 Promise.all(promises).then(nations => res.json(nations))
             })
             .catch((reason) => {console.log(reason)})
-            
         });
 
         //login route
         mongoose.set('debug', true);
+
+        // sheets criteria
+        this.app.get('/sapien/api/getCriteria', (req, res) => {
+            const sheets = new GoogleSheets();
+            return sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Round 3 Criteria!B1:D1")
+            .then((criteria:any) => {
+                console.log("DIG:", criteria, Array.isArray(criteria));
+                res.json(criteria[0]);
+            })
+            .catch((reason:string) => {console.log("SOMETHING BLEW UP:", reason)});
+        });
 
         this.app.post('/sapien/api/changestate', (req, res) => {
             console.log(req.body._id);

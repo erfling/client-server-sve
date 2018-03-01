@@ -7,6 +7,8 @@ import IDeal from './IDeal';
 import { Deal } from '../../api/src/models/Deal';
 import IRatings from './IRatings';
 import { Ratings } from '../../api/src/models/Ratings';
+import { Role } from '../../api/src/models/Role';
+import {RoleName} from './RoleName';
 
 export default interface ITeam extends IBaseClass {    
   Location?: string;  
@@ -25,4 +27,5 @@ export default interface ITeam extends IBaseClass {
   DealsProposedBy:Ref<Deal>[] | IDeal[];
   DealsProposedTo: Ref<Deal>[] | IDeal[];
   Ratings: Ratings | IRatings;
+  Roles:{ [R in RoleName]:Role };
 }

@@ -6,6 +6,7 @@ import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
 import IRole from '../../../shared/models/IRole';
+import { RoleName } from '../../../shared/models/RoleName';
 
 
 //TODO: find out how to save nested teams, not just their refs. Possibly with pre method: https://github.com/szokodiakos/typegoose#pre
