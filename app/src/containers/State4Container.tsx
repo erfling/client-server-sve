@@ -6,21 +6,28 @@ import * as Actions from '../actions/Actions';
 import State4 from '../components/State4';
 import ITeam from '../../../shared/models/ITeam';
 import { ACTION_TYPES } from '../actions/Actions';
+import IRole from  '../../../shared/models/IRole';
 
 interface DispatchProps {
     getPlayer:() => {}
     setWaterValues:(team:ITeam) => {}
     submitRatings:(teamWithRatings: ITeam) => {}
     getContent: (team: ITeam) => {}
+    selectRole: (role: string, teamSlug:string) => {}
+    submitRoleRating: (roleName: string, teamSlug: string, rating: any) => {} 
 }
 export interface State1Props{
     CurrentPlayer: ITeam;
-    StateContent: any
+    StateContent: any;
+    SelectedRole: IRole;
+    SocketConnected: boolean;
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): State1Props => {
     return {
         CurrentPlayer: state.GameData.CurrentPlayer,
-        StateContent: state.GameData.StateContent
+        StateContent: state.GameData.StateContent,
+        SelectedRole: state.GameData.SelectedRole,
+        SocketConnected: state.Application.SocketConnected
     };
 };
 
@@ -29,7 +36,11 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
         getPlayer: () => dispatch( Actions.getPlayer() ),
         setWaterValues: (team: ITeam) => {dispatch(Actions.setWaterValues(team))},
         submitRatings: (teamWithRatings: ITeam) => dispatch( Actions.submitRatings(teamWithRatings) ),
-        getContent: (team: ITeam) => dispatch( Actions.getContent( team ) )
+        getContent: (team: ITeam) => dispatch( Actions.getContent( team ) ),
+        selectRole: (role: string, teamSlug:string) => dispatch( Actions.selectRole(role, teamSlug) ),
+        submitRoleRating: (roleName: string, teamSlug: string, rating: any) => dispatch( Actions.submitRoleRating(roleName, teamSlug, rating) ) 
+
+
     }
 }
 

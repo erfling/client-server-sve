@@ -12,6 +12,7 @@ import { store } from '../index';
 import { setTimeout } from 'timers';
 import IDeal from '../../../shared/models/IDeal';
 import IRatings from '../../../shared/models/IRatings';
+import IRole from '../../../shared/models/IRole';
 import { Socket } from 'dgram';
 
 const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
@@ -79,7 +80,9 @@ export enum ACTION_TYPES {
 
     RATINGS_SUBMITTED = "RATINGS_SUBMITTED",
 
-    GOT_CONTENT = "GOT_CONTENT"
+    GOT_CONTENT = "GOT_CONTENT",
+
+    SOCKET_CONNECTED = "SOCKET_CONNECTED"
 
 }
 
@@ -97,9 +100,6 @@ export const createTeamSocket = (team:ITeam) => {
         console.log("OUR SOCKET IS", socket);
 
         //SET UP SOCKET EVENTS
-        socket.on(SocketEvents.MESSAGE, (msg: string) => {
-            console.log("SOCKET RETURNED NAMESPACE MESSAGE", msg);
-        })
         socket.on(SocketEvents.ROOM_MESSAGE, (roomName:string, msg: string) => {
             console.log("SOCKET RETURNED ROOM " + roomName + "MESSAGE", msg);
         })
@@ -109,6 +109,7 @@ export const createTeamSocket = (team:ITeam) => {
         })
         
         return (dispatch: Dispatch<Action<ITeam>>) => {
+            console.log("WILL RETURN DISPATCH")
             socket.on(SocketEvents.TEAM_UPDATED, (team:ITeam) => {
                 console.log("heard team update event from server over socket")
                 dispatch( {
@@ -169,7 +170,25 @@ export const createTeamSocket = (team:ITeam) => {
                 } )
             })
             .on(SocketEvents.DASHBOARD_UPDATED,(dashboardData:any) => {
+                console.log("DASHBOARD_UPDATED")
                 dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED, dashboardData));
+            })
+            .on(SocketEvents.JOIN_ROLE, (role:IRole) => {
+                dispatch( {
+                    type: ACTION_TYPES.ROLE_SELECTED,
+                    payload: role
+                } );
+
+                dispatch( {
+                    type: ACTION_TYPES.IS_LOADING,
+                    payload: false
+                } )
+            })
+            .on(SocketEvents.HAS_CONNECTED, (msg: string) => {
+                console.log('HAS CONNECTED', msg);
+                dispatch( {
+                    type:ACTION_TYPES.SOCKET_CONNECTED
+                } )
             })
         }
     }
@@ -506,12 +525,13 @@ export const selectTeam = (team:ITeam) => {
 
 }   
 
-export const selectRole = (role: string) => {
+export const selectRole = (role: string, teamSlug:string) => {
     console.log("STORAGE",localStorage.sve_player);
     return (dispatch: Dispatch<Action<ITeam>>) => {
+        socket.emit(SocketEvents.JOIN_ROLE, role, teamSlug);
         dispatch({
-            type: ACTION_TYPES.ROLE_SELECTED,
-            payload: role
+            type: ACTION_TYPES.IS_LOADING,
+            payload: true
         })
     }
 }
@@ -690,5 +710,14 @@ export const getContent = (team: ITeam) => {
             }, 200);          
         })
         .catch(reason => {console.log(reason), alert("SAVE FAILED")})
+    }
+}
+
+export const submitRoleRating = (roleName: string, teamSlug: string, rating: any) => {
+    return (dispatch:Dispatch<Action<any>>) => {
+        socket.emit(SocketEvents.SUBMIT_ROLE_RATING, roleName, teamSlug, rating)
+        dispatch({
+            type: "NOPE"
+        })
     }
 }

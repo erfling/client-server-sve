@@ -47,6 +47,8 @@ import { ObjectID } from 'bson';
 import { Document } from 'mongoose';
 import { Role } from './models/Role';
 import { Ratings } from './models/Ratings';
+import { RoleName } from '../../shared/models/RoleName';
+import { RoleRatingCategories } from '../../shared/models/RoleRatingCategories';
 
 // AppServer class
 export default class AppServer
@@ -132,7 +134,7 @@ export default class AppServer
 
         let teams:ITeam[] = (<IGame>game).Teams as ITeam[];
         teams.forEach((t:ITeam) => {
-            eventTarget.to(t.Slug).emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON SOCKET FOR GAME " + game._id + " IN ROOM " + t.Slug);
+            eventTarget.to(t.Slug).emit(SocketEvents.HAS_CONNECTED, "CONNECTION SUCCESS ON SOCKET FOR GAME " + game._id + " IN ROOM " + t.Slug);
         });
         
         // Add socket listeners
@@ -146,6 +148,8 @@ export default class AppServer
             .on(SocketEvents.PROPOSE_DEAL, this.dealExchange.bind(this, socket, SocketEvents.PROPOSE_DEAL))
             .on(SocketEvents.RESPOND_TO_DEAL, this.dealExchange.bind(this, socket, SocketEvents.RESPOND_TO_DEAL))
             .on(SocketEvents.FORWARD_DEAL, this.forwardDeal.bind(this, socket, SocketEvents.FORWARD_DEAL))
+            .on(SocketEvents.JOIN_ROLE, this.onSocketJoinRole.bind(this, socket))
+            .on(SocketEvents.SUBMIT_ROLE_RATING, this.submitRatingByRole.bind(this, socket))
             
     }
 
@@ -466,12 +470,68 @@ export default class AppServer
         console.log('Client ' + eventTarget.id + ' joined room ' + roomName);
         eventTarget.nsp.emit(SocketEvents.MESSAGE, "CONNECTION SUCCESS ON ROOM " + roomName);
         eventTarget.nsp.to(roomName).emit(SocketEvents.ROOM_MESSAGE, roomName, "ID " + eventTarget.id + " HAS JOINED ROOM " + roomName);
-        
+        eventTarget.nsp.to(roomName).emit(SocketEvents.HAS_CONNECTED, "ID " + eventTarget.id + " CONNECTED RIGHT, YO " + roomName);
+
         //emit the values to all the teams
         this.sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
             console.log("trying to emit to ", roomName)
             eventTarget.nsp.to(roomName).emit(SocketEvents.DASHBOARD_UPDATED, r);
         })
+        
+    }
+
+    private async onSocketJoinRole(eventTarget:SocketIO.Socket, roleName:RoleName, teamSlug: string):Promise<any> {
+        var roleRoomName:string = teamSlug + "_" + roleName;
+        eventTarget.leave(roleRoomName);
+        eventTarget.join(roleRoomName);
+        console.log("FROM THE SOCKET: ", roleName, " | ", teamSlug);
+        const team = await TeamModel.findOne({Slug: teamSlug})
+        console.log("DID WE GET HERE?")
+
+        if (team) {
+            var t = team.toObject();           
+            console.log("GOODBYE?")
+
+            if (!t.Roles) {
+                (<any>t.Roles) = {};
+                for (let item in RoleName) {
+                    (t.Roles as any)[item] = {
+                        Name: item,
+                        RoleTradeRatings: {}
+                    }
+                    Object.keys(RoleRatingCategories).forEach((r) => {
+                        console.log(r);
+                        (t.Roles as any)[item].RoleTradeRatings[r] = null;
+                    })
+                }
+
+                TeamModel.findOneAndUpdate({Slug: teamSlug}, {Roles: t.Roles}, {new: true}).then(t => console.log(t));
+            }
+            console.log("AFTER ADDING ROLES", t.Roles[roleName]);
+
+            eventTarget.nsp.to(roleRoomName).emit(SocketEvents.JOIN_ROLE, t.Roles[roleName])
+
+        } else {
+            console.log("Woops. No Team", eventTarget.nsp.name);
+        }
+    }
+
+    private async submitRatingByRole(eventTarget: SocketIO.Socket, roleName: string, teamSlug: string, rating: {[index:string]: 1|2|3}){
+        const team = await TeamModel.findOne({Slug: teamSlug})
+        var t = team.toObject();
+        var teamRolesRole = t.Roles[roleName];
+        t.Roles[roleName] = Object.assign(teamRolesRole, rating);
+        const updatedTeam = await TeamModel.findOneAndUpdate({Slug: teamSlug}, t)
+
+        //TODO: check if other role has submitted the same thing
+        //if not emit waiting for other team to role room
+
+        //determing whethere there is agreement
+        //if not, emit no agreement event to whole team
+        //if so, emit agreement event to whole team
+
+        //if agreement, check team to see if all are agreed
+        //if all agreed submit to sheets
         
     }
 

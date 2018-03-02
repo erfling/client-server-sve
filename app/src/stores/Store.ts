@@ -2,6 +2,7 @@ import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
 import IDeal from '../../../shared/models/IDeal';
 import IPlayer from '../../../shared/models/IPlayer';
+import IRole from '../../../shared/models/IRole';
 
 export default interface ApplicationStore{
     GameData?: {
@@ -9,7 +10,7 @@ export default interface ApplicationStore{
         Game?: IGame[],
         Team?: ITeam[],
         SelectedTeam?: ITeam,
-        SelectedRole?: string
+        SelectedRole: IRole,
         Player?: IPlayer[],
         CurrentPlayer?: ITeam,
         CurrentGame?: IGame,
@@ -28,7 +29,8 @@ export default interface ApplicationStore{
     Application?: {
         Loading: boolean,
         DashboardUpdating:boolean,
-        Submitting: boolean
+        Submitting: boolean,
+        SocketConnected: boolean
     }
     form: any;
     Route?: any;

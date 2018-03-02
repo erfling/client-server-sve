@@ -1,6 +1,4 @@
 export enum RoleName {
-    Agriculture = "Agriculture",
-    Healthcare = "Healthcare",
-    Industry = "Industry",
-    Government = "Government"
+    BANK = "BANK",
+    MINISTER_OF_ENERGY = "MINISTER_OF_ENERGY"
 }

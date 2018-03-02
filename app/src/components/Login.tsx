@@ -31,9 +31,7 @@ interface FormProps{
     LoggingIn: boolean;
     Loading: boolean;
     selectTeam: (team: any) => {}
-    selectRole: (role:string) => {}
     SelectedTeam: ITeam;
-    SelectedRole: string;
     SelectedPlayer: IPlayer;
     CurrentTeam:  ITeam & {CurrentRole: string}
 }
@@ -70,10 +68,7 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
         */        
     }
 
-    handleCancel(){
-       console.log(this);
-       this.props.selectRole(null)
-    }
+
 
     componentDidUpdate(){
         if(this.props.CurrentTeam){
@@ -82,15 +77,6 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
     }
     
 
-    prepareJoinGame(){
-        if(this.props.SelectedTeam && this.props.SelectedRole){
-            let joinPackage:IPlayer = {
-                TeamId: this.props.SelectedTeam.Slug,
-                SelectedRole: this.props.SelectedRole
-            }
-            this.props.joinGame(joinPackage)
-        }
-    }
 
     getTitle(role:string){
         role = role.toLocaleUpperCase();
@@ -111,17 +97,7 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
     render(){
 
         return <div style={{background: `url(${Hurricane})`, backgroundSize:'cover'}}>                        
-                    {this.props.SelectedRole && <Modal
-                        title={"The Case for " + this.getTitle(this.props.SelectedRole)}
-                        visible={"undefined" != typeof this.props.SelectedRole && this.props.SelectedRole.length > 0}
-                        footer={[
-                            <Button key="back" className="game-button" onClick={e => this.props.selectRole(undefined)}>Close</Button>,
-                            <Button key="go" className="game-button go" onClick={e => this.prepareJoinGame()}>Play as {this.props.SelectedRole}</Button>,
-                            ]}
-                    >
-                        <Route component={RoleDetail}/>
-                    </Modal>    }  
-
+                  
                     {this.props.CurrentTeam && <Redirect to="/who-gets-the-water"/>}
 
                     {this.props.CurrentGame && 

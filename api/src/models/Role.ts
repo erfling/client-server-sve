@@ -3,6 +3,7 @@ import { prop, arrayProp, Typegoose, ModelType, InstanceType, Ref } from 'typego
 import * as mongoose from 'mongoose';
 import BaseClass from "./BaseModel";
 import {RoleName} from '../../../shared/models/RoleName';
+import { RoleRatingCategories } from "../../../shared/models/RoleRatingCategories";
 
 
 export class Role extends BaseClass implements IRole
@@ -11,7 +12,7 @@ export class Role extends BaseClass implements IRole
     Name:RoleName;
 
     @prop()
-    RoleTradeRatings:{ [R in RoleName]: 1|2|3|4|5 };
+    RoleTradeRatings:{ [R in RoleRatingCategories]: null|1|2|3 };
 }
 
 export const RoleModel = new Role().getModelForClass( Role, { existingMongoose: mongoose } )

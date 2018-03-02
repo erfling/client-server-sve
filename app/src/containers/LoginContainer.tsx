@@ -20,7 +20,6 @@ export interface LoginFormProps{
     Teams: ITeam[];
     CurrentGame:IGame;
     SelectedTeam:  ITeam;
-    SelectedRole: string;
     CurrentTeam: ITeam
 
 }
@@ -31,7 +30,6 @@ const mapStateToProps = (state: ApplicationStore, ownProps: {}): LoginFormProps 
         CurrentGame: state.GameData.CurrentGame,
         Teams: state.GameData.Team,
         SelectedTeam: state.GameData.SelectedTeam,
-        SelectedRole: state.GameData.SelectedRole,
         CurrentTeam: state.GameData.CurrentPlayer
     };
 };
@@ -51,8 +49,7 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
         selectTeam: (team: ITeam) => {
             console.log("select fired to give us" , team)
             dispatch( Actions.selectTeam(team) )
-        },
-        selectRole: (role: string) => dispatch(Actions.selectRole(role))
+        }
     }
 }
 

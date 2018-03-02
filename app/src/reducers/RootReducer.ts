@@ -24,12 +24,14 @@ const initialState: ApplicationStore = {
         PendingDealOffer: null,
         RejectedDealOffer: null,
         AcceptedDealOffer: null,
-        StateContent: null
+        StateContent: null,
+        SelectedRole:null
     },
     Application: {
         Loading: false,
         DashboardUpdating: true,
-        Submitting:false
+        Submitting:false,
+        SocketConnected:false
     },
     form:{}
 };
@@ -168,7 +170,8 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
         case ACTION_TYPES.GOT_TEAMS:
             return Object.assign({}, state, {Team: action.payload})
         case ACTION_TYPES.ROLE_SELECTED:
-            return Object.assign({}, state, {SelectedRole: action.payload})
+            localStorage.setItem("SELECTED_ROLE", JSON.stringify(action.payload));
+            return Object.assign({}, state, {SelectedRole: action.payload});
         case ACTION_TYPES.PLAYER_JOINED:
             localStorage.setItem('SVE_PLAYER', JSON.stringify(action.payload.team));
             localStorage.setItem('TOKEN', JSON.stringify(action.payload.token));
@@ -203,7 +206,9 @@ export const Application = ( state = initialState.Application, action: Action<{t
         case (ACTION_TYPES.DASHBOARD_UPDATING):
             return Object.assign({}, {DashboardUpdating: action.payload})
         case (ACTION_TYPES.SUBMITTING):
-        return Object.assign({}, {Submitting: action.payload})
+            return Object.assign({}, {Submitting: action.payload})
+        case (ACTION_TYPES.SOCKET_CONNECTED):
+            return Object.assign({} , state, {SocketConnected: true})
         default:
             return state;
     }
