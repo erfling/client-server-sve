@@ -12,7 +12,7 @@ module.exports = {
     entry: [
       './app/src/index.tsx'
     ],
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
     output: {
       path: path.resolve(ROOT_PATH, '/build'),
       publicPath: '/',
@@ -92,7 +92,7 @@ module.exports = {
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': '"production"'
       }),
-      //new webpack.optimize.AggressiveMergingPlugin(),//Merge chunks
-      //new UglifyJSPlugin()
+      new webpack.optimize.AggressiveMergingPlugin(),//Merge chunks
+      new UglifyJSPlugin()
     ]
   };
