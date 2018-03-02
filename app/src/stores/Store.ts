@@ -19,7 +19,7 @@ export default interface ApplicationStore{
         PendingDealOffer: IDeal;
         RejectedDealOffer: IDeal;
         AcceptedDealOffer: IDeal;
-
+        StateContent:any;
 
         //temp testing value
         EnvironmentalHealth: number

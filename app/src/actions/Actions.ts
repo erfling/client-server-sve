@@ -77,7 +77,9 @@ export enum ACTION_TYPES {
     DEAL_ACCEPTED = "DEAL_ACCEPTED",
     ACKNOWLEDGE_DEAL_REJECTION  = "ACKNOWLEDGE_DEAL_REJECTION",
 
-    RATINGS_SUBMITTED = "RATINGS_SUBMITTED"
+    RATINGS_SUBMITTED = "RATINGS_SUBMITTED",
+
+    GOT_CONTENT = "GOT_CONTENT"
 
 }
 
@@ -658,6 +660,33 @@ export const getCurrentGame = () => {
             setTimeout(() => {
                 dispatch({type:ACTION_TYPES.SUBMITTING, payload: false})
                 dispatch({type:ACTION_TYPES.GOT_CURRENT_GAME, payload: game})
+            }, 200);          
+        })
+        .catch(reason => {console.log(reason), alert("SAVE FAILED")})
+    }
+}
+
+export const getContent = (team: ITeam) => {
+    return (dispatch:Dispatch<Action<any>>) => {
+        dispatch({type:ACTION_TYPES.SUBMITTING, payload: true});
+        const url = baseRestURL + "sheets/content"
+        fetch(
+            url, 
+            {
+                method: "POST",
+                body: JSON.stringify(team), 
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            }
+        )
+        .then( (res:Response) => {
+            return res.json()//.then(r => r);
+        })
+        .then( (content: any) => {
+            setTimeout(() => {
+                dispatch({type:ACTION_TYPES.SUBMITTING, payload: false})
+                dispatch({type:ACTION_TYPES.GOT_CONTENT, payload: content})
             }, 200);          
         })
         .catch(reason => {console.log(reason), alert("SAVE FAILED")})

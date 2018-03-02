@@ -146,6 +146,7 @@ class TeamRouter
                     sheetSubmitVals[i] = [averagedRating["COMPELLING_EMOTIONAL_CONTENT"], averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"], averagedRating["STRONG_EXECUTIVE_PRESENCE"]];
             })
             console.log( "ALL",sheetSubmitVals)
+            //TODO: we need to wait to do this until all teams have submitted
             sheets.commitAnswers(sheetSubmitVals,"Round 3 Criteria!B2:D7")
             res.json(savedTeam);
         } catch(error) {
@@ -158,6 +159,8 @@ class TeamRouter
     public routes(){
         this.router.get("/", this.GetTeams);
         this.router.get("/:team", this.GetTeam);
+        this.router.get("/:team", this.GetTeam);
+        this.router.get("/content/state", this.GetTeam);
         this.router.post("/ratings", this.AddRatings)
         this.router.post("/", this.CreateTeam);
     }

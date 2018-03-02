@@ -11,13 +11,16 @@ interface DispatchProps {
     getPlayer:() => {}
     setWaterValues:(team:ITeam) => {}
     submitRatings:(teamWithRatings: ITeam) => {}
+    getContent: (team: ITeam) => {}
 }
 export interface State1Props{
     CurrentPlayer: ITeam;
+    StateContent: any
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): State1Props => {
     return {
         CurrentPlayer: state.GameData.CurrentPlayer,
+        StateContent: state.GameData.StateContent
     };
 };
 
@@ -25,7 +28,8 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
     return {
         getPlayer: () => dispatch( Actions.getPlayer() ),
         setWaterValues: (team: ITeam) => {dispatch(Actions.setWaterValues(team))},
-        submitRatings: (teamWithRatings: ITeam) => dispatch( Actions.submitRatings(teamWithRatings) )
+        submitRatings: (teamWithRatings: ITeam) => dispatch( Actions.submitRatings(teamWithRatings) ),
+        getContent: (team: ITeam) => dispatch( Actions.getContent( team ) )
     }
 }
 

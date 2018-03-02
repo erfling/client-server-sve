@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import  GoogleSheets  from '../models/GoogleSheets'; 
 import { resolve } from 'dns';
+import ITeam from '../../../shared/models/ITeam';
 
 
 class GoogleSheetsRouter
@@ -75,8 +76,37 @@ class GoogleSheetsRouter
       
     }
 
+    private async GetTeamContent(req: Request, res: Response){
+        const state = (req.body as ITeam).GameState;
+
+        const sheets = new GoogleSheets();
+        
+        var range = "";
+
+        switch(state){
+            case "3A":
+                range = "Round 3 Criteria!B9"
+            default:
+                break;
+        }
+
+        if(!range){
+            res.status(400);
+            res.json("No Game State provided")
+        }
+
+        const content = await sheets.GetSheetValues(null, range);
+
+        console.log(content);
+
+        res.json(content)
+
+
+    }
+
     public routes(){
         this.router.get("/", this.GetSheetValues);
+        this.router.post("/content", this.GetTeamContent);
     }
 }
 
