@@ -118,7 +118,6 @@ class TeamRouter
             var sheetSubmitVals:string[][] = [];
             gameTeams.forEach((t:Team, i) => {
                 var averagedRating:any = {};
-                
                 gameTeams
                     .filter(team => team.Slug != t.Slug && team.Ratings != undefined)
                     .forEach(team => {
@@ -139,24 +138,16 @@ class TeamRouter
                                 averagedRating["STRONG_EXECUTIVE_PRESENCE"] = parseInt(averagedRating["STRONG_EXECUTIVE_PRESENCE"] || 0);
                                 averagedRating["STRONG_EXECUTIVE_PRESENCE"] += innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"] / 5;
                             }
-
-                            console.log("WORD:", averagedRating);
                         }
                     });
 
                     TeamModel.findOneAndUpdate({Slug: t.Slug}, {MyAverageNationRating: averagedRating});
 
                     sheetSubmitVals[i] = [averagedRating["COMPELLING_EMOTIONAL_CONTENT"], averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"], averagedRating["STRONG_EXECUTIVE_PRESENCE"]];
-                    console.log("SOME", sheetSubmitVals[i]);
             })
-
             console.log( "ALL",sheetSubmitVals)
-
-
-            //sheets.commitAnswers([["10", "10", "10"]],"Round 3 Criteria!B2:D7")
-
+            sheets.commitAnswers(sheetSubmitVals,"Round 3 Criteria!B2:D7")
             res.json(savedTeam);
-
         } catch(error) {
             console.log("Blew up:", error);
             res.status(400);
