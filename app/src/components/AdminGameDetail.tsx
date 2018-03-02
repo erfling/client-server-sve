@@ -54,7 +54,7 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
         return this.props.Game.State ? buttonIdx == this.props.Game.State : buttonIdx == 1;
     }
 
-    states = ["1A", "1B", "1C", "2", "3A", "3B", "4", "5"];
+    states = ["1A", "1B", "1C", "2", "3A", "3B", "4A", "4B", "INTERMISSION", "4C", "5"];
 
     render() {
           

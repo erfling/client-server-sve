@@ -255,7 +255,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
 
                             <DiscreteColorLegend
                                 className="impact-chart"
-                                colors={["red", "orange", this.getColor()]}
+                                colors={["red", "orange", "#3366cc"]}
                                 orientation="horizontal"
                                 items={["Paris Accord", "Preindustrial Level", "Adjusted Temp Increase"]}
                             />
@@ -303,10 +303,16 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                                     data={this.getParsedData(0)}
                                 />
 
+                                <LineSeries
+                                    strokeWidth={3}
+                                    color="rgba(0,0,0,0)"
+                                    className="second-series"
+                                    data={this.getParsedData(4)}
+                                />
 
                                 <LineSeries
                                     className="third-series"
-                                    color={this.getColor()}
+                                    color="#3366cc"
                                     style={{
                                         //strokeDasharray: '10 2'
                                     }}
