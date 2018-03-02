@@ -7,6 +7,8 @@ import IDeal from './IDeal';
 import { Deal } from '../../api/src/models/Deal';
 import IRatings from './IRatings';
 import { Ratings } from '../../api/src/models/Ratings';
+import { Role } from '../../api/src/models/Role';
+import {RoleName} from './RoleName';
 
 export default interface ITeam extends IBaseClass {    
   Location?: string;  
@@ -15,14 +17,11 @@ export default interface ITeam extends IBaseClass {
   SheetId?: string;
   Players?: Ref<IPlayer>[] | IPlayer[];
   IsSelected?: boolean;
-  government: string;
-  industry: string;
-  healthcare: string;
-  agriculture: string;
   GameId: string;
   GameState: string;
   Nation: Ref<Nation> | INation;
   DealsProposedBy:Ref<Deal>[] | IDeal[];
   DealsProposedTo: Ref<Deal>[] | IDeal[];
   Ratings: Ratings | IRatings;
+  Roles:{ [R in RoleName]:Role };
 }

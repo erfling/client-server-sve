@@ -239,72 +239,39 @@ export default class GoogleSheets
         }).catch(e => {throw(e)})
     }
 
-    public commitAnswers(player:IPlayer, formValues:formValues):Promise<any> {
+    public commitAnswers(values:string[][], range:string, sheetId:string = null ):Promise<any> {
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth) => {
-            var values:any[][] = [
-                [
-                    null, parseInt(formValues.PeopleOnBoard), "test"
-                ],
-                [
-                    null, parseInt(formValues.LaunchDate)
-                ],
-                [
-                    null, formValues.Budget
-                ],
-                [
-                    null, null
-                ],
-                [
-                    null, null
-                ],
-                [
-                    null, null
-                ],
-                [
-                    null, null
-                ],
-                [
-                    null, formValues.RecruitingBudget
-                ],
-                [
-                    null, null
-                ]
-            ];
-            var data = [];
-            var range = player.SheetRange + "!A2:C10"
-            const sheets = google.sheets('v4');
-            /*
-            var body = {
-                data:data,
-                valueInputOption: 'USER_ENTERED'
-            }
-            */
-            var requestBody = {
-                resource: body,
-                spreadsheetId: '1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q',
-                auth:auth,
-            }
 
-            var data = [];
-            data.push({
+            const sheets = google.sheets('v4');
+
+
+            if(!sheetId)sheetId = '1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg';
+
+            var data = [{
                 range: range,
                 values: values
-            });
-            // Additional ranges to update ...
+            }];
+
+
             var body = {
                 data: data,
                 valueInputOption: 'USER_ENTERED'
             };
 
+            var requestBody = {
+                resource: body,
+                spreadsheetId: '1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg',
+                auth:auth,
+            }
+
+            console.log("data to submit", values);
           // console.log("TRYING TO SEND:",requestBody)
           return new Promise((resolve, reject) => {
-              sheets.spreadsheets.values.batchUpdate({
-                  spreadsheetId:'1IhiI6i9eiN-fIIaVedG0ODoMsso7oi34DFK-A9SAg4Q',
-                  resource: body,
-                  auth:auth
-              }, (err:any, result: any) => {
+              sheets.spreadsheets.values.batchUpdate(
+                  requestBody, 
+                  (err:any, result: any) => {
                   console.log(result);
                   if (err) {
                       console.log(err,"ERROR HERE")

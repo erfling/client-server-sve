@@ -7,6 +7,7 @@ import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom'; 
 import {Row, Col} from 'antd';
 import IRatings from '../../../shared/models/IRatings';
+import {Ratings} from '../../../api/src/models/Ratings';
 
 const WOTW = require("../img/The-War-of-the-Worlds-Radio-Broadcast.jpg");
 
@@ -43,8 +44,15 @@ export default class State3 extends React.Component<State3Props, {PlayerNotFound
         console.log("UPDATED")
     }
 
-    prepareRatings(formValues: IRatings){
-        this.props.submitRatings(Object.assign(this.props.CurrentPlayer, {Ratings: formValues}))
+    prepareRatings(formValues: any){
+        var ratings:IRatings = {};
+        Object.keys(formValues).forEach((o:string) => {
+            var nation:string = o.split("_")[0];
+            if (!(ratings as any)[nation]) (ratings as any)[nation] = {};
+            (ratings as any)[nation][o.substr(nation.length + 1)] = formValues[o];
+        })
+        this.props.submitRatings(Object.assign(this.props.CurrentPlayer, {Ratings: ratings}));
+        console.log(ratings);
     }
 
     render(){

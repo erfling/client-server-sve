@@ -1,8 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Team, TeamModel } from '../models/Team'; 
 import { Error } from 'mongoose';
-
-
+import INation from '../../../shared/models/INation';
+import { CriteriaName } from '../../../shared/models/CriteriaName';
+import GoogleSheets from '../models/GoogleSheets';
+import IRatings from '../../../shared/models/IRatings';
 class TeamRouter
 {
     //----------------------------------------------------------------------
@@ -99,20 +101,58 @@ class TeamRouter
         
     }
 
-    public AddRatings(req: Request, res: Response):void {
+    public async AddRatings(req: Request, res: Response):Promise<any> {
         console.log(req.body);
-        TeamModel.findByIdAndUpdate(req.body._id, {Ratings: req.body.Ratings}, {new: true})
-                    .populate({
-                        path:"Nation",
-                        populate: {
-                            path:"TradeOptions"     
+        try {
+            const savedTeam = await TeamModel.findByIdAndUpdate(req.body._id, {Ratings: req.body.Ratings}, {new: true})
+                    .populate("Nation")
+                    .then(t => t);
+            
+            const gameTeams = await TeamModel.find({GameId: {$in: savedTeam.GameId}})
+                    .populate("Nation")
+                    .then(t => t);
+
+            var numRatings = gameTeams.filter(t => t.Ratings && (<any>t.Ratings)[(<INation>savedTeam.Nation).Name]).length;
+            var innerTeamRatingForOuterTeam:any = {};
+            const sheets = new GoogleSheets();
+            var sheetSubmitVals:string[][] = [];
+            gameTeams.forEach((t:Team, i) => {
+                var averagedRating:any = {};
+                gameTeams
+                    .filter(team => team.Slug != t.Slug && team.Ratings != undefined)
+                    .forEach(team => {
+                        innerTeamRatingForOuterTeam = (<any>team.Ratings)[(<INation>t.Nation).Name];
+                        if (innerTeamRatingForOuterTeam) {
+                            if (innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"]) {
+                                innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"] = parseInt(innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"] || 0);
+                                averagedRating["COMPELLING_EMOTIONAL_CONTENT"] = parseInt(averagedRating["COMPELLING_EMOTIONAL_CONTENT"] || 0);
+                                averagedRating["COMPELLING_EMOTIONAL_CONTENT"] += innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"] / 5;
+                            }
+                            if (innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"]) {
+                                innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"] = parseInt(innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"] || 0);
+                                averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"] = parseInt(averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"] || 0);
+                                averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"] += innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"] / 5;
+                            }
+                            if (innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"]) {
+                                innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"] = parseInt(innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"] || 0);
+                                averagedRating["STRONG_EXECUTIVE_PRESENCE"] = parseInt(averagedRating["STRONG_EXECUTIVE_PRESENCE"] || 0);
+                                averagedRating["STRONG_EXECUTIVE_PRESENCE"] += innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"] / 5;
+                            }
                         }
-                    })
-                    .then(t => res.json(t))
-                    .catch(e => {
-                        res.status(400);
-                        res.json(e)
-                    })
+                    });
+
+                    TeamModel.findOneAndUpdate({Slug: t.Slug}, {MyAverageNationRating: averagedRating});
+
+                    sheetSubmitVals[i] = [averagedRating["COMPELLING_EMOTIONAL_CONTENT"], averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"], averagedRating["STRONG_EXECUTIVE_PRESENCE"]];
+            })
+            console.log( "ALL",sheetSubmitVals)
+            sheets.commitAnswers(sheetSubmitVals,"Round 3 Criteria!B2:D7")
+            res.json(savedTeam);
+        } catch(error) {
+            console.log("Blew up:", error);
+            res.status(400);
+            res.json(error);
+        }
     }
 
     public routes(){

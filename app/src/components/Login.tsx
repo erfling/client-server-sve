@@ -17,6 +17,7 @@ import IGame from '../../../shared/models/IGame';
 import Role from '../../../shared/models/IPlayer';
 import RoleDetail from './RoleDetail'
 import { Link, Route } from "react-router-dom";
+import {RoleName} from '../../../shared/models/RoleName';
 
 const Logo = require('../img/logo.png');
 const Hurricane = require('../img/hurricane-space-earth-horizontal.jpg');

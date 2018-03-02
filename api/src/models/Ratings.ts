@@ -5,27 +5,29 @@ import { TradeOption } from './TradeOption';
 import { Typegoose, prop, Ref } from 'typegoose';
 import * as mongoose from 'mongoose';
 import IRatings from "../../../shared/models/IRatings";
+import { CriteriaName } from "../../../shared/models/CriteriaName";
+
 
 export class Ratings extends BaseClass implements IRatings {
     
     @prop()
-    Australia?: number;
+    Australia?: { [C in CriteriaName]: 1|2|3|4|5|6|7|8|9|10 };
 
     @prop()
-    Bangladesh?: number;
+    Bangladesh?: { [C in CriteriaName]: 1|2|3|4|5|6|7|8|9|10 };
 
     @prop()
-    China?: number;
+    China?: { [C in CriteriaName]: 1|2|3|4|5|6|7|8|9|10 };
 
     @prop()
-    India?: number;
+    India?: { [C in CriteriaName]: 1|2|3|4|5|6|7|8|9|10 };
 
     @prop()
-    Japan?: number;
+    Japan?: { [C in CriteriaName]: 1|2|3|4|5|6|7|8|9|10 };
 
     @prop()
-    Vietnam?: number
+    Vietnam?: { [C in CriteriaName]: 1|2|3|4|5|6|7|8|9|10 };
     
 }
 
-export const DealModel = new Ratings().getModelForClass( Ratings, { existingMongoose: mongoose } )
+export const RatingsModel = new Ratings().getModelForClass( Ratings, { existingMongoose: mongoose } )

@@ -11,6 +11,9 @@ import { Deal } from './Deal';
 import IDeal from '../../../shared/models/IDeal';
 import IRatings from '../../../shared/models/IRatings';
 import { Ratings } from './Ratings';
+import { RoleName } from '../../../shared/models/RoleName';
+import { Role } from './Role';
+import { CriteriaName } from '../../../shared/models/CriteriaName';
 
 
 export class Team extends BaseClass implements ITeam
@@ -40,21 +43,6 @@ export class Team extends BaseClass implements ITeam
     Nation:  Ref<Nation> | INation;
 
     @prop()
-    CurrentRole: string;
-
-    @prop()
-    government: string;
-
-    @prop()
-    industry: string;
-
-    @prop()
-    healthcare: string;
-
-    @prop()
-    agriculture: string;
-
-    @prop()
     GameId: string;
 
     @prop()
@@ -71,6 +59,12 @@ export class Team extends BaseClass implements ITeam
 
     @prop()
     Ratings: Ratings | IRatings;
+
+    @prop()
+    MyAverageNationRating?: { [C in CriteriaName]:number };
+
+    @prop()
+    Roles:{ [R in RoleName]: Role };
 
   }
 

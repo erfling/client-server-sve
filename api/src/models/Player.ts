@@ -5,7 +5,8 @@ import { Team } from './Team';
 import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
 import IPlayer from '../../../shared/models/IPlayer';
-import {Role} from '../../../shared/models/IPlayer';
+import IRole from '../../../shared/models/IRole';
+import { RoleName } from '../../../shared/models/RoleName';
 
 
 //TODO: find out how to save nested teams, not just their refs. Possibly with pre method: https://github.com/szokodiakos/typegoose#pre
@@ -25,12 +26,7 @@ export class Player extends BaseClass implements IPlayer
     Name: string;
 
     @prop()
-    Role:Role;
-
-    @instanceMethod
-    getSheetRangeByRole():string {
-        return this.Role == Role.PRIVATE ? "SPACE X" : "NASA";
-    }
+    Role:RoleName;
 
     @prop()
     SheetRange:string;

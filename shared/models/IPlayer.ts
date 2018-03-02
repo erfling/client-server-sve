@@ -1,19 +1,13 @@
 import IBaseClass from './BaseModel';
 import ITeam from './ITeam';
-import IRole from './Role';
+import IRole from './IRole';
 import {  Ref } from 'typegoose';
+import { RoleName } from './RoleName';
 
-export enum Role{
-    PRIVATE = "PRIVATE",
-    ENERGY = "Energy",
-    HEALTH = "Health",
-    NGO    = "NGO",
-    GOVERNMENT    = "GOVERNMENT"
 
-}
 export default interface IPlayer extends IBaseClass {
-    Role?: Role;
-    getSheetRangeByRole?(): string;
+    Role?:RoleName;
+    getSheetRangeByRole?():string;
     SheetRange?:string;
     Name?:string;
     IsSelected?: boolean;

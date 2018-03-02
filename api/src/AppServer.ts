@@ -1,7 +1,6 @@
 import { DealModel, Deal } from './models/Deal';
 import { TradeOption, TradeOptionModel } from './models/TradeOption';
 import { selectRole, proposeDeal } from './../../app/src/actions/Actions';
-import { Role } from './../../shared/models/IPlayer';
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
@@ -46,6 +45,8 @@ import Item from 'antd/lib/list/Item';
 import INation from '../../shared/models/INation';
 import { ObjectID } from 'bson';
 import { Document } from 'mongoose';
+import { Role } from './models/Role';
+import { Ratings } from './models/Ratings';
 
 // AppServer class
 export default class AppServer
@@ -139,7 +140,6 @@ export default class AppServer
             .removeAllListeners()         
             .on(SocketEvents.DISCONNECT, this.onSocketDisconnect.bind(this, socket))
             .on(SocketEvents.SELECT_TEAM, this.onSocketSelectTeam.bind(this, socket))
-            .on(SocketEvents.SUBMIT_TO_SHEET, this.onSocketSubmitToSheet.bind(this, socket))
             .on(SocketEvents.UPDATE_TEAM, this.onSocketSaveTeam.bind(this, socket))
             .on(SocketEvents.JOIN_ROOM, this.onSocketJoinRoom.bind(this, socket))
             .on(SocketEvents.TO_ROOM_MESSAGE, this.onSocketRoomToRoomMessage.bind(this, socket))
@@ -165,7 +165,7 @@ export default class AppServer
                 path:"DealsProposedTo",
                 populate: {
                     path:"TradeOption"
-                }                            
+                }
             },
             {
                 path:"DealsProposedBy",
@@ -494,21 +494,6 @@ export default class AppServer
         })
     }
 
-    private onSocketSubmitToSheet(eventTarget:SocketIO.Socket, values:formValues):void {
-        TeamModel.findById(values.PlayerId).then((team:Team) => {
-            var sheets = new GoogleSheets();
-            sheets.commitAnswers(team, values).then(() => {
-                if (this.socketServer instanceof http.Server) {
-                    setTimeout(() => {
-                        sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((v:any) => {     
-                            eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, v);                   
-                        })
-                    }, 500);
-                }
-            })                    
-        })
-    }
-
     private onSocketSaveTeam(eventTarget:SocketIO.Socket, values:any):void{
         console.log("MESSAGE FROM CLIENT", eventTarget.nsp.name, values);
         TeamModel.findOneAndUpdate({Slug: eventTarget.nsp.name.replace('/', '')}, { values }, { new: true }).then((team) => {
@@ -641,11 +626,21 @@ export default class AppServer
                 Promise.all(promises).then(nations => res.json(nations))
             })
             .catch((reason) => {console.log(reason)})
-            
         });
 
         //login route
         mongoose.set('debug', true);
+
+        // sheets criteria
+        this.app.get('/sapien/api/getCriteria', (req, res) => {
+            const sheets = new GoogleSheets();
+            return sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Round 3 Criteria!B1:D1")
+            .then((criteria:any) => {
+                console.log("DIG:", criteria, Array.isArray(criteria));
+                res.json(criteria[0]);
+            })
+            .catch((reason:string) => {console.log("SOMETHING BLEW UP:", reason)});
+        });
 
         this.app.post('/sapien/api/changestate', (req, res) => {
             console.log(req.body._id);
