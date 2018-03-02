@@ -107,46 +107,47 @@ class TeamRouter
             const savedTeam = await TeamModel.findByIdAndUpdate(req.body._id, {Ratings: req.body.Ratings}, {new: true})
                     .populate("Nation")
                     .then(t => t);
-
+            
             const gameTeams = await TeamModel.find({GameId: {$in: savedTeam.GameId}})
+                    .populate("Nation")
+                    .then(t => t);
+
             var numRatings = gameTeams.filter(t => t.Ratings && (<any>t.Ratings)[(<INation>savedTeam.Nation).Name]).length;
-            var ratingsHolder:number[] = [];
-            var teamRatingForMyNation:any = {};
-            var ratings:{ [C in CriteriaName]:number } = null;
+            var innerTeamRatingForOuterTeam:any = {};
             const sheets = new GoogleSheets();
             var sheetSubmitVals:string[][] = [];
             gameTeams.forEach((t:Team, i) => {
                 var averagedRating:any = {};
+                
                 gameTeams
                     .filter(team => team.Slug != t.Slug && team.Ratings != undefined)
                     .forEach(team => {
-                        console.log(team.Ratings);
+                        innerTeamRatingForOuterTeam = (<any>team.Ratings)[(<INation>t.Nation).Name];
+                        if (innerTeamRatingForOuterTeam) {
+                            if (innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"]) {
+                                innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"] = parseInt(innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"] || 0);
+                                averagedRating["COMPELLING_EMOTIONAL_CONTENT"] = parseInt(averagedRating["COMPELLING_EMOTIONAL_CONTENT"] || 0);
+                                averagedRating["COMPELLING_EMOTIONAL_CONTENT"] += innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"] / 5;
+                            }
+                            if (innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"]) {
+                                innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"] = parseInt(innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"] || 0);
+                                averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"] = parseInt(averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"] || 0);
+                                averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"] += innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"] / 5;
+                            }
+                            if (innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"]) {
+                                innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"] = parseInt(innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"] || 0);
+                                averagedRating["STRONG_EXECUTIVE_PRESENCE"] = parseInt(averagedRating["STRONG_EXECUTIVE_PRESENCE"] || 0);
+                                averagedRating["STRONG_EXECUTIVE_PRESENCE"] += innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"] / 5;
+                            }
 
-                        teamRatingForMyNation = (<any>team.Ratings)[(<INation>t.Nation).Name];
-                        if(teamRatingForMyNation){
-                            if (teamRatingForMyNation["Compelling Emotional Content"]) {
-                                teamRatingForMyNation["Compelling Emotional Content"] = parseInt(teamRatingForMyNation["Compelling Emotional Content"] || 0);
-                                averagedRating["Compelling Emotional Content"] = parseInt(averagedRating["Compelling Emotional Content"] || 0);
-                                averagedRating["Compelling Emotional Content"] += teamRatingForMyNation["Compelling Emotional Content"] / 5;
-                            }
-                            if (teamRatingForMyNation["Demonstrated Systemic Impact"]) {
-                                teamRatingForMyNation["Demonstrated Systemic Impact"] = parseInt(teamRatingForMyNation["Demonstrated Systemic Impact"] || 0);
-                                averagedRating["Demonstrated Systemic Impact"] = parseInt(averagedRating["Demonstrated Systemic Impact"] || 0);
-                                averagedRating["Demonstrated Systemic Impact"] += teamRatingForMyNation["Demonstrated Systemic Impact"] / 5;
-                            }
-                            if (teamRatingForMyNation["Strong Executive Presence"]) {
-                                teamRatingForMyNation["Strong Executive Presence"] = parseInt(teamRatingForMyNation["Strong Executive Presence"] || 0);
-                                averagedRating["Strong Executive Presence"] = parseInt(averagedRating["Strong Executive Presence"] || 0);
-                                averagedRating["Strong Executive Presence"] += teamRatingForMyNation["Strong Executive Presence"] / 5;
-                            }
+                            console.log("WORD:", averagedRating);
                         }
                     });
-                
 
-                    TeamModel.findOneAndUpdate({Slug: t.Slug}, {Ratings: averagedRating});
+                    TeamModel.findOneAndUpdate({Slug: t.Slug}, {MyAverageNationRating: averagedRating});
 
-                   sheetSubmitVals[i] = [averagedRating["Compelling Emotional Content"], averagedRating["Demonstrated Systemic Impact"], averagedRating["Strong Executive Presence"]];
-                   console.log("SOME", sheetSubmitVals[i])
+                    sheetSubmitVals[i] = [averagedRating["COMPELLING_EMOTIONAL_CONTENT"], averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"], averagedRating["STRONG_EXECUTIVE_PRESENCE"]];
+                    console.log("SOME", sheetSubmitVals[i]);
             })
 
             console.log( "ALL",sheetSubmitVals)
