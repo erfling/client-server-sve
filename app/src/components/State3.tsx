@@ -74,7 +74,7 @@ export default class State3 extends React.Component<State3Props, {PlayerNotFound
                     {this.props.CurrentPlayer.GameState == "3B" 
                         ?    
                         <Row className="form-wrapper" gutter={{lg:"1", xl:"1"}}>
-                            <Col sm={23} md={16} lg={12}>
+                            <Col sm={23} md={23} lg={12}>
                                 <RatingsForm onSubmit={this.prepareRatings.bind(this)}/>
                             </Col> 
                         </Row>                 
@@ -84,7 +84,7 @@ export default class State3 extends React.Component<State3Props, {PlayerNotFound
                             <h3>DECEIVING THE NATION</h3>
                             <p style={{fontWeight:"lighter", textAlign:"center"}}>By Akwugo St. Claire,&nbsp; February 22, {new Date().getFullYear() + 2}</p>
                         
-                            {this.props.StateContent ? <Col sm={23} md={16} lg={12}>
+                            {this.props.StateContent ? <Col sm={23} md={23} lg={12}>
                                 {this.props.StateContent[0][0].split("\n").map((c:string, i:number) => {
                                     return c == c.toUpperCase() ? <h3>{c}</h3> : i == 0 ? <p><em><strong>{c}</strong></em></p> : <p>{c}</p>
                                 })}
