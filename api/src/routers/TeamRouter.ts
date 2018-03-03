@@ -143,11 +143,11 @@ class TeamRouter
 
                     TeamModel.findOneAndUpdate({Slug: t.Slug}, {MyAverageNationRating: averagedRating});
 
-                    sheetSubmitVals[i] = [averagedRating["COMPELLING_EMOTIONAL_CONTENT"], averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"], averagedRating["STRONG_EXECUTIVE_PRESENCE"]];
+                    sheetSubmitVals[i] = [averagedRating["COMPELLING_EMOTIONAL_CONTENT"], averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"], averagedRating["STRONG_EXECUTIVE_PRESENCE"], [(<INation>t.Nation).Name]];
             })
             console.log( "ALL",sheetSubmitVals)
             //TODO: we need to wait to do this until all teams have submitted
-            sheets.commitAnswers(sheetSubmitVals,"Round 3 Criteria!B2:D7")
+            sheets.commitAnswers(sheetSubmitVals.sort((a,b) =>  a[4] > b[4] ? 1: 0).map(v => [ v[0], v[1], v[2] ] ),"Round 3 Criteria!B2:D7")
             res.json(savedTeam);
         } catch(error) {
             console.log("Blew up:", error);
