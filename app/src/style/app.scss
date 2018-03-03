@@ -289,3 +289,20 @@ h4{font-size: 160%}
     }
 }
 
+.role-trades{
+    padding: 0 10px 35px;
+    box-shadow: 0 0 20px 0 rgba(0,0,0,.1);
+    border: 1px solid rgba(0, 187, 255, 0.64);
+    padding-bottom:25px;
+    transition: 1s border;
+    label:not(.ant-radio-button-wrapper){
+        text-align: center;
+        display: block;
+        font-weight: normal;
+        font-size: 1em;
+        >span{
+            margin-left:10px;
+        }
+    }
+
+}

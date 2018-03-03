@@ -104,34 +104,53 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                                 
                             </Col> 
                         </Row>
-                        : null               
+                        :   <pre>TODO: replace with content.{JSON.stringify(this.props.SelectedRole, null, 2)}</pre>
+               
                     }
 
                     {this.props.CurrentPlayer.GameState == "4B" && this.props.SelectedRole ? 
                         <Row className="form-wrapper">
                             <Col sm={23} md={16} lg={12}>
+                                TODO: replace with content.
                                 <pre>{JSON.stringify(this.props.SelectedRole, null, 2)}</pre>
                             </Col> 
                         </Row> : null                  
                     }
 
                     {this.props.CurrentPlayer.GameState == "4C" && this.props.SelectedRole ? 
-                        <Row className="form-wrapper">
-                            <Col sm={23} md={16} lg={12}>
-                                {Object.keys(this.props.SelectedRole.RoleTradeRatings).map((rating, i) => {
+                        <Row className="form-wrapper" type="flex" justify="center" >
+                            <Col sm={23} md={23} lg={20}>
+                                {Object.keys(this.props.SelectedRole.RoleTradeRatings).sort((a,b) => {return a > b ? 1 : 0}).map((rating, i) => {
                                     return (
-                                        <div>
-                                            <label style={{display: "block"}}>{(RoleRatingCategories as any)[rating]} MARKET</label>
+                                        <Row className="form-wrapper role-trades"  type="flex" justify="center" >
+                                            <label>
+                                                {(RoleRatingCategories as any)[rating]} MARKET
+                                                {(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus == -1 && 
+                                                    <span>
+                                                        <Icon  type="hourglass" />Waiting...
+                                                    </span>
+                                                }
+                                                {(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus == 0 && 
+                                                    <span>
+                                                        <Icon type="close-circle-o" style={{color:"red"}} />
+                                                    </span>
+                                                }
+                                                {(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus == 1 && 
+                                                    <span>
+                                                        <Icon type="check-circle-o" style={{color:"green"}}/>
+                                                    </span>
+                                                }
+                                            </label>
                                             <RadioGroup 
-                                                defaultValue={(this.props.SelectedRole.RoleTradeRatings as any)[rating]} 
+                                                defaultValue={(this.props.SelectedRole.RoleTradeRatings as any)[rating].Value} 
                                                 size="large"
-                                                onChange={e => this.props.submitRoleRating(this.props.SelectedRole.Name, this.props.CurrentPlayer.Slug, {[rating]: e.target.value})}
+                                                onChange={e => this.props.submitRoleRating(this.props.SelectedRole.Name, this.props.CurrentPlayer.Slug, {[rating]: {Value: e.target.value, AgreementStatus:(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus }})}
                                             >
                                                 <RadioButton value={1}>Country First</RadioButton>
                                                 <RadioButton value={2}>Region First</RadioButton>
                                                 <RadioButton value={3}>Planet First</RadioButton>
                                             </RadioGroup>
-                                        </div>
+                                        </Row>
                                     )
                                 })}
                             </Col> 

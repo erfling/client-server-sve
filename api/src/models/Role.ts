@@ -12,7 +12,7 @@ export class Role extends BaseClass implements IRole
     Name:RoleName;
 
     @prop()
-    RoleTradeRatings:{ [R in RoleRatingCategories]: null|1|2|3 };
+    RoleTradeRatings:{ [R in RoleRatingCategories]: {Value: null|1|2|3, AgreementStatus: -1|0|1 }};
 }
 
 export const RoleModel = new Role().getModelForClass( Role, { existingMongoose: mongoose } )

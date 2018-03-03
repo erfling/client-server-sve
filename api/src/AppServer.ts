@@ -501,7 +501,7 @@ export default class AppServer
                     }
                     Object.keys(RoleRatingCategories).forEach((r) => {
                         console.log(r);
-                        (t.Roles as any)[item].RoleTradeRatings[r] = null;
+                        (t.Roles as any)[item].RoleTradeRatings[r] = {Value: null, AgreementStatus: null};
                     })
                 }
 
@@ -516,23 +516,95 @@ export default class AppServer
         }
     }
 
-    private async submitRatingByRole(eventTarget: SocketIO.Socket, roleName: string, teamSlug: string, rating: {[index:string]: 1|2|3}){
+    private async submitRatingByRole(eventTarget: SocketIO.Socket, roleName: string, teamSlug: string, rating: {[index:string]:{Value: 1|2|3, InAgreement:boolean}}){
+        const valueToAssign = Object.keys(rating)[0];
         const team = await TeamModel.findOne({Slug: teamSlug})
         var t = team.toObject();
-        var teamRolesRole = t.Roles[roleName];
-        t.Roles[roleName] = Object.assign(teamRolesRole, rating);
-        const updatedTeam = await TeamModel.findOneAndUpdate({Slug: teamSlug}, t)
+
+        t.Roles[roleName].RoleTradeRatings[valueToAssign] = rating[valueToAssign];
+
+
+        const updatedTeam = await TeamModel.findOneAndUpdate({Slug: teamSlug}, t, {new: true})
+        const ratingName:string = Object.keys(rating)[0];
 
         //TODO: check if other role has submitted the same thing
-        //if not emit waiting for other team to role room
 
-        //determing whethere there is agreement
-        //if not, emit no agreement event to whole team
-        //if so, emit agreement event to whole team
+        var otherRole = roleName == RoleName.BANK ? RoleName.MINISTER_OF_ENERGY : RoleName.BANK;
 
-        //if agreement, check team to see if all are agreed
-        //if all agreed submit to sheets
-        
+        const roleRoomName:string = teamSlug + "_" + roleName;        
+        const otherRoleRoomName:string = teamSlug + "_" + otherRole;        
+        if( updatedTeam.Roles[otherRole] && (<any>updatedTeam.Roles[otherRole].RoleTradeRatings)[valueToAssign].Value ){
+            console.log("FOUND MATCHING ANSWER TO CHECK")
+            //var isAgreed = correspondingAnswers.every(answer => answer[ratingName].Value == rating[ratingName].Value
+            if((<any>updatedTeam.Roles[otherRole].RoleTradeRatings)[valueToAssign].Value == rating[valueToAssign].Value){
+                //we have a match
+                console.log("ROLES IN AGREEMENT")
+                t.Roles[roleName].RoleTradeRatings[valueToAssign].AgreementStatus = 1;
+                t.Roles[otherRole].RoleTradeRatings[valueToAssign].AgreementStatus = 1;
+
+            } else {
+                //we don't have a match
+                console.log("ROLES NOT IN AGREEMENT")
+                t.Roles[roleName].RoleTradeRatings[valueToAssign].AgreementStatus = 0;
+                t.Roles[otherRole].RoleTradeRatings[valueToAssign].AgreementStatus = 0;
+            }
+            const newlyUpdatedTeam = await TeamModel.findOneAndUpdate({Slug: teamSlug}, t, {new: true}).populate("Nation");
+            console.log((<any>newlyUpdatedTeam).Roles[otherRole]);
+            //emit to both roles on the team
+            eventTarget.nsp.to(roleRoomName).emit(SocketEvents.ROLE_RETURNED, (<any>newlyUpdatedTeam).Roles[roleName])
+            eventTarget.nsp.to(otherRoleRoomName).emit(SocketEvents.ROLE_RETURNED, (<any>newlyUpdatedTeam).Roles[otherRole])
+
+
+            //the two params are in agreement. now we check to see if all are for the given team.
+            //we will have already determined whether there is agreement on each param, so just check the AgreementStatus prop
+            var allAgree = Object.keys(newlyUpdatedTeam.Roles[RoleName.BANK].RoleTradeRatings).every((rating:RoleRatingCategories) => {
+                return newlyUpdatedTeam.Roles[RoleName.BANK].RoleTradeRatings[rating].AgreementStatus == 1;
+            })
+            if(allAgree){
+                //get our sheet submit range. Magic strings represent ranges in google sheets model based on country
+                var range = "Round 4!";
+                switch((<INation>newlyUpdatedTeam.Nation).Name){
+                    case "Australia":
+                        range += "B14:C17";
+                        break;
+                    case "Bangladesh":
+                        range += "D14:E17";
+                        break;
+                    case "China":
+                        range += "F14:G17";
+                        break;
+                    case "India":
+                        range += "H14:I17";
+                        break;
+                    case "Japan":
+                        range += "J14:K17";
+                        break;
+                    case "Vietnam":
+                        range += "L14:M17";
+                        break;
+                    default:                    
+                        break;
+                }
+
+                var values = Object.keys(newlyUpdatedTeam.Roles[RoleName.BANK].RoleTradeRatings).map((rating:RoleRatingCategories) => {
+                    return [newlyUpdatedTeam.Roles[RoleName.BANK].RoleTradeRatings[rating].Value.toString(), newlyUpdatedTeam.Roles[RoleName.MINISTER_OF_ENERGY].RoleTradeRatings[rating].Value.toString()];
+                })
+
+                console.log(values)
+
+                this.sheets.commitAnswers( values, range );
+            }
+        } 
+        //if not emit waiting for other team to role room back to submitting role
+        else{
+            console.log("DIDN'T FIND MATCHING ANSWER TO CHECK")
+            //update the team again to reflect that we have submitted, but have no agreement
+            t.Roles[roleName].RoleTradeRatings[valueToAssign].AgreementStatus = -1;
+            console.log("HERE", t.Roles[roleName].RoleTradeRatings[valueToAssign])
+            const newlyUpdatedTeam = await TeamModel.findOneAndUpdate({Slug: teamSlug}, t, {new: true});
+            eventTarget.nsp.to(roleRoomName).emit(SocketEvents.ROLE_RETURNED, (<any>newlyUpdatedTeam).Roles[roleName])
+        }
+ 
     }
 
     private onSocketRoomToRoomMessage(eventTarget:SocketIO.Socket, fromRoom:string, toRoom:string, msg:string):void {

@@ -190,6 +190,13 @@ export const createTeamSocket = (team:ITeam) => {
                     type:ACTION_TYPES.SOCKET_CONNECTED
                 } )
             })
+            .on(SocketEvents.ROLE_RETURNED, (role:IRole) => {
+                console.log("server returned", role)
+                dispatch( {
+                    type: ACTION_TYPES.ROLE_SELECTED,
+                    payload: role
+                } );
+            })
         }
     }
 }

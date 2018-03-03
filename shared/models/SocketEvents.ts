@@ -28,5 +28,8 @@ export enum SocketEvents{
     JOIN_ROLE = "JOIN_ROLE",
     HAS_CONNECTED = "HAS_CONNECTED",
 
-    SUBMIT_ROLE_RATING = "SUBMIT_ROLE_RATING"
+    //International Negotiation Round Events
+    SUBMIT_ROLE_RATING = "SUBMIT_ROLE_RATING",
+    ROLE_RETURNED = "ROLE_RETURNED",
+
 }
