@@ -790,12 +790,9 @@ export default class AppServer
                                 GameState: 2
                             }
                             TeamModel.findByIdAndUpdate(teams[i]._id, update, {new: true}).populate(
-                                {
-                                    path:"Nation",
-                                    populate: {
-                                        path:"TradeOptions"
-                                    }
-                                }
+                                [
+                                    "Nation", "DealsProposedTo", "DealsProposedBy"
+                                ]
                             ).then((t) => {
                                 this.sheets.GetNationContent((t.Nation as INation).Name).then(c => {
                                     (t.Nation as INation).Content = c;
@@ -820,7 +817,11 @@ export default class AppServer
                 } else {
                     console.log("GAME STATE IS NOW", game.State);
                     (<ITeam[]>game.Teams).forEach((t:ITeam) => {
-                        var promise = TeamModel.findByIdAndUpdate(t._id, {GameState: game.State}, {new: true}).then(t => t)
+                        var promise = TeamModel.findByIdAndUpdate(t._id, {GameState: game.State}, {new: true}).populate(
+                            [
+                                "Nation", "DealsProposedTo", "DealsProposedBy"
+                            ]
+                        ).then(t => t)
                         promises.push(promise)
                     })
 

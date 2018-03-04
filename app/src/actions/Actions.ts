@@ -77,6 +77,7 @@ export enum ACTION_TYPES {
     DEAL_REJECTED = "DEAL_REJECTED",
     DEAL_ACCEPTED = "DEAL_ACCEPTED",
     ACKNOWLEDGE_DEAL_REJECTION  = "ACKNOWLEDGE_DEAL_REJECTION",
+    ROUND_2_WON = "ROUND_2_WON",
 
     RATINGS_SUBMITTED = "RATINGS_SUBMITTED",
 
@@ -172,6 +173,10 @@ export const createTeamSocket = (team:ITeam) => {
             .on(SocketEvents.DASHBOARD_UPDATED,(dashboardData:any) => {
                 console.log("DASHBOARD_UPDATED")
                 dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED, dashboardData));
+            })
+            .on(SocketEvents.DASHBOARD_UPDATED_WIN,(dashboardData:any) => {
+                console.log("DASHBOARD_UPDATED WITH VICTORY")
+                dispatch({type:ACTION_TYPES.ROUND_2_WON});
             })
             .on(SocketEvents.JOIN_ROLE, (role:IRole) => {
                 dispatch( {

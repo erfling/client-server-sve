@@ -1,3 +1,4 @@
+import { CriteriaName } from './../../../shared/models/CriteriaName';
 import { Router, Request, Response, NextFunction } from 'express';
 import * as cors from 'cors';
 import { Game, GameModel } from '../models/Game'; 
@@ -11,6 +12,7 @@ import Item from 'antd/lib/list/Item';
 import GoogleSheets from '../models/GoogleSheets'
 import INation from '../../../shared/models/INation';
 import { Ratings } from '../models/Ratings';
+import IRatings from '../../../shared/models/IRatings';
 
 
 class GameRouter
@@ -139,8 +141,6 @@ class GameRouter
             var existingTeamRatings:Ratings = (<Ratings>(<IGame>game).TeamRatings);
             if(!existingTeamRatings)existingTeamRatings = new Ratings();
 
-        
-
             Object.keys(newTeamRatings).forEach(nationKey => {
                 var newTeamRatingNation:any = (<any>newTeamRatings)[nationKey];
                 Object.keys((<any>newTeamRatings)[nationKey]).forEach(criteria => {
@@ -158,54 +158,46 @@ class GameRouter
                 (<any>existingTeamRatings)[nationKey]['numVotes']++;
             })
             
-            console.log("!!!Rating for saving:", existingTeamRatings);
-            const savedTeamRatings = await GameModel.findByIdAndUpdate(req.body.GameId, {TeamRatings: existingTeamRatings}, {new:true});
+            const savedGame = await GameModel.findByIdAndUpdate(req.body.GameId, {TeamRatings: existingTeamRatings}, {new:true});
 
-            /*
+            var keys = Object.keys((savedGame.TeamRatings as IRatings));
+
+            var sheetValues = keys.sort((a,b) => a > b ? 1 : 0).map((countryName: keyof IRatings) => {
+                    return [ (savedGame.TeamRatings[countryName] as any)[CriteriaName.COMPELLING_EMOTIONAL_CONTENT] / (savedGame.TeamRatings[countryName] as any)['numVotes'],
+                             (savedGame.TeamRatings[countryName] as any)[CriteriaName.DEMONSTRATED_SYSTEMIC_IMPACT] / (savedGame.TeamRatings[countryName] as any)['numVotes'],
+                             (savedGame.TeamRatings[countryName] as any)[CriteriaName.STRONG_EXECUTIVE_PRESENCE] / (savedGame.TeamRatings[countryName] as any)['numVotes']
+                           ]
+            })
+
+            //find missing country
+            if(sheetValues.length < 6){
+                var nations =  [
+                    "Australia",
+                    "Bangladesh",
+                    "China",
+                    "India",
+                    "Japan",
+                    "Vietnam"
+                ]
+
+                //if there are any missing nations, push in an array of empties of the right length
+                nations.forEach((nation:string, i) => {
+                    if( keys.indexOf(nation) == -1 ){
+                        sheetValues.splice(i, 0, [null, null, null])
+                    }
+                });
+            }
+            
+            new GoogleSheets().commitAnswers(sheetValues,"Round 3 Criteria!B2:D7")
+
+            console.log(sheetValues);
+
+            
             const savedTeam = await TeamModel.findByIdAndUpdate(req.body._id, {Ratings: req.body.Ratings}, {new: true})
                     .populate("Nation")
                     .then(t => t);
             
-            const gameTeams = await TeamModel.find({GameId: {$in: savedTeam.GameId}})
-                    .populate("Nation")
-                    .then(t => t);
-
-            var innerTeamRatingForOuterTeam:any = {};
-            const sheets = new GoogleSheets();
-            var sheetSubmitVals:string[][] = [];
-            gameTeams.forEach((t:Team, i) => {
-                var averagedRating:any = {};
-                gameTeams
-                    .filter(team => team.Slug != t.Slug && team.Ratings != undefined)
-                    .forEach(team => {
-                        innerTeamRatingForOuterTeam = (<any>team.Ratings)[(<INation>t.Nation).Name];
-                        if (innerTeamRatingForOuterTeam) {
-                            if (innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"]) {
-                                innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"] = parseInt(innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"] || 0);
-                                averagedRating["COMPELLING_EMOTIONAL_CONTENT"] = parseInt(averagedRating["COMPELLING_EMOTIONAL_CONTENT"] || 0);
-                                averagedRating["COMPELLING_EMOTIONAL_CONTENT"] += innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"] / 5;
-                            }
-                            if (innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"]) {
-                                innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"] = parseInt(innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"] || 0);
-                                averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"] = parseInt(averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"] || 0);
-                                averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"] += innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"] / 5;
-                            }
-                            if (innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"]) {
-                                innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"] = parseInt(innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"] || 0);
-                                averagedRating["STRONG_EXECUTIVE_PRESENCE"] = parseInt(averagedRating["STRONG_EXECUTIVE_PRESENCE"] || 0);
-                                averagedRating["STRONG_EXECUTIVE_PRESENCE"] += innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"] / 5;
-                            }
-                        }
-                    });
-
-                    TeamModel.findOneAndUpdate({Slug: t.Slug}, {MyAverageNationRating: averagedRating});
-
-                    sheetSubmitVals[i] = [averagedRating["COMPELLING_EMOTIONAL_CONTENT"], averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"], averagedRating["STRONG_EXECUTIVE_PRESENCE"], [(<INation>t.Nation).Name]];
-            })
-            console.log( "ALL",sheetSubmitVals)
-            //TODO: we need to wait to do this until all teams have submitted
-            sheets.commitAnswers(sheetSubmitVals.sort((a,b) =>  a[4] > b[4] ? 1: 0).map(v => [ v[0], v[1], v[2] ] ),"Round 3 Criteria!B2:D7")
-            res.json(savedTeam);*/
+            res.json(req.body);
         } catch(error) {
             console.log("Blew up:", error);
             res.status(400);

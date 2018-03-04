@@ -37,6 +37,7 @@ interface State2Props {
     acknowledgeDealRejection: () => {}
     match: any;
     Dashboard: any;
+    Round2Won: boolean;
 }
 
 interface IClientTradeOption {
@@ -45,7 +46,7 @@ interface IClientTradeOption {
 }
 
 const Beach = require("../img/Bangladesh_beach.jpeg")
-export default class State2 extends React.Component<State2Props, { PlayerNotFound: boolean, ParallaxByNation: any, ShowChart: boolean, ChosenCountry: string, TradeOptions: string[], SelectionOptions: IClientTradeOption[], RejectedDeal: boolean }> {
+export default class State2 extends React.Component<State2Props, { PlayerNotFound: boolean, ParallaxByNation: any, ShowChart: boolean, ChosenCountry: string, TradeOptions: string[], SelectionOptions: IClientTradeOption[], RejectedDeal: boolean, showVictoryModal: boolean, victoryModalShown: boolean }> {
 
     componentWillMount() {
         this.setState({ PlayerNotFound: false, ShowChart: false })
@@ -58,6 +59,15 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
             }
         }
         window.scrollTo(0, 0);
+    }
+
+    componentDidUpdate(){
+        if(this.props.Dashboard && this.props.Dashboard.length > 100 && this.props.Dashboard[100] < 1 && !this.state.showVictoryModal && !this.state.victoryModalShown){
+            this.setState(Object.assign({}, this.state, {
+                showVictoryModal: true,
+                victoryModalShown: true
+            }));
+        }
     }
 
     prepDeal() {
@@ -124,12 +134,10 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
             "India",
             "Japan",
             "Vietnam"
-        ]
+        ]   .filter(nation => nation != (this.props.CurrentPlayer.Nation as INation).Name)
             .map(s => {
                 return {
-                    text: s != (this.props.CurrentPlayer.Nation as INation).Name ?
-                        "Invest $" + (this.props.CurrentPlayer.DealsProposedTo.length ? ((((this.props.CurrentPlayer.DealsProposedTo[0]) as IDeal).Value + 1) * 10) : "10") + " billion in " + s
-                        : "Invest $" + (this.props.CurrentPlayer.DealsProposedTo.length ? ((((this.props.CurrentPlayer.DealsProposedTo[0]) as IDeal).Value + 1) * 10) : "10") + " billion in your own program",
+                    text: "Invest $" + (this.props.CurrentPlayer.DealsProposedTo.length ? ((((this.props.CurrentPlayer.DealsProposedTo[0]) as IDeal).Value + 1) * 10) : "10") + " billion in " + s,
                     value: s
                 }
             })
@@ -169,6 +177,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
         return this.props.CurrentPlayer.DealsProposedTo.length ? ((this.props.CurrentPlayer.DealsProposedTo[0] as IDeal).Value + 1) * 10 : 10
     }
 
+
     render() {
         if (!this.props.CurrentPlayer) return <div />
 
@@ -194,8 +203,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                         <Modal
                             title={
                                 this.props.PendingDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug
-                                    ? <p>Your team offered a trade deal to {this.props.PendingDealOffer.ToNationName}.</p>
-                                    : <p>{this.props.PendingDealOffer.FromNationName} wants to make a trade deal.</p>
+                                    ? <span>Your team offered a trade deal to {this.props.PendingDealOffer.ToNationName}.</span>
+                                    : <span>{this.props.PendingDealOffer.FromNationName} wants to make a trade deal.</span>
                             }
                             visible={true}
                             width="95%"
@@ -219,8 +228,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                         <Modal
                             title={
                                 this.props.RejectedDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug
-                                    ? <p>Your trade deal with {this.props.RejectedDealOffer.ToNationName} was rejected{!this.props.RejectedDealOffer.CanAccept && " by the agency"}.</p>
-                                    : <p>Your trade deal with {this.props.RejectedDealOffer.FromNationName} was rejected{!this.props.RejectedDealOffer.CanAccept && " by the agency"}.</p>
+                                    ? <span>Your trade deal with {this.props.RejectedDealOffer.ToNationName} was rejected{!this.props.RejectedDealOffer.CanAccept && " by the agency"}.</span>
+                                    : <span>Your trade deal with {this.props.RejectedDealOffer.FromNationName} was rejected{!this.props.RejectedDealOffer.CanAccept && " by the agency"}.</span>
                             }
                             visible={true}
                             width="80%"
@@ -231,13 +240,13 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
 
                     }
 
-                    {this.props.AcceptedDealOffer ?
+                    {this.props.AcceptedDealOffer && this.props.AcceptedDealOffer.ToNationName != "India" ?
 
                         <Modal
                             title={
                                 this.props.AcceptedDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug
-                                    ? <p>Your trade deal with {this.props.AcceptedDealOffer.ToNationName} was accepted.</p>
-                                    : <p>Your trade deal with {this.props.AcceptedDealOffer.FromNationName} was accepted.</p>
+                                    ? <span>Your trade deal with {this.props.AcceptedDealOffer.ToNationName} was accepted.</span>
+                                    : <span>Your trade deal with {this.props.AcceptedDealOffer.FromNationName} was accepted.</span>
                             }
                             visible={true}
                             width="80%"
@@ -337,7 +346,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                             {(this.state.TradeOptions ? this.state.TradeOptions : this.getTradeOptionContent()).map((o: string) => <p>{this.parseMessage(o)}</p>)}
                         </Row>
 
-                        {!this.props.CurrentPlayer.DealsProposedBy.length && <Row style={{ background: "#fff", padding: "10px", marginTop: '25px;', boxShadow: '0 0 10px 0 rgba(0,0,0,.3)' }}>
+                        {!this.props.CurrentPlayer.DealsProposedBy.length && typeof this.props.CurrentPlayer.DealsProposedTo[0] != "string" ? 
+                        <Row style={{ background: "#fff", padding: "10px", marginTop: '25px;', boxShadow: '0 0 10px 0 rgba(0,0,0,.3)' }}>
                             <p style={{ marginTop: '10px !important' }}>Propose a Trade</p>
                             <Select
                                 style={{ width: '100%' }}
@@ -348,13 +358,13 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                             </Select>
                             {this.state && <Button style={{ marginTop: '10px' }} className="game-button block" onClick={e => this.prepDeal()} disabled={!this.state.ChosenCountry}>Propose Trade</Button>}
 
-                        </Row>}
+                        </Row> : null}
 
 
 
 
                         <Row>
-                            {this.props.CurrentPlayer.DealsProposedTo.length ?
+                            {this.props.CurrentPlayer.DealsProposedTo.length && typeof this.props.CurrentPlayer.DealsProposedTo[0] != "string" ?
                                 <ul>
                                     {(this.props.CurrentPlayer.DealsProposedTo as IDeal[]).map(d => {
 
@@ -387,6 +397,21 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                     </Col>
 
                 </Row>
+
+
+                {this.props.Dashboard && this.props.Dashboard.length > 100 && this.props.Dashboard[100] < 1 ? 
+                <Modal
+                    className="victory-modal"
+                    visible={ this.props.Dashboard[100] < 1 && this.state.showVictoryModal }
+                    width={"95%"}
+                    footer={[<Button onClick={e => this.setState(Object.assign({}, this.state, {
+                        showVictoryModal: false
+                    }))}>OK</Button>]}
+                >
+                    <Icon type="trophy" style={{color:"green"}} />
+                    <p>Congratulations. You've worked with the international community to lower temperatures in 2100 to pre-industrial levels.</p>
+                </Modal> : null}
+
             </GameWrapper>
             :
             <Row style={{height: '100vh'}} type="flex" justify="center" >

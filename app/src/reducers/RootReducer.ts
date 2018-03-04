@@ -31,7 +31,8 @@ const initialState: ApplicationStore = {
         Loading: false,
         DashboardUpdating: true,
         Submitting:false,
-        SocketConnected:false
+        SocketConnected:false,
+        Round2Won: false
     },
     form:{}
 };
@@ -182,7 +183,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
         case ACTION_TYPES.GAME_STATE_CHANGED: 
             localStorage.setItem('SVE_PLAYER', JSON.stringify(action.payload));
-            return Object.assign({}, state, {CurrenPlayer: Object.assign({}, state.CurrentPlayer, {GameState: action.payload.GameState})})
+            return Object.assign({}, state, {CurrentPlayer: Object.assign({}, state.CurrentPlayer, {GameState: action.payload.GameState})})
         case ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE: 
             return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
         case ACTION_TYPES.RATINGS_SUBMITTED:
@@ -209,6 +210,8 @@ export const Application = ( state = initialState.Application, action: Action<{t
             return Object.assign({}, {Submitting: action.payload})
         case (ACTION_TYPES.SOCKET_CONNECTED):
             return Object.assign({} , state, {SocketConnected: true})
+        case (ACTION_TYPES.ROUND_2_WON):
+            return Object.assign({} , state, {Round2Won: true})
         default:
             return state;
     }

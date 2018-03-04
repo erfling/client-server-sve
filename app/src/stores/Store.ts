@@ -30,7 +30,8 @@ export default interface ApplicationStore{
         Loading: boolean,
         DashboardUpdating:boolean,
         Submitting: boolean,
-        SocketConnected: boolean
+        SocketConnected: boolean,
+        Round2Won: boolean
     }
     form: any;
     Route?: any;

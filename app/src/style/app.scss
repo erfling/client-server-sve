@@ -316,3 +316,30 @@ h4{font-size: 160%}
         margin: 0 0 5px !important;
     }
 }
+
+//modal styles
+.ant-modal{
+    .ant-modal-close{display: none}
+    font-size:2em;
+    p, label{font-size:250%; line-height:1.8em;}
+    .ant-modal-title{
+        font-size: 110%;
+        line-height: normal;
+    }
+    .ant-btn{
+        font-size: 45px;
+        padding: 0 20px 72px;
+    }
+    label{font-weight: 700}
+    h1{font-size: 350%}
+    h2{font-size: 320%}
+    h3{font-size: 290%}
+    h4{font-size: 260%}
+    &.victory-modal{
+        .anticon-trophy{
+            font-size: 37em;
+            display: block;
+            margin: 75px auto;
+        }
+    }
+}

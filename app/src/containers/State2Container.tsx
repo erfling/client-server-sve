@@ -23,6 +23,7 @@ export interface State2Props{
     RejectedDealOffer: IDeal;
     Dashboard: any;
     AcceptedDealOffer: IDeal;
+    Round2Won: boolean
     //Options: ITradeOption[]
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): State2Props => {
@@ -31,7 +32,8 @@ const mapStateToProps = (state: ApplicationStore, ownProps: {}): State2Props => 
         RejectedDealOffer: state.GameData.RejectedDealOffer,
         AcceptedDealOffer: state.GameData.AcceptedDealOffer,
         PendingDealOffer: state.GameData.PendingDealOffer,
-        Dashboard: state.GameData.Dashboard
+        Dashboard: state.GameData.Dashboard,
+        Round2Won: state.Application.Round2Won
         //Options: (state.GameData.CurrentPlayer.Nation as INation).TradeOptions as ITradeOption[]
     };
 };

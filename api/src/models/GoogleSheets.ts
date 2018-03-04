@@ -203,7 +203,7 @@ export default class GoogleSheets
             }
             ).map((t) => {
                 console.log((t.Nation as INation).Name, t.DealsProposedTo.length)
-                return (t.Nation as INation).Name == deal.ToNationNamey ? [deal.Value] : [0] ;
+                return (t.Nation as INation).Name == deal.ToNationName ? [deal.Value] : [0] ;
             })
             console.log("VALUES we want to submit");
             console.log(values);

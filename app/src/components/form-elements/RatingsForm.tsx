@@ -83,7 +83,7 @@ class RatingsFormWrapper extends React.Component<DealFormProps, { warning:string
 
                        {this.state.Criteria.map((c:any) => {
                            return <FormItem>
-                                        <label>{CriteriaName[c]}</label>
+                                        <label>{CriteriaName[c].split("_").map(c => c.charAt(0).toUpperCase() + c.slice(1).toLocaleLowerCase() ).join("_").replace(/_/g, ' ')}</label>
                                         <Field
                                             name={o.value+'_'+c}
                                             component={SliderWrapper}
