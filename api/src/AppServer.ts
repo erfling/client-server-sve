@@ -184,7 +184,7 @@ export default class AppServer
         if (deal._id) {
             dealPromise = DealModel.findByIdAndUpdate(deal._id, deal, {new: true}).then(d => d)
         } else{
-            dealPromise = DealModel.create(deal).then(newDeal => DealModel.findById(newDeal._id));              
+            dealPromise = DealModel.create(deal).then(newDeal => DealModel.findById(newDeal._id));
         }
         console.log(eventTarget.nsp.name);
         var gamePromise = GameModel.findById(eventTarget.nsp.name.slice(1)).populate(

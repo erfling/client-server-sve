@@ -74,7 +74,7 @@ export default class State3 extends React.Component<State3Props, {PlayerNotFound
                     {this.props.CurrentPlayer.GameState == "3B" 
                         ?    
                         <Row className="form-wrapper" gutter={{lg:"1", xl:"1"}}>
-                            <Col sm={23} md={23} lg={12}>
+                            <Col sm={23} md={23} lg={23}>
                                 <RatingsForm onSubmit={this.prepareRatings.bind(this)}/>
                             </Col> 
                         </Row>                 

@@ -1,5 +1,5 @@
 import { WaterValues } from './WaterValues';
-import { prop, arrayProp, Typegoose, ModelType, InstanceType, Ref } from 'typegoose';
+import { prop, arrayProp, Typegoose, ModelType, InstanceType, Ref, pre } from 'typegoose';
 import * as mongoose from 'mongoose';
 import BaseClass from './BaseModel'
 import ITeam from '../../../shared/models/ITeam';
@@ -9,11 +9,11 @@ import { Player } from './Player';
 import { Nation } from './Nation';
 import { Deal } from './Deal';
 import IDeal from '../../../shared/models/IDeal';
-import IRatings from '../../../shared/models/IRatings';
-import { Ratings } from './Ratings';
 import { RoleName } from '../../../shared/models/RoleName';
 import { Role } from './Role';
 import { CriteriaName } from '../../../shared/models/CriteriaName';
+import { Ratings } from './Ratings';
+import IRatings from '../../../shared/models/IRatings';
 
 
 export class Team extends BaseClass implements ITeam
@@ -57,11 +57,15 @@ export class Team extends BaseClass implements ITeam
     @arrayProp({itemsRef: Deal})
     DealsProposedTo: Ref<Deal>[] | IDeal[];
 
-    @prop()
+    @prop({default: { Bangladesh:
+      { COMPELLING_EMOTIONAL_CONTENT: 4,
+        DEMONSTRATED_SYSTEMIC_IMPACT: 5,
+        STRONG_EXECUTIVE_PRESENCE: 6 },
+     China:
+      { COMPELLING_EMOTIONAL_CONTENT: 7,
+        DEMONSTRATED_SYSTEMIC_IMPACT: 8,
+        STRONG_EXECUTIVE_PRESENCE: 9 } }})
     Ratings: Ratings | IRatings;
-
-    @prop()
-    MyAverageNationRating?: { [C in CriteriaName]:number };
 
     @prop()
     Roles:{ [R in RoleName]: Role };

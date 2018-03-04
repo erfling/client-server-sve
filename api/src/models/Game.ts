@@ -4,6 +4,8 @@ import BaseClass from './BaseModel'
 import { Team } from './Team';
 import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
+import { Ratings } from './Ratings';
+import IRatings from '../../../shared/models/IRatings';
 
 
 //TODO: find out how to save nested teams, not just their refs. Possibly with pre method: https://github.com/szokodiakos/typegoose#pre
@@ -29,6 +31,9 @@ export class Game extends BaseClass implements IGame
 
     @arrayProp({ itemsRef: Team })
     Teams:  Ref<ITeam>[] | ITeam[];
+
+    @prop()
+    TeamRatings?: Ratings | IRatings;
 
     @prop({default: 1})
     State: string;

@@ -9,6 +9,8 @@ import { Team,TeamModel } from './../models/Team';
 import ITeam from '../../../shared/models/ITeam';
 import Item from 'antd/lib/list/Item';
 import GoogleSheets from '../models/GoogleSheets'
+import INation from '../../../shared/models/INation';
+import { Ratings } from '../models/Ratings';
 
 
 class GameRouter
@@ -126,7 +128,90 @@ class GameRouter
         } catch(err) {
             ( err: any ) => res.status(500).json({ error: err });
         }
-    } 
+    }
+
+    public async AddTeamRatings(req: Request, res: Response):Promise<any> {
+        console.log(req.body);
+        try {
+            var newTeamRatings:Ratings = req.body.Ratings; // passed team rating
+            const game:IGame = await GameModel.findById(req.body.GameId);
+            console.log(game);
+            var existingTeamRatings:Ratings = (<Ratings>(<IGame>game).TeamRatings);
+            if(!existingTeamRatings)existingTeamRatings = new Ratings();
+
+        
+
+            Object.keys(newTeamRatings).forEach(nationKey => {
+                var newTeamRatingNation:any = (<any>newTeamRatings)[nationKey];
+                Object.keys((<any>newTeamRatings)[nationKey]).forEach(criteria => {
+                    if (newTeamRatingNation[criteria]) {
+                        console.log(criteria);
+                        // set if doesn't exist
+                        if (!(<any>existingTeamRatings)[nationKey]) (<any>existingTeamRatings)[nationKey] = {};
+                        if (!(<any>existingTeamRatings)[nationKey][criteria]) (<any>existingTeamRatings)[nationKey][criteria] = 0;
+
+                        (<any>existingTeamRatings)[nationKey][criteria] = (<any>existingTeamRatings)[nationKey][criteria] || 0;
+                        (<any>existingTeamRatings)[nationKey][criteria] += parseInt(newTeamRatingNation[criteria]);
+                    }
+                })
+                if (!(<any>existingTeamRatings)[nationKey]['numVotes']) (<any>existingTeamRatings)[nationKey]['numVotes'] = 0;
+                (<any>existingTeamRatings)[nationKey]['numVotes']++;
+            })
+            
+            console.log("!!!Rating for saving:", existingTeamRatings);
+            const savedTeamRatings = await GameModel.findByIdAndUpdate(req.body.GameId, {TeamRatings: existingTeamRatings}, {new:true});
+
+            /*
+            const savedTeam = await TeamModel.findByIdAndUpdate(req.body._id, {Ratings: req.body.Ratings}, {new: true})
+                    .populate("Nation")
+                    .then(t => t);
+            
+            const gameTeams = await TeamModel.find({GameId: {$in: savedTeam.GameId}})
+                    .populate("Nation")
+                    .then(t => t);
+
+            var innerTeamRatingForOuterTeam:any = {};
+            const sheets = new GoogleSheets();
+            var sheetSubmitVals:string[][] = [];
+            gameTeams.forEach((t:Team, i) => {
+                var averagedRating:any = {};
+                gameTeams
+                    .filter(team => team.Slug != t.Slug && team.Ratings != undefined)
+                    .forEach(team => {
+                        innerTeamRatingForOuterTeam = (<any>team.Ratings)[(<INation>t.Nation).Name];
+                        if (innerTeamRatingForOuterTeam) {
+                            if (innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"]) {
+                                innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"] = parseInt(innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"] || 0);
+                                averagedRating["COMPELLING_EMOTIONAL_CONTENT"] = parseInt(averagedRating["COMPELLING_EMOTIONAL_CONTENT"] || 0);
+                                averagedRating["COMPELLING_EMOTIONAL_CONTENT"] += innerTeamRatingForOuterTeam["COMPELLING_EMOTIONAL_CONTENT"] / 5;
+                            }
+                            if (innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"]) {
+                                innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"] = parseInt(innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"] || 0);
+                                averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"] = parseInt(averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"] || 0);
+                                averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"] += innerTeamRatingForOuterTeam["DEMONSTRATED_SYSTEMIC_IMPACT"] / 5;
+                            }
+                            if (innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"]) {
+                                innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"] = parseInt(innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"] || 0);
+                                averagedRating["STRONG_EXECUTIVE_PRESENCE"] = parseInt(averagedRating["STRONG_EXECUTIVE_PRESENCE"] || 0);
+                                averagedRating["STRONG_EXECUTIVE_PRESENCE"] += innerTeamRatingForOuterTeam["STRONG_EXECUTIVE_PRESENCE"] / 5;
+                            }
+                        }
+                    });
+
+                    TeamModel.findOneAndUpdate({Slug: t.Slug}, {MyAverageNationRating: averagedRating});
+
+                    sheetSubmitVals[i] = [averagedRating["COMPELLING_EMOTIONAL_CONTENT"], averagedRating["DEMONSTRATED_SYSTEMIC_IMPACT"], averagedRating["STRONG_EXECUTIVE_PRESENCE"], [(<INation>t.Nation).Name]];
+            })
+            console.log( "ALL",sheetSubmitVals)
+            //TODO: we need to wait to do this until all teams have submitted
+            sheets.commitAnswers(sheetSubmitVals.sort((a,b) =>  a[4] > b[4] ? 1: 0).map(v => [ v[0], v[1], v[2] ] ),"Round 3 Criteria!B2:D7")
+            res.json(savedTeam);*/
+        } catch(error) {
+            console.log("Blew up:", error);
+            res.status(400);
+            res.json(error);
+        }
+    }
 
     private getSheets(){
         if(!this.Sheets)this.Sheets = new GoogleSheets();
@@ -260,6 +345,7 @@ class GameRouter
         this.router.post("/setcurrent", this.setCurrentGame.bind(this));
         this.router.put("/:game", this.UpdateGame.bind(this));
         this.router.use("/:game/teams", this.GetTeams.bind(this));
+        this.router.post("/teamratings", this.AddTeamRatings);
     }
 }
 

@@ -35,7 +35,7 @@ class RatingsFormWrapper extends React.Component<DealFormProps, { warning:string
         this.setState(Object.assign({}, this.state, {Criteria: Object.keys(CriteriaName)}));
     }
 
-    getOptionsByTeam():{value: string, text: string}[] {
+    getOptionsByTeam():{value: string}[] {
         var options = [
             "Australia",
             "Bangladesh",
@@ -45,10 +45,7 @@ class RatingsFormWrapper extends React.Component<DealFormProps, { warning:string
             "Vietnam"
         ].filter(s => s != (this.props.CurrentPlayer.Nation as INation).Name)
          .map(s => {
-             return {
-                        text:"Invest $" + (this.props.CurrentPlayer.DealsProposedTo.length ? ((((this.props.CurrentPlayer.DealsProposedTo[0]) as IDeal).Value + 1) * 10) : "10") + " billion in " + s,
-                        value:s
-                    }
+             return { value:s }
         })
          return options;
     }
@@ -107,7 +104,7 @@ class RatingsFormWrapper extends React.Component<DealFormProps, { warning:string
                 </div>
                
                 <div className="form-wrapper" style={{backgroundColor: 'transparent'}}>
-                    {this.props.FormData && <Button className="game-button block" onClick={e => this.props.handleSubmit(e)} disabled={!this.props.FormData.values}>Submit Ratings {this.props.Submitting && <Icon type="loading"/>}</Button>}
+                    {this.props.FormData && <Button className="game-button block" onClick={e => this.props.handleSubmit(e)} disabled={!this.props.FormData.values || Object.keys(this.props.FormData.values).length < 15}>Submit Ratings {this.props.Submitting && <Icon type="loading"/>}</Button>}
                     {this.props.CurrentPlayer.Ratings && <Alert message="Your ratings have been submitted." type="success" />}
                 </div>
             </form>

@@ -629,7 +629,7 @@ export const forwardDeal = (deal: IDeal) => {
 
 export const submitRatings = (teamWithRatings: ITeam) => {
     return (dispatch: Dispatch<Action<ITeam>>) => {
-        const url = baseRestURL + 'teams/ratings';
+        const url = baseRestURL + 'games/teamratings';
         dispatch({
             type: ACTION_TYPES.IS_LOADING,
             payload: true
