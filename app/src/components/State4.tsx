@@ -89,8 +89,6 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
     }
 
     getRoleContent() {
-        alert("going to request content")
-
         const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
         const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
         const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/sheets/content/rolecontent/" + this.props.SelectedRole.Name
