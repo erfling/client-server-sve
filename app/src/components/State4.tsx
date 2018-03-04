@@ -164,8 +164,8 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
 
                     {this.props.CurrentPlayer.GameState == "4B" && this.props.SelectedRole ? 
                         <Row className="form-wrapper" type="flex" justify="center" >
-                            <Col sm={23} md={23} lg={20}>
-                                <label>{(this.props.CurrentPlayer.Nation as INation).Name } Platform</label>
+                            <Col sm={24} md={24} lg={24}>
+                                <label style={{textAlign:'center'}}>{(this.props.CurrentPlayer.Nation as INation).Name } Platform</label>
                                 {Object.keys(this.props.SelectedRole.RoleTradeRatings).sort((a,b) => {return a > b ? 1 : 0}).map((rating, i) => {
                                     return (
                                         <Row className="form-wrapper role-trades"  type="flex" justify="center" >
