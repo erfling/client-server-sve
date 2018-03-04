@@ -90,7 +90,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
             deal.Value = deal.Message.startsWith("#") && !isNaN(parseInt(deal.Message.substr(1))) ? parseInt(deal.Message.substr(1)) : null
         } else {
             //India can accept it's own deal if it has 5 offers. The server will reject if this is less than 5, returning an appropriate event
-            deal.Value = this.getTradeBank()/10;
+            deal.Value = this.getTradeBank() / 10;
         }
         console.log("WHAT'S THE DEAL?", deal)
         this.props.proposeDeal(deal);
@@ -240,7 +240,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
 
                     }
 
-                    {this.props.AcceptedDealOffer && this.props.AcceptedDealOffer.ToNationName != "India" ?
+                    {this.props.AcceptedDealOffer && this.props.AcceptedDealOffer.ToNationName != "Bangladesh" ?
 
                         <Modal
                             title={

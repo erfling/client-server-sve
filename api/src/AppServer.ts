@@ -228,7 +228,7 @@ export default class AppServer
                 }
             } else if( deal.Accept ) {
                 deal.Accept = false;
-            } else if( deal.FromNationName == deal.ToNationName && deal.FromNationName != "India"){
+            } else if( deal.FromNationName == deal.ToNationName && deal.FromNationName != "Bangladesh"){
                 deal.Accept = false;
                 deal.CanAccept = false;
             }
