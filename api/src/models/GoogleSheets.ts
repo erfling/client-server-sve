@@ -11,6 +11,7 @@ import * as googleAuth form 'google-auth-library'
 import * as fs from 'fs';
 import IPlayer from '../../../shared/models/IPlayer';
 import ITeam from '../../../shared/models/ITeam';
+import IDeal from '../../../shared/models/IDeal';
 import formValues from '../../../shared/models/FormValues';
 import INation from '../../../shared/models/INation';
 
@@ -192,7 +193,7 @@ export default class GoogleSheets
         })
     }
 
-    public submitTradeDealValues(teams: ITeam[]):Promise<any>{
+    public submitTradeDealValues(teams: ITeam[], deal:IDeal):Promise<any>{
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth) => {
@@ -202,7 +203,7 @@ export default class GoogleSheets
             }
             ).map((t) => {
                 console.log((t.Nation as INation).Name, t.DealsProposedTo.length)
-                return [t.DealsProposedTo.length];
+                return (t.Nation as INation).Name == deal.ToNationName ? [deal.Value] : [0] ;
             })
             console.log("VALUES we want to submit");
             console.log(values);

@@ -160,6 +160,7 @@ export default class AppServer
      * @param deal The deal Object
      */
     private async dealExchange(eventTarget:SocketIO.Socket, socketEvent:string, deal:IDeal):Promise<any> {
+        console.log("DEAL", deal);
         var dealPromise;
         const teamPopulateRules =  [
             {
@@ -217,8 +218,8 @@ export default class AppServer
             //catch accepted deals and verify whether they are allowed
             if(deal.Message.startsWith("#")){
                 var dealAmount = parseInt( deal.Message.charAt(1) )
-                if( isNaN(  dealAmount  ) || dealAmount != fromTeam.DealsProposedTo.length + 1){
-                     console.log("DEAL WILL BE REJECTED BECAUSE AMOUNT IS", dealAmount, " AND IT SHOULD BE", fromTeam.DealsProposedTo.length + 1)
+                if( isNaN(  dealAmount  ) || !deal.Value || ( dealAmount != deal.Value) ){
+                     console.log("DEAL WILL BE REJECTED BECAUSE AMOUNT IS", dealAmount, " AND IT SHOULD BE", deal.Value)
                      deal.Accept = false;
                      deal.CanAccept = false;
                 }else{
@@ -227,7 +228,6 @@ export default class AppServer
                 }
             } else if( deal.Accept ) {
                 deal.Accept = false;
-                deal.CanAccept = false;
             } else if( deal.FromNationName == deal.ToNationName && deal.FromNationName != "India"){
                 deal.Accept = false;
                 deal.CanAccept = false;
@@ -266,6 +266,28 @@ export default class AppServer
                 if (deal.Accept === true) {
                     saveTeamDeal(deal.Accept); // save both toTeam and fromTeam
                     // potentially remove deal, if it was previously accepted
+                    //update the SpreadSheet
+                    const game = await GameModel.findById(g._id).populate(
+                        [
+                            {
+                                path: "Teams",
+                                populate: teamPopulateRules
+                            }
+                        ]
+                    )
+                    if(game){
+                        const sheets = new GoogleSheets();
+                        const sheetsResponse = await sheets.submitTradeDealValues(game.Teams as ITeam[], deal)
+                        console.log(sheetsResponse);
+
+                        //emit the values to all the teams
+                        setTimeout(() => {
+                            sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
+                                eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, r);
+                            })
+                        },10)
+                        
+                    }
                 } else if (deal.Accept === false){
                     eventTarget.nsp.to(deal.ToTeamSlug).emit(SocketEvents.DEAL_REJECTED, deal); // Send proposal or response to team it's asking
                     eventTarget.nsp.to(deal.FromTeamSlug).emit(SocketEvents.DEAL_REJECTED, deal); // Send message back to sender's room to varify dealExchange was sent
@@ -274,31 +296,7 @@ export default class AppServer
                     // notify teams about proposal (which has yet to be accepted or rejected)
                     eventTarget.nsp.to(deal.ToTeamSlug).emit(socketEvent, deal); // Send proposal or response to team it's asking
                     eventTarget.nsp.to(deal.FromTeamSlug).emit(socketEvent, deal); // Send message back to sender's room to varify dealExchange was sent
-                }
-
-
-                //update the SpreadSheet
-                const game = await GameModel.findById(g._id).populate(
-                    [
-                        {
-                            path: "Teams",
-                            populate: teamPopulateRules
-                        }
-                    ]
-                )
-                if(game){
-                    const sheets = new GoogleSheets();
-                    const sheetsResponse = await sheets.submitTradeDealValues(game.Teams as ITeam[])
-                    console.log(sheetsResponse);
-
-                    //emit the values to all the teams
-                    setTimeout(() => {
-                        sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
-                            eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, r);
-                        })
-                    },10)
-                    
-                }
+                }                
 
             } else {
                 console.log("OOPS: No team found with nation " + (<TradeOption>deal.TradeOption).ToNationId);
@@ -406,7 +404,7 @@ export default class AppServer
                     )
                     if(game){
                         const sheets = new GoogleSheets();
-                        const sheetsResponse = await sheets.submitTradeDealValues(game.Teams as ITeam[])
+                        const sheetsResponse = await sheets.submitTradeDealValues(game.Teams as ITeam[], deal)
                         console.log(sheetsResponse);
                         //emit the values to all the teams
                         setTimeout(() => {

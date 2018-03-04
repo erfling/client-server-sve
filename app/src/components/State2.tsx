@@ -80,7 +80,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
             deal.Value = deal.Message.startsWith("#") && !isNaN(parseInt(deal.Message.substr(1))) ? parseInt(deal.Message.substr(1)) : null
         } else {
             //India can accept it's own deal if it has 5 offers. The server will reject if this is less than 5, returning an appropriate event
-            deal.Value = this.props.CurrentPlayer.DealsProposedTo.length + 1;
+            deal.Value = this.getTradeBank()/10;
         }
         console.log("WHAT'S THE DEAL?", deal)
         this.props.proposeDeal(deal);
@@ -143,9 +143,6 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
         for (var i = 2000; i < 2101; i++) {
 
             let value = typeof data == "number" ? data : data[i - 2000];
-            if(typeof value != "number"){
-                console.log("WE FOUND SOMETHING THAT'S NOT A NUMBER AT INDEX ", i, " AND IT WAS ", value, )
-            }
             parsedData.push({
                 x: i,
                 y: typeof value == "string" ? parseFloat(value) : value
@@ -168,8 +165,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
     }
 
     getTradeBank() {
-        if (this.props.CurrentPlayer.DealsProposedBy.length) return "0";
-        return this.props.CurrentPlayer.DealsProposedTo.length ? ((this.props.CurrentPlayer.DealsProposedTo[0] as IDeal).Value + 1) * 10 : "10"
+        if (this.props.CurrentPlayer.DealsProposedBy.length) return 0;
+        return this.props.CurrentPlayer.DealsProposedTo.length ? ((this.props.CurrentPlayer.DealsProposedTo[0] as IDeal).Value + 1) * 10 : 10
     }
 
     render() {
@@ -222,8 +219,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                         <Modal
                             title={
                                 this.props.RejectedDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug
-                                    ? <p>Your trade deal with {this.props.RejectedDealOffer.ToNationName} was rejected{!this.props.RejectedDealOffer.CanAccept && " by the agency."}.</p>
-                                    : <p>Your trade deal with {this.props.RejectedDealOffer.FromNationName} was rejected{!this.props.RejectedDealOffer.CanAccept && " by the agency."}.</p>
+                                    ? <p>Your trade deal with {this.props.RejectedDealOffer.ToNationName} was rejected{!this.props.RejectedDealOffer.CanAccept && " by the agency"}.</p>
+                                    : <p>Your trade deal with {this.props.RejectedDealOffer.FromNationName} was rejected{!this.props.RejectedDealOffer.CanAccept && " by the agency"}.</p>
                             }
                             visible={true}
                             width="80%"
@@ -251,8 +248,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
 
                     }
                         {this.props.Dashboard &&
-                            this.props.Dashboard.length > 100 ? <Row style={{ background: "#fff", padding: "10px", margin: '25px 0', boxShadow: '0 0 10px 0 rgba(0,0,0,.8)' }}>
-
+                            this.props.Dashboard.length > 100 ? <Row className="main-chart">
+                            <label>Simulated Global Warming Data</label>
                             <DiscreteColorLegend
                                 className="impact-chart"
                                 colors={["red", "orange", "#3366cc"]}
@@ -331,7 +328,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
 
                         {this.props.CurrentPlayer.Nation && (this.props.CurrentPlayer.Nation as INation).Content && (this.props.CurrentPlayer.Nation as INation).Content.length ? <Row>
                             {(this.props.CurrentPlayer.Nation as INation).Content[0][7].split('\n').filter((c: string) => c.length).map((c: string) => {
-                                return c == c.toUpperCase() ? <h4>{c}</h4> : <p>{c.replace(/\[([^}]+)\]/, moment().format('MMMM Do, YYYY').toString())}</p>
+                                return c == c.toUpperCase() ? <h4>{c}</h4> : <p>{c.replace(/\[([^}]+)\]/, moment().format('MMMM D, YYYY').toString())}</p>
                             })}
                         </Row> : null}
 
@@ -362,7 +359,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                                     {(this.props.CurrentPlayer.DealsProposedTo as IDeal[]).map(d => {
 
                                         return <li>
-                                            <h5>You Accepted {d.TransferFromNationName || d.FromNationName}'s' Trade Deal</h5>
+                                            <h5>You Accepted {d.TransferFromNationName || d.FromNationName}'s' Trade Deal for {d.Value}</h5>
                                             {this.parseMessage(d.Message)}
                                         </li>
                                     })}
