@@ -11,6 +11,7 @@ import { Redirect } from 'react-router-dom';
 import { Row, Col, Modal, Icon, Button, Select, Spin } from 'antd';
 import ITradeOption from '../../../shared/models/ITradeOption';
 import INation from '../../../shared/models/INation';
+import ChartContainer from '../containers/ChartContainer'
 
 import {
     XYPlot,
@@ -256,81 +257,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                         </Modal> : null
 
                     }
-                        {this.props.Dashboard &&
-                            this.props.Dashboard.length > 100 ? <Row className="main-chart">
-                            <label>Simulated Global Warming Data</label>
-                            <DiscreteColorLegend
-                                className="impact-chart"
-                                colors={["red", "orange", "#3366cc"]}
-                                orientation="horizontal"
-                                items={["Paris Accord", "Preindustrial Level", "Adjusted Temp Increase"]}
-                            />
-
-                            <XYPlot
-                                height={400}
-                                width={window.innerWidth - 30}
-                                margin={{ left: 60, right: 60, top: 60 }}
-                                className="line-chart"
-                            >
-                                <HorizontalGridLines
-                                    style={{ stroke: '#B7E9ED' }}
-                                />
-                                <VerticalGridLines
-                                    tickValues={[2000, 2025, 2050, 2075, 2100]}
-                                    style={{ stroke: '#B7E9ED' }} />
-
-                                <XAxis
-                                    tickValues={[2000, 2025, 2050, 2075, 2100]}
-                                    tickFormat={(tick: any) => tick.toString()}
-                                    style={{ stroke: '#ddd' }}
-                                />
-                                <YAxis
-                                    style={{ stroke: '#ddd' }}
-                                />
-
-                                <LineSeries
-                                    strokeWidth={3}
-                                    color="red"
-                                    label="test"
-                                    className="first-series"
-                                    style={{
-                                        strokeDasharray: '10 2'
-                                    }}
-                                    data={this.getParsedData(2)}
-                                />
-
-                                <LineSeries
-                                    strokeWidth={3}
-                                    color="orange"
-                                    className="second-series"
-                                    style={{
-                                        strokeDasharray: '10 2'
-                                    }}
-                                    data={this.getParsedData(0)}
-                                />
-
-                                <LineSeries
-                                    strokeWidth={3}
-                                    color="rgba(0,0,0,0)"
-                                    className="second-series"
-                                    data={this.getParsedData(4)}
-                                />
-
-                                <LineSeries
-                                    className="third-series"
-                                    color="#3366cc"
-                                    style={{
-                                        //strokeDasharray: '10 2'
-                                    }}
-                                    strokeWidth={3}
-                                    data={this.getParsedData(this.props.Dashboard)}
-                                />
-
-
-                            </XYPlot>
-
-
-                    </Row> : null}
+                    
+                    {this.props.Dashboard && this.props.Dashboard.length > 100 ? <ChartContainer/> : null}
 
                     <Col xs={22}>
                         <h1 style={{ marginTop: "100px" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>

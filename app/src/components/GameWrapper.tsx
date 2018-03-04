@@ -22,6 +22,7 @@ export interface GamesList {
     ImageStyles?: any;
     Style?: any;
     match?: any;
+    HideImage?: boolean;
 }
 
 // 'HelloProps' describes the shape of props.
@@ -83,7 +84,8 @@ export default class GameWrapper extends React.Component<GamesList, any> {
                                 marginTop: '-250px',
                                 maxWidth: '250%',
                                 minWidth:'110%',
-                                maxHeight: '130vh'
+                                maxHeight: '130vh',
+                                height: this.props.HideImage ? "0" : "auto"
                             }}
                         >  
                             <Row type="flex" justify="center" className="banner">

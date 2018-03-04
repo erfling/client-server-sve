@@ -5,6 +5,8 @@ import WaterForm from './form-elements/WaterForm'
 import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom';
 import { Row, Col, Select, Button } from 'antd';
+import ChartContainer from '../containers/ChartContainer'
+
 import Horse from '-!svg-react-loader?name=Icon!../img/horse.svg';
 require('smoothscroll-polyfill').polyfill();
 
@@ -109,7 +111,18 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                                         .filter(content => content.length)
                                         .map((content: string) => {
                                             return content == content.toUpperCase() ? <h3>{content}</h3> : <p>{content}</p>
-                                        })}
+                                    })}
+                                    
+                                    <ChartContainer>
+                                        Planet Sapien Global Warming
+                                    </ChartContainer>
+
+                                    {this.state.FeedBack && this.state.FeedBack[12][2]
+                                        .split("\n")
+                                        .filter(content => content.length)
+                                        .map((content: string) => {
+                                            return content == content.toUpperCase() ? <h3>{content}</h3> : <p>{content}</p>
+                                    })}
 
                                     <Row className="formWrapper">
                                         <h4 className="decided-messaged" style={{ margin: "10px 0 20px" }}>{this.state.Decided && <span>You selected {this.state.ChosenHorse}. Change your mind? If so, simply choose again</span>}</h4>

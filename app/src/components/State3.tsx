@@ -7,7 +7,9 @@ import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom'; 
 import {Row, Col} from 'antd';
 import IRatings from '../../../shared/models/IRatings';
+import INation from '../../../shared/models/INation';
 import {Ratings} from '../../../api/src/models/Ratings';
+import ChartContainer from '../containers/ChartContainer'
 
 const WOTW = require("../img/The-War-of-the-Worlds-Radio-Broadcast.jpg");
 const NY = require("../img/The_New_Yorker_logo.png");
@@ -70,7 +72,10 @@ export default class State3 extends React.Component<State3Props, {PlayerNotFound
                     HeaderText="War Of The Worlds"
                     match={this.props.match}
                     CurrentPlayer={this.props.CurrentPlayer}
+                    HideImage={true}
                 >   
+                    <h1 style={{ marginTop: "10px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
+                    <ChartContainer />
                     {this.props.CurrentPlayer.GameState == "3B" 
                         ?    
                         <Row className="form-wrapper" gutter={{lg:"1", xl:"1"}}>
