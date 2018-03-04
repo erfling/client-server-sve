@@ -117,7 +117,7 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                                         Planet Sapien Global Warming
                                     </ChartContainer>
 
-                                    {this.state.FeedBack && this.state.FeedBack[12][2]
+                                    {this.state.FeedBack && this.state.FeedBack[13][2]
                                         .split("\n")
                                         .filter(content => content.length)
                                         .map((content: string) => {
