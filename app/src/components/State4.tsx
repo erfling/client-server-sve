@@ -62,7 +62,7 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
             if(localStorage.getItem("SELECTED_ROLE")){
                 var role = JSON.parse(localStorage.getItem("SELECTED_ROLE")) as IRole;
                 console.log("ALREADY HAD ROLE: ", role)
-                this.props.selectRole(role.Name, this.props.CurrentPlayer.Slug);
+                if(role.hasOwnProperty("Name"))this.props.selectRole(role.Name, this.props.CurrentPlayer.Slug);
             }
 
             if(!this.state.GenericContent){
@@ -89,6 +89,8 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
     }
 
     getRoleContent() {
+        alert("going to request content")
+
         const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
         const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
         const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/sheets/content/rolecontent/" + this.props.SelectedRole.Name
@@ -117,7 +119,6 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                         marginLeft: '-110px'
                     }}
                 >   
-                    {this.props.SocketConnected && this.props.SocketConnected}
                     {this.props.CurrentPlayer.GameState == "4A" && !this.props.SelectedRole ? 
                         <Row className="role-selection">
                             {this.state && this.state.GenericContent && 

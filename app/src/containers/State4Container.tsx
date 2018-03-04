@@ -39,8 +39,6 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
         getContent: (team: ITeam) => dispatch( Actions.getContent( team ) ),
         selectRole: (role: string, teamSlug:string) => dispatch( Actions.selectRole(role, teamSlug) ),
         submitRoleRating: (roleName: string, teamSlug: string, rating: any) => dispatch( Actions.submitRoleRating(roleName, teamSlug, rating) ) 
-
-
     }
 }
 

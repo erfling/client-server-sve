@@ -114,6 +114,8 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             return newState;
         case(ACTION_TYPES.DASHBOARD_UPDATED):
             return Object.assign({}, state, {Dashboard: action.payload})
+        case(ACTION_TYPES.ROUND_2_WON):
+            return Object.assign({}, state, {Dashboard: action.payload})
         case(ACTION_TYPES.GOT_GAME):
             return Object.assign({}, state, {SelectedGame: action.payload})
         case(ACTION_TYPES.GAME_STATE_CHANGED_ADMIN):
@@ -203,13 +205,13 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
 export const Application = ( state = initialState.Application, action: Action<{type:string, payload:boolean}> ) => {
     switch(action.type){
         case (ACTION_TYPES.IS_LOADING):
-            return Object.assign({}, {Loading: action.payload})
+            return Object.assign({}, state, {Loading: action.payload})
         case (ACTION_TYPES.DASHBOARD_UPDATING):
-            return Object.assign({}, {DashboardUpdating: action.payload})
+            return Object.assign({}, state, {DashboardUpdating: action.payload})
         case (ACTION_TYPES.SUBMITTING):
-            return Object.assign({}, {Submitting: action.payload})
+            return Object.assign({}, state, {Submitting: action.payload})
         case (ACTION_TYPES.SOCKET_CONNECTED):
-            return Object.assign({} , state, {SocketConnected: true})
+            return Object.assign({}, state, {SocketConnected: true})
         case (ACTION_TYPES.ROUND_2_WON):
             return Object.assign({} , state, {Round2Won: true})
         default:
