@@ -399,7 +399,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                 </Row>
 
 
-                {this.props.Dashboard && this.props.Dashboard.length > 100 && this.props.Dashboard[100] < 1 ? 
+                {this.props.Dashboard && this.props.Dashboard.length > 100 && this.props.Dashboard[100] < .3 ? 
                 <Modal
                     className="victory-modal"
                     visible={ this.props.Dashboard[100] < 1 && this.state.showVictoryModal }
