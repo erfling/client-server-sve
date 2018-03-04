@@ -17,6 +17,7 @@ import INation from '../../../shared/models/INation';
 import IRole from '../../../shared/models/IRole';
 import { RoleName } from '../../../shared/models/RoleName';
 import { RoleRatingCategories } from '../../../shared/models/RoleRatingCategories';
+import ChartContainer from '../containers/ChartContainer';
 const PlanetSapien = require('../img/sapien-from-moon.jpg');
 
 interface State3Props{
@@ -68,6 +69,14 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
             if(!this.state.GenericContent){
                 this.getGenericContent();
             }
+
+            
+        }
+
+        if(this.props.CurrentPlayer && this.props.CurrentPlayer.GameState == "4B"){
+            var elem = document.querySelector('.scroll-target');
+            console.log(elem);
+            if(elem)elem.scrollIntoView( { behavior:'smooth', block:'end' } )
         }
 
         if(this.props.SelectedRole && !this.state.RoleContent){
@@ -117,8 +126,12 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                         marginLeft: '-110px'
                     }}
                 >   
+                
+                    <h1 style={{ marginTop: "10px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
+                    <ChartContainer />
                     {this.props.CurrentPlayer.GameState == "4A" && !this.props.SelectedRole ? 
                         <Row className="role-selection">
+                            
                             {this.state && this.state.GenericContent && 
                                 <Col sm={24} md={24} lg={24}>
 
@@ -163,7 +176,7 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                     }
 
                     {this.props.CurrentPlayer.GameState == "4B" && this.props.SelectedRole ? 
-                        <Row className="form-wrapper" type="flex" justify="center" >
+                        <Row className="form-wrapper" type="flex" justify="center" style={{paddingLeft: "0", paddingRight:"0"}}>
                             <Col sm={24} md={24} lg={24}>
                                 <label style={{textAlign:'center'}}>{(this.props.CurrentPlayer.Nation as INation).Name } Platform</label>
                                 {Object.keys(this.props.SelectedRole.RoleTradeRatings).sort((a,b) => {return a > b ? 1 : 0}).map((rating, i) => {
@@ -199,6 +212,7 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                                         </Row>
                                     )
                                 })}
+                                <span className="scroll-target"/>
                             </Col> 
                         </Row> : null                
                     }
