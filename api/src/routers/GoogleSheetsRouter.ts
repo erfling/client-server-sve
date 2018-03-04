@@ -143,7 +143,7 @@ class GoogleSheetsRouter
 
             try{
                 const sheetsResponse = await sheets.GetSheetValues(null, "Round 4!B5:C5")
-                var finalResponse = req.params.role.toUpperCase().indexOf("BANK") ? sheetsResponse[0][0] : sheetsResponse[0][1];
+                var finalResponse = req.params.role.toUpperCase().indexOf("BANK") != -1 ? sheetsResponse[0][0] : sheetsResponse[0][1];
                 if(finalResponse){
                     res.json(finalResponse)
                 } else {
