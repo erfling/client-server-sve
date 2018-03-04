@@ -12,6 +12,7 @@ import LoginForm from './form-elements/LoginForm';
 import formValues from '../../../shared/models/FormValues';
 import { loadavg } from 'os';
 import ITeam from '../../../shared/models/ITeam';
+import INation from '../../../shared/models/INation';
 import IPlayer from '../../../shared/models/IPlayer';
 import IGame from '../../../shared/models/IGame';
 import Role from '../../../shared/models/IPlayer';
@@ -106,7 +107,7 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                                 <div className="form-wrapper" style={{background: "rgba(255,255,255,.6)"}}>
                                     <p style={{margin: '10px', fontWeight: 'bold'}}>Select Your Team to Join</p>
                                     <Select style={{width:'100%'}} onChange={val => this.onChangeSelectTeam(val)} placeholder="--Select Team--">
-                                        {(this.props.CurrentGame.Teams as ITeam[]).map(( t, i) => {
+                                        {(this.props.CurrentGame.Teams as ITeam[]).sort((a,b) => (a.Nation as INation).Name > (b.Nation as INation).Name ? 1 : 0).map(( t, i) => {
                                             return <Select.Option key={i+1} value={t.Slug}>Team {i + 1}</Select.Option>
                                         })}                                                   
                                     </Select>

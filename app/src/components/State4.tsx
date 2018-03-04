@@ -17,7 +17,7 @@ import INation from '../../../shared/models/INation';
 import IRole from '../../../shared/models/IRole';
 import { RoleName } from '../../../shared/models/RoleName';
 import { RoleRatingCategories } from '../../../shared/models/RoleRatingCategories';
-const Hurricane = require('../img/hurricane-space-earth-horizontal.jpg');
+const PlanetSapien = require('../img/sapien-from-moon.jpg');
 
 interface State3Props{
    CurrentPlayer: ITeam
@@ -73,8 +73,8 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
         if(!this.props.CurrentPlayer)return <div>loading</div>
         return (
                 this.props.CurrentPlayer && <GameWrapper
-                    ParallaxImg={Hurricane}
-                    HeaderText="State 4 Title"
+                    ParallaxImg={PlanetSapien}
+                    HeaderText="The Endeavor Accord"
                     match={this.props.match}
                     CurrentPlayer={this.props.CurrentPlayer}
                 >   

@@ -263,8 +263,7 @@ class GameRouter
             
             var teams: string[] = promises.map(p => p._id)
 
-            return GameModel.findOneAndUpdate({Slug: game.Slug}, { Teams: promises }, {new: true}, ()=>{
-
+            return GameModel.findOneAndUpdate({Slug: game.Slug}, { Teams: promises }, {new: true}, (game)=>{
             })
             
         });
@@ -323,8 +322,9 @@ class GameRouter
     private async getCurrentGame(req: Request, res: Response){
         console.log("we calling this")
         try{
-            const currentGame = await GameModel.findOne({IsCurrentGame: true}).populate("Teams")
+            const currentGame = await GameModel.findOne({IsCurrentGame: true}).populate({path: "Teams", populate:{path: "Nation"}})
             if(currentGame){
+                //this.SaveChildGames(currentGame);
                 res.json(currentGame)
             }else{
                 res.status(400);
