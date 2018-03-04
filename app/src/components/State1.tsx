@@ -72,6 +72,25 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
         const month = d.getMonth();
         const day = d.getDate();
         const future = new Date(year + 20, month, day);
+
+        const getLabel = (i:number):string => {
+
+            switch(i){
+                case 0:
+                    return "War"
+                case 1:
+                    return "Disease "                
+                case 2:
+                    return "Poverty"                
+                case 3:
+                    return "Famine"                
+                default:
+                   break;
+            }
+
+            return "";
+        } 
+
         if(!this.props.CurrentPlayer)return <div>Should go to login<Redirect to="/"/></div>
         return (
                 <GameWrapper
@@ -115,10 +134,13 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
                                             <Row className="state1results">
                                                     {this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.state.ChosenHorse.toUpperCase())
                                                         .map(f => {
-                                                            return f.filter((c, i) => i != 0 && i != 5).map((c) => {
+                                                            return f.filter((c, i) => i != 0 && i != 5).map((c, i) => {
                                                                 return <Row className={c.charAt(0) == "^" && this.props.CurrentPlayer.GameState != "1C" ? "winner" : null}>
                                                                             <div>
                                                                                 <Horse  />
+                                                                                <p>
+                                                                                    {getLabel(i)}
+                                                                                </p>
                                                                             </div>
                                                                             <div>
                                                                                 <p>{c.substring(1, c.length)}</p>
@@ -137,10 +159,13 @@ export default class State1 extends React.Component<State1Props, {PlayerNotFound
                                             <Row>
                                                 <Row className="state1results">
                                                         {this.replaceWinner()
-                                                            .map((c:string) => {
-                                                                    return <Row className={c.charAt(0) != "#" ? "former-winner" : null}>
+                                                            .map((c:string, i) => {
+                                                                    return <Row className={c.indexOf("The fourth horseman has arrived") != -1 ? "former-winner" : null}>
                                                                                 <div>
                                                                                     <Horse  />
+                                                                                    <p>
+                                                                                        {getLabel(i)}
+                                                                                    </p>
                                                                                 </div>
                                                                                 <div>
                                                                                     <p>{c}</p>

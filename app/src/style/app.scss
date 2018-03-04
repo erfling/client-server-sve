@@ -244,17 +244,11 @@ h4{font-size: 160%}
 .state1results{
     display: table;
     .ant-row{
-        &:nth-of-type(even){
-            background:#f7f7f7;
-        }
         display: table-row;
+        background: rgba(255, 49, 49, 0.24);
         svg{
-            float:left;
-            margin:10px auto;
-            max-width:75%;
-        }
-        svg{    
-           transition: opacity 2s;
+            max-width:90%;
+            transition: opacity 2s;
         }
         >div{
             display: table-cell;
@@ -263,26 +257,53 @@ h4{font-size: 160%}
             box-sizing: border-box;
             &:first-child{
                 width: 33%;
+                p {
+                    text-align: center;
+                    font-weight: bold;
+                    margin-top:-10px;
+                }
             }
             &:last-child{
                 width: 67%;
             }
+
         }
     }
-    
+    .winner{
+        background: rgba(54, 255, 62, 0.1);
+        svg{
+            opacity:.1;
+        }
+    }
     .winner{
         svg{
             opacity:.1;
         }
     }
     .former-winner{
+        animation: redify 2s;
+        animation-fill-mode: forwards;
+
         svg{
             animation: fadein 2s;
+            animation-fill-mode: forwards;
         }
     }
     @keyframes fadein {
-        from { opacity: .1; }
-        to   { opacity: 1; }
+        from { 
+            opacity: .1;
+        }
+        to { 
+            opacity: 1; 
+        }
+    }
+    @keyframes redify {
+        from { 
+            background: rgba(54, 255, 62, 0.1);
+        }
+        to { 
+            background: rgba(255, 49, 49, 0.24);
+        }
     }
 }
 
