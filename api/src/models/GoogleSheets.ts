@@ -96,7 +96,11 @@ export default class GoogleSheets
         }).catch(e => {})
     }
     
-    public GetSheetValues(sheetId:string = null, range: string = null):any {
+    public GetSheetValues(sheetId:string = null, range: string = null, log:boolean = false):any {
+        if(log){
+            console.log("OUR RANGE IS:");
+            console.log(range);
+        }
         const sheets = google.sheets('v4');
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
@@ -114,7 +118,11 @@ export default class GoogleSheets
                         reject(err);
                         return;
                     }
+                    if(log){
+                        console.log(response.values);
+                    }
                     return resolve(response.values);
+
                 })
             })
         })
@@ -365,4 +373,5 @@ export default class GoogleSheets
             })
         })    
     }
+
 }

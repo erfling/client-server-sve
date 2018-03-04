@@ -9,10 +9,10 @@ import {Row, Col, Button, Icon, Radio} from 'antd';
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 
-import HealthIcon from '-!svg-react-loader?name=Icon!../img/health-icon.svg';
-import IndustryIcon from '-!svg-react-loader?name=Icon!../img/industry-icon.svg';
-import GovernmentIcon from '-!svg-react-loader?name=Icon!../img/government-icon.svg';
-import AgriIcon from '-!svg-react-loader?name=Icon!../img/agri-icon.svg';
+//import HealthIcon from '-!svg-react-loader?name=Icon!../img/health-icon.svg';
+import MinisterIcon from '-!svg-react-loader?name=Icon!../img/industry-icon.svg';
+import BankIcon from '-!svg-react-loader?name=Icon!../img/government-icon.svg';
+//import AgriIcon from '-!svg-react-loader?name=Icon!../img/agri-icon.svg';
 import INation from '../../../shared/models/INation';
 import IRole from '../../../shared/models/IRole';
 import { RoleName } from '../../../shared/models/RoleName';
@@ -32,7 +32,7 @@ interface State3Props{
    SelectedRole: IRole;
    SocketConnected: boolean;
 }
-export default class State4 extends React.Component<State3Props, {PlayerNotFound:boolean}> {
+export default class State4 extends React.Component<State3Props, {PlayerNotFound:boolean, GenericContent: any[], RoleContent: string}> {
 
     componentWillMount(){
         
@@ -51,10 +51,9 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
             console.log("CURRENT PLAYER ALREADY IN REDUX STORE")
         }
 
-  
-
         window.scrollTo(0,0);
     }
+
     
     componentDidUpdate(){
         console.log("UPDATED")
@@ -65,7 +64,42 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                 console.log("ALREADY HAD ROLE: ", role)
                 this.props.selectRole(role.Name, this.props.CurrentPlayer.Slug);
             }
+
+            if(!this.state.GenericContent){
+                this.getGenericContent();
+            }
         }
+
+        if(this.props.SelectedRole && !this.state.RoleContent){
+            this.getRoleContent();
+        }
+    }
+    
+    getGenericContent() {
+        const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
+        const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
+        const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/sheets/content/" + (this.props.CurrentPlayer.Nation as INation).Name;
+        fetch(
+            URL
+        )
+        .then( r => r.json() )
+        .then(r => {
+            this.setState(Object.assign({}, this.state, {GenericContent: r}))
+        })
+    }
+
+    getRoleContent() {
+        const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
+        const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
+        const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/sheets/content/rolecontent/" + this.props.SelectedRole.Name
+
+        fetch(
+            URL
+        )
+        .then( r => r.json() )
+        .then(r => {
+            this.setState(Object.assign({}, this.state, {RoleContent: r}))
+        })
     }
 
     render(){
@@ -77,47 +111,59 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                     HeaderText="The Endeavor Accord"
                     match={this.props.match}
                     CurrentPlayer={this.props.CurrentPlayer}
+                        ImageStyles={{marginTop: '-250px',
+                        minWidth:'110%',
+                        maxHeight: '130vh',
+                        marginLeft: '-110px'
+                    }}
                 >   
                     {this.props.SocketConnected && this.props.SocketConnected}
                     {this.props.CurrentPlayer.GameState == "4A" && !this.props.SelectedRole ? 
                         <Row className="role-selection">
-                            <Col sm={24} md={24} lg={24}>                                                        
-                                <Row  type="flex" justify="center" style={{paddingTop:'20px'}}>
-                                    <h1>Role Selection</h1>                                                            
-                                </Row>
-                                <Row type="flex" justify="center">
-                                    <Col xs={22}>
-                                        <GovernmentIcon height={400}/>
-                                        <p>The CEO of Warburton, the region's largest agrichemical business faced with growing food production for an escalating population in a time of water scarcity and drought. </p>
-                                        <Button onClick={e => this.props.selectRole(RoleName.MINISTER_OF_ENERGY, this.props.CurrentPlayer.Slug)} className="game-button block">Minister of Energy, {(this.props.CurrentPlayer.Nation as INation).Name}</Button>
-                                    </Col>
-                                </Row>
+                            {this.state && this.state.GenericContent && 
+                                <Col sm={24} md={24} lg={24}>
 
-                                
-                                <Row type="flex" justify="center">
-                                    <Col xs={22}>
-                                        <IndustryIcon height={400}/>
-                                        <p>The CEO of Vanguard Life, the region's largest health care and insurance provider, who is anxious of increased exposure to climate-sensitive diseases and mental health impacts from severe weather-related events</p>
-                                        <Button onClick={e => this.props.selectRole(RoleName.BANK, this.props.CurrentPlayer.Slug)} className="game-button block">{(this.props.CurrentPlayer.Nation as INation).Name}Bank</Button>
-                                    </Col>
-                                </Row>
-                                
-                            </Col> 
+                                    <Row type="flex" justify="center">
+                                        <Col sm={22} md={22} lg={22} style={{marginTop: '75px'}}>
+                                            <p>{this.state.GenericContent[0]}</p>
+                                        </Col>
+                                        
+                                    </Row>        
+
+                                    <Row  type="flex" justify="center" style={{paddingTop:'20px'}}>
+                                        <h1>Role Selection</h1>                                                            
+                                    </Row>
+                                                                    
+                                    <Row type="flex" justify="center">
+                                        <Col xs={22}>
+                                            <BankIcon height={400}/>
+                                            <p>{this.state.GenericContent[1]}</p>
+                                            <Button onClick={e => this.props.selectRole(RoleName.BANK, this.props.CurrentPlayer.Slug)} className="game-button block title-case">Play As {(this.props.CurrentPlayer.Nation as INation).Name}Bank</Button>
+                                        </Col>
+                                    </Row>
+
+                                    <Row type="flex" justify="center">
+                                        <Col xs={22}>
+                                            <MinisterIcon height={400}/>
+                                            <p>{this.state.GenericContent[2]}</p>
+                                            <Button onClick={e => this.props.selectRole(RoleName.MINISTER_OF_ENERGY, this.props.CurrentPlayer.Slug)} className="game-button block title-case">Play As Minister of Energy, {(this.props.CurrentPlayer.Nation as INation).Name}</Button>
+                                        </Col>
+                                    </Row>                                
+                                </Col>
+                            }
                         </Row>
-                        :   <pre>TODO: replace with content.{JSON.stringify(this.props.SelectedRole, null, 2)}</pre>
+                        :
+                        <Row type="flex" justify="center">
+                            <Col sm={22} md={22} lg={22} style={{marginTop: '75px'}}>
+                                {this.state.RoleContent && this.state.RoleContent.split("\n").map(c => {
+                                    return c == c.toUpperCase() ? <h3>{c}</h3> : <p>{c}</p>
+                                })}
+                            </Col>
+                        </Row>
                
                     }
 
                     {this.props.CurrentPlayer.GameState == "4B" && this.props.SelectedRole ? 
-                        <Row className="form-wrapper">
-                            <Col sm={23} md={16} lg={12}>
-                                TODO: replace with content.
-                                <pre>{JSON.stringify(this.props.SelectedRole, null, 2)}</pre>
-                            </Col> 
-                        </Row> : null                  
-                    }
-
-                    {this.props.CurrentPlayer.GameState == "4C" && this.props.SelectedRole ? 
                         <Row className="form-wrapper" type="flex" justify="center" >
                             <Col sm={23} md={23} lg={20}>
                                 {Object.keys(this.props.SelectedRole.RoleTradeRatings).sort((a,b) => {return a > b ? 1 : 0}).map((rating, i) => {

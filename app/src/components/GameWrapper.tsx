@@ -19,8 +19,9 @@ export interface GamesList {
     ParallaxImg: any;
     HeaderText: string;
     FormComponent?: any;
-    Style?: any
-    match?: any
+    ImageStyles?: any;
+    Style?: any;
+    match?: any;
 }
 
 // 'HelloProps' describes the shape of props.
@@ -78,7 +79,7 @@ export default class GameWrapper extends React.Component<GamesList, any> {
                             bgImage={this.props.ParallaxImg}
                             bgImageAlt="this blows"
                             strength={500}
-                            bgStyle={{
+                            bgStyle={ this.props.ImageStyles ? this.props.ImageStyles : {
                                 marginTop: '-250px',
                                 maxWidth: '250%',
                                 minWidth:'110%',

@@ -104,9 +104,69 @@ class GoogleSheetsRouter
 
     }
 
+    private  async getGenericState4Content (req: Request, res: Response){
+        console.log("CALLED ID")
+        const sheets = new GoogleSheets();
+
+        try{
+            const sheetsResponse = await sheets.GetSheetValues(null, "Round 4!B1:M3")
+            if(sheetsResponse){
+
+                var resp = sheetsResponse.filter((row:string[], i:number) => {
+                    return i == 0 || i == 2; 
+                })
+
+                if(resp.length == 2){
+                    var finalResp = resp[0].concat(
+                        resp[1].filter((cellContent: string) => cellContent.indexOf(req.params.country) != -1)
+                    )
+                    res.json(finalResp)
+                } else{ 
+                    res.status(400);
+                    res.json("Couldn't get content")
+                }
+            } else {
+                res.status(400);
+                res.json("Couldn't get content")
+            }
+        }
+        catch{
+            console.log("ERROR REQUESTING")
+        }
+
+    }
+
+
+    private async getRoleContent(req: Request, res: Response){
+        if(req.params.role){
+            const sheets = new GoogleSheets();
+
+            try{
+                const sheetsResponse = await sheets.GetSheetValues(null, "Round 4!B5:C5")
+                var finalResponse = req.params.role.toUpperCase().indexOf("BANK") ? sheetsResponse[0][0] : sheetsResponse[0][1];
+                if(finalResponse){
+                    res.json(finalResponse)
+                } else {
+                        res.status(400);
+                        res.json("Couldn't get content")
+                }
+            }
+            catch{
+                console.log("ERROR REQUESTING")
+            }
+
+        } else {
+            res.status(400);
+            res.json("Params not provided")
+        }
+    }
+
     public routes(){
+        console.log("SETTING UP ROUTES")
         this.router.get("/", this.GetSheetValues);
         this.router.post("/content", this.GetTeamContent);
+        this.router.get("/content/:country", this.getGenericState4Content);
+        this.router.get("/content/rolecontent/:role", this.getRoleContent)
     }
 }
 

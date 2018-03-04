@@ -54,7 +54,7 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
         return this.props.Game.State ? buttonIdx == this.props.Game.State : buttonIdx == 1;
     }
 
-    states = ["1A", "1B", "1C", "2", "3A", "3B", "4A", "4B", "INTERMISSION", "4C", "5"];
+    states = ["1A", "1B", "1C", "2", "3A", "3B", "4A", "INTERMISSION", "4B", "5"];
 
     render() {
           
@@ -68,7 +68,7 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
                                     {this.states.map(state => <Button
                                                                 type={this.stateIsSelected(state) ? 'primary' : 'dashed'}
                                                                 onClick={e => this.props.setGameState(this.props.Game, state)}
-                                                                shape="circle">{state}
+                                                                shape={state.length < 3 ? 'circle' : null}>{state}
                                                              </Button>
                                                 )}
                                 </div>

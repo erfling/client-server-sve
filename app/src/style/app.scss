@@ -115,6 +115,9 @@ h4{font-size: 160%}
         display: block;
         margin:5px auto;
     }
+    &.title-case{
+        text-transform: none;
+    }
 }
 
 .form-wrapper{
