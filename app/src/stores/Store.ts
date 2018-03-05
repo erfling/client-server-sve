@@ -21,6 +21,7 @@ export default interface ApplicationStore{
         RejectedDealOffer: IDeal;
         AcceptedDealOffer: IDeal;
         StateContent:any;
+        DaysAbove2: number;
 
         //temp testing value
         EnvironmentalHealth: number

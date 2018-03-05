@@ -10,6 +10,8 @@ import IRatings from '../../../shared/models/IRatings';
 import INation from '../../../shared/models/INation';
 import {Ratings} from '../../../api/src/models/Ratings';
 import ChartContainer from '../containers/ChartContainer'
+import TopBarContainer from '../containers/TopBarContainer';
+
 
 const WOTW = require("../img/The-War-of-the-Worlds-Radio-Broadcast.jpg");
 const NY = require("../img/The_New_Yorker_logo.png");
@@ -19,17 +21,15 @@ interface State3Props{
    setWaterValues: (team:ITeam) => {}
    submitRatings: (formValues: any) => {}
    getContent: (team: ITeam) => {}
+   getDaysAbove: (team: ITeam) => {}
    match:any;
    StateContent: any;
+   DaysAbove2: number;
+   SocketConnected: boolean;
 }
 export default class State3 extends React.Component<State3Props, {PlayerNotFound:boolean}> {
 
-    componentWillMount(){
-        
-    }
-
     componentDidMount(){
-        console.log("COMPONENT MOUNTING???????????????????")
         this.setState({PlayerNotFound: false})
         if(!this.props.CurrentPlayer){
             if(localStorage.getItem("SVE_PLAYER")){
@@ -43,9 +43,17 @@ export default class State3 extends React.Component<State3Props, {PlayerNotFound
         }
         window.scrollTo(0,0);
     }
-    
+
     componentDidUpdate(){
-        console.log("UPDATED")
+        console.log("did updated called", this.props.SocketConnected, this.props.DaysAbove2)
+        this.getData();
+    }
+
+    getData() {
+        console.log("Calling get data")
+        if(this.props.SocketConnected && !this.props.DaysAbove2){
+            this.props.getDaysAbove(this.props.CurrentPlayer);
+        }
     }
 
     prepareRatings(formValues: any){
@@ -56,7 +64,6 @@ export default class State3 extends React.Component<State3Props, {PlayerNotFound
             (ratings as any)[nation][o.substr(nation.length + 1)] = formValues[o];
         })
         this.props.submitRatings(Object.assign(this.props.CurrentPlayer, {Ratings: ratings}));
-        console.log(ratings);
     }
 
     render(){
@@ -73,7 +80,10 @@ export default class State3 extends React.Component<State3Props, {PlayerNotFound
                     match={this.props.match}
                     CurrentPlayer={this.props.CurrentPlayer}
                     HideImage={true}
-                >   
+                >  
+                {this.props.DaysAbove2 && this.props.SocketConnected ? 
+                    <TopBarContainer /> : null
+                }
                     <h1 style={{ marginTop: "10px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
                     <ChartContainer />
                     {this.props.CurrentPlayer.GameState == "3B" 

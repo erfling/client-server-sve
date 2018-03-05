@@ -51,6 +51,7 @@ export enum ACTION_TYPES {
     SUBMITTING = "SUBMITTING",
     DASHBOARD_UPDATING = "DASHBOARD_UPDATING",
     DASHBOARD_UPDATED = "DASHBOARD_UPDATED",
+    YEARS_ABOVE_2_UPDATED = "YEARS_ABOVE_2_UPDATED",
     EDIT_GAME = "EDIT_GAME",
     CANCEL_EDIT_GAME = "CANCEL_EDIT_GAME",
     SET_CURRENT_GAME = "SET_CURRENT_GAME",
@@ -83,12 +84,14 @@ export enum ACTION_TYPES {
 
     GOT_CONTENT = "GOT_CONTENT",
 
-    SOCKET_CONNECTED = "SOCKET_CONNECTED"
+    SOCKET_CONNECTED = "SOCKET_CONNECTED",
 
 }
 
 export const createTeamSocket = (team:ITeam) => {
+    console.log("")
     if (socket) {
+        console.log("SOCKET ALREADY PRESENT")
         return (dispatch: Dispatch<Action<ITeam>>) => {
             dispatch( {
                 type: ACTION_TYPES.PLAYER_JOINED,
@@ -200,6 +203,13 @@ export const createTeamSocket = (team:ITeam) => {
                 dispatch( {
                     type: ACTION_TYPES.ROLE_SELECTED,
                     payload: role
+                } );
+            })
+            .on(SocketEvents.UPDATE_YEARS_ABOVE_2, (years: number | string) => {
+                console.log("SERVER SAYS DAYS ABOVE 2 IS:", years);
+                dispatch( {
+                    type: ACTION_TYPES.YEARS_ABOVE_2_UPDATED,
+                    payload: years
                 } );
             })
         }
@@ -634,7 +644,7 @@ export const forwardDeal = (deal: IDeal) => {
 
 export const submitRatings = (teamWithRatings: ITeam) => {
     return (dispatch: Dispatch<Action<ITeam>>) => {
-        const url = baseRestURL + 'games/teamratings';
+        const url = baseRestURL + 'teamratings';
         dispatch({
             type: ACTION_TYPES.IS_LOADING,
             payload: true
@@ -730,6 +740,31 @@ export const submitRoleRating = (roleName: string, teamSlug: string, rating: any
         socket.emit(SocketEvents.SUBMIT_ROLE_RATING, roleName, teamSlug, rating)
         dispatch({
             type: "NOPE"
+        })
+    }
+}
+
+export const getDaysAbove = (team:ITeam) => {
+    return (dispatch: Dispatch<Action<any>>) => {
+        const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
+
+        const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
+        const URL = protocol + "//" + window.location.hostname + port + "/sapien/api/getDaysAbove";
+
+        fetch(
+            URL,
+            {
+                body: JSON.stringify(team),
+                method: "POST"
+            }
+        )
+        .then(r => r.json())
+        .then(r => {
+            console.log(r);
+            dispatch( {
+                type: ACTION_TYPES.YEARS_ABOVE_2_UPDATED,
+                payload: r
+            } );
         })
     }
 }

@@ -12,6 +12,7 @@ import { Row, Col, Modal, Icon, Button, Select, Spin } from 'antd';
 import ITradeOption from '../../../shared/models/ITradeOption';
 import INation from '../../../shared/models/INation';
 import ChartContainer from '../containers/ChartContainer'
+import TopBarContainer from '../containers/TopBarContainer'
 
 import {
     XYPlot,
@@ -190,15 +191,12 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                 match={this.props.match}
                 CurrentPlayer={this.props.CurrentPlayer}
             >
-                <h1 style={{ marginTop: "100px" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
+                <h1 style={{ marginTop: "10px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
                 {this.props.Dashboard && this.props.Dashboard.length > 100 ? <ChartContainer/> : null}
                 <Row style={{ background: this.getBodyColor() }} type="flex" justify="center" className="trades">
                     {this.props.Dashboard &&
                         this.props.Dashboard.length > 100 ?
-                        <Row ref="tempTracker" className="tempTracker">
-                            Temp  in 2100: <span style={{ color: this.getColor() }}>{this.props.Dashboard[100]}</span>
-                            <span>Your Trade Bank: ${this.getTradeBank()} Billion</span>
-                        </Row> : null
+                        <TopBarContainer /> : null
                     }
 
                     {this.props.PendingDealOffer ?

@@ -23,6 +23,8 @@ import IGame from '../../shared/models/IGame';
 import ITeam from '../../shared/models/ITeam';
 import IDeal from '../../shared/models/IDeal';
 import ITradeOption from '../../shared/models/ITradeOption';
+import IRatings from '../../shared/models/IRatings';
+import { CriteriaName } from './../../shared/models/CriteriaName';
 
 import formValues from '../../shared/models/FormValues';
 import * as fs from 'fs';
@@ -927,16 +929,98 @@ export default class AppServer
                 })
             })
         }
+
+        this.app.post('/sapien/api/teamratings', async (req, res) => {
+            try {
+                var newTeamRatings:Ratings = req.body.Ratings; // passed team rating
+                const game:IGame = await GameModel.findById(req.body.GameId);
+                console.log(game);
+                var existingTeamRatings:Ratings = (<Ratings>(<IGame>game).TeamRatings);
+                if(!existingTeamRatings)existingTeamRatings = new Ratings();
+    
+                Object.keys(newTeamRatings).forEach(nationKey => {
+                    var newTeamRatingNation:any = (<any>newTeamRatings)[nationKey];
+                    Object.keys((<any>newTeamRatings)[nationKey]).forEach(criteria => {
+                        if (newTeamRatingNation[criteria]) {
+                            console.log(criteria);
+                            // set if doesn't exist
+                            if (!(<any>existingTeamRatings)[nationKey]) (<any>existingTeamRatings)[nationKey] = {};
+                            if (!(<any>existingTeamRatings)[nationKey][criteria]) (<any>existingTeamRatings)[nationKey][criteria] = 0;
+    
+                            (<any>existingTeamRatings)[nationKey][criteria] = (<any>existingTeamRatings)[nationKey][criteria] || 0;
+                            (<any>existingTeamRatings)[nationKey][criteria] += parseInt(newTeamRatingNation[criteria]);
+                        }
+                    })
+                    if (!(<any>existingTeamRatings)[nationKey]['numVotes']) (<any>existingTeamRatings)[nationKey]['numVotes'] = 0;
+                    (<any>existingTeamRatings)[nationKey]['numVotes']++;
+                })
+                
+                const savedGame = await GameModel.findByIdAndUpdate(req.body.GameId, {TeamRatings: existingTeamRatings}, {new:true});
+    
+                var keys = Object.keys((savedGame.TeamRatings as IRatings));
+    
+                var sheetValues = keys.sort((a,b) => a > b ? 1 : 0).map((countryName: keyof IRatings) => {
+                        return [ (savedGame.TeamRatings[countryName] as any)[CriteriaName.COMPELLING_EMOTIONAL_CONTENT] / (savedGame.TeamRatings[countryName] as any)['numVotes'],
+                                 (savedGame.TeamRatings[countryName] as any)[CriteriaName.DEMONSTRATED_SYSTEMIC_IMPACT] / (savedGame.TeamRatings[countryName] as any)['numVotes'],
+                                 (savedGame.TeamRatings[countryName] as any)[CriteriaName.STRONG_EXECUTIVE_PRESENCE] / (savedGame.TeamRatings[countryName] as any)['numVotes']
+                               ]
+                })
+    
+                //find missing country
+                if(sheetValues.length < 6){
+                    var nations =  [
+                        "Australia",
+                        "Bangladesh",
+                        "China",
+                        "India",
+                        "Japan",
+                        "Vietnam"
+                    ]
+    
+                    //if there are any missing nations, push in an array of empties of the right length
+                    nations.forEach((nation:string, i) => {
+                        if( keys.indexOf(nation) == -1 ){
+                            sheetValues.splice(i, 0, [null, null, null])
+                        }
+                    });
+                }
+                
+                new GoogleSheets().commitAnswers(sheetValues,"Round 3 Criteria!B2:D7")
+    
+                console.log(sheetValues);
+    
+                
+                const savedTeam = await TeamModel.findByIdAndUpdate(req.body._id, {Ratings: req.body.Ratings}, {new: true})
+                        .populate("Nation")
+                        .then(t => t);
+
+               
+                this.getDaysAbove(savedTeam);
+
+                
+                res.json(req.body);
+            } catch(error) {
+                console.log("Blew up:", error);
+                res.status(400);
+                res.json(error);
+            }
+        });
+
+        this.app.post("/sapien/api/getDaysAbove", async (req, res) => {
+            this.getDaysAbove(req.body);
+            const updatedValues = await this.sheets.GetSheetValues(null, "Country Impact!C21");
+            res.json(updatedValues);
+
+        })
+        
     }
 
-    /**
-     * Get team based on slug
-     * @param Slug 
-     */
-    private getTeam(Slug: string): void {
-        TeamModel.findOne( { Slug } ).populate("Players").then((t:Team) => {
-            this.io.emit(SocketEvents.SELECT_TEAM, t);
-        })
+    private async getDaysAbove(team:ITeam): Promise<any>{
+        const updatedValues = await this.sheets.GetSheetValues(null, "Country Impact!C21");
+                
+        if(updatedValues){
+            console.log("VALUES FROM SHEET", updatedValues);
+            this.io.of(team.GameId).emit(SocketEvents.UPDATE_YEARS_ABOVE_2, updatedValues[0][0]);
+        }
     }
-    
 }

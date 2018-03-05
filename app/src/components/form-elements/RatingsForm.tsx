@@ -51,7 +51,6 @@ class RatingsFormWrapper extends React.Component<DealFormProps, { warning:string
     }
 
     componentWillMount(){
-        console.log("MOUNTED")
         this.setState(Object.assign({}, this.state, {warning:""}));
         this.getCriteria();
     }
@@ -61,8 +60,6 @@ class RatingsFormWrapper extends React.Component<DealFormProps, { warning:string
     }
    
     selectChanged(e:any, allValues:any){
-        console.log(e);
-        console.log(allValues);  
     }
     
     hasErrors(){

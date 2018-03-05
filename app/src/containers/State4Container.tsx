@@ -14,19 +14,22 @@ interface DispatchProps {
     submitRatings:(teamWithRatings: ITeam) => {}
     getContent: (team: ITeam) => {}
     selectRole: (role: string, teamSlug:string) => {}
-    submitRoleRating: (roleName: string, teamSlug: string, rating: any) => {} 
+    submitRoleRating: (roleName: string, teamSlug: string, rating: any) => {}
+    getDaysAbove: (team: ITeam) => {}
 }
 export interface State1Props{
     CurrentPlayer: ITeam;
     StateContent: any;
-    SelectedRole: IRole;
-    SocketConnected: boolean;
+    SelectedRole: IRole;    
+    DaysAbove2: number;
+    SocketConnected: boolean
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): State1Props => {
     return {
         CurrentPlayer: state.GameData.CurrentPlayer,
         StateContent: state.GameData.StateContent,
         SelectedRole: state.GameData.SelectedRole,
+        DaysAbove2: state.GameData.DaysAbove2,
         SocketConnected: state.Application.SocketConnected
     };
 };
@@ -38,7 +41,9 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
         submitRatings: (teamWithRatings: ITeam) => dispatch( Actions.submitRatings(teamWithRatings) ),
         getContent: (team: ITeam) => dispatch( Actions.getContent( team ) ),
         selectRole: (role: string, teamSlug:string) => dispatch( Actions.selectRole(role, teamSlug) ),
-        submitRoleRating: (roleName: string, teamSlug: string, rating: any) => dispatch( Actions.submitRoleRating(roleName, teamSlug, rating) ) 
+        submitRoleRating: (roleName: string, teamSlug: string, rating: any) => dispatch( Actions.submitRoleRating(roleName, teamSlug, rating) ),
+        getDaysAbove: (team:ITeam) => dispatch( Actions.getDaysAbove(team) )
+
     }
 }
 

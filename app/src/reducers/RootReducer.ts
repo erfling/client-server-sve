@@ -25,7 +25,9 @@ const initialState: ApplicationStore = {
         RejectedDealOffer: null,
         AcceptedDealOffer: null,
         StateContent: null,
-        SelectedRole:null
+        SelectedRole: null,
+        DaysAbove2: null
+
     },
     Application: {
         Loading: false,
@@ -197,6 +199,8 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             return Object.assign({}, state, {CurrentGame: action.payload})
         case ACTION_TYPES.GOT_CONTENT:
             return Object.assign({}, state, {StateContent: action.payload})
+        case ACTION_TYPES.YEARS_ABOVE_2_UPDATED:
+            return Object.assign({}, state, {DaysAbove2: action.payload})
         default:
             return state;
     }

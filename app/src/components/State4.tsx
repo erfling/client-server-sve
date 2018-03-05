@@ -4,6 +4,7 @@ import { RadioButtonWrapper } from './form-elements/AntdFormWrappers';
 import ITeam from '../../../shared/models/ITeam';
 import RatingsForm from './form-elements/RatingsForm'
 import GameWrapper from './GameWrapper';
+import TopBarContainer from '../containers/TopBarContainer';
 import { Redirect } from 'react-router-dom'; 
 import {Row, Col, Button, Icon, Radio} from 'antd';
 const RadioButton = Radio.Button;
@@ -27,20 +28,21 @@ interface State3Props{
    getContent: (team: ITeam) => {}
    selectRole: (role: string, teamSlug: string) => {}
    submitRoleRating: (roleName: string, teamSlug: string, rating: any) => {} 
+   getDaysAbove: (team: ITeam) => {}
 
    match:any;
    StateContent: any;
    SelectedRole: IRole;
    SocketConnected: boolean;
+   DaysAbove2: number;
 }
 export default class State4 extends React.Component<State3Props, {PlayerNotFound:boolean, GenericContent: any[], RoleContent: string}> {
 
     componentWillMount(){
-        
+        this.setState({PlayerNotFound: false})
     }
 
     componentDidMount(){
-        this.setState({PlayerNotFound: false})
         if(!this.props.CurrentPlayer){
             if(localStorage.getItem("SVE_PLAYER")){
                 console.log("HEY YOU")
@@ -58,6 +60,8 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
     
     componentDidUpdate(){
         console.log("UPDATED")
+        this.getData();
+
         if(this.props.CurrentPlayer && this.props.SocketConnected && !this.props.SelectedRole){
             console.log("SOCKET CONNECTED")
             if(localStorage.getItem("SELECTED_ROLE")){
@@ -69,7 +73,6 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
             if(!this.state.GenericContent){
                 this.getGenericContent();
             }
-
             
         }
 
@@ -82,6 +85,8 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
         if(this.props.SelectedRole && !this.state.RoleContent){
             this.getRoleContent();
         }
+
+        
     }
     
     getGenericContent() {
@@ -111,6 +116,12 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
         })
     }
 
+    getData() {
+        if(this.props.SocketConnected && !this.props.DaysAbove2){
+            this.props.getDaysAbove(this.props.CurrentPlayer);
+        }
+    }
+
     render(){
         
         if(!this.props.CurrentPlayer)return <div>loading</div>
@@ -120,13 +131,15 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                     HeaderText="The Endeavor Accord"
                     match={this.props.match}
                     CurrentPlayer={this.props.CurrentPlayer}
-                        ImageStyles={{marginTop: '-250px',
+                        ImageStyles={{marginTop: '-100px',
                         minWidth:'110%',
                         maxHeight: '130vh',
                         marginLeft: '-110px'
                     }}
                 >   
-                
+                    {this.props.DaysAbove2 && this.props.SocketConnected ? 
+                        <TopBarContainer /> : null
+                    }
                     <h1 style={{ marginTop: "10px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
                     <ChartContainer />
                     {this.props.CurrentPlayer.GameState == "4A" && !this.props.SelectedRole ? 
