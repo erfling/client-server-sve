@@ -190,6 +190,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                 match={this.props.match}
                 CurrentPlayer={this.props.CurrentPlayer}
             >
+                <h1 style={{ marginTop: "100px" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
                 {this.props.Dashboard && this.props.Dashboard.length > 100 ? <ChartContainer/> : null}
                 <Row style={{ background: this.getBodyColor() }} type="flex" justify="center" className="trades">
                     {this.props.Dashboard &&
@@ -261,7 +262,6 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                     
 
                     <Col xs={22}>
-                        <h1 style={{ marginTop: "100px" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
 
                         {this.props.CurrentPlayer.Nation && (this.props.CurrentPlayer.Nation as INation).Content && (this.props.CurrentPlayer.Nation as INation).Content.length ? <Row>
                             {(this.props.CurrentPlayer.Nation as INation).Content[0][7].split('\n').filter((c: string) => c.length).map((c: string) => {
