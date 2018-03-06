@@ -65,7 +65,7 @@ export default class Chart extends React.Component<ChartProps, {}> {
                 />
 
                 <XYPlot
-                    height={400}
+                    height={600}
                     width={window.innerWidth}
                     margin={{ left: 60, right: 40, top: 60 }}
                     className="line-chart"
