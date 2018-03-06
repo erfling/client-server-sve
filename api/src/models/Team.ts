@@ -35,7 +35,10 @@ export class Team extends BaseClass implements ITeam
 
     @prop()
     SheetId:string;
-    
+
+    @prop()
+    SourceSheetId:string;
+
     @arrayProp({ itemsRef: Player })
     Players:  Ref<IPlayer>[] | IPlayer[];
 
@@ -57,14 +60,7 @@ export class Team extends BaseClass implements ITeam
     @arrayProp({itemsRef: Deal})
     DealsProposedTo: Ref<Deal>[] | IDeal[];
 
-    @prop({default: { Bangladesh:
-      { COMPELLING_EMOTIONAL_CONTENT: 4,
-        DEMONSTRATED_SYSTEMIC_IMPACT: 5,
-        STRONG_EXECUTIVE_PRESENCE: 6 },
-     China:
-      { COMPELLING_EMOTIONAL_CONTENT: 7,
-        DEMONSTRATED_SYSTEMIC_IMPACT: 8,
-        STRONG_EXECUTIVE_PRESENCE: 9 } }})
+    @prop()
     Ratings: Ratings | IRatings;
 
     @prop()

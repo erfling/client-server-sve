@@ -97,7 +97,7 @@ class GameRouter
 
 
         const sheets = new GoogleSheets();
-        const sheetId = await sheets.createTeamSheet(savedGame.Location + " " + savedGame.DatePlayed.toLocaleDateString(), savedGame.SourceSheetId)
+        const sheetId = await sheets.createTeamSheet((savedGame.Name ? savedGame.Name + ", " : null) + savedGame.Location + " " + savedGame.DatePlayed.toLocaleDateString(), savedGame.SourceSheetId)
         const newGame = await GameModel.findOneAndUpdate({_id: g._id},{SheetId: sheetId, IsCurrentGame: true, State: "1A"},{new:true});
 
         const gameWithTeams = await this.SaveChildGames(newGame);
@@ -228,7 +228,7 @@ class GameRouter
             console.log(i, game.Location + " " + " Team " + (i + 1));
             //+ game.DatePlayed.toISOString()
 
-            var team = new Team({GameId: game._id, SheetId: game.SheetId, Slug: "Team" + (i + 1) + "-" + game._id, Nation: nations[i]._id})
+            var team = new Team({GameId: game._id, SheetId: game.SheetId, SourceSheetId: game.SourceSheetId, Slug: "Team" + (i + 1) + "-" + game._id, Nation: nations[i]._id})
 
             let promise = TeamModel.create(team);
             
