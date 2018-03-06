@@ -90,7 +90,7 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
 
     render(){
 
-        return <div style={{background: `url(${Hurricane})`, backgroundSize:'cover'}}>                        
+        return <div style={{background: `url(${Hurricane})`, backgroundSize:'cover', minHeigh:'100vh'}}>                        
                   
                     {this.props.CurrentTeam && <Redirect to="/who-gets-the-water"/>}
 
@@ -111,7 +111,7 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                         <Row type="flex" justify="center">                                            
                             <Col xs={24} sm={16} lg={12} xl={12} style={{marginTop: '30px'}}>
                                 <div className="form-wrapper" style={{background: "rgba(255,255,255,.6)"}}>
-                                    <p style={{margin: '10px', fontWeight: 'bold'}}>Select Your Team to Join</p>
+                                    <p style={{margin: '10px', fontWeight: 'bold'}}>Select Your Team</p>
                                     <Select style={{width:'100%'}} onChange={val => this.onChangeSelectTeam(val)} placeholder="--Select Team--">
                                         {(this.state.SelectedGame.Teams as ITeam[]).sort((a,b) => (a.Nation as INation).Name > (b.Nation as INation).Name ? 1 : 0).map(( t, i) => {
                                             return <Select.Option key={i+1} value={t.Slug}>Team {i + 1}</Select.Option>
