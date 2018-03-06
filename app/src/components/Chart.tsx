@@ -62,6 +62,10 @@ export default class Chart extends React.Component<ChartProps, {}> {
                         // you can access the value of the event
                         console.log(item, index, event);
                     }}
+
+                    onItemClick={(item: any, index: number) => {
+                        console.log(item, index);
+                    }}
                 />
 
                 <XYPlot
