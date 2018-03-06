@@ -100,7 +100,7 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                             <label>Join a Game</label>
                             <Select style={{width:'100%'}} onChange={val => this.onChangeSelectGame(val)} placeholder="--Select Game--">
                                 {this.props.CurrentGames.map(( g, i) => {
-                                    return <Select.Option key={i+1} value={g._id}>{g.Location + " " + new Date(g.DatePlayed).toLocaleDateString()}</Select.Option>
+                                    return <Select.Option key={i+1} value={g._id}>{(g.Name + " " || null) +  g.Location + " " + new Date(g.DatePlayed).toLocaleDateString()}</Select.Option>
                                     })}                                                  
                                 </Select>
                             </div>
