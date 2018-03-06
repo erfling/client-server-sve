@@ -2,6 +2,7 @@ import { CriteriaName } from './../../../shared/models/CriteriaName';
 import { Router, Request, Response, NextFunction } from 'express';
 import * as cors from 'cors';
 import { Game, GameModel } from '../models/Game'; 
+import { Nation, NationModel } from '../models/Nation'; 
 import IGame from '../../../shared/models/IGame'; 
 import { Error } from 'mongoose';
 import * as mongoose from 'mongoose';
@@ -72,9 +73,10 @@ class GameRouter
     }
 
     public async GetGame(req: Request, res: Response):Promise<any> {
-        const Slug = req.params.game;
+        const ID = req.params.game;
+        console.log(ID);
         try {
-            let game = await GameModel.findOne({Slug}).populate({path : 'Teams', populate : {path : 'Players'}});
+            let game = await GameModel.findById(ID).populate({path : 'Teams'});
         
             if (!game) {
               res.status(400).json({ error: 'No games' });
@@ -86,16 +88,20 @@ class GameRouter
         }
     }
 
-    public CreateGame(req: Request, res: Response):Promise<any> {
+    public async CreateGame(req: Request, res: Response):Promise<any> {
+        console.log(req.body);
         const game = new Game(req.body);         
         const g = new GameModel(game);
         
-        const saveChildGames = this.SaveChildGames;
-        //
-        return g.save()
-                .then(this.SaveChildGames.bind(this))
-                .then((g) => {res.json(g)})
-                .catch(() => res.status(400).json({ error: 'Save Failed' }));
+        const savedGame = await g.save();
+
+
+        const sheets = new GoogleSheets();
+        const sheetId = await sheets.createTeamSheet(savedGame.Location + " " + savedGame.DatePlayed.toLocaleDateString(), savedGame.SourceSheetId)
+        const newGame = await GameModel.findOneAndUpdate({_id: g._id},{SheetId: sheetId, IsCurrentGame: true, State: "1A"},{new:true});
+
+        const gameWithTeams = await this.SaveChildGames(newGame);
+        res.json(gameWithTeams);
     }
 
     public async UpdateGame(req: Request, res: Response):Promise<IGame | any> {
@@ -212,8 +218,9 @@ class GameRouter
 
     private async SaveChildGames(game: IGame):Promise<any> {
         console.log("SAVE CHILD GAMES CALLED");
-
+        let nations = await NationModel.find()
         //ALL GOOGLE SVE GAMES HAVE 6 TEAMS
+        nations.sort((a: INation, b: INation) => a.Name > b.Name ? 1 : 0);
         let gamesNeeded = 6 - game.Teams.length;
         console.log(gamesNeeded, game);
         var promises = [];          
@@ -221,33 +228,12 @@ class GameRouter
             console.log(i, game.Location + " " + " Team " + (i + 1));
             //+ game.DatePlayed.toISOString()
 
-            
-            let promise = this.Sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toLocaleDateString() + " Team " + (i + 1), game.SourceSheetId)
-                                .then((sheetId:any) => {console.log("RETURNED SHEETID:", sheetId); return Promise.resolve(new Team({GameId: game._id, SheetId: sheetId, Slug: "Team" + (i + 1) + "-" + game._id}))})
-                                .then((t:ITeam) => TeamModel.create(t))
-            
+            var team = new Team({GameId: game._id, SheetId: game.SheetId, Slug: "Team" + (i + 1) + "-" + game._id, Nation: nations[i]._id})
+
+            let promise = TeamModel.create(team);
             
             promises.push(promise);
 
-
-
-            //Create spreadsheet for team
-            /*
-            try{
-                let sheetId = await sheets.createTeamSheet(game.Location + " " + game.DatePlayed.toISOString() + " Team " + gamesNeeded);
-                console.log(sheetId);
-                let t = new Team({GameId: game._id, SheetId: sheetId});
-                let team = await TeamModel.create(t);
-                if(team){
-                    let teams:string[] = game.Teams as string[];
-                    teams.push(team._id);
-                }
-
-            }
-            catch{
-                console.log("ERROR")
-            }
-            */
         }
         
 
@@ -256,51 +242,23 @@ class GameRouter
             var teams: string[] = promises.map(p => p._id)
 
             return GameModel.findOneAndUpdate({Slug: game.Slug}, { Teams: promises }, {new: true}, (game)=>{
+                return game;
             })
             
         });
-        /*
-        try{
-            return await GameModel.findOneAndUpdate({Slug: game.Slug}, { Teams: game.Teams }, {new: true}, ()=>{
-
-            })
-        }
-        catch{
-
-        }
-        */
-
-/*
-        try {
         
-            if (!game) {
-              res.status(400).json({ error: 'No games' });
-            } else {
-              res.json(game.Teams);
-            }
-        } catch(err) {
-            ( err: any ) => res.status(500).json({ error: err });
-        }
-        */
     } 
 
     private async setCurrentGame(req: Request, res: Response):Promise<any> {
         const game = new Game(req.body);         
         const g = new GameModel(game);
         try{
-            const allGames = await GameModel.find()
-            //build update all query ids
-            const ids = allGames.map(g => g.toObject()._id);
-            console.log(ids)
-            const updatedGames = await GameModel.updateMany({_id: {$in: ids}}, {IsCurrentGame: false}, {new: true})
-            console.log(updatedGames);
-
+   
             const updatedGame  = await GameModel.findByIdAndUpdate(g._id, {IsCurrentGame: true})
-            const newAllGames = await GameModel.find()
 
-            if(newAllGames){
-                console.log(newAllGames)
-                res.json(newAllGames)
+            if(updatedGame){
+                console.log(updatedGame)
+                res.json(updatedGame)
             } else {
                 res.status(400);
                 res.json("couldn't save games")
@@ -311,13 +269,13 @@ class GameRouter
         }
     }
 
-    private async getCurrentGame(req: Request, res: Response){
+    private async getCurrentGames(req: Request, res: Response){
         console.log("we calling this")
         try{
-            const currentGame = await GameModel.findOne({IsCurrentGame: true}).populate({path: "Teams", populate:{path: "Nation"}})
-            if(currentGame){
+            const currentGames = await GameModel.find({IsCurrentGame: true}).populate({path: "Teams", populate:{path: "Nation"}})
+            if(currentGames){
                 //this.SaveChildGames(currentGame);
-                res.json(currentGame)
+                res.json(currentGames)
             }else{
                 res.status(400);
                 res.json("Couldn't find the current game")
@@ -332,7 +290,7 @@ class GameRouter
         this.getSheets();
         this.router.get("/", this.GetGames.bind(this));
         this.router.get("/:game", this.GetGame.bind(this));
-        this.router.get("/req/getcurrentgame", this.getCurrentGame.bind(this));
+        this.router.get("/req/getcurrentgame", this.getCurrentGames.bind(this));
         this.router.post("/", this.CreateGame.bind(this));
         this.router.post("/setcurrent", this.setCurrentGame.bind(this));
         this.router.put("/:game", this.UpdateGame.bind(this));

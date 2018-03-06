@@ -50,7 +50,6 @@ export default class State3 extends React.Component<State3Props, {PlayerNotFound
     }
 
     getData() {
-        console.log("Calling get data")
         if(this.props.SocketConnected && !this.props.DaysAbove2){
             this.props.getDaysAbove(this.props.CurrentPlayer);
         }

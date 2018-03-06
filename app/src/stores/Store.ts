@@ -13,7 +13,7 @@ export default interface ApplicationStore{
         SelectedRole: IRole,
         Player?: IPlayer[],
         CurrentPlayer?: ITeam,
-        CurrentGame?: IGame,
+        CurrentGames?: IGame[],
         Dashboard: any,
         ReceivedProposedDeals: IDeal[];
         SentProposedDeals: IDeal[];

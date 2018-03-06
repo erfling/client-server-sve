@@ -284,7 +284,7 @@ export default class AppServer
 
                         //emit the values to all the teams
                         setTimeout(() => {
-                            sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
+                            sheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
                                 eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, r);
                             })
                         },10)
@@ -410,7 +410,7 @@ export default class AppServer
                         console.log(sheetsResponse);
                         //emit the values to all the teams
                         setTimeout(() => {
-                            sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
+                            sheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
                                 eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, r);
                             })
                         },10)
@@ -464,7 +464,7 @@ export default class AppServer
     }
     
 
-    private onSocketJoinRoom(eventTarget:SocketIO.Socket, roomName:string):void {
+    private async onSocketJoinRoom(eventTarget:SocketIO.Socket, roomName:string):Promise<any> {
         eventTarget.leave(roomName);
         eventTarget.join(roomName);
         console.log('Client ' + eventTarget.id + ' joined room ' + roomName);
@@ -472,11 +472,20 @@ export default class AppServer
         eventTarget.nsp.to(roomName).emit(SocketEvents.ROOM_MESSAGE, roomName, "ID " + eventTarget.id + " HAS JOINED ROOM " + roomName);
         eventTarget.nsp.to(roomName).emit(SocketEvents.HAS_CONNECTED, "ID " + eventTarget.id + " CONNECTED RIGHT, YO " + roomName);
 
-        //emit the values to all the teams
-        this.sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
-            console.log("trying to emit to ", roomName)
-            eventTarget.nsp.to(roomName).emit(SocketEvents.DASHBOARD_UPDATED, r);
-        })
+        try{
+        const game = await GameModel.findById(eventTarget.nsp.name.replace("/", "")).then(g => g)
+
+            //emit the values to all the teams
+            if(game){
+                this.sheets.GetSheetValues((game as IGame).SheetId, "Country Impact!Y3:Y103").then((r:any) => {
+                    console.log("trying to emit to ", roomName)
+                    eventTarget.nsp.to(roomName).emit(SocketEvents.DASHBOARD_UPDATED, r);
+                })
+            }
+        }
+        catch{
+
+        }
         
     }
 
@@ -615,12 +624,12 @@ export default class AppServer
         console.log('Client disconnected:', eventTarget.id);
     }
 
-    private onSocketSelectTeam(eventTarget:SocketIO.Socket, Slug:string):void {
+    private async onSocketSelectTeam(eventTarget:SocketIO.Socket, Slug:string):Promise<void> {
         console.log("SELECTING TEAM", Slug);
-        TeamModel.findOne( { Slug } ).populate("Players").then((t:Team) => {
-            eventTarget.nsp.emit(SocketEvents.SELECT_TEAM, t);
-        })
-        this.sheets.GetSheetValues().then((v:any) => {
+        const t = await TeamModel.findOne( { Slug } ).populate("Players");
+        eventTarget.nsp.emit(SocketEvents.SELECT_TEAM, t);
+
+        this.sheets.GetSheetValues(t.SheetId).then((v:any) => {
             console.log("going to send values", v);
             eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, v);                            
         })
@@ -763,17 +772,6 @@ export default class AppServer
         //login route
         mongoose.set('debug', true);
 
-        // sheets criteria
-        this.app.get('/sapien/api/getCriteria', (req, res) => {
-            const sheets = new GoogleSheets();
-            return sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Round 3 Criteria!B1:D1")
-            .then((criteria:any) => {
-                console.log("DIG:", criteria, Array.isArray(criteria));
-                res.json(criteria[0]);
-            })
-            .catch((reason:string) => {console.log("SOMETHING BLEW UP:", reason)});
-        });
-
         this.app.post('/sapien/api/changestate', (req, res) => {
             console.log(req.body._id);
             GameModel.findByIdAndUpdate(req.body._id, {State: req.body.State}, {new: true}).populate("Teams").then(( game ) => {
@@ -806,9 +804,9 @@ export default class AppServer
 
 
                         const sheets = new GoogleSheets();
-    
+                        console.log("LOOKING UP", game.SheetId)
                         //emit the values to all the teams
-                        sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
+                        sheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
                             console.log("SHOULD BE EMITTING TO TEAMS")
                             this.io.of(game._id).emit(SocketEvents.DASHBOARD_UPDATED, r);
                         })
@@ -881,10 +879,10 @@ export default class AppServer
                             this.sheets.setTeamListener(t.Slug);
                         }
                         let token = jwt.sign({team: t}, 'shhhhh');
-                        console.log("TEAM TO SEND", team);
 
                         //emit the values to all the teams
-                        this.sheets.GetSheetValues("1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg", "Country Impact!Y3:Y103").then((r:any) => {
+                        console.log("LOOKING UP", game.SheetId)
+                        this.sheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
                             console.log("trying to emit to ", game._id)
                             this.io.of(game._id).emit(SocketEvents.DASHBOARD_UPDATED, r);
                         })
@@ -922,11 +920,15 @@ export default class AppServer
                 const game = await GameModel.findOne({IsCurrentGame: true}).then(g => g);
                 console.log("FOUND THIS TEAM", game)
                 var sheets = new GoogleSheets();
+
+                //TODO: this must be a loop through all active games. We must emit to all sockets for all games being played
+                /*
                 sheets.GetSheetValues(null, "Country Impact").then((v:any) => {     
                     console.log("returning:", req.body.Slug);
                     this.io.of(game.toObject()._id).emit(SocketEvents.DASHBOARD_UPDATED, v);
                     resp.json({test: "hello folks"});
                 })
+                */
             })
         }
 
@@ -1008,7 +1010,7 @@ export default class AppServer
 
         this.app.post("/sapien/api/getDaysAbove", async (req, res) => {
             this.getDaysAbove(req.body);
-            const updatedValues = await this.sheets.GetSheetValues(null, "Country Impact!C21");
+            const updatedValues = await this.sheets.GetSheetValues(req.body.SheetId, "Country Impact!C21");
             res.json(updatedValues);
 
         })
@@ -1016,7 +1018,7 @@ export default class AppServer
     }
 
     private async getDaysAbove(team:ITeam): Promise<any>{
-        const updatedValues = await this.sheets.GetSheetValues(null, "Country Impact!C21");
+        const updatedValues = await this.sheets.GetSheetValues(team.SheetId, "Country Impact!C21");
                 
         if(updatedValues){
             console.log("VALUES FROM SHEET", updatedValues);

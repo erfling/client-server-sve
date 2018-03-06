@@ -67,7 +67,7 @@ export default class AdminGamesList extends React.Component<GameListProps, {addi
                                                     
                                                     <Button type="dashed" shape="circle" onClick={e => this.props.editGame(g)}><Icon type="edit" /></Button>
                                                     <Button type="dashed" shape="circle">
-                                                        <Link to={'/admin/games/'+g.Slug}><Icon type="info" /></Link>
+                                                        <Link to={'/admin/games/'+g._id}><Icon type="info" /></Link>
                                                     </Button>
                                                 </div>}> 
                                             <p>Location: {g.Location}</p>

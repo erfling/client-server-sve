@@ -24,6 +24,9 @@ export class Game extends BaseClass implements IGame
     SourceSheetId?: string;
 
     @prop()
+    SheetId?: string;
+
+    @prop()
     Slug: string;
 
     @prop()
