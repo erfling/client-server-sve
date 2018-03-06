@@ -94,9 +94,9 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                   
                     {this.props.CurrentTeam && <Redirect to="/who-gets-the-water"/>}
 
-                    {this.props.CurrentGames && <Row type="flex" justify="center" style={{height:'100vh', justifyContent: 'center'}}>                                            
+                    {this.props.CurrentGames && <Row type="flex" justify="center">                                            
                         <Col xs={24} sm={16} lg={12} xl={12} style={{marginTop: '35vh'}}>
-                        <div className="form-wrapper">                                       
+                        <div className="form-wrapper" style={{background: "rgba(255,255,255,.6)"}}>                                       
                             <label>Join a Game</label>
                             <Select style={{width:'100%'}} onChange={val => this.onChangeSelectGame(val)} placeholder="--Select Game--">
                                 {this.props.CurrentGames.map(( g, i) => {
@@ -108,8 +108,8 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                     </Row>}   
 
                     {this.state.SelectedGame && 
-                        <Row type="flex" justify="center" style={{height:'100vh', justifyContent: 'center'}}>                                            
-                            <Col xs={24} sm={16} lg={12} xl={12} style={{marginTop: '35vh'}}>
+                        <Row type="flex" justify="center">                                            
+                            <Col xs={24} sm={16} lg={12} xl={12} style={{marginTop: '30px'}}>
                                 <div className="form-wrapper" style={{background: "rgba(255,255,255,.6)"}}>
                                     <p style={{margin: '10px', fontWeight: 'bold'}}>Select Your Team to Join</p>
                                     <Select style={{width:'100%'}} onChange={val => this.onChangeSelectTeam(val)} placeholder="--Select Team--">
