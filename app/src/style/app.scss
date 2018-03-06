@@ -1,5 +1,4 @@
 @import '~antd/dist/antd.css';
-@import './chart.scss';
 
 $breakPoint: 80em;
 
@@ -35,9 +34,17 @@ h4{font-size: 160%}
 .rv-xy-plot path{
     fill: none;
 } 
-.line-chart{
-   
-    
+.main-chart{
+    label{
+        color: #333
+    }
+    .line-chart{
+        text{
+            stroke: #444 !important;
+            font-size: 110%;
+        }
+        
+    }
 }
 
 .rv-discrete-color-legend {
@@ -47,9 +54,21 @@ h4{font-size: 160%}
     text-align: center;
     .rv-discrete-color-legend-item{
         display: inline-block;
-        font-size:200%;
+        font-size: 155%;
+        padding: 9px 10px;
+        color: #444;
+
+        .rv-discrete-color-legend-item__color {
+            display: inline-block;
+            height: 6px;
+            vertical-align: middle;
+            width: 36px;
+            margin-right: 10px;
+        }
     }
 }
+ 
+  
 
 .loginForm{
     display: flex;
@@ -219,7 +238,7 @@ h4{font-size: 160%}
     z-index: 9999;
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.9);
     text-align: center;
-
+    color: #7d7d7d;
     >div >span{
         margin-left:3px;
         margin-right:20px;
@@ -309,8 +328,35 @@ h4{font-size: 160%}
 }
 
 .trades{
+    margin-top:-20px;
     h1,h2,h3,h4,h5{
-        text-align: center
+        text-align: center;
+        color:white;
+    }
+    color:white;
+
+    &.danger{
+        background: #862323
+    }
+
+    &.warning{
+        background: #ffa400
+    }
+
+    &.success{
+        background: #16591f
+    }
+    .propose-block{
+        background: rgba(255, 255, 255, 0.75);
+        padding: 10px;
+        margin-top: 25px;
+        margin-bottom:70px; 
+        box-shadow: 0 0 10px 0 rgba(0,0,0,.3);
+        color: black; 
+        label{
+            text-align: center;
+            margin: 10px 0 30px !important;
+        }
     }
 }
 

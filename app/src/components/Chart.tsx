@@ -48,15 +48,26 @@ export default class Chart extends React.Component<ChartProps, {}> {
                 <label>{this.props.children || 'Simulated Global Warming Data'}</label>
                 <DiscreteColorLegend
                     className="impact-chart"
-                    colors={["red", "orange", "#3366cc"]}
+                    colors={["#ffa400", "#16591f", "#3366cc"]}
                     orientation="horizontal"
                     items={["Paris Accord", "Preindustrial Level", "Adjusted Temp Increase"]}
+                    onItemMouseEnter={(item: any, index: number, event: any) => {
+                        // does something on mouse enter
+                        // you can access the value of the event
+                        console.log(item, index, event)
+                    }}
+
+                    onItemMouseLeave={(item: any, index: number, event: any) => {
+                        // does something on mouse enter
+                        // you can access the value of the event
+                        console.log(item, index, event);
+                    }}
                 />
 
                 <XYPlot
                     height={400}
-                    width={window.innerWidth - 30}
-                    margin={{ left: 60, right: 60, top: 60 }}
+                    width={window.innerWidth}
+                    margin={{ left: 60, right: 40, top: 60 }}
                     className="line-chart"
                 >
                     <HorizontalGridLines
@@ -75,42 +86,38 @@ export default class Chart extends React.Component<ChartProps, {}> {
                         style={{ stroke: '#ddd' }}
                     />
 
+ 
                     <LineSeries
-                        strokeWidth={3}
-                        color="red"
+                        strokeWidth={5}
+                        color="#ffa400"
                         label="test"
-                        className="first-series"
-                        style={{
-                            strokeDasharray: '10 2'
-                        }}
+                        className="paris-accord"
                         data={this.getParsedData(2)}
                     />
 
                     <LineSeries
-                        strokeWidth={3}
-                        color="orange"
-                        className="second-series"
-                        style={{
-                            strokeDasharray: '10 2'
-                        }}
+                        strokeWidth={5}
+                        color="#16591f"
+                        className="pre-industrial"
                         data={this.getParsedData(0)}
                     />
 
-                    <LineSeries
-                        strokeWidth={3}
-                        color="rgba(0,0,0,0)"
-                        className="second-series"
-                        data={this.getParsedData(4)}
-                    />
 
                     <LineSeries
-                        className="third-series"
+                        className="value"
                         color="#3366cc"
                         style={{
                             //strokeDasharray: '10 2'
                         }}
-                        strokeWidth={3}
+                        strokeWidth={7}
                         data={this.getParsedData(this.props.Dashboard)}
+                    />
+
+                    <LineSeries
+                        strokeWidth={1}
+                        color="rgba(0,0,0,0)"
+                        className="second-series"
+                        data={this.getParsedData(4)}
                     />
 
 

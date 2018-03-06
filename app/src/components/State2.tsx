@@ -102,28 +102,16 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
     respondToDeal(deal: IDeal, accept: boolean) {
         this.props.acceptOrRejectDeal(deal, accept)
     }
-
-    getColor() {
+    
+    getBodyClassName() {
         var temp = this.props.Dashboard[100];
 
         if (temp <= 0) {
-            return "green";
+            return "success";
         } else if (temp >= 2) {
-            return "red";
+            return "danger";
         } else {
-            return "orange";
-        }
-    }
-
-    getBodyColor() {
-        var temp = this.props.Dashboard[100];
-
-        if (temp <= 0) {
-            return "rgba(54, 255, 62, 0.1)";
-        } else if (temp >= 2) {
-            return "rgba(255, 49, 49, 0.24)";
-        } else {
-            return "rgba(250, 225, 0, 0.5)";
+            return "warning";
         }
     }
 
@@ -191,13 +179,14 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                 match={this.props.match}
                 CurrentPlayer={this.props.CurrentPlayer}
             >
-                <h1 style={{ marginTop: "10px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
-                {this.props.Dashboard && this.props.Dashboard.length > 100 ? <ChartContainer/> : null}
-                <Row style={{ background: this.getBodyColor() }} type="flex" justify="center" className="trades">
+                
+                <Row className={this.getBodyClassName() + " trades"} type="flex" justify="center">
                     {this.props.Dashboard &&
                         this.props.Dashboard.length > 100 ?
                         <TopBarContainer /> : null
                     }
+                    <h1 style={{ marginTop: "50px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
+                    {this.props.Dashboard && this.props.Dashboard.length > 100 ? <ChartContainer/> : null}
 
                     {this.props.PendingDealOffer ?
 
@@ -273,8 +262,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                         </Row>
 
                         {!this.props.CurrentPlayer.DealsProposedBy.length && typeof this.props.CurrentPlayer.DealsProposedTo[0] != "string" ? 
-                        <Row style={{ background: "#fff", padding: "10px", marginTop: '25px;', boxShadow: '0 0 10px 0 rgba(0,0,0,.3)' }}>
-                            <p style={{ marginTop: '10px !important' }}>Propose a Trade</p>
+                        <Row className="propose-block">
+                            <label>Propose a Trade</label>
                             <Select
                                 style={{ width: '100%' }}
                                 placeholder="--Select Nation--"
