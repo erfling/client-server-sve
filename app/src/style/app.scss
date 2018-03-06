@@ -41,10 +41,33 @@ h4{font-size: 160%}
     .line-chart{
         text{
             stroke: #444 !important;
-            font-size: 110%;
+            font-size: 100%;
         }
-        
+
+        .chart-line{
+            stroke-width: 5px;
+            opacity: .5 !important;
+            transition: .75s opacity;
+            &.selected{
+                stroke-width: 9px !important;
+                opacity: 1 !important;
+            }
+        }
+
+        .paris-accord{
+            stroke:#ffa400 !important;
+        }
+
+        .preindustrial{
+            stroke:#16591f !important;
+        }
+
+        .adjusted-temp-increase{
+            stroke:#3366cc !important;
+            stroke-width: 7px;
+        }
     }
+
 }
 
 .rv-discrete-color-legend {
@@ -52,19 +75,36 @@ h4{font-size: 160%}
     display: block;
     height:40px;
     text-align: center;
+    cursor: pointer;
     .rv-discrete-color-legend-item{
+  
         display: inline-block;
         font-size: 155%;
         padding: 9px 10px;
         color: #444;
+        margin-left: 5px;
 
         .rv-discrete-color-legend-item__color {
             display: inline-block;
             height: 6px;
             vertical-align: middle;
             width: 36px;
-            margin-right: 10px;
+            margin-right: 7px;
+            margin-top: -6px;  
+            transition: .5s height;          
         }
+
+        &.selected, &:hover{
+            font-weight: bold;
+            padding: 9px 5px;
+            background: rgba(192, 224, 252, 0.26);
+            .rv-discrete-color-legend-item__color {
+                height: 15px !important;    
+                margin-top: -7px;            
+            }
+        }
+
+        
     }
 }
  

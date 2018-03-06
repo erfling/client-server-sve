@@ -140,8 +140,10 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                     {this.props.DaysAbove2 && this.props.SocketConnected ? 
                         <TopBarContainer /> : null
                     }
-                    <h1 style={{ marginTop: "10px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
-                    <ChartContainer />
+                    <Col xs={24} style={{paddingLeft:'13px'}}>
+                        <h1 style={{ marginTop: "50px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
+                        <ChartContainer/>
+                    </Col>
                     {this.props.CurrentPlayer.GameState == "4A" && !this.props.SelectedRole ? 
                         <Row className="role-selection">
                             
