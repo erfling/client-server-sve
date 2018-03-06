@@ -90,7 +90,7 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
 
     render(){
 
-        return <div style={{background: `url(${Hurricane})`, backgroundSize:'cover', minHeigh:'100vh'}}>                        
+        return <div style={{background: `url(${Hurricane})`, backgroundSize:'cover', minHeight:'100vh'}}>                        
                   
                     {this.props.CurrentTeam && <Redirect to="/who-gets-the-water"/>}
 
