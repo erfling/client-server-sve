@@ -237,8 +237,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                         <Modal
                             title={
                                 this.props.AcceptedDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug
-                                    ? <span>Your trade deal with {this.props.AcceptedDealOffer.ToNationName} was accepted.</span>
-                                    : <span>Your trade deal with {this.props.AcceptedDealOffer.FromNationName} was accepted.</span>
+                                    ? <span>Your trade deal with {this.props.AcceptedDealOffer.ToNationName} was accepted by the SVI.</span>
+                                    : <span>Your trade deal with {this.props.AcceptedDealOffer.FromNationName} was accepted by the SVI.</span>
                             }
                             visible={true}
                             width="80%"
