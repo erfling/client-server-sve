@@ -800,6 +800,11 @@ export const resetGame = (game:IGame) => {
                 type:ACTION_TYPES.GAME_SAVED,
                 payload:r
             })
+
+            dispatch({
+                type:ACTION_TYPES.GOT_GAME,
+                payload:r
+            })
         })
     }
 }
