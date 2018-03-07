@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Row, Icon, Button} from 'antd';
+import { Row, Icon, Button, Radio} from 'antd';
+const RadioButton = Radio.Button;
+const RadioGroup = Radio.Group;
 import ITradeOption from '../../../shared/models/ITradeOption';
 import INation from '../../../shared/models/INation';
 
@@ -72,44 +74,42 @@ export default class Chart extends React.Component<ChartProps, {Width: number}> 
         return parsedData;
     }
 
-    private onChartItemClick(item: any, index:number):void {
-        var chartLabelParent = document.querySelector(".impact-chart");
-        console.log(item);
-        chartLabelParent.childNodes.forEach((n,i) => {
-            if((n as Element).classList.contains("rv-discrete-color-legend-item")){
-                (n as Element).classList.remove("selected");
-                i == index ? (n as Element).classList.add("selected") : null;
-            }
-        })
-
-        document.querySelectorAll(".chart-line").forEach((el:Element) => {
-            el.classList.remove("selected");
-        });
-
-        document.querySelector("." + item.props.children.toLowerCase().split(" ").join("-")).classList.add("selected");
+    private onChartItemClick(index: number):void {
+        var chartLabelParent = document.querySelector(".impact-chart");        
+        document.querySelectorAll(".chart-line").forEach((el:Element, i:Number) => {
+            i == index ? el.classList.add("selected") : el.classList.remove("selected");
+        });        
     }
 
     render() {
+        const colors = ["#ffa400", "#16591f", "#3366cc"]
         if (!this.props.Dashboard) return <div />
 
         return this.props.Dashboard  &&  this.props.Dashboard.length > 100 && this.state.Width ? <Row className="main-chart">                
                 <label>{this.props.children || 'Simulated Global Warming Data'}</label>
-                <DiscreteColorLegend
-                    className="impact-chart"
-                    colors={["#ffa400", "#16591f", "#3366cc"]}
-                    orientation="horizontal"
-                    items={["Paris Accord" , "Preindustrial", "Adjusted Temp Increase"].map((val, i) => {
-                        return <a className="label-anchor">{val}</a>
-                    })}
-                    onItemClick={(item: any, index: number) => {
-                        this.onChartItemClick(item, index);
-                    }}
-                />
+                
+                    
+                <Row className="impact-chart">
+                    <RadioGroup 
+                        ref="ChartSelector"
+                        size="large"
+                        onChange={e => this.onChartItemClick(parseInt(e.target.value))}
+                        defaultValue={2}
+                    >                        
+                        {["Paris Accord" , "Preindustrial", "Adjusted Temp Increase"].map((val, i) => {
+                            return <RadioButton value={i}>
+                                        <span className="swatch" style={{background:colors[i]}}></span>
+                                        <span className="rdo-btn-label">{val}</span>
+                                   </RadioButton>
+                        })}
+                    </RadioGroup>
+
+                </Row>
 
                 <XYPlot
                     height={600}
                     width={this.state.Width}
-                    margin={{ left: 45, right: 52, top: 60 }}
+                    margin={{ left: 52, right: 45, top: 60 }}
                     className="line-chart"
                 >
                     <HorizontalGridLines
@@ -168,3 +168,14 @@ export default class Chart extends React.Component<ChartProps, {Width: number}> 
         </Row> : null}
 
 }
+/**<DiscreteColorLegend
+                    className="impact-chart"
+                    colors={["#ffa400", "#16591f", "#3366cc"]}
+                    orientation="horizontal"
+                    items={["Paris Accord" , "Preindustrial", "Adjusted Temp Increase"].map((val, i) => {
+                        return <a className="label-anchor">{val}</a>
+                    })}
+                    onItemClick={(item: any, index: number) => {
+                        this.onChartItemClick(item, index);
+                    }}
+                /> */

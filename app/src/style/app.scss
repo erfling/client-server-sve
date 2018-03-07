@@ -46,7 +46,7 @@ h4{font-size: 160%}
 
         .chart-line{
             stroke-width: 5px;
-            opacity: .5 !important;
+            opacity: .3 !important;
             transition: .75s opacity;
             &.selected{
                 stroke-width: 9px !important;
@@ -68,6 +68,48 @@ h4{font-size: 160%}
         }
     }
 
+}
+.impact-chart{
+    margin:0 auto;
+    display: block;
+    text-align: center;
+    .ant-radio-button-wrapper{
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        position: relative;
+        text-transform: none;
+
+        .swatch{
+            height: 11px;
+            width: 20px;
+            display: inline-block;
+            margin-top: 14px;
+            position: absolute;
+        }
+
+        .rdo-btn-label{
+            margin-left:25px;
+        }
+    }
+}
+
+@keyframes chartLine {
+    0%   {
+        stroke-width: 7px !important;
+        opacity: .5 !important;
+    }
+    25%  {
+        stroke-width: 9px !important;
+        opacity: .7 !important;
+    }
+    50%  {
+        stroke-width: 12px !important;
+        opacity: .9 !important;
+    }
+    100% {
+        stroke-width: 9px !important;
+        opacity: 1 !important;
+    }
 }
 
 .rv-discrete-color-legend {
@@ -444,7 +486,7 @@ h4{font-size: 160%}
 }
 .main-chart{
     background: #fff;
-    padding: 10px;
+    padding: 10px 0;
     margin: 25px 0 20px -15px;
     label{
         text-align: center;
