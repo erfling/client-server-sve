@@ -12,6 +12,7 @@ import * as ReactDOM from "react-dom";
 interface DispatchProps {
     selectGame: (game:string) => {}
     setGameState:(game:IGame, newState:number) => {}
+    resetGame: (game:IGame) => {}
 }
 export interface AdminGameDetailProps{
     Game:IGame;
@@ -28,6 +29,8 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
     return {
         selectGame: (slug: string) => dispatch( Actions.getGame( slug ) ),
         setGameState: (game:IGame, newState: number) => dispatch( Actions.setGameState(game, newState)),
+        resetGame: (game:IGame) => dispatch( Actions.resetGame(game) )
+
     }
 }
 

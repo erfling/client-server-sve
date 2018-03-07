@@ -1,6 +1,7 @@
 import * as React from "react";
 import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
+import INation from '../../../shared/models/INation';
 import { Icon } from 'antd/lib';
 import  Card  from 'antd/lib/card';
 import { Col, Row } from "antd/lib/grid";
@@ -23,6 +24,7 @@ interface AdminGameDetailProps{
     Loading:boolean;
     selectGame:(slug: string)=>{}
     addGame: () => {}
+    resetGame: (game: IGame) => {}
     setGameState : (game:IGame, newState: number | string) => {}
     match:any;
 }
@@ -54,6 +56,14 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
         return this.props.Game.State ? buttonIdx == this.props.Game.State : buttonIdx == 1;
     }
 
+    requestConfirmReset(){
+        console.log(this.props.Game);
+        if (window.confirm("Do you really reset this game? This action cannot be undone")) { 
+           this.props.resetGame(this.props.Game)
+        }
+    }
+
+
     states = ["1A", "1B", "1C", "2", "3A", "3B", "4A", "INTERMISSION", "4B", "5"];
 
     render() {
@@ -61,7 +71,7 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
           return <Col xs={24} sm={24} lg={16}>
                     {console.log("RENDERING")}
                         {this.props.Loading && <Card loading title="Loading Game">Loading</Card>}
-                        {this.props.Game && <Card title={this.props.Game.Name + " " + this.props.Game.State}
+                        {this.props.Game && <Card title={this.props.Game.Name}
                             extra={
                                 <div>
                                     <em style={{marginRight:'10px'}}>Set Game State:</em>
@@ -71,12 +81,15 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
                                                                 shape={state.length < 3 ? 'circle' : null}>{state}
                                                              </Button>
                                                 )}
+                                    <Button type="danger" onClick={e => this.requestConfirmReset()}>
+                                        Reset <Icon type="poweroff" />
+                                    </Button>
                                 </div>
                             }
                         >
                             <Collapse accordion defaultActiveKey={['0']}>
                                 { this.props.Game && this.getTeams(this.props.Game).map(( t, i ) => {
-                                    return <Panel header={t.Name} key={i.toString()}>
+                                    return <Panel header={t.Name || (t.Nation as INation).Name} key={i.toString()}>
                                                 {JSON.stringify(t, null, 2)}
                                            </Panel>
                                 })} 

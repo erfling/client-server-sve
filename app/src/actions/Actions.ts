@@ -14,6 +14,8 @@ import IDeal from '../../../shared/models/IDeal';
 import IRatings from '../../../shared/models/IRatings';
 import IRole from '../../../shared/models/IRole';
 import { Socket } from 'dgram';
+import { actionTypes } from 'redux-form';
+import { json } from 'express';
 
 const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
 const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
@@ -85,6 +87,7 @@ export enum ACTION_TYPES {
     GOT_CONTENT = "GOT_CONTENT",
 
     SOCKET_CONNECTED = "SOCKET_CONNECTED",
+    GAME_RESET = "GAME_RESET"
 
 }
 
@@ -463,6 +466,7 @@ export const getGame = (slug:string) => {
         fetch( url )
             .then( r => r.json() )
             .then( ( r: ITeam | IGame | IPlayer ) => {
+                console.log("we got this from the server", r)
                 r.IsSelected = true;
                 dispatch( {
                     type: ACTION_TYPES.GOT_GAME,
@@ -768,6 +772,34 @@ export const getDaysAbove = (team:ITeam) => {
                 type: ACTION_TYPES.YEARS_ABOVE_2_UPDATED,
                 payload: r
             } );
+        })
+    }
+}
+
+export const resetGame = (game:IGame) => {
+    console.log(game);
+    return (dispatch:Dispatch<Action<IGame>>) => {
+        
+        const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
+        const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
+        const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/games/resetgame"
+
+        fetch(
+            URL,
+            {
+                body: JSON.stringify(game),
+                method: "POST",
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            }
+        )
+        .then( r => r.json() )
+        .then(r => {
+            dispatch({
+                type:ACTION_TYPES.GAME_SAVED,
+                payload:r
+            })
         })
     }
 }

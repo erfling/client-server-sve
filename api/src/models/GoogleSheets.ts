@@ -415,4 +415,34 @@ export default class GoogleSheets
         })    
     }
 
+    public  clearRange(sheetId: string, range: string){
+        const sheets = google.sheets('v4');
+        return this.readAndAuthFile('./api/src/creds/client_secret.json')
+        .then(this.authorize)
+        .then((auth) => {
+            return new Promise((resolve, reject) => {
+                if (!auth) return;
+                var request = {
+                    // The ID of the spreadsheet to update.
+                    spreadsheetId: sheetId,  // TODO: Update placeholder value.
+                
+                    // The A1 notation of the values to clear.
+                    range: range,  // TODO: Update placeholder value.
+                
+                    auth: auth,
+                  };
+                
+                  sheets.spreadsheets.values.clear(request, function(err:Error, response:any) {
+                    if (err) {
+                      console.error(err);
+                      return reject(err);
+                    }
+
+                    return resolve(response);
+                
+                  });
+            })
+        })    
+    }
+
 }

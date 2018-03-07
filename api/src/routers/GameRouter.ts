@@ -58,7 +58,7 @@ class GameRouter
         console.log("GET GAMES CALLED");
         
         try {
-            let games = await GameModel.find().populate('Teams');
+            let games = await GameModel.find().populate({path: "Teams"});
             if (!games) {
                 return res.status(400).json({ error: 'No games' });
             } else {
@@ -76,7 +76,7 @@ class GameRouter
         const ID = req.params.game;
         console.log(ID);
         try {
-            let game = await GameModel.findById(ID).populate({path : 'Teams'});
+            let game = await GameModel.findById(ID).populate({path: "Teams", populate: {path: "Nation"}});
         
             if (!game) {
               res.status(400).json({ error: 'No games' });
@@ -194,7 +194,7 @@ class GameRouter
                 });
             }
             
-            new GoogleSheets().commitAnswers(sheetValues,"Round 3 Criteria!B2:D7")
+            new GoogleSheets().commitAnswers(sheetValues,"Round 3 Criteria!B2:D7", game.SheetId)
 
             console.log(sheetValues);
 
@@ -285,6 +285,46 @@ class GameRouter
         }
     }
 
+    private async ResetGame(req: Request, res: Response){
+     
+        try{
+            console.log("hello?",req.body)
+
+            const updatedGame = await GameModel.findOneAndUpdate( {_id: req.body._id}, {State: "1B", }, {new: true}).populate("Teams")
+            console.log(updatedGame);
+
+            if(updatedGame){
+                //reset spreadsheet ranges
+                const sheets = new GoogleSheets();
+                const sheetId = updatedGame.SheetId
+                //clear team ratings
+                const ratingsCleared     = await sheets.clearRange(sheetId, "Round 3 Criteria!B2:D7");
+                //clear role deals
+                const roleDealsCleared   = await sheets.clearRange(sheetId, "Round 4!B14:M17");
+                //clear tech investments
+                const investmentsCleared = await sheets.clearRange(sheetId, "Country Impact!C12:C17");
+ 
+                var ids = (updatedGame.Teams as ITeam[]).map(t => t._id)
+                TeamModel.updateMany({_id: {$in: ids}},{
+                    DealsProposedTo: [],
+                    DealsProposedBy: [],
+                    TeamRatings:null,
+                    GameState: "1A"
+                },{new: true})
+
+                const resetGame = await GameModel.findOne( {_id: req.body._id} ).populate("Teams");
+                res.json(resetGame);
+            } else {
+                res.status(400);
+                res.json("No Game Was Found")
+            }
+        }
+        catch{
+            res.status(400);
+            res.json("Couldn't Reset")
+        }
+    }
+
     public routes(){
         //this.router.all("*", cors());
         this.getSheets();
@@ -296,6 +336,8 @@ class GameRouter
         this.router.put("/:game", this.UpdateGame.bind(this));
         this.router.use("/:game/teams", this.GetTeams.bind(this));
         this.router.post("/teamratings", this.AddTeamRatings);
+        this.router.post("/resetgame", this.ResetGame.bind(this));
+
     }
 }
 
