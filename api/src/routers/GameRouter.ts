@@ -89,18 +89,17 @@ class GameRouter
     }
 
     public async CreateGame(req: Request, res: Response):Promise<any> {
-        console.log(req.body);
         const game = new Game(req.body);         
         const g = new GameModel(game);
         
         const savedGame = await g.save();
-
 
         const sheets = new GoogleSheets();
         const sheetId = await sheets.createTeamSheet((savedGame.Name ? savedGame.Name + ", " : null) + savedGame.Location + " " + savedGame.DatePlayed.toLocaleDateString(), savedGame.SourceSheetId)
         const newGame = await GameModel.findOneAndUpdate({_id: g._id},{SheetId: sheetId, IsCurrentGame: true, State: "1A"},{new:true});
 
         const gameWithTeams = await this.SaveChildGames(newGame);
+        console.log("DIG:", gameWithTeams);
         res.json(gameWithTeams);
     }
 
@@ -235,17 +234,15 @@ class GameRouter
             promises.push(promise);
 
         }
-        
 
         return Promise.all(promises).then((promises) => {
-            
-            var teams: string[] = promises.map(p => p._id)
-
-            return GameModel.findOneAndUpdate({Slug: game.Slug}, { Teams: promises }, {new: true}, (game)=>{
+            var teams: string[] = promises.map(p => p._id);
+            return teams;
+        }).then((teams) => {
+            return GameModel.findOneAndUpdate({_id: game._id}, { Teams: teams }, {new: true}).then( (game)=>{
                 return game;
             })
-            
-        });
+        })
         
     } 
 
