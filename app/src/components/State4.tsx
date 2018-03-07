@@ -140,8 +140,10 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                     {this.props.DaysAbove2 && this.props.SocketConnected ? 
                         <TopBarContainer /> : null
                     }
-                    <h1 style={{ marginTop: "10px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
-                    <ChartContainer />
+                    <Col xs={24} style={{paddingLeft:'13px'}}>
+                        <h1 style={{ marginTop: "50px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
+                        <ChartContainer/>
+                    </Col>
                     {this.props.CurrentPlayer.GameState == "4A" && !this.props.SelectedRole ? 
                         <Row className="role-selection">
                             
@@ -178,14 +180,13 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                             }
                         </Row>
                         :
-                        <Row type="flex" justify="center">
-                            <Col sm={22} md={22} lg={22} style={{marginTop: '75px'}}>
+                        <div>
+                            <div style={{margin: '75px auto 20px', width: '92%'}}>
                                 {this.state.RoleContent && this.state.RoleContent.split("\n").map(c => {
                                     return c == c.toUpperCase() ? <h3>{c}</h3> : <p>{c}</p>
                                 })}
-                            </Col>
-                        </Row>
-               
+                            </div>
+                        </div>
                     }
 
                     {this.props.CurrentPlayer.GameState == "4B" && this.props.SelectedRole ? 

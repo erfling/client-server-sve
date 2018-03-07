@@ -185,8 +185,10 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                         this.props.Dashboard.length > 100 ?
                         <TopBarContainer /> : null
                     }
-                    <h1 style={{ marginTop: "50px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
-                    {this.props.Dashboard && this.props.Dashboard.length > 100 ? <ChartContainer/> : null}
+                    <Col xs={24} style={{paddingLeft:'13px'}}>
+                        <h1 style={{ marginTop: "50px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
+                        {this.props.Dashboard && this.props.Dashboard.length > 100 ? <ChartContainer/> : null}
+                    </Col>
 
                     {this.props.PendingDealOffer ?
 
@@ -248,7 +250,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                     }
                     
 
-                    <Col xs={22}>
+                    <Col xs={23}>
 
                         {this.props.CurrentPlayer.Nation && (this.props.CurrentPlayer.Nation as INation).Content && (this.props.CurrentPlayer.Nation as INation).Content.length ? <Row>
                             {(this.props.CurrentPlayer.Nation as INation).Content[0][7].split('\n').filter((c: string) => c.length).map((c: string) => {

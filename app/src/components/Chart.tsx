@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Row, Col, Modal, Icon, Button, Select, Spin } from 'antd';
+import { Row, Icon, Button} from 'antd';
 import ITradeOption from '../../../shared/models/ITradeOption';
 import INation from '../../../shared/models/INation';
 
@@ -22,8 +22,41 @@ interface ChartProps {
 }
 
 const Beach = require("../img/Bangladesh_beach.jpeg")
-export default class Chart extends React.Component<ChartProps, {}> {
+export default class Chart extends React.Component<ChartProps, {Width: number}> {
 
+    componentWillMount(){
+        this.state = {Width: window.innerWidth}
+    }
+    /**
+     * Add event listener
+     */
+    componentDidMount() {
+        window.addEventListener("resize", this.updateChartDimensions.bind(this));
+    }
+
+    /**
+     * Remove event listener
+     */
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.updateChartDimensions.bind(this));
+    }
+
+    
+    componentDidUpdate(){
+        var chartLabelParent = document.querySelector(".impact-chart");
+        if(chartLabelParent){
+            chartLabelParent.childNodes.forEach((n,i) => {
+                if((n as Element).classList.contains("rv-discrete-color-legend-item")){
+                    (n as Element).classList.remove("selected");
+                    i == 2 ? (n as Element).classList.add("selected") : null;
+                }
+            })
+        }        
+    }
+
+    updateChartDimensions(){
+       this.setState(Object.assign({}, this.state, {Width: window.innerWidth}))
+    }
 
     getParsedData(data: number[] | string[] | number) {
         var parsedData: any[] = [];
@@ -39,39 +72,44 @@ export default class Chart extends React.Component<ChartProps, {}> {
         return parsedData;
     }
 
-   
+    private onChartItemClick(item: any, index:number):void {
+        var chartLabelParent = document.querySelector(".impact-chart");
+        console.log(item);
+        chartLabelParent.childNodes.forEach((n,i) => {
+            if((n as Element).classList.contains("rv-discrete-color-legend-item")){
+                (n as Element).classList.remove("selected");
+                i == index ? (n as Element).classList.add("selected") : null;
+            }
+        })
+
+        document.querySelectorAll(".chart-line").forEach((el:Element) => {
+            el.classList.remove("selected");
+        });
+
+        document.querySelector("." + item.props.children.toLowerCase().split(" ").join("-")).classList.add("selected");
+    }
 
     render() {
         if (!this.props.Dashboard) return <div />
 
-        return this.props.Dashboard && this.props.Dashboard.length > 100 ? <Row className="main-chart">                
+        return this.props.Dashboard  &&  this.props.Dashboard.length > 100 && this.state.Width ? <Row className="main-chart">                
                 <label>{this.props.children || 'Simulated Global Warming Data'}</label>
                 <DiscreteColorLegend
                     className="impact-chart"
                     colors={["#ffa400", "#16591f", "#3366cc"]}
                     orientation="horizontal"
-                    items={["Paris Accord", "Preindustrial Level", "Adjusted Temp Increase"]}
-                    onItemMouseEnter={(item: any, index: number, event: any) => {
-                        // does something on mouse enter
-                        // you can access the value of the event
-                        console.log(item, index, event)
-                    }}
-
-                    onItemMouseLeave={(item: any, index: number, event: any) => {
-                        // does something on mouse enter
-                        // you can access the value of the event
-                        console.log(item, index, event);
-                    }}
-
+                    items={["Paris Accord" , "Preindustrial", "Adjusted Temp Increase"].map((val, i) => {
+                        return <a className="label-anchor">{val}</a>
+                    })}
                     onItemClick={(item: any, index: number) => {
-                        console.log(item, index);
+                        this.onChartItemClick(item, index);
                     }}
                 />
 
                 <XYPlot
                     height={600}
-                    width={window.innerWidth}
-                    margin={{ left: 60, right: 40, top: 60 }}
+                    width={this.state.Width}
+                    margin={{ left: 45, right: 52, top: 60 }}
                     className="line-chart"
                 >
                     <HorizontalGridLines
@@ -87,33 +125,27 @@ export default class Chart extends React.Component<ChartProps, {}> {
                         style={{ stroke: '#ddd' }}
                     />
                     <YAxis
+                        tickValues={[0, 1, 2, 3, 4]}
                         style={{ stroke: '#ddd' }}
                     />
 
  
                     <LineSeries
-                        strokeWidth={5}
-                        color="#ffa400"
                         label="test"
-                        className="paris-accord"
+                        className="paris-accord chart-line"
                         data={this.getParsedData(2)}
                     />
 
                     <LineSeries
-                        strokeWidth={5}
-                        color="#16591f"
-                        className="pre-industrial"
+                        className="preindustrial chart-line"
                         data={this.getParsedData(0)}
                     />
 
-
                     <LineSeries
-                        className="value"
-                        color="#3366cc"
+                        className="adjusted-temp-increase chart-line selected"
                         style={{
                             //strokeDasharray: '10 2'
                         }}
-                        strokeWidth={7}
                         data={this.getParsedData(this.props.Dashboard)}
                     />
 
@@ -122,6 +154,12 @@ export default class Chart extends React.Component<ChartProps, {}> {
                         color="rgba(0,0,0,0)"
                         className="second-series"
                         data={this.getParsedData(4)}
+                    />
+
+                    <LineSeries
+                        strokeWidth={5}
+                        color="rgba(0,0,0,0)"
+                        data={this.getParsedData(-0.5)}
                     />
 
 
