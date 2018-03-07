@@ -290,7 +290,7 @@ class GameRouter
         try{
             console.log("hello?",req.body)
 
-            const updatedGame = await GameModel.findOneAndUpdate( {_id: req.body._id}, {State: "1B", }, {new: true}).populate("Teams")
+            const updatedGame = await GameModel.findOneAndUpdate( {_id: req.body._id}, {State: "1A", }, {new: true}).populate("Teams")
             console.log(updatedGame);
 
             if(updatedGame){
