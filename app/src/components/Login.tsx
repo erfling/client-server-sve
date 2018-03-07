@@ -96,11 +96,11 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
 
                     {this.props.CurrentGames && <Row type="flex" justify="center">                                            
                         <Col xs={24} sm={16} lg={12} xl={12} style={{marginTop: '35vh'}}>
-                        <div className="form-wrapper" style={{background: "rgba(255,255,255,.6)"}}>                                       
-                            <label>Join a Game</label>
-                            <Select style={{width:'100%'}} onChange={val => this.onChangeSelectGame(val)} placeholder="--Select Game--">
-                                {this.props.CurrentGames.map(( g, i) => {
-                                    return <Select.Option key={i+1} value={g._id}>{(g.Name + " " || null) +  g.Location + " " + new Date(g.DatePlayed).toLocaleDateString()}</Select.Option>
+                            <div className="form-wrapper" style={{background: "rgba(255,255,255,.6)"}}>                                       
+                                <label>Join a Game</label>
+                                <Select style={{width:'100%'}} onChange={val => this.onChangeSelectGame(val)} placeholder="--Select Game--">
+                                    {this.props.CurrentGames.map(( g, i) => {
+                                        return <Select.Option key={i+1} value={g._id}>{(g.Name + " " || null) +  g.Location + " " + new Date(g.DatePlayed).toLocaleDateString()}</Select.Option>
                                     })}                                                  
                                 </Select>
                             </div>

@@ -218,14 +218,14 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                         <Modal
                             title={
                                 this.props.RejectedDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug
-                                    ? <span>Your trade deal with {this.props.RejectedDealOffer.ToNationName} was rejected{!this.props.RejectedDealOffer.CanAccept && " by the agency"}.</span>
-                                    : <span>Your trade deal with {this.props.RejectedDealOffer.FromNationName} was rejected{!this.props.RejectedDealOffer.CanAccept && " by the agency"}.</span>
+                                    ? <span>Your trade deal with {this.props.RejectedDealOffer.ToNationName} was rejected{this.props.RejectedDealOffer.CanAccept == false && " by the SVI"}.</span>
+                                    : <span>Your trade deal with {this.props.RejectedDealOffer.FromNationName} was rejected{this.props.RejectedDealOffer.CanAccept == false && " by the SVI"}.</span>
                             }
                             visible={true}
                             width="80%"
                             footer={<Button type="primary" size="large" onClick={e => this.props.acknowledgeDealRejection()}>OK</Button>}
                         >
-                            <p>{this.parseMessage(this.props.RejectedDealOffer.Message)}</p>
+                            {this.props.RejectedDealOffer.CanAccept == true && <p>{this.parseMessage(this.props.RejectedDealOffer.Message)}</p>}
                         </Modal> : null
 
                     }

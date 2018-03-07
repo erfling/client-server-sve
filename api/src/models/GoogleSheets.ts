@@ -228,7 +228,7 @@ export default class GoogleSheets
             };
             var requestBody = {
                 resource: body,
-                spreadsheetId: '1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg',
+                spreadsheetId: teams[0].SheetId,
                 auth:auth,
             }
 
@@ -369,6 +369,47 @@ export default class GoogleSheets
                     })
                     values[0][7] = values[0][7] + "\n" +  response.values[9][1];
                     return resolve(values);
+                })
+            })
+        })    
+    }
+
+    public getRejectionOrAcceptanceReason(fromNationName: string, toNationName: string): Promise<any>{
+        const sheets = google.sheets('v4');
+        return this.readAndAuthFile('./api/src/creds/client_secret.json')
+        .then(this.authorize)
+        .then((auth) => {
+            const sheetId = '1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg'
+            return new Promise((resolve, reject) => {
+                if (!auth) return;
+                sheets.spreadsheets.values.get({
+                    auth: auth,            
+                    spreadsheetId: sheetId,
+                    //the range where rejection reasons live
+                    range: "Round 2 Offers!K2:Q8"
+                }, (err:any, response: any) => {
+                    if (err) {
+                        console.log(err,"ERROR HERE");
+                        reject("error");
+                        return;
+                    }
+
+
+                    var rows = response.values.filter((r: any) => {
+                        return r[0] == fromNationName;
+                    })
+                    
+
+                    if(rows && rows[0]){
+                        var column:string[] = rows[0].filter((row:string[], i: number) => {
+                            return response.values[0][i] && response.values[0][i] == toNationName
+                        })
+                        console.log(column);
+                        if(column) return resolve(column[0]);
+                    }
+                    
+                    return reject("no match found")
+                    
                 })
             })
         })    

@@ -153,9 +153,10 @@ export const createTeamSocket = (team:ITeam) => {
                     payload: false
                 } )
             })
-            .on(SocketEvents.DEAL_REJECTED, () => {
+            .on(SocketEvents.DEAL_REJECTED, (deal:IDeal) => {
                 dispatch( {
-                    type: ACTION_TYPES.DEAL_REJECTED
+                    type: ACTION_TYPES.DEAL_REJECTED,
+                    payload: deal
                 } );
 
                 dispatch( {
@@ -163,9 +164,11 @@ export const createTeamSocket = (team:ITeam) => {
                     payload: false
                 } )
             })
-            .on(SocketEvents.DEAL_ACCEPTED, () => {
+            .on(SocketEvents.DEAL_ACCEPTED, (deal: IDeal) => {
                 dispatch( {
-                    type: ACTION_TYPES.DEAL_ACCEPTED
+                    type: ACTION_TYPES.DEAL_ACCEPTED,
+                    payload: deal
+
                 } );
 
                 dispatch( {

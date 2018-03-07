@@ -55,10 +55,10 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             ), PendingDealOffer: null})
 
         case (ACTION_TYPES.DEAL_REJECTED):
-            return Object.assign({}, state, {RejectedDealOffer: state.PendingDealOffer, AcceptedDealOffer: null, PendingDealOffer: null})
+            return Object.assign({}, state, {RejectedDealOffer: action.payload, AcceptedDealOffer: null, PendingDealOffer: null})
 
         case (ACTION_TYPES.DEAL_ACCEPTED):
-            return Object.assign({}, state, {RejectedDealOffer: null, AcceptedDealOffer: state.PendingDealOffer, PendingDealOffer: null})
+            return Object.assign({}, state, {RejectedDealOffer: null, AcceptedDealOffer: action.payload, PendingDealOffer: null})
 
         case(ACTION_TYPES.GAME_SAVED):
             var game = action.payload as IGame;           
