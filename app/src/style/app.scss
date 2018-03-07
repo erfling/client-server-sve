@@ -300,6 +300,31 @@ h4{font-size: 160%}
     }
 }
 
+.deal-list{
+    background: rgba(255, 255, 255, 0.95);
+    display: table;
+    padding-left:0;
+    li{
+        display: table-row;
+        >div{
+            display: table-cell;
+            vertical-align: middle;
+            padding:10px;
+            &:first-child{
+                padding: 15px;
+            }
+            >.anticon {
+                font-size:10em;
+                color: rgba(51, 128, 230, 0.25);
+            }
+            >h3, >p{
+                text-align: left;
+                color: #333;
+            }
+        }
+    }
+}
+
 .state1results{
     display: table;
     .ant-row{

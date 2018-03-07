@@ -8,7 +8,7 @@ import IDeal from '../../../shared/models/IDeal';
 import DealFormWrapper from './form-elements/DealForm'
 import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom';
-import { Row, Col, Modal, Icon, Button, Select, Spin } from 'antd';
+import { Row, Col, Modal, Icon, Button, Select, Spin, List } from 'antd';
 import ITradeOption from '../../../shared/models/ITradeOption';
 import INation from '../../../shared/models/INation';
 import ChartContainer from '../containers/ChartContainer'
@@ -282,12 +282,17 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
 
                         <Row>
                             {this.props.CurrentPlayer.DealsProposedTo.length && typeof this.props.CurrentPlayer.DealsProposedTo[0] != "string" ?
-                                <ul>
+                                <ul className="deal-list">
                                     {(this.props.CurrentPlayer.DealsProposedTo as IDeal[]).map(d => {
 
                                         return <li>
-                                            <h5>You Accepted {d.TransferFromNationName || d.FromNationName}'s' Trade Deal for {d.Value}</h5>
-                                            {this.parseMessage(d.Message)}
+                                            <div>
+                                                <Icon type="global" />
+                                            </div>
+                                            <div>
+                                                <h3>You Accepted {d.TransferFromNationName || d.FromNationName}'s' Trade Deal for ${d.Value * 10}Billion</h3>
+                                                <p>{this.parseMessage(d.Message)}</p>
+                                            </div>
                                         </li>
                                     })}
                                 </ul>
@@ -297,22 +302,25 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
 
                         <Row>
                             {this.props.CurrentPlayer.DealsProposedBy.length ?
-                                <ul>
+                                <ul className="deal-list">
                                     {(this.props.CurrentPlayer.DealsProposedBy as IDeal[]).map(d => {
                                         return <li>
-                                            <h5>{d.TransferToNationName || d.ToNationName} Accepted Your Trade Deal</h5>
-                                            <p>
-                                                {this.parseMessage(d.Message)}
-                                            </p>
+                                            <div>
+                                                <Icon type="global" />
+                                            </div>
+                                            <div>
+                                                <h3>{d.TransferToNationName || d.ToNationName} Accepted Your Trade Deal for ${d.Value * 10}Billion</h3>
+                                                <p>{this.parseMessage(d.Message)}</p>
+                                            </div>
                                         </li>
                                     })}
                                 </ul>
                                 : null
                             }
                         </Row>
+
                         {this.state.PlayerNotFound && <Redirect to="/" />}
                     </Col>
-
                 </Row>
 
 
@@ -332,21 +340,10 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
             </GameWrapper>
             :
             <Row style={{height: '100vh'}} type="flex" justify="center" >
-                <Col xs={16} style={{marginTop: '35vh'}}>
-                    <h4>Downloading Climate Data <Spin style={{fontSize:'120%', marginLeft:'10px'}} indicator={<Icon type="loading"/>} /></h4>
+                <Col xs={24} style={{marginTop: '35vh'}}>
+                    <h4 style={{textAlign:"center"}}>Downloading Climate Data <Spin style={{fontSize:'120%', marginLeft:'10px'}} indicator={<Icon type="loading"/>} /></h4>
                 </Col>
             </Row>
     }
 
 }
-//                    {this.props.CurrentPlayer && <pre>{JSON.stringify(this.props.CurrentPlayer, null, 2)}</pre>}
-/*                    
-{this.props.Submitting && <Icon type="loading"/>}
-<Row className="form-wrapper">
-                        <p>{(this.props.CurrentPlayer.Nation as INation).Content[0][6]}</p>                        
-                    </Row>
-
-                    <Row className="form-wrapper">
-                        {(this.props.CurrentPlayer.Nation as INation).Content[0].filter((c:string, i: number) => i != 0 && i < 6).map((content: string) => <p>{content.replace(/\#([^}]+)\#/,"")}</p>)}
-                    </Row>
-*/
