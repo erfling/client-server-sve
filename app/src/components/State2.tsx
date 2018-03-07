@@ -225,7 +225,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                             width="80%"
                             footer={<Button type="primary" size="large" onClick={e => this.props.acknowledgeDealRejection()}>OK</Button>}
                         >
-                            {this.props.RejectedDealOffer.CanAccept == true && <p>{this.parseMessage(this.props.RejectedDealOffer.Message)}</p>}
+                            {this.props.RejectedDealOffer.CanAccept == false && <p>{this.parseMessage(this.props.RejectedDealOffer.Message)}</p>}
                         </Modal> : null
 
                     }
