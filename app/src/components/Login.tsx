@@ -19,6 +19,7 @@ import Role from '../../../shared/models/IPlayer';
 import RoleDetail from './RoleDetail'
 import { Link, Route } from "react-router-dom";
 import {RoleName} from '../../../shared/models/RoleName';
+import * as _ from "lodash";
 
 const Logo = require('../img/logo.png');
 const Hurricane = require('../img/hurricane-space-earth-horizontal.jpg');
@@ -71,7 +72,9 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
         }
     }
     
-
+    sortTeams(array:any[], property:string){
+        _.sortBy(array, [function(o:any) { return o[property]; }]);
+    }
 
     getTitle(role:string){
         role = role.toLocaleUpperCase();
@@ -101,16 +104,15 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
                                 <div className="form-wrapper" style={{background: "rgba(255,255,255,.6)"}}>
                                     <p style={{margin: '10px', fontWeight: 'bold'}}>Select Your Team to Join</p>
                                     <Select style={{width:'100%'}} onChange={val => this.onChangeSelectTeam(val)} placeholder="--Select Team--">
-                                        {(this.props.CurrentGame.Teams as ITeam[]).sort((a,b) => (a.Nation as INation).Name > (b.Nation as INation).Name ? 1 : 0).map(( t, i) => {
+                                        {_.sortBy(this.props.CurrentGame.Teams as ITeam[], [(team:ITeam) =>  (team.Nation as INation).Name ]).map(( t, i) => {
+                                            console.log(i, (t.Nation as INation).Name);
                                             return <Select.Option key={i+1} value={t.Slug}>Team {i + 1}</Select.Option>
                                         })}                                                   
                                     </Select>
                                 </div>
                             </Col>                                                   
                         </Row>
-
-                    } 
-                    
+                    }                    
                 </div>
     }
 }
