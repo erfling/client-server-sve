@@ -27,7 +27,7 @@ const initialState: ApplicationStore = {
         StateContent: null,
         SelectedRole: null,
         DaysAbove2: null,
-        CurrentGames: null
+        CurrentGame: null
     },
     Application: {
         Loading: false,
@@ -196,7 +196,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
         case ACTION_TYPES.CURRENT_GAME_SAVED:
             return Object.assign({}, state, {Game: action.payload.map((g:IGame) => g)})
         case ACTION_TYPES.GOT_CURRENT_GAME:
-            return Object.assign({}, state, {CurrentGames: action.payload})
+            return Object.assign({}, state, {CurrentGame: action.payload})
         case ACTION_TYPES.GOT_CONTENT:
             return Object.assign({}, state, {StateContent: action.payload})
         case ACTION_TYPES.YEARS_ABOVE_2_UPDATED:

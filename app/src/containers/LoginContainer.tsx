@@ -18,21 +18,19 @@ export interface LoginFormProps{
     LoggingIn:boolean;
     Loading:boolean;
     Teams: ITeam[];
-    CurrentGames:IGame[];
+    CurrentGame:IGame;
     SelectedTeam:  ITeam;
-    CurrentTeam: ITeam;
-    
+    CurrentTeam: ITeam
 
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): LoginFormProps => {
     return {
         LoggingIn: state.Application.Loading,
         Loading: state.Application.Loading,
-        CurrentGames: state.GameData.CurrentGames,
+        CurrentGame: state.GameData.CurrentGame,
         Teams: state.GameData.Team,
         SelectedTeam: state.GameData.SelectedTeam,
-        CurrentTeam: state.GameData.CurrentPlayer,
-        
+        CurrentTeam: state.GameData.CurrentPlayer
     };
 };
 

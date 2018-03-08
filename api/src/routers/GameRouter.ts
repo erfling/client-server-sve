@@ -96,7 +96,7 @@ class GameRouter
 
         const sheets = new GoogleSheets();
         const sheetId = await sheets.createTeamSheet((savedGame.Name ? savedGame.Name + ", " : null) + savedGame.Location + " " + savedGame.DatePlayed.toLocaleDateString(), savedGame.SourceSheetId)
-        const newGame = await GameModel.findOneAndUpdate({_id: g._id},{SheetId: sheetId, IsCurrentGame: true, State: "1A"},{new:true});
+        const newGame = await GameModel.findOneAndUpdate({_id: g._id},{SheetId: sheetId, State: "1A"},{new:true});
 
         const gameWithTeams = await this.SaveChildGames(newGame);
         console.log("DIG:", gameWithTeams);
@@ -250,12 +250,13 @@ class GameRouter
         const game = new Game(req.body);         
         const g = new GameModel(game);
         try{
-   
-            const updatedGame  = await GameModel.findByIdAndUpdate(g._id, {IsCurrentGame: true})
+            
+            const allGamesUpdated = await GameModel.updateMany({IsCurrentGame: true}, {IsCurrentGame: false});
+            const updatedGame     = await GameModel.findByIdAndUpdate(g._id, {IsCurrentGame: true});
+            const allGames        = await GameModel.find();
 
-            if(updatedGame){
-                console.log(updatedGame)
-                res.json(updatedGame)
+            if(allGames){
+                res.json(allGames)
             } else {
                 res.status(400);
                 res.json("couldn't save games")
@@ -266,13 +267,13 @@ class GameRouter
         }
     }
 
-    private async getCurrentGames(req: Request, res: Response){
+    private async getCurrentGame(req: Request, res: Response){
         console.log("we calling this")
         try{
-            const currentGames = await GameModel.find({IsCurrentGame: true}).populate({path: "Teams", populate:{path: "Nation"}})
-            if(currentGames){
+            const currentGame = await GameModel.findOne({IsCurrentGame: true}).populate({path: "Teams", populate:{path: "Nation"}})
+            if(currentGame){
                 //this.SaveChildGames(currentGame);
-                res.json(currentGames)
+                res.json(currentGame)
             }else{
                 res.status(400);
                 res.json("Couldn't find the current game")
@@ -285,10 +286,7 @@ class GameRouter
     private async ResetGame(req: Request, res: Response){
      
         try{
-            console.log("hello?",req.body)
-
             const updatedGame = await GameModel.findOneAndUpdate( {_id: req.body._id}, {State: "1A", }, {new: true}).populate("Teams")
-            console.log(updatedGame);
 
             if(updatedGame){
                 //reset spreadsheet ranges
@@ -301,15 +299,19 @@ class GameRouter
                 //clear tech investments
                 const investmentsCleared = await sheets.clearRange(sheetId, "Country Impact!C12:C17");
  
-                var ids = (updatedGame.Teams as ITeam[]).map(t => t._id)
-                TeamModel.updateMany({_id: {$in: ids}},{
+                var slugs = (updatedGame.Teams as ITeam[]).map(t => t._id)
+                console.log(slugs);
+                
+                const updatedTeams = await TeamModel.updateMany({_id: {$in: slugs}},{
                     DealsProposedTo: [],
                     DealsProposedBy: [],
-                    TeamRatings:null,
+                    TeamRatings: new Ratings(),
                     GameState: "1A"
-                },{new: true})
+                },{
+                    new: true
+                })
 
-                const resetGame = await GameModel.findOne( {_id: req.body._id} ).populate("Teams");
+                const resetGame = await GameModel.findOne( {_id: req.body._id} ).populate({path: "Teams", populate: {path: "Nation"}} );
                 res.json(resetGame);
             } else {
                 res.status(400);
@@ -327,7 +329,7 @@ class GameRouter
         this.getSheets();
         this.router.get("/", this.GetGames.bind(this));
         this.router.get("/:game", this.GetGame.bind(this));
-        this.router.get("/req/getcurrentgame", this.getCurrentGames.bind(this));
+        this.router.get("/req/getcurrentgame", this.getCurrentGame.bind(this));
         this.router.post("/", this.CreateGame.bind(this));
         this.router.post("/setcurrent", this.setCurrentGame.bind(this));
         this.router.put("/:game", this.UpdateGame.bind(this));

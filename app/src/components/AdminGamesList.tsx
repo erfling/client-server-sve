@@ -65,10 +65,17 @@ export default class AdminGamesList extends React.Component<GameListProps, {addi
                                                         </Tooltip>
                                                     }
                                                     
-                                                    <Button type="dashed" shape="circle" onClick={e => this.props.editGame(g)}><Icon type="edit" /></Button>
-                                                    <Button type="dashed" shape="circle">
-                                                        <Link to={'/admin/games/'+g._id}><Icon type="info" /></Link>
-                                                    </Button>
+                                                    <Tooltip placement="topLeft" title="Edit" arrowPointAtCenter>
+                                                        <Button type="dashed" shape="circle" onClick={e => this.props.editGame(g)}><Icon type="edit" /></Button>
+                                                    </Tooltip>
+
+                                                    <Tooltip placement="topLeft" title="View details" arrowPointAtCenter>
+                                                        <Button type="dashed" shape="circle">
+                                                            <Link to={'/admin/games/'+g._id}><Icon type="info" /></Link>
+                                                        </Button>                                                    
+                                                    </Tooltip>
+
+                                                    
                                                 </div>}> 
                                             <p>Location: {g.Location}</p>
                                             <p>Game URL: <a href="#">https://someurl.com{g.Slug}</a></p>
