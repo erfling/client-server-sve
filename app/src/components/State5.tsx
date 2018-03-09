@@ -94,20 +94,11 @@ export default class State2 extends React.Component<State5Props, { submitting: b
 
         return this.props.CurrentPlayer &&
             this.props.CurrentPlayer.Nation ?
-            <GameWrapper
-                ParallaxImg={Beach}
-                HeaderText="Planet Sapien Experiment Platform"
-                match={this.props.match}
-                CurrentPlayer={this.props.CurrentPlayer}
-            >
-
-
-                <Row type="flex" justify="center">
-                    <Col xs={24} style={{ paddingLeft: '13px' }}>
-                        <h1 style={{ marginTop: "50px", textAlign: "center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
+            <Row  type="flex" justify="center" style={{minHeight:"100vh"}}>
+                  <Col xs={24} style={{ paddingLeft: '13px' }}>
+                        <h1 style={{ marginTop: "50px", textAlign: "center" }}>Planet Sapien Experiment Platform</h1>
                     </Col>
-                </Row>
-                <Row type="flex" justify="center">
+
                     <Col xs={22}>
                         <Form onSubmit={this.handleSubmit.bind(this)}>
 
@@ -153,7 +144,12 @@ export default class State2 extends React.Component<State5Props, { submitting: b
 
                             </FormItem>
                             <FormItem>
-                                
+                                {this.state.submitted && 
+                                    <Alert style={{marginTop:'15px'}} 
+                                        message="Your experiment has been submitted." 
+                                        type="success">
+                                    </Alert>
+                                }
                                 <Button
                                     disabled={
                                         !this.state.FormValues 
@@ -169,21 +165,10 @@ export default class State2 extends React.Component<State5Props, { submitting: b
                                     Submit Experiment
                                     {this.state.submitting && <Icon type="loading"/>}
                                 </Button>
-                                {this.state.submitted && 
-                                <Alert style={{marginTop:'15px'}} 
-                                    message="Your experiment has been submitted." 
-                                    type="success">
-                                </Alert>}
-
                             </FormItem>
                         </Form>
                     </Col>
                 </Row>
-
-
-
-
-            </GameWrapper>
             :
             null
     }
