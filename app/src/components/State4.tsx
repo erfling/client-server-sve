@@ -19,6 +19,8 @@ import IRole from '../../../shared/models/IRole';
 import { RoleName } from '../../../shared/models/RoleName';
 import { RoleRatingCategories } from '../../../shared/models/RoleRatingCategories';
 import ChartContainer from '../containers/ChartContainer';
+import * as _ from "lodash";
+
 const PlanetSapien = require('../img/sapien-from-moon.jpg');
 
 interface State3Props{
@@ -193,7 +195,7 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                         <Row className="form-wrapper" type="flex" justify="center" style={{paddingLeft: "0", paddingRight:"0"}}>
                             <Col sm={24} md={24} lg={24}>
                                 <label style={{textAlign:'center'}}>{(this.props.CurrentPlayer.Nation as INation).Name } Platform</label>
-                                {Object.keys(this.props.SelectedRole.RoleTradeRatings).sort((a,b) => {return a > b ? 1 : 0}).map((rating, i) => {
+                                {_.sortBy(Object.keys(this.props.SelectedRole.RoleTradeRatings), [(o:any) => o ]).map((rating:any, i) => {
                                     return (
                                         <Row className="form-wrapper role-trades"  type="flex" justify="center" >
                                             <label>
@@ -236,3 +238,4 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                
     }
 }
+

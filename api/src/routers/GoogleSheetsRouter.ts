@@ -140,7 +140,7 @@ class GoogleSheetsRouter
     private async getRoleContent(req: Request, res: Response){
         if(req.params.role){
             const sheets = new GoogleSheets();
-
+            console.log("ROLE:", req.params.role)
             try{
                 const sheetsResponse = await sheets.GetSheetValues(null, "Round 4!B5:C5")
                 var finalResponse = req.params.role.toUpperCase().indexOf("BANK") != -1 ? sheetsResponse[0][0] : sheetsResponse[0][1];

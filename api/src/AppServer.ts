@@ -626,9 +626,10 @@ export default class AppServer
                     return [newlyUpdatedTeam.Roles[RoleName.BANK].RoleTradeRatings[rating].Value.toString(), newlyUpdatedTeam.Roles[RoleName.MINISTER_OF_ENERGY].RoleTradeRatings[rating].Value.toString()];
                 })
 
-                console.log(values)
-
-                this.sheets.commitAnswers( values, range );
+                const game = await GameModel.findById(newlyUpdatedTeam.GameId);
+                console.log(game);
+                const committedAnswers = await this.sheets.commitAnswers( values, range, game.SheetId );
+                this.getDaysAbove(newlyUpdatedTeam);
             }
         } 
         //if not emit waiting for other team to role room back to submitting role
@@ -1014,7 +1015,7 @@ export default class AppServer
                     });
                 }
                 
-                new GoogleSheets().commitAnswers(sheetValues,"Round 3 Criteria!B2:D7")
+                const sheetSubmit = await new GoogleSheets().commitAnswers(sheetValues,"Round 3 Criteria!B2:D7", savedGame.SheetId)
     
                 console.log(sheetValues);
     
@@ -1036,6 +1037,7 @@ export default class AppServer
         });
 
         this.app.post("/sapien/api/getDaysAbove", async (req, res) => {
+            console.log("CALLING GET DAYS ABOVE", req.body);
             this.getDaysAbove(req.body);
             const updatedValues = await this.sheets.GetSheetValues(req.body.SheetId, "Country Impact!C21");
             res.json(updatedValues);

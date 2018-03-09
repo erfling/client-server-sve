@@ -762,7 +762,11 @@ export const getDaysAbove = (team:ITeam) => {
             URL,
             {
                 body: JSON.stringify(team),
-                method: "POST"
+                method: "POST",
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+
             }
         )
         .then(r => r.json())

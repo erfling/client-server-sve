@@ -97,6 +97,7 @@ export default class GoogleSheets
     }
     
     public GetSheetValues(sheetId:string = null, range: string = null, log:boolean = false):any {
+        console.log("SHEET ID: ", sheetId)
         if(log){
             console.log("OUR RANGE IS:");
             console.log(range);
@@ -248,7 +249,9 @@ export default class GoogleSheets
         }).catch(e => {throw(e)})
     }
 
-    public commitAnswers(values:string[][] | number[][], range:string, sheetId:string = null ):Promise<any> {
+    public commitAnswers(values:string[][] | number[][], range:string, sheetId:string ):Promise<any> {
+        console.log("ABOUT TO COMMIT ANSWERS TO SHEET ", sheetId);
+
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth) => {
