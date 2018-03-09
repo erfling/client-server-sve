@@ -448,4 +448,39 @@ export default class GoogleSheets
         })    
     }
 
+    public getRatingsByNation(team:ITeam){
+        const sheets = google.sheets('v4');
+        return this.readAndAuthFile('./api/src/creds/client_secret.json')
+        .then(this.authorize)
+        .then((auth) => {
+            return new Promise((resolve, reject) => {
+                if (!auth) return;
+                var request = {
+                    // The ID of the spreadsheet to update.
+                    spreadsheetId: team.SheetId,  // TODO: Update placeholder value.
+                
+                    // The A1 notation of the values to clear.
+                    range: "Round 3 Criteria!A2:D7",  // TODO: Update placeholder value.
+                
+                    auth: auth,
+                  };
+                
+                  sheets.spreadsheets.values.get(request, function(err:Error, response:any) {
+                    if (err) {
+                      console.error(err);
+                      return reject(err);
+                    }
+
+                    var row = response.values.filter( (v:string[])=> {
+                        console.log(v);
+                        return v[0] && v[0] == (team.Nation as INation).Name;
+                    })
+
+                    return resolve(row);
+                
+                  });
+            })
+        })  
+    }
+
 }

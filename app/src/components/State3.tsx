@@ -11,7 +11,7 @@ import INation from '../../../shared/models/INation';
 import { Ratings } from '../../../api/src/models/Ratings';
 import ChartContainer from '../containers/ChartContainer'
 import TopBarContainer from '../containers/TopBarContainer';
-
+import { CriteriaName } from '../../../shared/models/CriteriaName';
 
 const WOTW = require("../img/The-War-of-the-Worlds-Radio-Broadcast.jpg");
 const NY = require("../img/The_New_Yorker_logo.png");
@@ -27,7 +27,7 @@ interface State3Props {
     DaysAbove2: number;
     SocketConnected: boolean;
 }
-export default class State3 extends React.Component<State3Props, { PlayerNotFound: boolean }> {
+export default class State3 extends React.Component<State3Props, { PlayerNotFound: boolean, Ratings:string[] }> {
 
     componentDidMount() {
         this.setState({ PlayerNotFound: false })
@@ -47,6 +47,7 @@ export default class State3 extends React.Component<State3Props, { PlayerNotFoun
     componentDidUpdate() {
         console.log("did updated called", this.props.SocketConnected, this.props.DaysAbove2)
         this.getData();
+        if(this.props.CurrentPlayer && !this.state.Ratings)this.getRatings();
     }
 
     getData() {
@@ -63,6 +64,27 @@ export default class State3 extends React.Component<State3Props, { PlayerNotFoun
             (ratings as any)[nation][o.substr(nation.length + 1)] = formValues[o];
         })
         this.props.submitRatings(Object.assign(this.props.CurrentPlayer, { Ratings: ratings }));
+    }
+
+    getRatings(){
+        const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
+        const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
+        const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/sheets/ratings";
+        fetch(
+            URL,
+            {
+                method: "POST",
+                body: JSON.stringify(this.props.CurrentPlayer),
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            }
+        )
+        .then( r => r.json() )
+        .then(r => {
+            console.log("RATINGS RETURNED", r)
+            this.setState(Object.assign({}, this.state, {Ratings: r}))
+        })
     }
 
     render() {
@@ -95,6 +117,7 @@ export default class State3 extends React.Component<State3Props, { PlayerNotFoun
                         </Col>
                     </Row>
                     :
+                    this.props.CurrentPlayer.GameState == "3A" ?
                     <Row className="form-wrapper" gutter={{ lg: "1", xl: "1" }}>
                         <h3><img src={NY} style={{ maxWidth: '100%' }} /></h3>
                         <h3>DECEIVING THE NATION</h3>
@@ -107,7 +130,23 @@ export default class State3 extends React.Component<State3Props, { PlayerNotFoun
                         </Col>
                             : <span>{this.props.getContent(this.props.CurrentPlayer)}</span>}
 
+                    </Row> : null
+                }
+
+                {this.props.CurrentPlayer.GameState == "3C" && this.state && this.state.Ratings
+                    ?
+                    <Row className="form-wrapper" gutter={{ lg: "1", xl: "1" }}>
+                        <h2>Your Ratings</h2>
+                        <Col sm={23} md={23} lg={23}>
+                            {this.state.Ratings.slice(1).map((r, i) => {
+                                return <Row>
+                                    <h4>{Object.keys(CriteriaName)[i].split("_").map(c => c.charAt(0).toUpperCase() + c.slice(1).toLocaleLowerCase() ).join("_").replace(/_/g, ' ') + ": " + Math.round( parseFloat(r) * 10 ) / 10}</h4>
+                                </Row>
+                            })}
+                        </Col>
                     </Row>
+                    :
+                    null
                 }
 
             </GameWrapper>

@@ -1,3 +1,4 @@
+import { Team } from './../models/Team';
 import { Router, Request, Response, NextFunction } from 'express';
 import  GoogleSheets  from '../models/GoogleSheets'; 
 import { resolve } from 'dns';
@@ -161,10 +162,33 @@ class GoogleSheetsRouter
         }
     }
 
+    private async GetRatingsByTeam(req: Request, res: Response){
+        try{
+            const sheets = new GoogleSheets();
+            const t = new Team(req.body);
+            const values:any = await sheets.getRatingsByNation(t);
+            console.log("SHEETS", values)
+
+            if(values){
+
+                res.json(values[0]);
+            }else{
+                res.status(400);
+                res.json("Params not provided")
+            }
+        }
+        catch{
+            res.status(400);
+            res.json("Params not provided")
+        }
+        
+    }
+
     public routes(){
         console.log("SETTING UP ROUTES")
         this.router.get("/", this.GetSheetValues);
         this.router.post("/content", this.GetTeamContent);
+        this.router.post("/ratings", this.GetRatingsByTeam);
         this.router.get("/content/:country", this.getGenericState4Content);
         this.router.get("/content/rolecontent/:role", this.getRoleContent)
     }

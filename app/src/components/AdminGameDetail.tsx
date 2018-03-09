@@ -64,7 +64,7 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
     }
 
 
-    states = ["1A", "1B", "1C", "2", "3A", "3B", "4A", "INTERMISSION", "4B", "5"];
+    states = ["1A", "1B", "1C", "2", "3A", "3B", "3C", "4A", "INTERMISSION", "4B", "5"];
 
     render() {
           
