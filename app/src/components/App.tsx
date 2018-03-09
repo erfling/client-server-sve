@@ -8,6 +8,7 @@ import State1Container from '../containers/State1Container'
 import State2Container from '../containers/State2Container'
 import State3Container from '../containers/State3Container'
 import State4Container from '../containers/State4Container'
+import State5Container from '../containers/State5Container'
 
 // Icon = require('-!svg-react-loader?name=Icon!../img/si-glyph-leaf.svg');
 import Routes from '../routes/Routes';
@@ -30,6 +31,7 @@ export class App extends React.Component<{}> {
           <Route exact={true} path="/make-the-trade" component={State2Container} key={2}/>
           <Route exact={true} path="/war-of-the-worlds" component={State3Container} key={2}/>
           <Route exact={true} path="/international-trade" component={State4Container} key={2}/>
+          <Route exact={true} path="/experiment" component={State5Container} key={2}/>
           <Route exact={false} component={TeamDetailContainer} path="/team-detail/:id" key={3}/>
         </Switch>
       </div>

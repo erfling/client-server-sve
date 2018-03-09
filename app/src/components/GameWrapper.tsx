@@ -68,6 +68,9 @@ export default class GameWrapper extends React.Component<GamesList, any> {
                 case "4C":
                     if(this.props.match.path.indexOf('international-trade') == -1)return <div><Redirect to="/international-trade"/></div>
                     break;
+                case "5":
+                    if(this.props.match.path.indexOf('experiment') == -1)return <div><Redirect to="/experiment"/></div>
+                    break;
             
                 default:
                     break;

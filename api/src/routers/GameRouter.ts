@@ -8,6 +8,7 @@ import { Error } from 'mongoose';
 import * as mongoose from 'mongoose';
 import TeamRouter  from './TeamRouter';
 import { Team,TeamModel } from './../models/Team';
+import { PlatformExperiment, PlatformExperimentModel } from './../models/Experiment';
 import ITeam from '../../../shared/models/ITeam';
 import Item from 'antd/lib/list/Item';
 import GoogleSheets from '../models/GoogleSheets'
@@ -326,6 +327,26 @@ class GameRouter
         }
     }
 
+    private async saveExperiment(req:Request, res:Response) {
+        console.log("SAVING EXPERIMENT")
+        if(req.body){
+            try{
+                var experiment = new PlatformExperiment(req.body);
+                const savedExperiment = PlatformExperimentModel.create(experiment);
+                if(savedExperiment){
+                    res.json(savedExperiment)
+                } else {
+                    res.status(400);
+                    res.json("Couldn't save experiment")
+                }
+            }
+            catch{
+                res.status(400);
+                res.json("Couldn't save experiment")
+            }
+        }
+    }
+
     public routes(){
         //this.router.all("*", cors());
         this.getSheets();
@@ -334,6 +355,7 @@ class GameRouter
         this.router.get("/req/getcurrentgame", this.getCurrentGame.bind(this));
         this.router.post("/", this.CreateGame.bind(this));
         this.router.post("/setcurrent", this.setCurrentGame.bind(this));
+        this.router.post("/saveexperiment", this.saveExperiment.bind(this));
         this.router.put("/:game", this.UpdateGame.bind(this));
         this.router.use("/:game/teams", this.GetTeams.bind(this));
         this.router.post("/teamratings", this.AddTeamRatings);
