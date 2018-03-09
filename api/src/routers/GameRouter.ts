@@ -286,7 +286,7 @@ class GameRouter
     private async ResetGame(req: Request, res: Response){
      
         try{
-            const updatedGame = await GameModel.findOneAndUpdate( {_id: req.body._id}, {State: "1A", }, {new: true}).populate("Teams")
+            const updatedGame = await GameModel.findOneAndUpdate( {_id: req.body._id}, {State: "1A", TeamRatings:{}}, {new: true}).populate("Teams")
 
             if(updatedGame){
                 //reset spreadsheet ranges
@@ -306,7 +306,8 @@ class GameRouter
                     DealsProposedTo: [],
                     DealsProposedBy: [],
                     TeamRatings: new Ratings(),
-                    GameState: "1A"
+                    GameState: "1A",
+                    Roles:{}
                 },{
                     new: true
                 })
