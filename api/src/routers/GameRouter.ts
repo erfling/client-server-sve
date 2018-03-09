@@ -307,7 +307,8 @@ class GameRouter
                     DealsProposedBy: [],
                     TeamRatings: new Ratings(),
                     GameState: "1A",
-                    Roles:{}
+                    Roles:{},
+                    Ratings:{}
                 },{
                     new: true
                 })
