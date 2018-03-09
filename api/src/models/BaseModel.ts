@@ -21,6 +21,9 @@ export default class BaseClass extends Typegoose implements IBaseClass
 
     
  
+    @prop()
+    CLASS_NAME:string;
+
     @prop({default: this.Created || new Date()})
     Created:Date;
 

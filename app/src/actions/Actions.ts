@@ -36,20 +36,43 @@ export interface GameAction<IGame> extends Action<IGame | IGame[]> {
     payloads?: IGame[];
 }
 
-export enum ACTION_TYPES {
-    GAME_SAVED = "GAME_SAVED",
-    IS_LOADING = "IS_LOADING",
-    LOADING_COMPLETE = "LOADING_COMPLETE",
-    GAMES_LOADED = "GAMES_LOADED",
-    TEAMS_LOADED_WITH_GAMES = "TEAMS_LOADED_WITH_GAMES",
-    TEAMS_LOADED = "TEAMS_LOADED",
-    PLAYERS_LOADED = "PLAYERS_LOADED",
-    PLAYERS_LOADED_WITH_TEAMS = "PLAYERS_LOADED_WITH_TEAMS",
-    GET_TEAM_BY_SLUG = "GET_TEAM_BY_SLUG",
-    TEAM_SELECTED = "TEAM_SELECTED",
-    ROLE_SELECTED = "ROLE_SELECTED",
-    CURRENT_PLAYER_SET = "CURRENT_PLAYER_SET",
-    SUBMIT = "SUBMIT",
+interface ActionDescription {
+    actionType:string,
+    payloadType?: string
+}   
+
+export const ACTION_TYPES = {
+    GAME_SAVED: {
+        actionType: "GAME_SAVED", 
+        payloadType: "IGame"
+    },
+    IS_LOADING:{
+        actionType: "IS_LOADING", 
+        payloadType: "boolean"        
+    },
+    GAMES_LOADED: {
+        actionType: "GAMES_LOADED",
+        payloadType: "IGame",
+        isArray: true
+    },
+    TEAM_SELECTED: {
+        actionType: "TEAM_SELECTED",
+        payloadType: "ITeam"
+    },
+    ROLE_SELECTED: {
+        actionType: "ROLE_SELECTED",
+        payloadType: "IRole"
+    },
+    CURRENT_PLAYER_SET:{
+        actionType: "CURRENT_PLAYER_SET",
+        payloadType: "ITeam"
+    },
+    SUBMITTING: {
+        actionType: "SUBMITTING",
+        payloadType: "any"
+    }
+    /*
+    
     SUBMITTING = "SUBMITTING",
     DASHBOARD_UPDATING = "DASHBOARD_UPDATING",
     DASHBOARD_UPDATED = "DASHBOARD_UPDATED",
@@ -88,7 +111,7 @@ export enum ACTION_TYPES {
 
     SOCKET_CONNECTED = "SOCKET_CONNECTED",
     GAME_RESET = "GAME_RESET"
-
+*/
 }
 
 export const createTeamSocket = (team:ITeam) => {
@@ -251,29 +274,6 @@ export const fetchGames = () => {
     
 }
 
-const getTeamBySlug:ActionCreator<Action<any>> = (type:string, payload:string) => {
-    return {
-        type,
-        payload
-    }
-}
-export const findTeam = (slug:string = null) => {
-    return (dispatch: Dispatch<Action<ITeam>>) => {
-        dispatch(getTeamBySlug(ACTION_TYPES.GET_TEAM_BY_SLUG, slug));        
-    }
-}
-
-const getPlayersFromTeam:ActionCreator<Action<ITeam>> = (type:string, payload: ITeam) => {
-    return {
-        type,
-        payload
-    }
-}
-export const findPlayers = (team:ITeam) => {
-    return (dispatch: Dispatch<Action<ITeam>>) => {
-        dispatch(getPlayersFromTeam(ACTION_TYPES.PLAYERS_LOADED_WITH_TEAMS, team));
-    }
-}
 
 const teamSelected:ActionCreator<Action<ITeam>> = (type:string, payload: ITeam) => {
     return {type,payload};
@@ -801,12 +801,12 @@ export const resetGame = (game:IGame) => {
         .then( r => r.json() )
         .then(r => {
             dispatch({
-                type:ACTION_TYPES.GAME_SAVED,
+                type: ACTION_TYPES.GAME_SAVED,
                 payload:r
             })
 
             dispatch({
-                type:ACTION_TYPES.GOT_GAME,
+                type: ACTION_TYPES.GOT_GAME,
                 payload:r
             })
         })

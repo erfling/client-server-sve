@@ -4,6 +4,9 @@ import * as mongoose from 'mongoose';
 
 export class PlatformExperiment extends BaseClass {
     
+    @prop({default: "PlatformExperiment"})
+    CLASS_NAME:string;
+
     @prop()
     SystemicPoint: string;
    

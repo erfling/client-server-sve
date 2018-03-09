@@ -80,6 +80,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
         })[0] || null
         console.log(chosenOption, this.state.ChosenCountry.toUpperCase())
         var deal: IDeal = {
+            CLASS_NAME: "Deal",
             FromTeamSlug: this.props.CurrentPlayer.Slug,
             FromNationName: (this.props.CurrentPlayer.Nation as INation).Name,
             ToNationName: this.state.ChosenCountry,

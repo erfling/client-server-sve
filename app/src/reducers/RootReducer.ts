@@ -27,7 +27,8 @@ const initialState: ApplicationStore = {
         StateContent: null,
         SelectedRole: null,
         DaysAbove2: null,
-        CurrentGame: null
+        CurrentGame: null,
+        RequiresRefresh: false
     },
     Application: {
         Loading: false,
@@ -39,8 +40,17 @@ const initialState: ApplicationStore = {
     form:{}
 };
 
+const isValidPlayer = ( player:IPlayer ) => {
+    return player.CLASS_NAME && player.CLASS_NAME == "Team";
+}
 
 export const GameData = (state = initialState.GameData, action: Action<any>) => {
+
+    //verify we won't push any empty objects into the redux store, or, more importantly, localStorage
+    if(action.payload && typeof action.payload == "object" && !Object.keys(action.payload).length){
+        return Object.assign({}, state, {RequiresRefresh: true})
+    }
+
     switch(action.type) {
         case (ACTION_TYPES.DEAL_PROPOSED):            
             return Object.assign({}, state, {PendingDealOffer: action.payload})

@@ -34,7 +34,8 @@ export default class State2 extends React.Component<State5Props, { submitting: b
                 Decision: null,
                 Hypothesis: null,
                 Experiment: null,
-                GameId: null
+                GameId: null,
+                CLASS_NAME: "PlatformExperiment"
             }
         })
         if (!this.props.CurrentPlayer) {

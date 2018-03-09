@@ -6,8 +6,11 @@ import { Typegoose, prop, Ref } from 'typegoose';
 import * as mongoose from 'mongoose';
 import value from "*.json";
 
-export class Deal extends BaseClass implements IDeal {
-    
+export class Deal extends BaseClass implements IDeal {    
+
+    @prop({default: "Team"})
+    CLASS_NAME:string;
+
     @prop({ref: TradeOption})
     TradeOption?: Ref<TradeOption> | ITradeOption;
 

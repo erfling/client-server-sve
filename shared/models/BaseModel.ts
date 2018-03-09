@@ -6,6 +6,6 @@ export default interface IBaseClass{
     Modified?: Date;  
     _id?: string;
     idx?: number;
-    CLASS_NAME?:string;
+    CLASS_NAME :string;
     REST_URL?:string;
 }

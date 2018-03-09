@@ -22,7 +22,7 @@ export default interface ApplicationStore{
         AcceptedDealOffer: IDeal;
         StateContent:any;
         DaysAbove2: number;
-
+        RequiresRefresh: boolean;
         //temp testing value
         EnvironmentalHealth: number
     };
