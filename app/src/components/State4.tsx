@@ -6,7 +6,7 @@ import RatingsForm from './form-elements/RatingsForm'
 import GameWrapper from './GameWrapper';
 import TopBarContainer from '../containers/TopBarContainer';
 import { Redirect } from 'react-router-dom'; 
-import {Row, Col, Button, Icon, Radio} from 'antd';
+import {Row, Col, Button, Icon, Radio, Modal} from 'antd';
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 
@@ -38,7 +38,7 @@ interface State3Props{
    SocketConnected: boolean;
    DaysAbove2: number;
 }
-export default class State4 extends React.Component<State3Props, {PlayerNotFound:boolean, GenericContent: any[], RoleContent: string}> {
+export default class State4 extends React.Component<State3Props, {PlayerNotFound:boolean, GenericContent: any[], RoleContent: string, showVictoryModal: boolean, victoryModalShown: boolean}> {
 
     componentWillMount(){
         this.setState({PlayerNotFound: false})
@@ -86,6 +86,13 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
 
         if(this.props.SelectedRole && !this.state.RoleContent){
             this.getRoleContent();
+        }
+
+        if(this.props.DaysAbove2 && this.props.DaysAbove2 == 0 && !this.state.showVictoryModal && !this.state.victoryModalShown){
+            this.setState(Object.assign({}, this.state, {
+                showVictoryModal: true,
+                victoryModalShown: true
+            }));
         }
 
         
@@ -232,7 +239,18 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                             </Col> 
                         </Row> : null                
                     }
-
+                {this.props.DaysAbove2 && this.props.DaysAbove2 == 0 ? 
+                <Modal
+                    className="victory-modal"
+                    visible={ this.props.DaysAbove2 == 0 && this.state.showVictoryModal }
+                    width={"95%"}
+                    footer={[<Button onClick={e => this.setState(Object.assign({}, this.state, {
+                        showVictoryModal: false
+                    }))}>OK</Button>]}
+                >
+                    <Icon type="trophy" style={{color:"green"}} />
+                    <p>Congratulations. You have prevented the temperature on Planet Sapien from ever exceeding 2&#176;C above preindustrial levels.</p>
+                </Modal> : null}
                </GameWrapper>
             )
                
