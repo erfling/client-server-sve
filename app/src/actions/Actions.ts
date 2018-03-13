@@ -182,11 +182,6 @@ export class ACTION_TYPES implements I_ACTION_TYPES{
         actionType: "DEAL_REJECTED",
         payloadType: "Deal"
     }
-
-    static DEAL_RESPONSE: ActionDescription = {
-        actionType: "DEAL_RESPONSE",
-        payloadType: "Deal"
-    } 
  
     static DEAL_ACCEPTED: ActionDescription = {
         actionType: "DEAL_ACCEPTED",
