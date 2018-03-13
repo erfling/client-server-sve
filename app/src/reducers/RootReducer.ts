@@ -28,14 +28,14 @@ const initialState: ApplicationStore = {
         SelectedRole: null,
         DaysAbove2: null,
         CurrentGame: null,
-        RequiresRefresh: false
     },
     Application: {
         Loading: false,
         DashboardUpdating: true,
         Submitting:false,
         SocketConnected:false,
-        Round2Won: false
+        Round2Won: false,
+        RequiresRefresh: false
     },
     form:{}
 };
@@ -46,16 +46,75 @@ const isValidPlayer = ( player:IPlayer ) => {
 
 export const GameData = (state = initialState.GameData, action: Action<any>) => {
 
+    var validAction = true;
     //verify we won't push any empty objects into the redux store, or, more importantly, localStorage
-    if(action.payload && typeof action.payload == "object" && !Object.keys(action.payload).length){
-        return Object.assign({}, state, {RequiresRefresh: true})
+    if(( ACTION_TYPES as any )[action.type]){
+        if(action.payload && typeof action.payload == "object" && !Object.keys(action.payload).length){
+            validAction = false;
+        }
+        else if( ( ACTION_TYPES as any )[action.type].payloadType == "boolean") { 
+           
+
+            if(typeof action.payload != "boolean"){
+                 validAction = false;
+            }
+        }
+        else if( ( ACTION_TYPES as any )[action.type].payloadType && !action.payload ) { 
+
+            validAction = false;
+        }
+        else if( ( ACTION_TYPES as any )[action.type].payloadType == "any" ){
+
+            if(!action.payload || typeof action.payload != "object"){
+                validAction = false;
+            }
+        }
+        
+        else if( ( ACTION_TYPES as any )[action.type].payloadType == "array" ){
+
+            if(!action.payload || !Array.isArray(action.payload)){
+                validAction = false;
+            }
+        }
+        else if( ( ACTION_TYPES as any )[action.type].payloadType == "number" ){
+
+            if(!action.payload || isNaN(parseFloat(action.payload))){
+                validAction = false;
+            }
+        }
+        else if( action.payload && 
+                ( ACTION_TYPES as any )[action.type].actionType 
+                && ( ACTION_TYPES as any )[action.type].isArray 
+                && ( ACTION_TYPES as any )[action.type].payloadType
+                &&
+                (
+                    !Array.isArray(action.payload)
+                    || !action.payload[0]  
+                    || !action.payload[0].CLASS_NAME
+                    ||  ( ACTION_TYPES as any )[action.type].payloadType != action.payload[0].CLASS_NAME
+                )
+            ){
+
+            validAction = false;
+        }
+        else if(action.payload  && !( ACTION_TYPES as any )[action.type].isArray
+            && ( ACTION_TYPES as any )[action.type].actionType && (!action.payload.CLASS_NAME || ( ACTION_TYPES as any )[action.type].payloadType != action.payload.CLASS_NAME)){
+
+            validAction = false;
+        }
+
+        if( !validAction ) {
+            console.log("setting refresh to true", action, ( ACTION_TYPES as any )[action.type])
+            return Object.assign({}, state, {RequiresRefresh: true});
+        }
+
     }
 
     switch(action.type) {
-        case (ACTION_TYPES.DEAL_PROPOSED):            
+        case (ACTION_TYPES.DEAL_PROPOSED.actionType):            
             return Object.assign({}, state, {PendingDealOffer: action.payload})
            
-        case (ACTION_TYPES.DEAL_RESPONSE):        
+        case (ACTION_TYPES.DEAL_RESPONSE.actionType):        
             console.log("Deal response in reducer", action.payload)
             return Object.assign({}, state, {CurrentPlayer: Object.assign(
                 {}, state.CurrentPlayer, {
@@ -64,13 +123,13 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
                 }
             ), PendingDealOffer: null})
 
-        case (ACTION_TYPES.DEAL_REJECTED):
+        case (ACTION_TYPES.DEAL_REJECTED.actionType):
             return Object.assign({}, state, {RejectedDealOffer: action.payload, AcceptedDealOffer: null, PendingDealOffer: null})
 
-        case (ACTION_TYPES.DEAL_ACCEPTED):
+        case (ACTION_TYPES.DEAL_ACCEPTED.actionType):
             return Object.assign({}, state, {RejectedDealOffer: null, AcceptedDealOffer: action.payload, PendingDealOffer: null})
 
-        case(ACTION_TYPES.GAME_SAVED):
+        case(ACTION_TYPES.GAME_SAVED.actionType):
             var game = action.payload as IGame;           
             let IDX = state.Game.map((g) => {
                 return {_id:g._id || null }
@@ -82,61 +141,45 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
                 return g._id == game._id ? Object.assign(g, game) : state;
             }) : state.Game.concat( [Object.assign( game, { _id: (state.Game.length+1).toString() } ) ] )
         
-        case(ACTION_TYPES.ACKNOWLEDGE_DEAL_REJECTION):
+        case(ACTION_TYPES.ACKNOWLEDGE_DEAL_REJECTION.actionType):
             return Object.assign({}, state, {RejectedDealOffer: null, AcceptedDealOffer: null})
         
-        case(ACTION_TYPES.GAMES_LOADED):
+        case(ACTION_TYPES.GAMES_LOADED.actionType):
             var games = action.payload as IGame[];
             var teams:ITeam[] = [];
             return Object.assign( {}, state, 
                 { Game: games.map((g,i) => Object.assign(g, { idx:i} ) ) },
             );
-        case(ACTION_TYPES.TEAMS_LOADED_WITH_GAMES):
-            var games = action.payload as IGame[];  
-            var teams:ITeam[] = [];         
-            games.forEach( (g:IGame):void => {
-                var ts:ITeam[] = g.Teams as ITeam[];
-                teams = teams.concat(ts);
-            });
-            return Object.assign( {}, state, 
-                { Team: teams },
-            );
-        case(ACTION_TYPES.TEAM_SELECTED):
+
+        case(ACTION_TYPES.TEAM_SELECTED.actionType):
             var team:ITeam = action.payload as ITeam;  
             return Object.assign({}, state, {SelectedTeam: team || null})
-        case(ACTION_TYPES.GET_TEAM_BY_SLUG):
-            return Object.assign({}, state, {SelectedTeam: state.Team.filter(t => t.Slug == action.payload)[0] || null})
-        case(ACTION_TYPES.CURRENT_PLAYER_SET):
+        case(ACTION_TYPES.CURRENT_PLAYER_SET.actionType):
             let players: IPlayer[] = state.SelectedTeam.Players as IPlayer[];
             var newState = Object.assign({},state);
             newState.SelectedTeam.Players = players.map(p => Object.assign({}, p, {IsSelected: p._id == action.payload}))
             return newState;
-
-        case(ACTION_TYPES.CURRENT_GAME_SET):
-            var game:IGame = action.payload as IGame;  
-            return Object.assign({}, state, {SelectedGame: game || null})
-
-        case(ACTION_TYPES.EDIT_GAME):
+        case(ACTION_TYPES.EDIT_GAME.actionType):
             var newState = Object.assign({},state);
             newState.Game = state.Game.map(g => Object.assign({}, g, {IsSelected: g._id == action.payload}))
             return newState;
-        case(ACTION_TYPES.CANCEL_EDIT_GAME):
+        case(ACTION_TYPES.CANCEL_EDIT_GAME.actionType):
             var newState = Object.assign({},state);
             newState.Game = state.Game.filter(g => g._id).map(g => Object.assign({}, g, {IsSelected:false}))
             return newState;
-        case(ACTION_TYPES.DASHBOARD_UPDATED):
+        case(ACTION_TYPES.DASHBOARD_UPDATED.actionType):
             return Object.assign({}, state, {Dashboard: action.payload})
-        case(ACTION_TYPES.ROUND_2_WON):
+        case(ACTION_TYPES.ROUND_2_WON.actionType):
             return Object.assign({}, state, {Dashboard: action.payload})
-        case(ACTION_TYPES.GOT_GAME):
+        case(ACTION_TYPES.GOT_GAME.actionType):
             return Object.assign({}, state, {SelectedGame: action.payload})
-        case(ACTION_TYPES.GAME_STATE_CHANGED_ADMIN):
+        case(ACTION_TYPES.GAME_STATE_CHANGED_ADMIN.actionType):
             console.log("REDUCER HANDLING")
             var ns = JSON.parse(JSON.stringify(state));
             ns.SelectedGame.State = action.payload.State;
             return ns;
             //, Game: state.Game.map(g => g._id == action.payload._id ? Object.assign(action.payload, {IsSelected: true}) :  g)}
-        case (ACTION_TYPES.REST_SAVE_SUCCESS):
+        case (ACTION_TYPES.REST_SAVE_SUCCESS.actionType):
             var newState = Object.assign({} ,state);
             var objects = newState[action.payload.CLASS_NAME];
             var found = false;
@@ -153,7 +196,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             if(!found) newState[action.payload.CLASS_NAME].splice(0, 0, action.payload);
             return newState;
 
-        case (ACTION_TYPES.GOT_OBJECT_BY_SLUG):
+        case (ACTION_TYPES.GOT_OBJECT_BY_SLUG.actionType):
             var newState = Object.assign({} ,state);
             var objects = newState[action.payload.CLASS_NAME] || [action.payload];
             console.log("OBJECTS",objects, action)
@@ -174,62 +217,66 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             newState["Selected" + action.payload.CLASS_NAME] = action.payload;
             return newState;
         
-        case (ACTION_TYPES.ADD_CLIENT_OBJECT):
+        case (ACTION_TYPES.ADD_CLIENT_OBJECT.actionType):
             var newState = Object.assign({} ,state);
             var objects = newState[action.payload.CLASS_NAME];
             newState[action.payload.CLASS_NAME] = [action.payload, ...objects];
             return newState;
-        case ACTION_TYPES.UPDATE_ENVIRONMENTAL_HEALTH:
-            return Object.assign({}, state, {EnvironmentalHealth: action.payload})
-
-        case ACTION_TYPES.GOT_TEAMS:
+        case ACTION_TYPES.GOT_TEAMS.actionType:
             return Object.assign({}, state, {Team: action.payload})
-        case ACTION_TYPES.ROLE_SELECTED:
+        case ACTION_TYPES.ROLE_SELECTED.actionType:
             localStorage.setItem("SELECTED_ROLE", JSON.stringify(action.payload));
             return Object.assign({}, state, {SelectedRole: action.payload});
-        case ACTION_TYPES.PLAYER_JOINED:
+        case ACTION_TYPES.PLAYER_JOINED.actionType:
             localStorage.setItem('SVE_PLAYER', JSON.stringify(action.payload.team));
             localStorage.setItem('TOKEN', JSON.stringify(action.payload.token));
             console.log(action.payload)
             return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload.team)})
-        case ACTION_TYPES.PLAYER_UPDATED:
+        case ACTION_TYPES.PLAYER_UPDATED.actionType:
             localStorage.setItem('SVE_PLAYER', JSON.stringify(action.payload));
             return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
-        case ACTION_TYPES.GAME_STATE_CHANGED: 
+        case ACTION_TYPES.GAME_STATE_CHANGED.actionType: 
             localStorage.setItem('SVE_PLAYER', JSON.stringify(action.payload));
             return Object.assign({}, state, {CurrentPlayer: Object.assign({}, state.CurrentPlayer, {GameState: action.payload.GameState})})
-        case ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE: 
+        case ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE.actionType: 
             return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
-        case ACTION_TYPES.RATINGS_SUBMITTED:
+        case ACTION_TYPES.RATINGS_SUBMITTED.actionType:
             localStorage.setItem('SVE_PLAYER', JSON.stringify(action.payload));
             return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
-        case ACTION_TYPES.CURRENT_GAME_SAVED:
+        case ACTION_TYPES.CURRENT_GAME_SAVED.actionType:
             return Object.assign({}, state, {Game: action.payload.map((g:IGame) => g)})
-        case ACTION_TYPES.GOT_CURRENT_GAME:
+        case ACTION_TYPES.GOT_CURRENT_GAME.actionType:
             return Object.assign({}, state, {CurrentGame: action.payload})
-        case ACTION_TYPES.GOT_CONTENT:
+        case ACTION_TYPES.GOT_CONTENT.actionType:
             return Object.assign({}, state, {StateContent: action.payload})
-        case ACTION_TYPES.YEARS_ABOVE_2_UPDATED:
+        case ACTION_TYPES.YEARS_ABOVE_2_UPDATED.actionType:
             return Object.assign({}, state, {DaysAbove2: action.payload})
         default:
             return state;
     }
 }
 
-export const Application = ( state = initialState.Application, action: Action<{type:string, payload:boolean}> ) => {
+export const Application = ( state = initialState.Application, action: Action<any> ) => {
+
+    var validAction = true;
+    
+    var newState = Object.assign({}, state, {RequiresRefresh: false})
+
+
     switch(action.type){
-        case (ACTION_TYPES.IS_LOADING):
-            return Object.assign({}, state, {Loading: action.payload})
-        case (ACTION_TYPES.DASHBOARD_UPDATING):
-            return Object.assign({}, state, {DashboardUpdating: action.payload})
-        case (ACTION_TYPES.SUBMITTING):
-            return Object.assign({}, state, {Submitting: action.payload})
-        case (ACTION_TYPES.SOCKET_CONNECTED):
-            return Object.assign({}, state, {SocketConnected: true})
-        case (ACTION_TYPES.ROUND_2_WON):
-            return Object.assign({} , state, {Round2Won: true})
+        case (ACTION_TYPES.IS_LOADING.actionType):
+            return Object.assign({}, newState, {Loading: action.payload, RequiresRefresh: false})
+        case (ACTION_TYPES.DASHBOARD_UPDATING.actionType):
+            return Object.assign({}, newState, {DashboardUpdating: action.payload, RequiresRefresh: false})
+        case (ACTION_TYPES.SUBMITTING.actionType):
+            return Object.assign({}, newState, {Submitting: action.payload, RequiresRefresh: false})
+        case (ACTION_TYPES.SOCKET_CONNECTED.actionType):
+            return Object.assign({}, newState, {SocketConnected: true, RequiresRefresh: false})
+        case (ACTION_TYPES.ROUND_2_WON.actionType):
+            return Object.assign({} , newState, {Round2Won: true, RequiresRefresh: false})
         default:
-            return state;
+            return ( ACTION_TYPES as any )[action.type] ? newState : state;
+        
     }
 }
 

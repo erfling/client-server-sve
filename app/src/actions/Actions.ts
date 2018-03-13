@@ -24,6 +24,18 @@ const baseRestURL = protocol +  "//" + window.location.hostname + port + "/sapie
 //const socket = socketIo({path: socketPort + "/" + "Team1", transports: ['websocket'] });
 var socket:SocketIOClient.Socket;
 
+export interface GameAction<IGame> extends Action<IGame | IGame[]> {
+    payload?: IGame;
+    payloads?: IGame[];
+}
+
+interface ActionDescription {
+    actionType:string;
+    payloadType?: string;
+    isArray?: boolean;
+    AdminOnly?: boolean;
+    toString: Function
+}   
 
 export interface Action<T> {
     type: string;
@@ -31,87 +43,182 @@ export interface Action<T> {
     payloads?: T[];
 }
 
-export interface GameAction<IGame> extends Action<IGame | IGame[]> {
-    payload?: IGame;
-    payloads?: IGame[];
+export interface I_ACTION_TYPES{
+    [key:string]: ActionDescription;
 }
 
-interface ActionDescription {
-    actionType:string,
-    payloadType?: string
-}   
+export class ACTION_TYPES implements I_ACTION_TYPES{
+    [key:string]: ActionDescription;
 
-export const ACTION_TYPES = {
-    GAME_SAVED: {
+
+    static GAME_SAVED: ActionDescription = {
         actionType: "GAME_SAVED", 
-        payloadType: "IGame"
-    },
-    IS_LOADING:{
+        payloadType: "Game"
+    }
+
+    static IS_LOADING: ActionDescription = {
         actionType: "IS_LOADING", 
-        payloadType: "boolean"        
-    },
-    GAMES_LOADED: {
+        payloadType: "boolean" 
+    }
+
+    static GAMES_LOADED: ActionDescription = {
         actionType: "GAMES_LOADED",
-        payloadType: "IGame",
+        payloadType: "Game",
         isArray: true
-    },
-    TEAM_SELECTED: {
+    }
+
+    static TEAM_SELECTED: ActionDescription = {
         actionType: "TEAM_SELECTED",
-        payloadType: "ITeam"
-    },
-    ROLE_SELECTED: {
+        payloadType: "Team"
+    }
+
+    static ROLE_SELECTED: ActionDescription = {
         actionType: "ROLE_SELECTED",
-        payloadType: "IRole"
-    },
-    CURRENT_PLAYER_SET:{
+        payloadType: "Role"
+    }
+
+    static CURRENT_PLAYER_SET: ActionDescription = {
         actionType: "CURRENT_PLAYER_SET",
-        payloadType: "ITeam"
-    },
-    SUBMITTING: {
+        payloadType: "Team"
+    }
+
+    static SUBMITTING: ActionDescription = {
         actionType: "SUBMITTING",
+        payloadType: "boolean"
+    }
+
+    static DASHBOARD_UPDATING: ActionDescription = {
+        actionType: "SUBMITTING",
+        payloadType: "boolean"
+    }
+
+    static DASHBOARD_UPDATED: ActionDescription = {
+        actionType: "DASHBOARD_UPDATED",
+        payloadType: "array"
+    }
+
+    static YEARS_ABOVE_2_UPDATED: ActionDescription = {
+        actionType: "YEARS_ABOVE_2_UPDATED",
+        payloadType: "number"
+    }
+    
+    static EDIT_GAME: ActionDescription = {
+        actionType: "EDIT_GAME",
+        payloadType: "string"
+    }
+
+    static CANCEL_EDIT_GAME: ActionDescription = {
+        actionType: "CANCEL_EDIT_GAME",
+        payloadType: "string"
+    }
+
+    static CURRENT_GAME_SAVED: ActionDescription = {
+        actionType: "CURRENT_GAME_SAVED",
+        payloadType: "Game",
+        isArray: true
+    }
+    
+    static GOT_CURRENT_GAME: ActionDescription = {
+        actionType: "GOT_CURRENT_GAME",
+        payloadType: "Game"
+    }
+    
+    static ADD_CLIENT_OBJECT: ActionDescription = {
+        actionType: "ADD_CLIENT_OBJECT",
+        payloadType: "Game",
+    }
+        
+    static REST_SAVE_SUCCESS: ActionDescription = {
+        actionType: "REST_SAVE_SUCCESS",
+        payloadType: "any",
+    }   
+
+    static GOT_OBJECT_BY_SLUG: ActionDescription = {
+        actionType: "GOT_OBJECT_BY_SLUG",
+        payloadType: "any",
+    }    
+
+    static PLAYER_JOINED: ActionDescription = {
+        actionType: "PLAYER_JOINED",
+        payloadType: "any",
+    }
+
+    static PLAYER_UPDATED: ActionDescription = {
+        actionType: "PLAYER_UPDATED",
+        payloadType: "Team",
+    }
+
+    static GOT_TEAMS: ActionDescription = {
+        actionType: "GOT_TEAMS",
+        payloadType: "Team",
+        isArray: true
+    }
+  
+    static GOT_PLAYER_FROM_LOCAL_STORAGE: ActionDescription = {
+        actionType: "GOT_PLAYER_FROM_LOCAL_STORAGE",
+        payloadType: "Team"
+    }  
+      
+    static GAME_STATE_CHANGED: ActionDescription = {
+        actionType: "GAME_STATE_CHANGED",
+        payloadType: "Team"
+    }    
+
+    static GAME_STATE_CHANGED_ADMIN: ActionDescription = {
+        actionType: "GAME_STATE_CHANGED_ADMIN",
+        payloadType: "Game"
+    }  
+
+    static GOT_GAME: ActionDescription = {
+        actionType: "GOT_GAME",
+        payloadType: "Game"
+    }  
+
+    static DEAL_PROPOSED: ActionDescription = {
+        actionType: "DEAL_PROPOSED",
+        payloadType: "Deal"
+    }  
+
+    static DEAL_RESPONSE: ActionDescription = {
+        actionType: "DEAL_RESPONSE",
+        payloadType: "Deal"
+    }  
+
+    static DEAL_REJECTED: ActionDescription = {
+        actionType: "DEAL_REJECTED",
+        payloadType: "Deal"
+    }  
+ 
+    static DEAL_ACCEPTED: ActionDescription = {
+        actionType: "DEAL_ACCEPTED",
+        payloadType: "Deal"
+    }  
+
+    static ACKNOWLEDGE_DEAL_REJECTION: ActionDescription = {
+        actionType: "ACKNOWLEDGE_DEAL_REJECTION"
+    }
+
+    static ROUND_2_WON: ActionDescription = {
+        actionType: "ROUND_2_WON"
+    }
+
+    static RATINGS_SUBMITTED: ActionDescription = {
+        actionType: "RATINGS_SUBMITTED"
+    }
+    
+    static GOT_CONTENT: ActionDescription = {
+        actionType: "RATINGS_SUBMITTED",
         payloadType: "any"
     }
-    /*
+
+    static SOCKET_CONNECTED: ActionDescription = {
+        actionType: "SOCKET_CONNECTED",
+    }
     
-    SUBMITTING = "SUBMITTING",
-    DASHBOARD_UPDATING = "DASHBOARD_UPDATING",
-    DASHBOARD_UPDATED = "DASHBOARD_UPDATED",
-    YEARS_ABOVE_2_UPDATED = "YEARS_ABOVE_2_UPDATED",
-    EDIT_GAME = "EDIT_GAME",
-    CANCEL_EDIT_GAME = "CANCEL_EDIT_GAME",
-    SET_CURRENT_GAME = "SET_CURRENT_GAME",
-    CURRENT_GAME_SAVED = "CURRENT_GAME_SAVED",
-    GOT_CURRENT_GAME = "GOT_CURRENT_GAME",
+    static GAME_RESET: ActionDescription = {
+        actionType: "GAME_RESET",
+    }
 
-    UPDATE_ENVIRONMENTAL_HEALTH = "UPDATE_ENVIRONMENTAL_HEALTH",
-    ADD_CLIENT_OBJECT = "ADD_CLIENT_OBJECT",
-    REST_SAVE_SUCCESS = "REST_SAVE_SUCCESS",
-    CURRENT_GAME_SET = "CURRENT_GAME_SET",
-    GOT_OBJECT_BY_SLUG = "GOT_OBJECT_BY_SLUG",
-
-    PLAYER_JOINED = 'PLAYER_JOINED',
-    PLAYER_UPDATED = "PLAYER_UPDATED",
-    GOT_TEAMS = "GOT_TEAMS",
-    GOT_PLAYER_FROM_LOCAL_STORAGE = "GOT_PLAYER_FROM_LOCAL_STORAGE",
-
-    GAME_STATE_CHANGED       = "GAME_STATE_CHANGED",
-    GAME_STATE_CHANGED_ADMIN = "GAME_STATE_CHANGED_ADMIN",
-    GOT_GAME = "GOT_GAME",
-
-    DEAL_PROPOSED = "DEAL_PROPOSED",
-    DEAL_RESPONSE = "DEAL_RESPONSE",
-    DEAL_REJECTED = "DEAL_REJECTED",
-    DEAL_ACCEPTED = "DEAL_ACCEPTED",
-    ACKNOWLEDGE_DEAL_REJECTION  = "ACKNOWLEDGE_DEAL_REJECTION",
-    ROUND_2_WON = "ROUND_2_WON",
-
-    RATINGS_SUBMITTED = "RATINGS_SUBMITTED",
-
-    GOT_CONTENT = "GOT_CONTENT",
-
-    SOCKET_CONNECTED = "SOCKET_CONNECTED",
-    GAME_RESET = "GAME_RESET"
-*/
 }
 
 export const createTeamSocket = (team:ITeam) => {
@@ -120,7 +227,7 @@ export const createTeamSocket = (team:ITeam) => {
         console.log("SOCKET ALREADY PRESENT")
         return (dispatch: Dispatch<Action<ITeam>>) => {
             dispatch( {
-                type: ACTION_TYPES.PLAYER_JOINED,
+                type: ACTION_TYPES.PLAYER_JOINED.actionType,
                 payload: team
             } );
         }
@@ -143,101 +250,101 @@ export const createTeamSocket = (team:ITeam) => {
             socket.on(SocketEvents.TEAM_UPDATED, (team:ITeam) => {
                 console.log("heard team update event from server over socket")
                 dispatch( {
-                    type: ACTION_TYPES.IS_LOADING,
+                    type: ACTION_TYPES.IS_LOADING.actionType,
                     payload: false
                 } );
                 dispatch( {
-                    type: ACTION_TYPES.PLAYER_UPDATED,
+                    type: ACTION_TYPES.PLAYER_UPDATED.actionType,
                     payload: team
                 } );
                 dispatch({
-                    type: ACTION_TYPES.GAME_STATE_CHANGED,
+                    type: ACTION_TYPES.GAME_STATE_CHANGED.actionType,
                     payload:team
                 })
             })
             .on(SocketEvents.PROPOSE_DEAL, (deal:IDeal) => {
                 console.log("SOCKET RETURNED DEAL_PR   OPOSED:", deal);
                 dispatch( {
-                    type: ACTION_TYPES.DEAL_PROPOSED,
+                    type: ACTION_TYPES.DEAL_PROPOSED.actionType,
                     payload: deal
                 } );
 
                 dispatch( {
-                    type: ACTION_TYPES.IS_LOADING,
+                    type: ACTION_TYPES.IS_LOADING.actionType,
                     payload: false
                 } )
             })
             .on(SocketEvents.RESPOND_TO_DEAL || SocketEvents.FORWARD_DEAL, (deal: IDeal) => {
                 console.log("DEAL RESPONSE IS", deal)
                 dispatch( {
-                    type: ACTION_TYPES.DEAL_RESPONSE,
+                    type: ACTION_TYPES.DEAL_RESPONSE.actionType,
                     payload: deal
                 } );
 
                 dispatch( {
-                    type: ACTION_TYPES.IS_LOADING,
+                    type: ACTION_TYPES.IS_LOADING.actionType,
                     payload: false
                 } )
             })
             .on(SocketEvents.DEAL_REJECTED, (deal:IDeal) => {
                 dispatch( {
-                    type: ACTION_TYPES.DEAL_REJECTED,
+                    type: ACTION_TYPES.DEAL_REJECTED.actionType,
                     payload: deal
                 } );
 
                 dispatch( {
-                    type: ACTION_TYPES.IS_LOADING,
+                    type: ACTION_TYPES.IS_LOADING.actionType,
                     payload: false
                 } )
             })
             .on(SocketEvents.DEAL_ACCEPTED, (deal: IDeal) => {
                 dispatch( {
-                    type: ACTION_TYPES.DEAL_ACCEPTED,
+                    type: ACTION_TYPES.DEAL_ACCEPTED.actionType,
                     payload: deal
 
                 } );
 
                 dispatch( {
-                    type: ACTION_TYPES.IS_LOADING,
+                    type: ACTION_TYPES.IS_LOADING.actionType,
                     payload: false
                 } )
             })
             .on(SocketEvents.DASHBOARD_UPDATED,(dashboardData:any) => {
                 console.log("DASHBOARD_UPDATED")
-                dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED, dashboardData));
+                dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED.actionType, dashboardData));
             })
             .on(SocketEvents.DASHBOARD_UPDATED_WIN,(dashboardData:any) => {
                 console.log("DASHBOARD_UPDATED WITH VICTORY")
-                dispatch({type:ACTION_TYPES.ROUND_2_WON});
+                dispatch({type:ACTION_TYPES.ROUND_2_WON.actionType});
             })
             .on(SocketEvents.JOIN_ROLE, (role:IRole) => {
                 dispatch( {
-                    type: ACTION_TYPES.ROLE_SELECTED,
+                    type: ACTION_TYPES.ROLE_SELECTED.actionType,
                     payload: role
                 } );
 
                 dispatch( {
-                    type: ACTION_TYPES.IS_LOADING,
+                    type: ACTION_TYPES.IS_LOADING.actionType,
                     payload: false
                 } )
             })
             .on(SocketEvents.HAS_CONNECTED, (msg: string) => {
                 console.log('HAS CONNECTED', msg);
                 dispatch( {
-                    type:ACTION_TYPES.SOCKET_CONNECTED
+                    type:ACTION_TYPES.SOCKET_CONNECTED.actionType
                 } )
             })
             .on(SocketEvents.ROLE_RETURNED, (role:IRole) => {
                 console.log("server returned", role)
                 dispatch( {
-                    type: ACTION_TYPES.ROLE_SELECTED,
+                    type: ACTION_TYPES.ROLE_SELECTED.actionType,
                     payload: role
                 } );
             })
             .on(SocketEvents.UPDATE_YEARS_ABOVE_2, (years: number | string) => {
                 console.log("SERVER SAYS DAYS ABOVE 2 IS:", years);
                 dispatch( {
-                    type: ACTION_TYPES.YEARS_ABOVE_2_UPDATED,
+                    type: ACTION_TYPES.YEARS_ABOVE_2_UPDATED.actionType,
                     payload: years
                 } );
             })
@@ -247,7 +354,7 @@ export const createTeamSocket = (team:ITeam) => {
 
 const gamePushed: ActionCreator<GameAction<IGame>> = (game: IGame) => {
     return {
-        type: ACTION_TYPES.GAME_SAVED,
+        type: ACTION_TYPES.GAME_SAVED.actionType,
         payload: game
     }
 }
@@ -268,7 +375,7 @@ const isLoading: ActionCreator<Action<boolean>> = (type = ACTION_TYPES.IS_LOADIN
 
 export const fetchGames = () => {
     return (dispatch: Dispatch<GameAction<IGame> | Action<any>>) => {
-        dispatch(isLoading(ACTION_TYPES.IS_LOADING, true));
+        dispatch(isLoading(ACTION_TYPES.IS_LOADING.actionType, true));
         console.log("fetching games");        
     }
     
@@ -280,14 +387,11 @@ const teamSelected:ActionCreator<Action<ITeam>> = (type:string, payload: ITeam) 
 }
 export const fetchTeamDetails = (slug:string) => {
     return (dispatch: Dispatch<GameAction<ITeam>>) => {
-        dispatch(isLoading(ACTION_TYPES.IS_LOADING, true));
-        //setTimeout(() => {
-            console.log("getting team", slug);
-            socket.emit(SocketEvents.SELECT_TEAM, slug);
-        //},2000)
+        dispatch(isLoading(ACTION_TYPES.IS_LOADING.actionType, true));
+        console.log("getting team", slug);
+        socket.emit(SocketEvents.SELECT_TEAM, slug);
         socket.on(SocketEvents.SELECT_TEAM, (res:ITeam) => {
-            dispatch(teamSelected(ACTION_TYPES.TEAM_SELECTED, res));
-            //setTimeout(() => dispatch( isLoading(ACTION_TYPES.IS_LOADING, false) ), 10)
+            dispatch(teamSelected(ACTION_TYPES.TEAM_SELECTED.actionType, res));
         })
     }
 }
@@ -302,22 +406,9 @@ export const chooseCurrentPlayer = (player:IPlayer) => {
     console.log("CHOOSING PLAYER", player);
     return (dispatch: Dispatch<Action<IPlayer>>) => {
         socket.on("DRIVE_UPDATE",(dashboardData:any) => {
-            dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED, dashboardData));
+            dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED.actionType, dashboardData));
         })
         dispatch(setCurrentPlayer(ACTION_TYPES.CURRENT_PLAYER_SET, player._id));
-    }
-}
-
-const setCurrentGame:ActionCreator<Action<IGame>> = (type:string, payload: IGame) => {
-    return {
-        type,
-        payload
-    }
-}
-export const chooseCurrentGame = (game: IGame) => {
-    console.log("CHOOSING GAME", game);
-    return (dispatch: Dispatch<Action<IPlayer>>) => {
-        dispatch(setCurrentPlayer(ACTION_TYPES.CURRENT_GAME_SET, game));
     }
 }
 
@@ -338,8 +429,8 @@ export const updateDashboard = () => {
         console.log(socket);
         socket.on(SocketEvents.DASHBOARD_UPDATED, (dashboardData:any) => {
             console.log("DASHBOARD UPDATE", "dashboardData:", dashboardData);
-            dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED, dashboardData));
-            dispatch(appStateChange(ACTION_TYPES.DASHBOARD_UPDATING, false));
+            dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED.actionType, dashboardData));
+            dispatch(appStateChange(ACTION_TYPES.DASHBOARD_UPDATING.actionType, false));
          })         
     }
 }
@@ -347,7 +438,7 @@ export const updateDashboard = () => {
 const gotGames: ActionCreator<Action<IGame[]>> = (type: string, payload:IGame[]) => {return {type, payload}}
 export const getGames = () => {
     return (dispatch: Dispatch<Action<IGame[]>>) => {
-        dispatch(isLoading(ACTION_TYPES.IS_LOADING, true))
+        dispatch(isLoading(ACTION_TYPES.IS_LOADING.actionType, true))
         console.log("BASE REST",baseRestURL);
         return fetch(baseRestURL + 'games')
             .then(( res:Response ) => {
@@ -355,8 +446,8 @@ export const getGames = () => {
             })
             .then( (games:IGame[] ) => {
                 console.log("GET GAMES RESPONSE,",games);
-                dispatch( gotGames( ACTION_TYPES.GAMES_LOADED, games ) );
-                setTimeout( () => {dispatch(isLoading(ACTION_TYPES.IS_LOADING, false))},200);
+                dispatch( gotGames( ACTION_TYPES.GAMES_LOADED.actionType, games ) );
+                dispatch(isLoading(ACTION_TYPES.IS_LOADING.actionType, false));
             })
             .catch( ( reason ) => { console.log("GET GAMES FAILE CUZ: ",reason); } )
     }
@@ -364,25 +455,25 @@ export const getGames = () => {
 
 export const editGame = (game: IGame): Dispatch<Action<string>> => {
     return (dispatch: Dispatch<Action<string>>) => {
-        dispatch({type:ACTION_TYPES.EDIT_GAME, payload: game._id});
+        dispatch({type:ACTION_TYPES.EDIT_GAME.actionType, payload: game._id});
     }
 }
 export const cancelEditGame = (game: IGame): Dispatch<Action<string>> => {
     return (dispatch: Dispatch<Action<string>>) => {
-        dispatch({type:ACTION_TYPES.CANCEL_EDIT_GAME, payload: game._id});
+        dispatch({type:ACTION_TYPES.CANCEL_EDIT_GAME.actionType, payload: game._id});
     }
 }
 
 const gameSaved: ActionCreator<GameAction<IGame>> = (game: IGame):GameAction<IGame> => {
     return {
-        type: ACTION_TYPES.GAME_SAVED,
+        type: ACTION_TYPES.GAME_SAVED.actionType,
         payload: game
     }
 }
 
 export const setGameCurrent = (game: IGame) => {
     return (dispatch:Dispatch<Action<IGame[]>>) => {
-        dispatch({type:ACTION_TYPES.SUBMITTING, payload: true});
+        dispatch({type:ACTION_TYPES.SUBMITTING.actionType, payload: true});
         const url = baseRestURL + "games/setcurrent"
         fetch(
             url, 
@@ -399,8 +490,8 @@ export const setGameCurrent = (game: IGame) => {
         })
         .then( (savedGames: IGame[]) => {
             setTimeout(() => {
-                dispatch({type:ACTION_TYPES.SUBMITTING, payload: false})
-                dispatch({type:ACTION_TYPES.CURRENT_GAME_SAVED, payload: savedGames})
+                dispatch({type:ACTION_TYPES.SUBMITTING.actionType, payload: false})
+                dispatch({type:ACTION_TYPES.CURRENT_GAME_SAVED.actionType, payload: savedGames})
             }, 200);          
         })
         .catch(reason => {console.log(reason), alert("SAVE FAILED")})
@@ -414,7 +505,7 @@ export const restSave = (payload: IGame | ITeam | IPlayer) => {
     url = url + (payload._id ? "/" + payload._id : "");
     let body = JSON.stringify(payload);
     return (dispatch:Dispatch<Action<any>>) => {
-        dispatch({type:ACTION_TYPES.SUBMITTING, payload: true});
+        dispatch({type:ACTION_TYPES.SUBMITTING.actionType, payload: true});
 
         fetch(
             url, 
@@ -431,15 +522,15 @@ export const restSave = (payload: IGame | ITeam | IPlayer) => {
         })
         .then( (saved: IGame | ITeam | IPlayer) => {
             setTimeout(() => {
-                dispatch({type:ACTION_TYPES.SUBMITTING, payload: false})
-                dispatch({type:ACTION_TYPES.REST_SAVE_SUCCESS, payload: saved})
+                dispatch({type:ACTION_TYPES.SUBMITTING.actionType, payload: false})
+                dispatch({type:ACTION_TYPES.REST_SAVE_SUCCESS.actionType, payload: saved})
             }, 200);          
         })
         .catch(reason => {console.log(reason), alert("SAVE FAILED")})
     }
 }
 export const addClientObject = ( objectType:string ) =>{
-    return ( dispatch:Dispatch<Action<any>> ) => dispatch( { type:ACTION_TYPES.ADD_CLIENT_OBJECT, payload:{ CLASS_NAME:objectType, IsSelected:true, REST_URL: objectType.toLowerCase() + 's'} } );
+    return ( dispatch:Dispatch<Action<any>> ) => dispatch( { type:ACTION_TYPES.ADD_CLIENT_OBJECT.actionType, payload:{ CLASS_NAME:objectType, IsSelected:true, REST_URL: objectType.toLowerCase() + 's'} } );
 }
 
 
@@ -452,7 +543,7 @@ export const restFetchBySlug = ( type: string, slug:string) => {
             .then( ( r: ITeam | IGame | IPlayer ) => {
                 r.IsSelected = true;
                 dispatch( {
-                    type: ACTION_TYPES.GOT_OBJECT_BY_SLUG,
+                    type: ACTION_TYPES.GOT_OBJECT_BY_SLUG.actionType,
                     payload: r
                 });
                 //dispatch({type:ACTION_TYPES.})
@@ -469,7 +560,7 @@ export const getGame = (slug:string) => {
                 console.log("we got this from the server", r)
                 r.IsSelected = true;
                 dispatch( {
-                    type: ACTION_TYPES.GOT_GAME,
+                    type: ACTION_TYPES.GOT_GAME.actionType,
                     payload: r
                 });
                 //dispatch({type:ACTION_TYPES.})
@@ -480,36 +571,25 @@ export const getGame = (slug:string) => {
 export const getTeams = () => {
     let url = baseRestURL + "teams"
     return (dispatch:Dispatch<Action<ITeam[]>>) => {
-        dispatch({type: ACTION_TYPES.IS_LOADING, payload: true})
+        dispatch({type: ACTION_TYPES.IS_LOADING.actionType, payload: true})
         console.log("getting teams from", url)
         return fetch( url )
             .then( (r: any) => r.json() )
             .then( ( r: ITeam[] ) => {
                 dispatch( {
-                    type: ACTION_TYPES.GOT_TEAMS,
+                    type: ACTION_TYPES.GOT_TEAMS.actionType,
                     payload: r
                 })
-                dispatch({type: ACTION_TYPES.IS_LOADING, payload: false})
+                dispatch({type: ACTION_TYPES.IS_LOADING.actionType, payload: false})
                 return r;
 
             })
     }
 }
 
-
-export const setEnvironmentalHealth = (health: number):Dispatch<Action<number>> => {
-    return (dispatch: Dispatch<Action<number>>) => {
-        dispatch( {
-            type: ACTION_TYPES.UPDATE_ENVIRONMENTAL_HEALTH, 
-            payload: health
-        });
-    }
-
-}
-
 export const login = (team: ITeam) => {
     return (dispatch: Dispatch<Action<IGame[]>>) => {
-        dispatch(isLoading(ACTION_TYPES.IS_LOADING, true));
+        dispatch(isLoading(ACTION_TYPES.IS_LOADING.actionType, true));
         console.log("BASE REST",baseRestURL);
         const url = baseRestURL + 'login';
         return fetch(
@@ -527,12 +607,12 @@ export const login = (team: ITeam) => {
             })
             .then( (jwt:any ) => {
                 dispatch( {
-                    type: ACTION_TYPES.PLAYER_JOINED,
+                    type: ACTION_TYPES.PLAYER_JOINED.actionType,
                     payload: jwt
                 } );
 
                 setTimeout( () => {
-                    dispatch(isLoading(ACTION_TYPES.IS_LOADING, false));
+                    dispatch(isLoading(ACTION_TYPES.IS_LOADING.actionType, false));
                 }, 1000);
                
                 dispatch(createTeamSocket(team));
@@ -547,7 +627,7 @@ export const login = (team: ITeam) => {
 export const selectTeam = (team:ITeam) => {
     return (dispatch: Dispatch<Action<ITeam>>) => {
         dispatch({
-            type: ACTION_TYPES.TEAM_SELECTED,
+            type: ACTION_TYPES.TEAM_SELECTED.actionType,
             payload: team
         })
     }
@@ -559,7 +639,7 @@ export const selectRole = (role: string, teamSlug:string) => {
     return (dispatch: Dispatch<Action<ITeam>>) => {
         socket.emit(SocketEvents.JOIN_ROLE, role, teamSlug);
         dispatch({
-            type: ACTION_TYPES.IS_LOADING,
+            type: ACTION_TYPES.IS_LOADING.actionType,
             payload: true
         })
     }
@@ -569,7 +649,7 @@ export const getPlayer = () => {
     console.log("PLAYER IS", JSON.parse(localStorage.getItem("SVE_PLAYER")))
     return (dispatch: Dispatch<Action<any>>) => {
         dispatch({
-            type: ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE,
+            type: ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE.actionType,
             payload: JSON.parse(localStorage.getItem("SVE_PLAYER"))
         })
         dispatch( login(JSON.parse(localStorage.getItem("SVE_PLAYER"))) );
@@ -581,7 +661,7 @@ export const setWaterValues = (team: ITeam) => {
     socket.emit(SocketEvents.UPDATE_TEAM, team);
     return (dispatch: Dispatch<Action<ITeam>>) => {
         dispatch( {
-            type: ACTION_TYPES.IS_LOADING,
+            type: ACTION_TYPES.IS_LOADING.actionType,
             payload: true
         } );
     }
@@ -606,7 +686,7 @@ export const setGameState = (game:IGame, newState: number) => {
         })
         .then( (jwt:any )=>{
             dispatch({
-                type: ACTION_TYPES.GAME_STATE_CHANGED_ADMIN,
+                type: ACTION_TYPES.GAME_STATE_CHANGED_ADMIN.actionType,
                 payload:game
             })
         }
@@ -618,7 +698,7 @@ export const proposeDeal = (deal: IDeal ) => {
     socket.emit(SocketEvents.PROPOSE_DEAL, deal);
     return (dispatch: Dispatch<Action<boolean>>) => {
         dispatch({
-            type: ACTION_TYPES.IS_LOADING,
+            type: ACTION_TYPES.IS_LOADING.actionType,
             payload: true
         })
     }
@@ -632,7 +712,7 @@ export const acceptOrRejectDeal = (deal: IDeal, Accept: boolean) => {
     return (dispatch: Dispatch<Action<boolean>>) => {
         socket.emit(SocketEvents.RESPOND_TO_DEAL, transmittedDeal);
         dispatch({
-            type: ACTION_TYPES.IS_LOADING,
+            type: ACTION_TYPES.IS_LOADING.actionType,
             payload: false
         })
     }
@@ -643,7 +723,7 @@ export const forwardDeal = (deal: IDeal) => {
     return (dispatch: Dispatch<Action<boolean>>) => {
         socket.emit(SocketEvents.FORWARD_DEAL, deal);
         dispatch({
-            type: ACTION_TYPES.IS_LOADING,
+            type: ACTION_TYPES.IS_LOADING.actionType,
             payload: false
         })
     }
@@ -653,7 +733,7 @@ export const submitRatings = (teamWithRatings: ITeam) => {
     return (dispatch: Dispatch<Action<ITeam>>) => {
         const url = baseRestURL + 'teamratings';
         dispatch({
-            type: ACTION_TYPES.IS_LOADING,
+            type: ACTION_TYPES.IS_LOADING.actionType,
             payload: true
         })
         return fetch(
@@ -671,11 +751,11 @@ export const submitRatings = (teamWithRatings: ITeam) => {
         })
         .then( (resp:any )=>{
             dispatch({
-                type: ACTION_TYPES.RATINGS_SUBMITTED,
+                type: ACTION_TYPES.RATINGS_SUBMITTED.actionType,
                 payload:resp
             })
             dispatch({
-                type: ACTION_TYPES.IS_LOADING,
+                type: ACTION_TYPES.IS_LOADING.actionType,
                 payload: false
             })
         }
@@ -685,13 +765,13 @@ export const submitRatings = (teamWithRatings: ITeam) => {
 
 export const acknowledgeDealRejection = () => {
     return (dispatch: Dispatch<Action<null>>) => {
-        dispatch({type: ACTION_TYPES.ACKNOWLEDGE_DEAL_REJECTION})
+        dispatch({type: ACTION_TYPES.ACKNOWLEDGE_DEAL_REJECTION.actionType})
     }
 }
 
 export const getCurrentGame = () => {
     return (dispatch:Dispatch<Action<IGame[]>>) => {
-        dispatch({type:ACTION_TYPES.SUBMITTING, payload: true});
+        dispatch({type:ACTION_TYPES.SUBMITTING.actionType, payload: true});
         const url = baseRestURL + "games/req/getcurrentgame"
         fetch(
             url, 
@@ -707,8 +787,8 @@ export const getCurrentGame = () => {
         })
         .then( (game: IGame) => {
             setTimeout(() => {
-                dispatch({type:ACTION_TYPES.SUBMITTING, payload: false})
-                dispatch({type:ACTION_TYPES.GOT_CURRENT_GAME, payload: game})
+                dispatch({type:ACTION_TYPES.SUBMITTING.actionType, payload: false})
+                dispatch({type:ACTION_TYPES.GOT_CURRENT_GAME.actionType, payload: game})
             }, 200);          
         })
         .catch(reason => {console.log(reason), alert("SAVE FAILED")})
@@ -717,7 +797,7 @@ export const getCurrentGame = () => {
 
 export const getContent = (team: ITeam) => {
     return (dispatch:Dispatch<Action<any>>) => {
-        dispatch({type:ACTION_TYPES.SUBMITTING, payload: true});
+        dispatch({type:ACTION_TYPES.SUBMITTING.actionType, payload: true});
         const url = baseRestURL + "sheets/content"
         fetch(
             url, 
@@ -734,8 +814,8 @@ export const getContent = (team: ITeam) => {
         })
         .then( (content: any) => {
             setTimeout(() => {
-                dispatch({type:ACTION_TYPES.SUBMITTING, payload: false})
-                dispatch({type:ACTION_TYPES.GOT_CONTENT, payload: content})
+                dispatch({type:ACTION_TYPES.SUBMITTING.actionType, payload: false})
+                dispatch({type:ACTION_TYPES.GOT_CONTENT.actionType, payload: content})
             }, 200);          
         })
         .catch(reason => {console.log(reason), alert("SAVE FAILED")})
@@ -773,7 +853,7 @@ export const getDaysAbove = (team:ITeam) => {
         .then(r => {
             console.log(r);
             dispatch( {
-                type: ACTION_TYPES.YEARS_ABOVE_2_UPDATED,
+                type: ACTION_TYPES.YEARS_ABOVE_2_UPDATED.actionType,
                 payload: r
             } );
         })
@@ -801,12 +881,12 @@ export const resetGame = (game:IGame) => {
         .then( r => r.json() )
         .then(r => {
             dispatch({
-                type: ACTION_TYPES.GAME_SAVED,
+                type: ACTION_TYPES.GAME_SAVED.actionType,
                 payload:r
             })
 
             dispatch({
-                type: ACTION_TYPES.GOT_GAME,
+                type: ACTION_TYPES.GOT_GAME.actionType,
                 payload:r
             })
         })

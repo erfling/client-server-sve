@@ -22,17 +22,17 @@ export default interface ApplicationStore{
         AcceptedDealOffer: IDeal;
         StateContent:any;
         DaysAbove2: number;
-        RequiresRefresh: boolean;
         //temp testing value
         EnvironmentalHealth: number
     };
     //export type SheetData   
     Application?: {
-        Loading: boolean,
-        DashboardUpdating:boolean,
-        Submitting: boolean,
-        SocketConnected: boolean,
-        Round2Won: boolean
+        Loading: boolean;
+        DashboardUpdating:boolean;
+        Submitting: boolean;
+        SocketConnected: boolean;
+        Round2Won: boolean;
+        RequiresRefresh: boolean;
     }
     form: any;
     Route?: any;

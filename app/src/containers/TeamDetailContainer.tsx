@@ -38,7 +38,6 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
             dispatch(Actions.dispatchSubmitForm(Object.assign(values)))
         },
         subscribeToDashboard: () => { dispatch( Actions.updateDashboard()) },
-        setEnvirontmentalHealth : (health: number) => { dispatch(Actions.setEnvironmentalHealth(health))}
     }
 }
 
