@@ -34,8 +34,8 @@ interface State2Props {
     //Options: ITradeOption[];
     getPlayer: () => {}
     proposeDeal: (deal: IDeal) => {}
-    acceptOrRejectDeal: (deal: IDeal, accept: boolean) => {}
-    forwardDeal: (deal: IDeal) => {}
+    rejectDeal: (deal: IDeal) => {}
+    acceptDeal: (deal: IDeal, accept: boolean) => {}
     acknowledgeDealRejection: () => {}
     match: any;
     Dashboard: any;
@@ -73,7 +73,6 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
     }
 
     prepDeal() {
-
         var chosenOption = this.state.TradeOptions.filter(o => {
             console.log(o.toUpperCase(), this.state.ChosenCountry.toUpperCase())
             return o.toUpperCase().indexOf(this.state.ChosenCountry.toUpperCase()) != -1
@@ -85,7 +84,6 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
             FromNationName: (this.props.CurrentPlayer.Nation as INation).Name,
             ToNationName: this.state.ChosenCountry,
             Message: chosenOption
-
         }
 
         //India's winning move is to give itself 60 billion.
@@ -97,11 +95,14 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
         }
         console.log("WHAT'S THE DEAL?", deal)
         this.props.proposeDeal(deal);
-
     }
 
-    respondToDeal(deal: IDeal, accept: boolean) {
-        this.props.acceptOrRejectDeal(deal, accept)
+    rejectDeal(deal: IDeal) {
+        this.props.rejectDeal(deal)
+    }
+
+    acceptDeal(deal: IDeal, accept: boolean) {
+        this.props.acceptDeal(deal, accept)
     }
     
     getBodyClassName() {
@@ -115,7 +116,6 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
             return "warning";
         }
     }
-
 
     getOptionsByTeam(): { value: string, text: string }[] {
         var options = [
@@ -134,7 +134,6 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
             })
         return options;
     }
-
 
     getParsedData(data: number[] | string[] | number) {
         var parsedData: any[] = [];
@@ -167,7 +166,6 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
         if (this.props.CurrentPlayer.DealsProposedBy.length) return 0;
         return this.props.CurrentPlayer.DealsProposedTo.length ? ((this.props.CurrentPlayer.DealsProposedTo[0] as IDeal).Value + 1) * 10 : 10
     }
-
 
     render() {
         if (!this.props.CurrentPlayer) return <div />
@@ -205,8 +203,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                                 this.props.PendingDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug
                                     ? null
                                     : [
-                                        <Button type="primary" size="large" onClick={e => { this.respondToDeal(this.props.PendingDealOffer, true) }}>Accept Deal</Button>,
-                                        <Button type="danger" size="large" onClick={e => { this.respondToDeal(this.props.PendingDealOffer, false) }}>Reject Deal</Button>
+                                        <Button type="primary" size="large" onClick={e => { this.acceptDeal(this.props.PendingDealOffer, true) }}>Accept Deal</Button>,
+                                        <Button type="danger" size="large" onClick={e => { this.rejectDeal(this.props.PendingDealOffer) }}>Reject Deal</Button>
                                     ]
                             }
                         >
@@ -277,8 +275,6 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                             {this.state && <Button style={{ marginTop: '10px' }} className="game-button block" onClick={e => this.prepDeal()} disabled={!this.state.ChosenCountry}>Propose Trade</Button>}
 
                         </Row> : null}
-
-
 
 
                         <Row>

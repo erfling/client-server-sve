@@ -50,7 +50,6 @@ export interface I_ACTION_TYPES{
 export class ACTION_TYPES implements I_ACTION_TYPES{
     [key:string]: ActionDescription;
 
-
     static GAME_SAVED: ActionDescription = {
         actionType: "GAME_SAVED", 
         payloadType: "Game"
@@ -177,17 +176,17 @@ export class ACTION_TYPES implements I_ACTION_TYPES{
     static DEAL_PROPOSED: ActionDescription = {
         actionType: "DEAL_PROPOSED",
         payloadType: "Deal"
-    }  
-
-    static DEAL_RESPONSE: ActionDescription = {
-        actionType: "DEAL_RESPONSE",
-        payloadType: "Deal"
-    }  
+    }
 
     static DEAL_REJECTED: ActionDescription = {
         actionType: "DEAL_REJECTED",
         payloadType: "Deal"
-    }  
+    }
+
+    static DEAL_RESPONSE: ActionDescription = {
+        actionType: "DEAL_RESPONSE",
+        payloadType: "Deal"
+    } 
  
     static DEAL_ACCEPTED: ActionDescription = {
         actionType: "DEAL_ACCEPTED",
@@ -263,7 +262,7 @@ export const createTeamSocket = (team:ITeam) => {
                 })
             })
             .on(SocketEvents.PROPOSE_DEAL, (deal:IDeal) => {
-                console.log("SOCKET RETURNED DEAL_PR   OPOSED:", deal);
+                console.log("SOCKET RETURNED DEAL_PROPOSED:", deal);
                 dispatch( {
                     type: ACTION_TYPES.DEAL_PROPOSED.actionType,
                     payload: deal
@@ -274,10 +273,10 @@ export const createTeamSocket = (team:ITeam) => {
                     payload: false
                 } )
             })
-            .on(SocketEvents.RESPOND_TO_DEAL || SocketEvents.FORWARD_DEAL, (deal: IDeal) => {
-                console.log("DEAL RESPONSE IS", deal)
+            .on(SocketEvents.REJECT_DEAL, (deal:IDeal) => {
+                console.log("SOCKET RETURNED DEAL_REJECTED:", deal);
                 dispatch( {
-                    type: ACTION_TYPES.DEAL_RESPONSE.actionType,
+                    type: ACTION_TYPES.DEAL_REJECTED.actionType,
                     payload: deal
                 } );
 
@@ -301,7 +300,6 @@ export const createTeamSocket = (team:ITeam) => {
                 dispatch( {
                     type: ACTION_TYPES.DEAL_ACCEPTED.actionType,
                     payload: deal
-
                 } );
 
                 dispatch( {
@@ -371,7 +369,6 @@ const isLoading: ActionCreator<Action<boolean>> = (type = ACTION_TYPES.IS_LOADIN
         payload
     }
 }
-
 
 export const fetchGames = () => {
     return (dispatch: Dispatch<GameAction<IGame> | Action<any>>) => {
@@ -631,7 +628,6 @@ export const selectTeam = (team:ITeam) => {
             payload: team
         })
     }
-
 }   
 
 export const selectRole = (role: string, teamSlug:string) => {
@@ -694,7 +690,7 @@ export const setGameState = (game:IGame, newState: number) => {
     }
 }
 
-export const proposeDeal = (deal: IDeal ) => {
+export const proposeDeal = (deal: IDeal) => {
     socket.emit(SocketEvents.PROPOSE_DEAL, deal);
     return (dispatch: Dispatch<Action<boolean>>) => {
         dispatch({
@@ -704,24 +700,22 @@ export const proposeDeal = (deal: IDeal ) => {
     }
 }
 
-export const acceptOrRejectDeal = (deal: IDeal, Accept: boolean) => {
-
-    let transmittedDeal = Object.assign(deal, {Accept});
-    console.log("About to transmit",transmittedDeal);
-
+export const rejectDeal = (deal: IDeal) => {
+    socket.emit(SocketEvents.REJECT_DEAL, deal);
     return (dispatch: Dispatch<Action<boolean>>) => {
-        socket.emit(SocketEvents.RESPOND_TO_DEAL, transmittedDeal);
         dispatch({
             type: ACTION_TYPES.IS_LOADING.actionType,
-            payload: false
+            payload: true
         })
     }
 }
 
-export const forwardDeal = (deal: IDeal) => {
-    console.log("about to tell server to forward", deal);
+export const acceptDeal = (deal: IDeal, Accept: boolean) => {
+    let transmittedDeal = Object.assign(deal, {Accept});
+    console.log("About to transmit",transmittedDeal);
+
     return (dispatch: Dispatch<Action<boolean>>) => {
-        socket.emit(SocketEvents.FORWARD_DEAL, deal);
+        socket.emit(SocketEvents.ACCEPT_DEAL, transmittedDeal);
         dispatch({
             type: ACTION_TYPES.IS_LOADING.actionType,
             payload: false
@@ -834,7 +828,6 @@ export const submitRoleRating = (roleName: string, teamSlug: string, rating: any
 export const getDaysAbove = (team:ITeam) => {
     return (dispatch: Dispatch<Action<any>>) => {
         const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
-
         const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
         const URL = protocol + "//" + window.location.hostname + port + "/sapien/api/getDaysAbove";
 
@@ -863,7 +856,6 @@ export const getDaysAbove = (team:ITeam) => {
 export const resetGame = (game:IGame) => {
     console.log(game);
     return (dispatch:Dispatch<Action<IGame>>) => {
-        
         const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
         const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
         const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/games/resetgame"

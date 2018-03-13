@@ -12,9 +12,9 @@ import ITradeOption from '../../../shared/models/ITradeOption';
 
 interface DispatchProps {
     getPlayer:() => {}
-    proposeDeal:(deal:{from:string, to: string, deal:string}) => {},
-    acceptOrRejectDeal: (deal: IDeal, accept: boolean) => {}
-    forwardDeal: (deal: IDeal) => {}
+    proposeDeal:(deal:{from:string, to: string, deal:string}) => {}
+    rejectDeal: (deal: IDeal) => {}
+    acceptDeal: (deal: IDeal, accept: boolean) => {}
     acknowledgeDealRejection: () => {}
 }
 export interface State2Props{
@@ -41,13 +41,10 @@ const mapStateToProps = (state: ApplicationStore, ownProps: {}): State2Props => 
 const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>, ownProps: any) => {
     return {
         getPlayer: () => dispatch( Actions.getPlayer() ),
-        proposeDeal: ( deal: IDeal ) => {
-            dispatch( Actions.proposeDeal(deal) )
-        },
-        acceptOrRejectDeal: (deal: IDeal, accept: boolean) => dispatch( Actions.acceptOrRejectDeal(deal, accept) ),
-        forwardDeal: (deal:IDeal) => dispatch( Actions.forwardDeal(deal) ),
+        proposeDeal: ( deal: IDeal ) => dispatch( Actions.proposeDeal(deal) ),
+        rejectDeal: ( deal: IDeal ) => dispatch( Actions.rejectDeal(deal) ),
+        acceptDeal: (deal: IDeal, accept: boolean) => dispatch( Actions.acceptDeal(deal, accept) ),
         acknowledgeDealRejection: () => dispatch( Actions.acknowledgeDealRejection() )
-
     }
 }
 
