@@ -399,13 +399,14 @@ export default class GoogleSheets
 
 
                     var rows = response.values.filter((r: any) => {
-                        return r[0] == fromNationName;
+                        return r[0].toUpperCase().indexOf(fromNationName.toUpperCase()) != -1
                     })
                     
+                    console.log(rows);
 
                     if(rows && rows[0]){
                         var column:string[] = rows[0].filter((row:string[], i: number) => {
-                            return response.values[0][i] && response.values[0][i] == toNationName
+                            return response.values[0][i] && response.values[0][i].toUpperCase().indexOf(toNationName.toUpperCase()) != -1
                         })
                         console.log(column);
                         if(column) return resolve(column[0]);

@@ -17,7 +17,7 @@ import { Row, Col } from 'antd/lib/grid';
 import './style/app.scss';
 const history  = createBrowserHistory();
 export const store = createStore(reducer, composeWithDevTools(
-  applyMiddleware(thunk),
+  applyMiddleware(thunk)
   // other store enhancers if any
 ));
 //const store = createStore(reducer, applyMiddleware(thunk));
