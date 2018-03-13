@@ -62,6 +62,7 @@ export default class AppServer
     //----------------------------------------------------------------------
 
     public static readonly PORT:number = 4000;
+    public static readonly STATIC_PORT:number = 443;
     public static readonly SECURE_PORT:number = 8443;
     public static readonly SOCKET_PORT:number = 5000;
     public static readonly SECURE_SOCKET_PORT:number = 9443;
@@ -935,7 +936,7 @@ export default class AppServer
         var port = AppServer.SOCKET_PORT;
         if (this.socketServer instanceof https.Server) {
             port = AppServer.SECURE_SOCKET_PORT;
-            this.io.origins('https://planetsapien.com | https://www.planetsapien.com');
+            this.io.origins('https://planetsapien.com:443 | https://www.planetsapien.com:443');
             
             console.log("ORIGINS HAVE BEEN SET");
         }
