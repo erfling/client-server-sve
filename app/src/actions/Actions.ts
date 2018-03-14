@@ -710,9 +710,9 @@ export const rejectDeal = (deal: IDeal) => {
     }
 }
 
-export const acceptDeal = (deal: IDeal, Accept: boolean) => {
+export const acceptDeal = (deal: IDeal, Accept: boolean = true) => {
     let transmittedDeal = Object.assign(deal, {Accept});
-    console.log("About to transmit",transmittedDeal);
+    console.log("About to transmit", transmittedDeal);
 
     return (dispatch: Dispatch<Action<boolean>>) => {
         socket.emit(SocketEvents.ACCEPT_DEAL, transmittedDeal);

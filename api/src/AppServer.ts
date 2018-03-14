@@ -148,9 +148,9 @@ export default class AppServer
             .on(SocketEvents.UPDATE_TEAM, this.onSocketSaveTeam.bind(this, socket))
             .on(SocketEvents.JOIN_ROOM, this.onSocketJoinRoom.bind(this, socket))
             .on(SocketEvents.TO_ROOM_MESSAGE, this.onSocketRoomToRoomMessage.bind(this, socket))
-            .on(SocketEvents.PROPOSE_DEAL, this.dealPropose.bind(this, socket, SocketEvents.PROPOSE_DEAL))
-            .on(SocketEvents.REJECT_DEAL, this.dealReject.bind(this, socket, SocketEvents.REJECT_DEAL))
-            .on(SocketEvents.ACCEPT_DEAL, this.handleDealAcceptance.bind(this, socket, SocketEvents.ACCEPT_DEAL))
+            .on(SocketEvents.PROPOSE_DEAL, this.dealPropose.bind(this, socket))
+            .on(SocketEvents.REJECT_DEAL, this.dealReject.bind(this, socket))
+            .on(SocketEvents.ACCEPT_DEAL, this.handleDealAcceptance.bind(this, socket))
             .on(SocketEvents.JOIN_ROLE, this.onSocketJoinRole.bind(this, socket))
             .on(SocketEvents.SUBMIT_ROLE_RATING, this.submitRatingByRole.bind(this, socket))
             
@@ -193,28 +193,32 @@ export default class AppServer
         });
     }
 
-    private async dealPropose(eventTarget:SocketIO.Socket, socketEvent:string, deal:IDeal):Promise<any> {
+    private async dealPropose(eventTarget:SocketIO.Socket, deal:IDeal):Promise<any> {
         const dealWithToFromTeams = await this.setDealToAndFromNations(eventTarget.nsp.name.slice(1), deal);
 
         console.log("ABOUT TO EMIT PROPOSED DEAL", dealWithToFromTeams);
         // notify teams about proposal (which has yet to be accepted or rejected)
-        eventTarget.nsp.to(dealWithToFromTeams.ToTeamSlug).emit(socketEvent, dealWithToFromTeams); // Send proposal or response to team it's asking
-        eventTarget.nsp.to(dealWithToFromTeams.FromTeamSlug).emit(socketEvent, dealWithToFromTeams); // Send message back to sender's room to varify dealExchange was sent
+        eventTarget.nsp.to(dealWithToFromTeams.ToTeamSlug).emit(SocketEvents.PROPOSE_DEAL, dealWithToFromTeams); // Send proposal or response to team it's asking
+        eventTarget.nsp.to(dealWithToFromTeams.FromTeamSlug).emit(SocketEvents.PROPOSE_DEAL, dealWithToFromTeams); // Send message back to sender's room to varify dealExchange was sent
     }
 
-    private async dealReject(eventTarget:SocketIO.Socket, socketEvent:string, deal:IDeal, cuz:boolean = false):Promise<any> {
-        console.log("FART:", deal);
-        if(!cuz || !deal.ToTeamSlug){
-            var deal = await this.setDealToAndFromNations(eventTarget.nsp.name.slice(1), deal);
+    private async dealReject(eventTarget:SocketIO.Socket, deal:IDeal, cuz:boolean = false):Promise<any> {
+        if (!cuz || !deal.ToTeamSlug) {
+            deal = await this.setDealToAndFromNations(eventTarget.nsp.name.slice(1), deal);
         }
 
         console.log("ABOUT TO EMIT REJECTED DEAL", deal);
         // notify teams about proposal (which has yet to be accepted or rejected)
-        eventTarget.nsp.to(deal.ToTeamSlug).emit(socketEvent, deal); // Send proposal or response to team it's asking
-        eventTarget.nsp.to(deal.FromTeamSlug).emit(socketEvent, deal); // Send message back to sender's room to varify dealExchange was sent
+        eventTarget.nsp.to(deal.ToTeamSlug).emit(SocketEvents.DEAL_REJECTED, deal); // Send proposal or response to team it's asking
+        eventTarget.nsp.to(deal.FromTeamSlug).emit(SocketEvents.DEAL_REJECTED, deal); // Send message back to sender's room to varify dealExchange was sent
     }
 
-    private async handleDealAcceptance(eventTarget:SocketIO.Socket, socketEvent:string, deal:IDeal):Promise<any> {
+    /**
+     * Handles requests from team to country to accept a trade deal or potentially have the SVI reject it
+     * @param eventTarget The socket instance listening for the event
+     * @param deal The deal Object
+     */
+    private async handleDealAcceptance(eventTarget:SocketIO.Socket, deal:IDeal):Promise<any> {
         const dealWithToFromTeams = await this.setDealToAndFromNations(eventTarget.nsp.name.slice(1), deal);
 
         var rejectedCuzMoney = false;
@@ -273,168 +277,8 @@ export default class AppServer
             deal.Accept = false;
             if (rejectedCuzMoney) deal.Message += "\n At this time, the offer is insufficient.";
             
-            //this.dealReject(eventTarget, SocketEvents.REJECT_DEAL, deal, rejectedCuzMoney);
-            eventTarget.nsp.to(deal.ToTeamSlug).emit(SocketEvents.DEAL_REJECTED, deal); // Send proposal or response to team it's asking
-            eventTarget.nsp.to(deal.FromTeamSlug).emit(SocketEvents.DEAL_REJECTED, deal); // Send message back to sender's room to varify dealExchange was sent
+            this.dealReject(eventTarget, deal, rejectedCuzMoney);
         }
-    }
-
-    /**
-     * Handles requests from team to country to propose or respond to a trade deal
-     * @param eventTarget The socket instance listening for the event
-     * @param socketEvent The event type
-     * @param deal The deal Object
-     */
-    private async dealExchange(eventTarget:SocketIO.Socket, socketEvent:string, deal:IDeal):Promise<any> {
-        console.log("DEAL", deal);
-        var dealPromise;
-        const teamPopulateRules =  [
-            {
-                path: "Nation"
-            },
-            {
-                path:"DealsProposedTo",
-                populate: {
-                    path:"TradeOption"
-                }
-            },
-            {
-                path:"DealsProposedBy",
-                populate: {
-                    path:"TradeOption"
-                }                            
-            }
-        ];
-
-        if (deal._id) {
-            dealPromise = DealModel.findByIdAndUpdate(deal._id, deal, {new: true}).then(d => d)
-        } else {
-            dealPromise = DealModel.create(deal).then(newDeal => DealModel.findById(newDeal._id));
-        }
-        console.log(eventTarget.nsp.name);
-        var gamePromise = GameModel.findById(eventTarget.nsp.name.slice(1)).populate(
-                {path:'Teams',
-                    populate:[
-                        {path:'Nation'},
-                        {path:"DealsProposedBy"},
-                        {path:"DealsProposedTo"}
-                    ]
-                }
-        )
-
-        return Promise.all([gamePromise, dealPromise])
-        .then(async (gameAndDeal) => {
-            let g = gameAndDeal[0];
-            let deal = gameAndDeal[1];
-            let teams:ITeam[] = (<IGame>g).Teams as ITeam[]; 
-
-            console.log("...Trying to match to team with nation " + deal.ToNationName);
-            var toTeam:ITeam = teams.filter(t => {
-                return (<INation>t.Nation).Name == deal.ToNationName}
-            )[0];
-            var fromTeam:ITeam = teams.filter(t => {
-                return (<INation>t.Nation).Name == deal.FromNationName}
-            )[0];
-
-            //catch accepted deals and verify whether they are allowed
-            if (deal.Message.startsWith("#")){
-                var dealAmount = parseInt( deal.Message.charAt(1) )
-                if ( isNaN(  dealAmount  ) || !deal.Value || ( dealAmount != deal.Value) ){
-                     console.log("DEAL WILL BE REJECTED BECAUSE AMOUNT IS", dealAmount, " AND IT SHOULD BE", deal.Value)
-                     deal.CanAccept = false;
-                } else {
-                    deal.Value = dealAmount;
-                    deal.CanAccept = true;
-                }
-            } else if (deal.Accept) {
-                deal.Accept = deal.CanAccept = false;
-            }
-            if (toTeam && fromTeam) {
-                deal.ToTeamSlug = toTeam.Slug;
-                async function saveTeamDeal(isAccepted:boolean, isTo:boolean = true, CanAccept: boolean = null, newMessage: string = null) {
-                    const newDeal = await DealModel.findOneAndUpdate({_id: deal._id}, {
-                        Message: newMessage ? newMessage: deal.Message,
-                        CanAccept: CanAccept != undefined ? CanAccept : deal.CanAccept
-                    }, {new: true})
-
-                    let dealsProposedToOrBy = isTo ? toTeam.DealsProposedTo : fromTeam.DealsProposedBy;
-                    let dealsProposed = (dealsProposedToOrBy as IDeal[] || [])
-                        .filter(d => !deal._id.equals(d._id)); // document._id.equals is a mongoose method to compare a document's _id against a string, since doc's _id isn't technically a string and == won't cut it.
-                    
-                    if (isAccepted) dealsProposed = dealsProposed.concat(newDeal);
-
-                    dealsProposed = dealsProposed.map(d => Object.assign(d));
-                    console.log(isTo ? "TO DEALS:" : "FROM DEALS:", dealsProposed);
-
-                    let dealsProposedUpdate = isTo ? {DealsProposedTo: dealsProposed} : {DealsProposedBy: dealsProposed};
-                    TeamModel.findByIdAndUpdate(isTo ? toTeam._id : fromTeam._id, dealsProposedUpdate, {new: true}).populate(
-                        [
-                            {path:"DealsProposedTo"},
-                            {path:"DealsProposedBy"}
-                        ]
-                    ).then((newTeam) => {
-                        eventTarget.nsp.to(isTo ? newDeal.ToTeamSlug : newDeal.FromTeamSlug).emit(SocketEvents.DEAL_ACCEPTED, newDeal); // Send proposal or response to team it's asking
-                        setTimeout(() => {
-                            eventTarget.nsp.to(isTo ? newDeal.ToTeamSlug : newDeal.FromTeamSlug).emit(socketEvent, newTeam); // Send proposal or response to team it's asking
-                        },300)
-                    }).catch(e => {throw(e)})
-
-                    if (isTo) saveTeamDeal(isAccepted, false); // Run again to save fromTeam
-                    
-                }
-
-                if (deal.Accept === true) {
-                    const acceptanceReason = await this.sheets.getRejectionOrAcceptanceReason(deal.FromNationName, deal.ToNationName);
-                    if (acceptanceReason) deal.Message = acceptanceReason;
-                    //set deal message to corresponding sheet value
-                    //deal = await DealModel.findByIdAndUpdate(deal._id, {CanAccept: false, Accept: true, Message: acceptanceReason}, {new: true});
-                    console.log("ABOUT TO EMIT AC DEAL: ", deal);
-
-                    saveTeamDeal(deal.Accept, true, true, acceptanceReason); // save both toTeam and fromTeam
-                    // potentially remove deal, if it was previously accepted
-                    //update the SpreadSheet
-                    const game = await GameModel.findById(g._id).populate(
-                        [
-                            {
-                                path: "Teams",
-                                populate: teamPopulateRules
-                            }
-                        ]
-                    )
-                    if (game) {
-                        const sheets = new GoogleSheets();
-                        const sheetsResponse = await sheets.submitTradeDealValues(game.Teams as ITeam[], deal)
-                        console.log(sheetsResponse);
-
-                        //emit the values to all the teams
-                        setTimeout(() => {
-                            sheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
-                                eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, r);
-                            })
-                        }, 10)
-                        
-                    }
-                } else if (deal.Accept === false){
-                    if (deal.CanAccept == false){
-                        //set deal message to corresponding sheet value
-                        const rejectionReason = await this.sheets.getRejectionOrAcceptanceReason(deal.FromNationName, deal.ToNationName);
-                        if (rejectionReason) deal.Message = rejectionReason;
-                        const rejectedDeal = await DealModel.findByIdAndUpdate(deal._id, {CanAccept: false, Message: rejectionReason}, {new: true});
-
-                        console.log("ABOUT TO EMIT REJECTED DEAL: ", rejectedDeal);
-
-                        eventTarget.nsp.to(deal.ToTeamSlug).emit(SocketEvents.DEAL_REJECTED, rejectedDeal); // Send proposal or response to team it's asking
-                        eventTarget.nsp.to(deal.FromTeamSlug).emit(SocketEvents.DEAL_REJECTED, rejectedDeal); // Send message back to sender's room to varify dealExchange was sent
-                    } else {
-                        eventTarget.nsp.to(deal.ToTeamSlug).emit(SocketEvents.DEAL_REJECTED, deal); // Send proposal or response to team it's asking
-                        eventTarget.nsp.to(deal.FromTeamSlug).emit(SocketEvents.DEAL_REJECTED, deal); // Send message back to sender's room to varify dealExchange was sent
-                    } 
-                }                
-            } else {
-                console.log("OOPS: No team found with nation " + (<TradeOption>deal.TradeOption).ToNationId);
-            }
-
-        });
     }
 
     private async onSocketJoinRoom(eventTarget:SocketIO.Socket, roomName:string):Promise<any> {

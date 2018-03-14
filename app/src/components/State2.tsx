@@ -35,7 +35,7 @@ interface State2Props {
     getPlayer: () => {}
     proposeDeal: (deal: IDeal) => {}
     rejectDeal: (deal: IDeal) => {}
-    acceptDeal: (deal: IDeal, accept: boolean) => {}
+    acceptDeal: (deal: IDeal) => {}
     acknowledgeDealRejection: () => {}
     match: any;
     Dashboard: any;
@@ -101,8 +101,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
         this.props.rejectDeal(deal)
     }
 
-    acceptDeal(deal: IDeal, accept: boolean) {
-        this.props.acceptDeal(deal, accept)
+    acceptDeal(deal: IDeal) {
+        this.props.acceptDeal(deal)
     }
     
     getBodyClassName() {
@@ -203,7 +203,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                                 this.props.PendingDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug
                                     ? null
                                     : [
-                                        <Button type="primary" size="large" onClick={e => { this.acceptDeal(this.props.PendingDealOffer, true) }}>Accept Deal</Button>,
+                                        <Button type="primary" size="large" onClick={e => { this.acceptDeal(this.props.PendingDealOffer) }}>Accept Deal</Button>,
                                         <Button type="danger" size="large" onClick={e => { this.rejectDeal(this.props.PendingDealOffer) }}>Reject Deal</Button>
                                     ]
                             }
