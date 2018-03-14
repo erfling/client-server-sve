@@ -185,7 +185,7 @@ export class ACTION_TYPES implements I_ACTION_TYPES{
 
     static DEAL_RESPONSE: ActionDescription = {
         actionType: "DEAL_RESPONSE",
-        payloadType: "Deal"
+        payloadType: "Team"
     } 
  
     static DEAL_ACCEPTED: ActionDescription = {
@@ -300,6 +300,18 @@ export const createTeamSocket = (team:ITeam) => {
             .on(SocketEvents.DEAL_ACCEPTED, (deal: IDeal) => {
                 dispatch( {
                     type: ACTION_TYPES.DEAL_ACCEPTED.actionType,
+                    payload: deal
+                } );
+
+                dispatch( {
+                    type: ACTION_TYPES.IS_LOADING.actionType,
+                    payload: false
+                } )
+            })
+            .on(SocketEvents.RESPOND_TO_DEAL, (deal: IDeal) => {
+                console.log("DEAL RESPONSE IS", deal)
+                dispatch( {
+                    type: ACTION_TYPES.DEAL_RESPONSE.actionType,
                     payload: deal
                 } );
 
