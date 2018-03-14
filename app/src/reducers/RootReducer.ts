@@ -48,7 +48,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
 
     var validAction = true;
     //verify we won't push any empty objects into the redux store, or, more importantly, localStorage
-    if(( ACTION_TYPES as any )[action.type]){
+    if(( ACTION_TYPES as any )[action.type] && ( ACTION_TYPES as any )[action.type].payloadType){
         if(action.payload && typeof action.payload == "object" && !Object.keys(action.payload).length){
             validAction = false;
         }
@@ -156,15 +156,15 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             return Object.assign({}, state, {SelectedTeam: team || null})
         case(ACTION_TYPES.CURRENT_PLAYER_SET.actionType):
             let players: IPlayer[] = state.SelectedTeam.Players as IPlayer[];
-            var newState = Object.assign({},state);
-            newState.SelectedTeam.Players = players.map(p => Object.assign({}, p, {IsSelected: p._id == action.payload}))
+            var newState:any = Object.assign({},state);
+            newState.SelectedTeam.Players = players.map(p => Object.assign({}, p, {IsSelected: p._id == action.payload}));
             return newState;
         case(ACTION_TYPES.EDIT_GAME.actionType):
-            var newState = Object.assign({},state);
+            var newState:any = Object.assign({},state);
             newState.Game = state.Game.map(g => Object.assign({}, g, {IsSelected: g._id == action.payload}))
             return newState;
         case(ACTION_TYPES.CANCEL_EDIT_GAME.actionType):
-            var newState = Object.assign({},state);
+            var newState:any = Object.assign({},state);
             newState.Game = state.Game.filter(g => g._id).map(g => Object.assign({}, g, {IsSelected:false}))
             return newState;
         case(ACTION_TYPES.DASHBOARD_UPDATED.actionType):
@@ -180,7 +180,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             return ns;
             //, Game: state.Game.map(g => g._id == action.payload._id ? Object.assign(action.payload, {IsSelected: true}) :  g)}
         case (ACTION_TYPES.REST_SAVE_SUCCESS.actionType):
-            var newState = Object.assign({} ,state);
+            var newState:any = Object.assign({} ,state);
             var objects = newState[action.payload.CLASS_NAME];
             var found = false;
             newState[action.payload.CLASS_NAME] = objects.filter((o:IBaseClass) => o._id).map((o:IBaseClass) => {
@@ -197,7 +197,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             return newState;
 
         case (ACTION_TYPES.GOT_OBJECT_BY_SLUG.actionType):
-            var newState = Object.assign({} ,state);
+            var newState:any = Object.assign({} ,state);
             var objects = newState[action.payload.CLASS_NAME] || [action.payload];
             console.log("OBJECTS",objects, action)
             var found = false;
@@ -218,7 +218,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             return newState;
         
         case (ACTION_TYPES.ADD_CLIENT_OBJECT.actionType):
-            var newState = Object.assign({} ,state);
+            var newState:any = Object.assign({} ,state);
             var objects = newState[action.payload.CLASS_NAME];
             newState[action.payload.CLASS_NAME] = [action.payload, ...objects];
             return newState;

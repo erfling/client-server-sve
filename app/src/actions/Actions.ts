@@ -206,8 +206,8 @@ export class ACTION_TYPES implements I_ACTION_TYPES{
     }
     
     static GOT_CONTENT: ActionDescription = {
-        actionType: "RATINGS_SUBMITTED",
-        payloadType: "any"
+        actionType: "GOT_CONTENT",
+        payloadType: "array"
     }
 
     static SOCKET_CONNECTED: ActionDescription = {
@@ -820,10 +820,8 @@ export const getContent = (team: ITeam) => {
             return res.json()//.then(r => r);
         })
         .then( (content: any) => {
-            setTimeout(() => {
-                dispatch({type:ACTION_TYPES.SUBMITTING.actionType, payload: false})
-                dispatch({type:ACTION_TYPES.GOT_CONTENT.actionType, payload: content})
-            }, 200);          
+            dispatch({type:ACTION_TYPES.SUBMITTING.actionType, payload: false})
+            dispatch({type:ACTION_TYPES.GOT_CONTENT.actionType, payload: content})
         })
         .catch(reason => {console.log(reason), alert("SAVE FAILED")})
     }
