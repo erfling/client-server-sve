@@ -157,11 +157,8 @@ export default class AppServer
     }
 
     private async setDealToAndFromNations(gameID:string, deal:IDeal):Promise<IDeal> {
-        var dealPromise;
-        if (deal._id) dealPromise = DealModel.findByIdAndUpdate(deal._id, deal, {new: true}).then(d => d)
-        else dealPromise = DealModel.create(deal).then(newDeal => DealModel.findById(newDeal._id));
         
-        var gamePromise = GameModel.findById(gameID).populate(
+        var gamePromise = await GameModel.findById(gameID).populate(
                 {path:'Teams',
                     populate:[
                         {path:'Nation'},
@@ -171,26 +168,24 @@ export default class AppServer
                 }
         )
 
-        return Promise.all([dealPromise, gamePromise]).then(async (dealAndGame) => {
-            let deal = dealAndGame[0] as IDeal;
-            let teams = (dealAndGame[1] as IGame).Teams as ITeam[];
+        let teams = gamePromise.Teams as ITeam[];
 
-            console.log("...Trying to match to team with nation " + deal.ToNationName);
-            var toTeam:ITeam = teams.filter(t => {
-                return (<INation>t.Nation).Name == deal.ToNationName}
-            )[0];
-            var fromTeam:ITeam = teams.filter(t => {
-                return (<INation>t.Nation).Name == deal.FromNationName}
-            )[0];
-            if (toTeam && fromTeam) {
-                deal.ToTeamSlug = toTeam.Slug;
-                deal.FromTeamSlug = fromTeam.Slug;
-            } else {
-                console.log("Failed to match team with nation:", deal);
-            }
+        console.log("...Trying to match to team with nation " + deal.ToNationName);
+        var toTeam:ITeam = teams.filter(t => {
+            return (<INation>t.Nation).Name == deal.ToNationName}
+        )[0];
+        var fromTeam:ITeam = teams.filter(t => {
+            return (<INation>t.Nation).Name == deal.FromNationName}
+        )[0];
+        if (toTeam && fromTeam) {
+            deal.ToTeamSlug = toTeam.Slug;
+            deal.FromTeamSlug = fromTeam.Slug;
+        } else {
+            console.log("Failed to match team with nation:", deal);
+        }
 
-            return deal;
-        });
+        return deal;
+
     }
 
     private async dealPropose(eventTarget:SocketIO.Socket, deal:IDeal):Promise<any> {
@@ -221,6 +216,8 @@ export default class AppServer
     private async handleDealAcceptance(eventTarget:SocketIO.Socket, deal:IDeal):Promise<any> {
         const dealWithToFromTeams = await this.setDealToAndFromNations(eventTarget.nsp.name.slice(1), deal);
 
+        console.log(deal);
+
         var rejectedCuzMoney = false;
         if (deal.Message.startsWith("#")){
             var dealAmount = parseInt( deal.Message.charAt(1) )
@@ -229,7 +226,6 @@ export default class AppServer
                  deal.CanAccept = false;
                  rejectedCuzMoney = true;
             } else {
-                deal.Value = dealAmount;
                 deal.CanAccept = true;
             }
         } else if (deal.Accept) {
@@ -259,8 +255,10 @@ export default class AppServer
                     }                            
                 }
             ];
-            //save the deal
+                
             const nudeEel = await DealModel.create(deal);
+        
+
             //add it to the appropriate collections for the teams
             var toTeam   = await TeamModel.findOne({Slug: deal.ToTeamSlug}).populate(teamPopulateRules);
             var fromTeam = await TeamModel.findOne({Slug: deal.FromTeamSlug}).populate(teamPopulateRules);
@@ -275,7 +273,13 @@ export default class AppServer
             eventTarget.nsp.to(deal.FromTeamSlug).emit(SocketEvents.DEAL_ACCEPTED, nudeEel); // Send message back to sender's room to varify dealExchange was sent
         } else {
             deal.Accept = false;
-            if (rejectedCuzMoney) deal.Message += "\n At this time, the offer is insufficient.";
+            if (rejectedCuzMoney) {
+                console.log("REJECTED BECAUSE OF MONEY")
+                deal.Message += "\n At this time, the offer is insufficient.";
+            } else {
+                console.log("REJECTED, BUT NOT BECAUSE OF MONEY")
+
+            }
             
             this.dealReject(eventTarget, deal, rejectedCuzMoney);
         }
