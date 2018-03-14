@@ -274,7 +274,6 @@ export const createTeamSocket = (team:ITeam) => {
                 } )
             })
             .on(SocketEvents.REJECT_DEAL, (deal:IDeal) => {
-                console.log("SOCKET RETURNED DEAL_REJECTED:", deal);
                 dispatch( {
                     type: ACTION_TYPES.DEAL_REJECTED.actionType,
                     payload: deal
@@ -286,6 +285,8 @@ export const createTeamSocket = (team:ITeam) => {
                 } )
             })
             .on(SocketEvents.DEAL_REJECTED, (deal:IDeal) => {
+                console.log("SOCKET RETURNED DEAL_REJECTED:", deal);
+
                 dispatch( {
                     type: ACTION_TYPES.DEAL_REJECTED.actionType,
                     payload: deal

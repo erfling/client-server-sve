@@ -86,13 +86,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
             Message: chosenOption
         }
 
-        //India's winning move is to give itself 60 billion.
-        if (deal.FromNationName != "India" && deal.ToNationName != "India") {
-            deal.Value = deal.Message.startsWith("#") && !isNaN(parseInt(deal.Message.substr(1))) ? parseInt(deal.Message.substr(1)) : null
-        } else {
-            //India can accept it's own deal if it has 5 offers. The server will reject if this is less than 5, returning an appropriate event
-            deal.Value = this.getTradeBank() / 10;
-        }
+        deal.Value = this.getTradeBank() / 10;
+        
         console.log("WHAT'S THE DEAL?", deal)
         this.props.proposeDeal(deal);
     }
@@ -150,7 +145,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
     }
 
     parseMessage(message: string) {
-        return message.startsWith("#") ? message.substring(3) : message;
+        return message.startsWith("#") ? message.substring(3).split("\n").map(s => <p>{s}</p>) : message.split("\n").map(s => <p>{s}</p>);
     }
 
     getTradeOptionContent() {
@@ -208,7 +203,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                                     ]
                             }
                         >
-                            <p>{this.parseMessage(this.props.PendingDealOffer.Message)}</p>
+                            {this.parseMessage(this.props.PendingDealOffer.Message)}
                         </Modal> : null
 
 
@@ -226,7 +221,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                             width="80%"
                             footer={<Button type="primary" size="large" onClick={e => this.props.acknowledgeDealRejection()}>OK</Button>}
                         >
-                            {this.props.RejectedDealOffer.CanAccept == false && <p>{this.parseMessage(this.props.RejectedDealOffer.Message)}</p>}
+                            {this.props.RejectedDealOffer.CanAccept == false && this.parseMessage(this.props.RejectedDealOffer.Message)}
                         </Modal> : null
 
                     }
@@ -243,7 +238,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                             width="80%"
                             footer={<Button type="primary" size="large" onClick={e => this.props.acknowledgeDealRejection()}>OK</Button>}
                         >
-                            <p>{this.parseMessage(this.props.AcceptedDealOffer.Message)}</p>
+                            {this.parseMessage(this.props.AcceptedDealOffer.Message)}
                         </Modal> : null
 
                     }
