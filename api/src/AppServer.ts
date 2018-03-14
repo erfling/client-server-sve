@@ -216,7 +216,7 @@ export default class AppServer
     private async handleDealAcceptance(eventTarget:SocketIO.Socket, deal:IDeal):Promise<any> {
         const dealWithToFromTeams = await this.setDealToAndFromNations(eventTarget.nsp.name.slice(1), deal);
 
-        console.log(deal);
+        console.log("DEAL for acceptance:", deal);
 
         var rejectedCuzMoney = false;
         if (deal.Message.startsWith("#")){
@@ -275,7 +275,7 @@ export default class AppServer
             deal.Accept = false;
             if (rejectedCuzMoney) {
                 console.log("REJECTED BECAUSE OF MONEY")
-                deal.Message += "\n At this time, the offer is insufficient.";
+                deal.Message += "\n At this time, however,the offer is insufficient.";
             } else {
                 console.log("REJECTED, BUT NOT BECAUSE OF MONEY")
 
