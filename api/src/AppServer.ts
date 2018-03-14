@@ -271,6 +271,20 @@ export default class AppServer
 
             eventTarget.nsp.to(deal.ToTeamSlug).emit(SocketEvents.DEAL_ACCEPTED, nudeEel); // Send proposal or response to team it's asking
             eventTarget.nsp.to(deal.FromTeamSlug).emit(SocketEvents.DEAL_ACCEPTED, nudeEel); // Send message back to sender's room to varify dealExchange was sent
+            eventTarget.nsp.to(deal.ToTeamSlug).emit(SocketEvents.RESPOND_TO_DEAL, toTeam); // Send proposal or response to team it's asking
+            eventTarget.nsp.to(deal.FromTeamSlug).emit(SocketEvents.RESPOND_TO_DEAL, fromTeam); // Send proposal or response to team it's asking
+
+            //emit the values to all the teams
+            const sheets = new GoogleSheets();
+            const game = await GameModel.findById(toTeam.GameId).populate({ path:"Teams", populate:teamPopulateRules });
+            const sheetsResponse = await sheets.submitTradeDealValues(game.Teams as ITeam[], deal)
+            console.log(sheetsResponse);
+
+            setTimeout(() => {
+                sheets.GetSheetValues(toTeam.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
+                    eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, r);
+                })
+            },10)
         } else {
             deal.Accept = false;
             if (rejectedCuzMoney) {
