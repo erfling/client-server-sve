@@ -329,6 +329,7 @@ export const createTeamSocket = (team:ITeam) => {
                 dispatch({type:ACTION_TYPES.ROUND_2_WON.actionType});
             })
             .on(SocketEvents.JOIN_ROLE, (role:IRole) => {
+                role.CLASS_NAME = "Role";
                 dispatch( {
                     type: ACTION_TYPES.ROLE_SELECTED.actionType,
                     payload: role
