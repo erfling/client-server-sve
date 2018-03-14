@@ -8,6 +8,10 @@ import { RoleRatingCategories } from "../../../shared/models/RoleRatingCategorie
 
 export class Role extends BaseClass implements IRole
 {
+
+    @prop({default: "Role"})
+    CLASS_NAME: string;
+
     @prop({enum:RoleName})
     Name:RoleName;
 
