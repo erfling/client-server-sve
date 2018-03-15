@@ -73,7 +73,7 @@ export class ACTION_TYPES implements I_ACTION_TYPES{
 
     static ROLE_SELECTED: ActionDescription = {
         actionType: "ROLE_SELECTED",
-        payloadType: "Role"
+        payloadType: "any"
     }
 
     static CURRENT_PLAYER_SET: ActionDescription = {
