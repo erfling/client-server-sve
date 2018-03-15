@@ -196,7 +196,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                             width="95%"
                             footer={
                                 this.props.PendingDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug
-                                    ? null
+                                    ? [<Button type="danger" size="large" onClick={e => { this.rejectDeal(this.props.PendingDealOffer) }}>Rescind Deal</Button>]
                                     : [
                                         <Button type="primary" size="large" onClick={e => { this.acceptDeal(this.props.PendingDealOffer) }}>Accept Deal</Button>,
                                         <Button type="danger" size="large" onClick={e => { this.rejectDeal(this.props.PendingDealOffer) }}>Reject Deal</Button>
