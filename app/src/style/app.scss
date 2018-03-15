@@ -566,7 +566,7 @@ textarea.ant-input{
         pointer-events: none;
     }
 }
-.ant-btn{
+.ant-btn:not(.small-button){
     font-size: 45px;
     padding: 0 20px 72px;
 }

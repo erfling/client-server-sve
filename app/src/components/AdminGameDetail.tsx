@@ -76,12 +76,16 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
                                 <div>
                                     <em style={{marginRight:'10px'}}>Set Game State:</em>
                                     {this.states.map(state => <Button
+                                                                className="small-button"
                                                                 type={this.stateIsSelected(state) ? 'primary' : 'dashed'}
                                                                 onClick={e => this.props.setGameState(this.props.Game, state)}
                                                                 shape={state.length < 3 ? 'circle' : null}>{state}
                                                              </Button>
                                                 )}
-                                    <Button type="danger" onClick={e => this.requestConfirmReset()}>
+                                    <Button 
+                                        className="small-button"
+                                        type="danger" 
+                                        onClick={e => this.requestConfirmReset()}>
                                         Reset <Icon type="poweroff" />
                                     </Button>
                                 </div>
