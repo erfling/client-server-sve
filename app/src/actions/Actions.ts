@@ -147,6 +147,11 @@ export class ACTION_TYPES implements I_ACTION_TYPES{
         payloadType: "Team",
     }
 
+    static ADMIN_MEESAGE_SENT: ActionDescription = {
+        actionType: "ADMIN_MEESAGE_SENT",
+        payloadType: "any",
+    }
+
     static GOT_TEAMS: ActionDescription = {
         actionType: "GOT_TEAMS",
         payloadType: "Team",
@@ -239,9 +244,12 @@ export const createTeamSocket = (team:ITeam) => {
         socket.on(SocketEvents.ROOM_MESSAGE, (roomName:string, msg: string) => {
             console.log("SOCKET RETURNED ROOM " + roomName + "MESSAGE", msg);
         })
-        socket.on(SocketEvents.CONNECT, (data: any) => {
+        .on(SocketEvents.CONNECT, (data: any) => {
             console.log("SOCKET ON CONNECT THAT RETURNED:", socket);
             socket.emit(SocketEvents.JOIN_ROOM, team.Slug);
+        })
+        .on(SocketEvents.ADMIN_MEESAGE, (msg: string) => {
+            console.log("SOCKET RETURNED NAMESPACE MESSAGE:", msg);
         })
         
         return (dispatch: Dispatch<Action<ITeam>>) => {
@@ -628,6 +636,34 @@ export const login = (team: ITeam) => {
                
                 dispatch(createTeamSocket(team));
 
+            })
+            .catch( ( reason ) => { 
+                console.log(reason);
+            })
+    }
+}
+
+export const sendMessageFromAdmin = (gameId:string, message:string) => {
+    return (dispatch: Dispatch<Action<any>>) => {
+        const url = baseRestURL + 'adminmessage';
+        return fetch(
+                url, 
+                {
+                    method: "POST",
+                    body: JSON.stringify({GameId:gameId, Message:message}),
+                    headers: new Headers({
+                        'Content-Type': 'application/json'
+                    })
+                }
+            )
+            .then(( res:Response ) => {
+                return res.json()
+            })
+            .then( (jwt:any ) => {
+                dispatch( {
+                    type: ACTION_TYPES.ADMIN_MEESAGE_SENT.actionType,
+                    payload: jwt
+                } );
             })
             .catch( ( reason ) => { 
                 console.log(reason);

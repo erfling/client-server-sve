@@ -720,7 +720,7 @@ export default class AppServer
                         //emit the values to all the teams
                         console.log("LOOKING UP", game.SheetId)
                         this.sheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
-                            console.log("trying to emit to ", game._id)
+                            console.log("trying to emit to ", game._id);
                             this.io.of(game._id).emit(SocketEvents.DASHBOARD_UPDATED, r);
                         })
 
@@ -731,6 +731,21 @@ export default class AppServer
                 }
             } catch {
                 res.json("LOGIN FAILED")
+            }
+        });
+
+        this.app.post('/sapien/api/adminmessage', async (req, res) => {
+            try {
+                let gameSocketNameSpace = this.io.of(req.body.GameId);
+                if (gameSocketNameSpace) {
+                    console.log("trying to emit ADMIN_MESSAGE to ", req.body.GameId);
+                    gameSocketNameSpace.emit(SocketEvents.ADMIN_MEESAGE, req.body.Message);
+
+                    let token = jwt.sign({gameId: req.body.GameId}, 'shhhhh');
+                    res.json({token});
+                }
+            } catch {
+                res.json("ADMIN MESSAGE FAILED");
             }
         });
     }

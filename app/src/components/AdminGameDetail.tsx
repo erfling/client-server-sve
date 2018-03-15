@@ -10,7 +10,7 @@ import AdminGameForm from "../components/form-elements/AdminGameForm";
 const { Header, Footer, Sider, Content } = Layout;
 import Collapse  from "antd/lib/collapse"
 import Menu from "antd/lib/menu"
-import { Button } from "antd/";
+import { Button, Input } from "antd/";
 import { Link } from "react-router-dom";
 
 const Panel = Collapse.Panel;
@@ -27,18 +27,19 @@ interface AdminGameDetailProps{
     resetGame: (game: IGame) => {}
     setGameState : (game:IGame, newState: number | string) => {}
     match:any;
+    sendMessageFromAdmin : (gameId:string, message:string) => {}
 }
 
 // 'HelloProps' describes the shape of props.
 // State is never set so we use the '{}' type.
-export default class AdminGameDetail extends React.Component<AdminGameDetailProps, {addingGame:boolean}> {
+export default class AdminGameDetail extends React.Component<AdminGameDetailProps, {addingGame:boolean, adminMessage:string}> {
 
     componentDidMount() {
-        console.log("ADMIN GAME DETAIL PROPS", this.props)
+        console.log("ADMIN GAME DETAIL PROPS", this.props);
     }
     componentWillMount(){
+        this.setState({ addingGame: false, adminMessage: null })
         this.props.selectGame(this.props.match.params.id);
-
     }
 
     componentDidUpdate(newState:any, oldState:any){
@@ -88,6 +89,19 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
                                         onClick={e => this.requestConfirmReset()}>
                                         Reset <Icon type="poweroff" />
                                     </Button>
+
+                                    <br/>
+                                    <div>
+                                        <Input 
+                                            defaultValue="Message to all players..."
+                                            onChange={e => this.setState(Object.assign(this.state, {adminMessage:e.target.value}))}
+                                        />
+                                        <Button 
+                                            className="small-button"
+                                            onClick={e => this.props.sendMessageFromAdmin(this.props.Game._id, this.state.adminMessage)}>
+                                            Send
+                                        </Button>
+                                    </div>
                                 </div>
                             }
                         >
