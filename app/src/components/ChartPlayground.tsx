@@ -40,7 +40,7 @@ export default class ChartPlayground extends React.Component<ChartPlaygroundProp
                                 AtmosphereImpact: 1, 
                                 HoveredCell: false
                             }
-        this.setState(Object.assign({}, initialState))
+        //this.setState(Object.assign({}, initialState))
     }
 
     componentDidUpdate(){

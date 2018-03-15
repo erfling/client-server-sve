@@ -320,7 +320,8 @@ h4{font-size: 160%}
     z-index: 9999;
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.9);
     text-align: center;
-    color: #7d7d7d;
+    color: #505050;
+    padding-top: 8px;
     >div >span{
         margin-left:3px;
         margin-right:20px;
@@ -503,10 +504,7 @@ h4{font-size: 160%}
         font-size: 110%;
         line-height: normal;
     }
-    .ant-btn{
-        font-size: 45px;
-        padding: 0 20px 72px;
-    }
+
     label{font-weight: 700}
     h1{font-size: 350%}
     h2{font-size: 320%}
@@ -527,4 +525,48 @@ h4{font-size: 160%}
 }
 textarea.ant-input{
     padding:10px 15px;
+}
+.select-wrapper{
+
+    select {
+        /* General styling */
+        height: 60px;
+        width: 100px;
+        border-radius: 0;
+        padding-left: 10px;
+    
+        /* Removes the default <select> styling */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        font-size: 30px;
+        background: #FAFAFA;
+        border:none;
+        option{
+            font-size: 12px;
+            background: #FAFAFA;
+            &:hover{
+                background: blue;
+                color:white;
+            }
+        }
+    
+    }
+    &::after{
+        content: "";
+        position: absolute;
+        z-index: 2;
+        right: 18px;
+        margin-top: 21px;
+        height: 0;
+        width: 0;
+        border-top: 12px solid #3366cc;
+        border-left: 12px solid transparent;
+        border-right: 12px solid transparent;
+        pointer-events: none;
+    }
+}
+.ant-btn{
+    font-size: 45px;
+    padding: 0 20px 72px;
 }

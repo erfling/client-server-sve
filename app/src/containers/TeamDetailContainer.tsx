@@ -35,7 +35,7 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
         fetchTeam: (slug: string) => dispatch(Actions.fetchTeamDetails(slug)),
         submitForm: (values: formValues) => {
             console.log(values);
-            dispatch(Actions.dispatchSubmitForm(Object.assign(values)))
+            dispatch(Actions.dispatchSubmitForm(values))
         },
         subscribeToDashboard: () => { dispatch( Actions.updateDashboard()) },
     }

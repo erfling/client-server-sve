@@ -289,7 +289,7 @@ export default class AppServer
             deal.Accept = false;
             if (rejectedCuzMoney) {
                 console.log("REJECTED BECAUSE OF MONEY")
-                deal.Message += "\n At this time, however,the offer is insufficient.";
+                deal.Message += "\n At this time, however, the offer is insufficient.";
             } else {
                 console.log("REJECTED, BUT NOT BECAUSE OF MONEY")
 

@@ -4,7 +4,7 @@ import ITeam from '../../../shared/models/ITeam';
 import WaterForm from './form-elements/WaterForm'
 import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom';
-import { Row, Col, Select, Button } from 'antd';
+import { Row, Col, Select, Button, Alert } from 'antd';
 import ChartContainer from '../containers/ChartContainer'
 
 import Horse from '-!svg-react-loader?name=Icon!../img/horse.svg';
@@ -124,19 +124,39 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                                             return content == content.toUpperCase() ? <h3>{content}</h3> : <p>{content}</p>
                                     })}
 
-                                    <Row className="formWrapper">
-                                        <h4 className="decided-messaged" style={{ margin: "10px 0 20px" }}>{this.state.Decided && <span>You selected {this.state.ChosenHorse}. Change your mind? If so, simply choose again</span>}</h4>
-                                        <Select
-                                            style={{ width: '100%' }}
-                                            onChange={e => this.setState(Object.assign({}, this.state, { ChosenHorse: e, Decided: false }))}
-                                            placeholder="Who gets the water?"
-                                        >
-                                            <Select.Option value="Agriculture">Agriculture</Select.Option>
-                                            <Select.Option value="Government">Government</Select.Option>
-                                            <Select.Option value="Healthcare">Healthcare</Select.Option>
-                                            <Select.Option value="Industry">Industry</Select.Option>
-                                        </Select>
-                                        <Button style={{ margin: "10px 0 50px" }} className="game-button block" onClick={e => this.setDecisionState(this.state.ChosenHorse)}>Commit Decision</Button>
+                                    <Row className="formWrapper" type="flex" justify="center" style={{background:"#f3f3f3", marginBottom:'10px'}}>
+                                        <Col xs={20}>
+                                            
+                                            <div className="select-wrapper">
+                                                <label>Who gets the water?</label>
+                                                <select
+                                                    style={{ width: '100%' }}
+                                                    onChange={e => {console.log(e); this.setState(Object.assign({}, this.state, { ChosenHorse: e.target.value, Decided: false }))}}
+                                                >
+                                                    <option value=''>-- Who gets the water? -- </option>
+                                                    <option value="Agriculture">Agriculture</option>
+                                                    <option value="Government">Government</option>
+                                                    <option value="Healthcare">Healthcare</option>
+                                                    <option value="Industry">Industry</option>
+                                                </select>
+                                            </div>
+                                            {this.state.Decided && 
+                                            <Alert type="info" 
+                                                className="bottom-alert"
+                                                style={{ margin: "10px 0 20px" }} 
+                                                message={<h4>You selected {this.state.ChosenHorse} Change your mind? If so, simply choose again.</h4>}>
+                                            </Alert>}
+                                            {!this.state.Decided && 
+                                            <Button style={{ margin: "30px 0 50px" }}
+                                                type="primary" 
+                                                size="large"
+                                                onClick={e => this.setDecisionState(this.state.ChosenHorse)}
+                                            >
+                                                Commit Decision
+                                            </Button>
+                                            }
+
+                                        </Col>
                                     </Row>
                                 </Col>
                             </Row> : null}
