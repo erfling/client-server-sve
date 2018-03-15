@@ -144,7 +144,7 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                                             <Alert type="info" 
                                                 className="bottom-alert"
                                                 style={{ margin: "10px 0 20px" }} 
-                                                message={<h4>You selected {this.state.ChosenHorse} Change your mind? If so, simply choose again.</h4>}>
+                                                message={<h4>You selected {this.state.ChosenHorse}. Change your mind? If so, simply choose again.</h4>}>
                                             </Alert>}
                                             {!this.state.Decided && 
                                             <Button style={{ margin: "30px 0 50px" }}
