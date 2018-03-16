@@ -110,7 +110,7 @@ class GoogleSheetsRouter
         const sheets = new GoogleSheets();
 
         try{
-            const sheetsResponse = await sheets.GetSheetValues(null, "Round 4!B1:M3")
+            const sheetsResponse = await sheets.GetSheetValues(req.params.sheetId, "Round 4!B1:M3")
             if(sheetsResponse){
 
                 var resp = sheetsResponse.filter((row:string[], i:number) => {
@@ -189,8 +189,8 @@ class GoogleSheetsRouter
         this.router.get("/", this.GetSheetValues);
         this.router.post("/content", this.GetTeamContent);
         this.router.post("/ratings", this.GetRatingsByTeam);
-        this.router.get("/content/:country", this.getGenericState4Content);
-        this.router.get("/content/rolecontent/:role", this.getRoleContent)
+        this.router.get("/content/:country/:sheetId", this.getGenericState4Content);
+        this.router.get("/content/rolecontent/role/:role", this.getRoleContent)
     }
 }
 
