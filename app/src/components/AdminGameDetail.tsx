@@ -99,8 +99,8 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
         if(input)input.value = null;
     }
 
-    // "3A", "3B", "3C",
-    states = ["1A", "1B", "1C", "2", "4A", "INTERMISSION", "4B", "5"];
+    // "3A", "3B", "3C","INTERMISSION"
+    states = ["1A", "1B", "1C", "2", "4A", "4B", "5"];
 
     render() {
           
@@ -175,30 +175,3 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
                     </Col>          
     }
 }
-/*
-this.props.Game &&
-                                //var teams:ITeam[] = this.props.Game.Teams;
-                                this.props.Game.Teams.map((g,i) => {
-                                    if(!g.IsSelected){
-                                        return <Card key={i} title={g.Name} className="has-button"
-                                                extra={ <div>
-                                                            <Button type="dashed" shape="circle" onClick={e => this.props.editGame(g)}><Icon type="edit" /></Button>
-                                                            <Button type="dashed" shape="circle" onClick={e => this.props.selectGame(g)}>
-                                                                <Link to={'admin-games/'+g.Slug}><Icon type="info" /></Link>
-                                                            </Button>
-                                                        </div>}> 
-                                                    <p>Location: {g.Location}</p>
-                                                    <p>Game URL: <a href="#">https://someurl.com{g.Slug}</a></p>
-                                            </Card>
-                                    } else {
-                                        return  <Card key={i} title={g.Name || "Create New Game"} className="has-button"
-                                                    extra={<div>
-                                                                <Button type="danger" shape="circle" onClick={e => this.props.cancelEditGame(g)}>X</Button>
-                                                           </div>}> 
-                                                        <AdminGameForm 
-                                                            form="admin-game"
-                                                            onSubmit={this.props.saveGame}
-                                                            initialValues={g}
-                                                        />
-                                                </Card>
-                                    }*/
