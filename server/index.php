@@ -18,6 +18,6 @@
     if(isset($version) && $version < 10.3){
         echo "Our software won't work on your device because you're using IOS " . $version;
     } else {
-        readfile("../dist/index.html");
+        readfile("/sapien/client-server-sve/dist/index.html");
     }
 ?>
