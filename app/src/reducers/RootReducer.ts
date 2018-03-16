@@ -36,7 +36,8 @@ const initialState: ApplicationStore = {
         SocketConnected:false,
         Round2Won: false,
         RequiresRefresh: false,
-        AdminMessage: null
+        AdminMessage: null,
+        NeedsReconnect: false
     },
     form:{}
 };
@@ -278,6 +279,10 @@ export const Application = ( state = initialState.Application, action: Action<an
             return Object.assign({}, newState, {AdminMessage: action.payload})
         case (ACTION_TYPES.DISMISS_ADMIN_MESSAGE.actionType):
             return Object.assign({}, newState, {AdminMessage: null})
+        case (ACTION_TYPES.RECONNECT_ACTION.actionType):
+            return Object.assign({}, newState, {NeedsReconnect: true})
+        case (ACTION_TYPES.PLAYER_JOINED.actionType):
+            return Object.assign({}, newState, {NeedsReconnect: false})
         default:
             return ( ACTION_TYPES as any )[action.type] ? newState : state;
         

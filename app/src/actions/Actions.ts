@@ -24,6 +24,9 @@ const baseRestURL = protocol +  "//" + window.location.hostname + port + "/sapie
 //const socket = socketIo({path: socketPort + "/" + "Team1", transports: ['websocket'] });
 var socket:SocketIOClient.Socket;
 
+var lastTimeConnected:number;
+var timer: any;
+
 export interface GameAction<IGame> extends Action<IGame | IGame[]> {
     payload?: IGame;
     payloads?: IGame[];
@@ -226,6 +229,12 @@ export class ACTION_TYPES implements I_ACTION_TYPES{
         actionType: "DISMISS_ADMIN_MESSAGE"
     }
 
+    static RECONNECT_ACTION: ActionDescription = {
+        actionType: "RECONNECT_ACTION",
+        payloadType: "boolean"
+    }
+
+
 }
 
 export const createTeamSocket = (team:ITeam) => {
@@ -378,6 +387,23 @@ export const createTeamSocket = (team:ITeam) => {
                 )
             })
             
+            // Set up is-awake interval checker thingy
+            timer = setInterval(() => {
+                var currTime = new Date().getTime();
+                if (lastTimeConnected && currTime - lastTimeConnected > 1000) {
+                    dispatch(
+                        {
+                            type: ACTION_TYPES.RECONNECT_ACTION.actionType,
+                            payload: true
+                        }
+                    )
+                    if(localStorage.getItem("SVE_PLAYER")){
+                        clearInterval(timer);
+                        login(JSON.parse(localStorage.getItem("SVE_PLAYER")))
+                    }
+                }
+                lastTimeConnected = currTime;
+            }, 999);
         }
     }
 }

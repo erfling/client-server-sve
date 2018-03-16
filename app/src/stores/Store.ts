@@ -34,6 +34,7 @@ export default interface ApplicationStore{
         Round2Won: boolean;
         RequiresRefresh: boolean;
         AdminMessage: string;
+        NeedsReconnect: boolean;
     }
     form: any;
     Route?: any;
