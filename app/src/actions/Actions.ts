@@ -147,9 +147,8 @@ export class ACTION_TYPES implements I_ACTION_TYPES{
         payloadType: "Team",
     }
 
-    static ADMIN_MEESAGE_SENT: ActionDescription = {
-        actionType: "ADMIN_MEESAGE_SENT",
-        payloadType: "any",
+    static ADMIN_MESSAGE_SENT: ActionDescription = {
+        actionType: "ADMIN_MESSAGE_SENT"
     }
 
     static GOT_TEAMS: ActionDescription = {
@@ -223,6 +222,10 @@ export class ACTION_TYPES implements I_ACTION_TYPES{
         actionType: "GAME_RESET",
     }
 
+    static DISMISS_ADMIN_MESSAGE: ActionDescription = {
+        actionType: "DISMISS_ADMIN_MESSAGE"
+    }
+
 }
 
 export const createTeamSocket = (team:ITeam) => {
@@ -247,9 +250,6 @@ export const createTeamSocket = (team:ITeam) => {
         .on(SocketEvents.CONNECT, (data: any) => {
             console.log("SOCKET ON CONNECT THAT RETURNED:", socket);
             socket.emit(SocketEvents.JOIN_ROOM, team.Slug);
-        })
-        .on(SocketEvents.ADMIN_MEESAGE, (msg: string) => {
-            console.log("SOCKET RETURNED NAMESPACE MESSAGE:", msg);
         })
         
         return (dispatch: Dispatch<Action<ITeam>>) => {
@@ -368,6 +368,16 @@ export const createTeamSocket = (team:ITeam) => {
                     payload: years
                 } );
             })
+            .on(SocketEvents.ADMIN_MESSAGE, (msg: string) => {
+                console.log("SOCKET RETURNED NAMESPACE MESSAGE:", msg);
+                dispatch(
+                    {
+                        type: ACTION_TYPES.ADMIN_MESSAGE_SENT.actionType,
+                        payload: msg
+                    }
+                )
+            })
+            
         }
     }
 }
@@ -643,34 +653,6 @@ export const login = (team: ITeam) => {
     }
 }
 
-export const sendMessageFromAdmin = (gameId:string, message:string) => {
-    return (dispatch: Dispatch<Action<any>>) => {
-        const url = baseRestURL + 'adminmessage';
-        return fetch(
-                url, 
-                {
-                    method: "POST",
-                    body: JSON.stringify({GameId:gameId, Message:message}),
-                    headers: new Headers({
-                        'Content-Type': 'application/json'
-                    })
-                }
-            )
-            .then(( res:Response ) => {
-                return res.json()
-            })
-            .then( (jwt:any ) => {
-                dispatch( {
-                    type: ACTION_TYPES.ADMIN_MEESAGE_SENT.actionType,
-                    payload: jwt
-                } );
-            })
-            .catch( ( reason ) => { 
-                console.log(reason);
-            })
-    }
-}
-
 export const selectTeam = (team:ITeam) => {
     return (dispatch: Dispatch<Action<ITeam>>) => {
         dispatch({
@@ -930,5 +912,13 @@ export const resetGame = (game:IGame) => {
                 payload:r
             })
         })
+    }
+}
+
+export const dismissAdminMessage = () => {
+    return (dispatch: Dispatch<Action<null>>) => {
+        dispatch({ 
+            type: ACTION_TYPES.DISMISS_ADMIN_MESSAGE.actionType
+        })        
     }
 }

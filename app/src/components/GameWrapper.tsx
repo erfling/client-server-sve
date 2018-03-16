@@ -12,8 +12,6 @@ import LoginContainer from '../containers/LoginContainer';
 import {StyleHTMLAttributes} from 'react';
 import {Redirect} from 'react-router-dom';
 
-require('smoothscroll-polyfill').polyfill();
-
 export interface GamesList {
     CurrentPlayer?:ITeam;
     ParallaxImg: any;

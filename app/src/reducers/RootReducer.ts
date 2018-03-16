@@ -35,7 +35,8 @@ const initialState: ApplicationStore = {
         Submitting:false,
         SocketConnected:false,
         Round2Won: false,
-        RequiresRefresh: false
+        RequiresRefresh: false,
+        AdminMessage: null
     },
     form:{}
 };
@@ -257,11 +258,10 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
 }
 
 export const Application = ( state = initialState.Application, action: Action<any> ) => {
-
+    console.log(action)
     var validAction = true;
     
     var newState = Object.assign({}, state, {RequiresRefresh: false})
-
 
     switch(action.type){
         case (ACTION_TYPES.IS_LOADING.actionType):
@@ -274,6 +274,10 @@ export const Application = ( state = initialState.Application, action: Action<an
             return Object.assign({}, newState, {SocketConnected: true, RequiresRefresh: false})
         case (ACTION_TYPES.ROUND_2_WON.actionType):
             return Object.assign({} , newState, {Round2Won: true, RequiresRefresh: false})
+        case (ACTION_TYPES.ADMIN_MESSAGE_SENT.actionType):
+            return Object.assign({}, newState, {AdminMessage: action.payload})
+        case (ACTION_TYPES.DISMISS_ADMIN_MESSAGE.actionType):
+            return Object.assign({}, newState, {AdminMessage: null})
         default:
             return ( ACTION_TYPES as any )[action.type] ? newState : state;
         

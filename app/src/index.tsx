@@ -21,6 +21,7 @@ export const store = createStore(reducer, composeWithDevTools(
   // other store enhancers if any
 ));
 //const store = createStore(reducer, applyMiddleware(thunk));
+require('es6-object-assign').polyfill();
 
 const app = document.createElement('div');
 document.body.appendChild(app);

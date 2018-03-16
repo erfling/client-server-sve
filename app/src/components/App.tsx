@@ -9,7 +9,7 @@ import State2Container from '../containers/State2Container'
 import State3Container from '../containers/State3Container'
 import State4Container from '../containers/State4Container'
 import State5Container from '../containers/State5Container'
-
+import AdminMessageContainer from '../components/AdminMessageModal';
 // Icon = require('-!svg-react-loader?name=Icon!../img/si-glyph-leaf.svg');
 import Routes from '../routes/Routes';
 
@@ -20,7 +20,6 @@ export class App extends React.Component<{}> {
   }
 
   render() {
-    //console.log("image element",<Icon/>);
     return (
       <div>
         <Switch>
@@ -34,6 +33,9 @@ export class App extends React.Component<{}> {
           <Route exact={true} path="/experiment" component={State5Container} key={2}/>
           <Route exact={false} component={TeamDetailContainer} path="/team-detail/:id" key={3}/>
         </Switch>
+
+        <Route component={AdminMessageContainer}/>
+
       </div>
     );
   }

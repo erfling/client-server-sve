@@ -738,11 +738,9 @@ export default class AppServer
             try {
                 let gameSocketNameSpace = this.io.of(req.body.GameId);
                 if (gameSocketNameSpace) {
-                    console.log("trying to emit ADMIN_MESSAGE to ", req.body.GameId);
-                    gameSocketNameSpace.emit(SocketEvents.ADMIN_MEESAGE, req.body.Message);
-
-                    let token = jwt.sign({gameId: req.body.GameId}, 'shhhhh');
-                    res.json({token});
+                    console.log("trying to emit ADMIN_MESSAGE to ", gameSocketNameSpace);
+                    gameSocketNameSpace.emit(SocketEvents.ADMIN_MESSAGE, req.body.Message);                   
+                    res.json("Message sent");
                 }
             } catch {
                 res.json("ADMIN MESSAGE FAILED");

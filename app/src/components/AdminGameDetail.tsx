@@ -2,18 +2,12 @@ import * as React from "react";
 import IGame from '../../../shared/models/IGame';
 import ITeam from '../../../shared/models/ITeam';
 import INation from '../../../shared/models/INation';
-import { Icon } from 'antd/lib';
-import  Card  from 'antd/lib/card';
-import { Col, Row } from "antd/lib/grid";
-import {Layout} from "antd/lib";
 import AdminGameForm from "../components/form-elements/AdminGameForm";
-const { Header, Footer, Sider, Content } = Layout;
 import Collapse  from "antd/lib/collapse"
-import Menu from "antd/lib/menu"
-import { Button, Input } from "antd/";
-import { Link } from "react-router-dom";
-
+import { Button, Input, Menu, Layout, Col, Row, Card, Icon, Modal } from "antd/";
 const Panel = Collapse.Panel;
+const { Header, Footer, Sider, Content } = Layout;
+import { Link } from "react-router-dom";
 
 class SapienButton extends Button{
 
@@ -27,12 +21,12 @@ interface AdminGameDetailProps{
     resetGame: (game: IGame) => {}
     setGameState : (game:IGame, newState: number | string) => {}
     match:any;
-    sendMessageFromAdmin : (gameId:string, message:string) => {}
+    //sendMessageFromAdmin : (gameId:string, message:string) => {}
 }
 
 // 'HelloProps' describes the shape of props.
 // State is never set so we use the '{}' type.
-export default class AdminGameDetail extends React.Component<AdminGameDetailProps, {addingGame:boolean, adminMessage:string}> {
+export default class AdminGameDetail extends React.Component<AdminGameDetailProps, {addingGame:boolean, adminMessage:string, sendMessage:boolean, sending: boolean}> {
 
     componentDidMount() {
         console.log("ADMIN GAME DETAIL PROPS", this.props);
@@ -42,13 +36,10 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
         this.props.selectGame(this.props.match.params.id);
     }
 
-    componentDidUpdate(newState:any, oldState:any){
-        console.log("UPDATE",newState, oldState)
-    }
-
     getName = (name:string = null) => {
         return name ? name : "Create New Game";
-    }         
+    }
+
     getTeams = (game: IGame = null) => {
         if(game && game.Teams)return game.Teams as ITeam[];
     }   
@@ -64,13 +55,56 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
         }
     }
 
+    sendMessageFromAdmin(gameId:string, message:string) {
 
-    states = ["1A", "1B", "1C", "2", "3A", "3B", "3C", "4A", "INTERMISSION", "4B", "5"];
+        this.setState(Object.assign(this.state, {sending: true}))
+
+        const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
+        const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
+        const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/adminmessage";
+        
+        return fetch(
+                URL, 
+                {
+                    method: "POST",
+                    body: JSON.stringify({GameId:gameId, Message:message}),
+                    headers: new Headers({
+                        'Content-Type': 'application/json'
+                    })
+                }
+            )
+            .then(( res:Response ) => {
+                this.setState(
+                    Object.assign(
+                        this.state, 
+                        {
+                            sending: false, 
+                            sendMessage: false, 
+                            adminMessage: null
+                        }
+                    )
+                )
+
+                this.clearAdminMessage()
+
+                return res.json()
+            })
+            .catch( ( reason ) => { 
+                console.log(reason);
+            })
+    }
+
+    clearAdminMessage() {
+        var input:HTMLInputElement = document.querySelector(".message-input")
+        if(input)input.value = null;
+    }
+
+    // "3A", "3B", "3C",
+    states = ["1A", "1B", "1C", "2", "4A", "INTERMISSION", "4B", "5"];
 
     render() {
           
           return <Col xs={24} sm={24} lg={16}>
-                    {console.log("RENDERING")}
                         {this.props.Loading && <Card loading title="Loading Game">Loading</Card>}
                         {this.props.Game && <Card title={this.props.Game.Name}
                             extra={
@@ -86,22 +120,22 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
                                     <Button 
                                         className="small-button"
                                         type="danger" 
+                                        shape="circle"
                                         onClick={e => this.requestConfirmReset()}>
-                                        Reset <Icon type="poweroff" />
+                                        <Icon type="poweroff" />
+                                    </Button>
+
+                                    <Button 
+                                        className="small-button"
+                                        type="primary"
+                                        shape="circle"
+ 
+                                        onClick={e => this.setState(Object.assign(this.state, {sendMessage: true}))}>
+                                        <Icon type="message" />
                                     </Button>
 
                                     <br/>
-                                    <div>
-                                        <Input 
-                                            defaultValue="Message to all players..."
-                                            onChange={e => this.setState(Object.assign(this.state, {adminMessage:e.target.value}))}
-                                        />
-                                        <Button 
-                                            className="small-button"
-                                            onClick={e => this.props.sendMessageFromAdmin(this.props.Game._id, this.state.adminMessage)}>
-                                            Send
-                                        </Button>
-                                    </div>
+                                    
                                 </div>
                             }
                         >
@@ -112,7 +146,32 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
                                            </Panel>
                                 })} 
                             </Collapse>
-                        </Card>}     
+                        </Card>}
+                        <Modal
+                            title={<span>Message from the game.</span>}
+                            visible={this.state.sendMessage}
+                            width="80%"
+                            footer={[<Button 
+                                        type="primary"
+                                        onClick={e => this.sendMessageFromAdmin(this.props.Game._id, this.state.adminMessage)}>
+                                        Send {this.state.sending ? <Icon type="loading" /> : <Icon type="message"/>}
+                                    </Button>,
+                                    <Button 
+                                        type="danger"
+                                        onClick={e => {
+                                            this.setState(Object.assign(this.state, {sendMessage: false, adminMessage: false}));
+                                            this.clearAdminMessage()
+                                        }}>
+                                        Cancel <Icon type="close" />
+                                    </Button>
+                                    ]}
+                        >
+                            <Input.TextArea
+                                className="message-input"
+                                placeholder="Message to all players..."
+                                onChange={e => this.setState(Object.assign(this.state, {adminMessage: e.target.value}))}
+                            />  
+                        </Modal>     
                     </Col>          
     }
 }

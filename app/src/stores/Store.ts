@@ -33,6 +33,7 @@ export default interface ApplicationStore{
         SocketConnected: boolean;
         Round2Won: boolean;
         RequiresRefresh: boolean;
+        AdminMessage: string;
     }
     form: any;
     Route?: any;
