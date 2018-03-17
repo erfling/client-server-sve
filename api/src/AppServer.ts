@@ -780,6 +780,11 @@ export default class AppServer
 
         this.app.post("/sapien/api/driveupdate/", async (req, res) => {
             console.log(req.headers);
+
+            const game = await GameModel.findById(req.headers['x-goog-channel-id']);
+
+            if(game)console.log(game);
+
             res.json(true);
         })
     }
