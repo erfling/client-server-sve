@@ -571,7 +571,6 @@ export default class AppServer
 
         this.app
             .use('/', router)
-            .use('/sapien/api/driveupdate', this.sheetsRouter)
             .use('/sapien/api/games', GameRouter)
             .use('/sapien/api/sheets', SheetsRouter)
             .use('/sapien/api/teams', TeamRouter)
@@ -780,6 +779,7 @@ export default class AppServer
         });
 
         this.app.post("/sapien/api/driveupdate/", async (req, res) => {
+            console.log(req.body);
             console.log(req.headers);
             res.json(true);
         })
