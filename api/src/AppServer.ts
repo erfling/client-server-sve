@@ -744,7 +744,7 @@ export default class AppServer
                         t.GameState = game.State;
                         if (this.socketServer instanceof https.Server) {
                             console.log("TRYING TO SET LISTENER FOR SHEET CHANGES")
-                            this.sheets.setTeamListener(t.Slug);
+                            this.sheets.setTeamListener(game);
                         }
                         let token = jwt.sign({team: t}, 'shhhhh');
 
@@ -779,7 +779,7 @@ export default class AppServer
         });
 
         this.app.post("/sapien/api/driveupdate/", async (req, res) => {
-            console.log(req);
+            console.log(req.headers);
             res.json(true);
         })
     }

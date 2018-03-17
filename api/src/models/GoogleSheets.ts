@@ -297,7 +297,7 @@ export default class GoogleSheets
         .catch()
     }
 
-    public setTeamListener(teamSlug:string):Promise<any> {
+    public setTeamListener(sheetId:string):Promise<any> {
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth: any) => {
@@ -305,11 +305,11 @@ export default class GoogleSheets
             return new Promise((resolve, reject) => {
                 service.files.watch({
                     resource: {
-                      id: new Date().getMilliseconds().toString(),
+                      id: sheetId,
                       type: 'web_hook',
                       address: 'https://planetsapien.com:8443/sapien/api/driveupdate/'
                     },
-                    fileId: "1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg",
+                    fileId: sheetId,
                     auth: auth
                 }, function(err:any, response:any) {
                     if (err) {
