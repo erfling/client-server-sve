@@ -779,8 +779,7 @@ export default class AppServer
         });
 
         this.app.post("/sapien/api/driveupdate/", async (req, res) => {
-            console.log(req.body);
-            console.log(req.headers);
+            console.log(req);
             res.json(true);
         })
     }
