@@ -64,6 +64,10 @@ declare module "react-parallax"{
     export const Background:any;
 }
 
+declare interface ObjectConstructor {
+    assign(...objects: Object[]): Object;
+}
+
 /*
 declare module 'redux-form-antd'{
     const AntdDRedux:any;

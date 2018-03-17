@@ -69,6 +69,7 @@ export default class AppServer
 
     // set app to be of type express.Application
     public app: express.Application;
+    public publicApp: express.Application;
     private io: SocketIO.Server;
     private socketServer: http.Server | https.Server;
     private port: string | number;
@@ -83,6 +84,7 @@ export default class AppServer
 
     constructor() {
         this.app = express();
+        this.publicApp = express();
         this.port = process.env.PORT || AppServer.PORT;
         this.config();
 
@@ -106,6 +108,7 @@ export default class AppServer
                 .on('listening', this.onSocketServerListening.bind(this, this.socketServer));
         }
 
+        
         
 
         this.io = socketIo(this.socketServer);
@@ -291,7 +294,7 @@ export default class AppServer
                 console.log("REJECTED BECAUSE OF MONEY")
                 deal.Message += "\n At this time, however, the offer is insufficient.";
             } else {
-                console.log("REJECTED, BUT NOT BECAUSE OF MONEY")
+                console.log("REJECTED, BUT NOT BECAUSE OF MONEY")   
 
             }
             
@@ -493,12 +496,29 @@ export default class AppServer
         mongoose.connect(MONGO_URI || process.env.MONGODB_URI);
         //mongoose.connect('mongodb://mbreeden:MUfC9ex6CWRwktBf@localhost:27017/express-boilerplate');
 
+        this.publicApp.use((req, res, next) => {
+            console.log("request came from ", req.headers['user-agent']);
+            const agent = req.headers['user-agent'];
+            if(agent){
+                res.sendFile("/sapien/client-server-sve/api/src/no-support.html")
+            } else {
+                next();
+            }
+        })
+        this.publicApp.use('/assets', express.static("dist/assets"));
+        this.publicApp.use('/', express.static("dist"));
+        this.publicApp.use('*', express.static("dist"));
+
+        const publicServer =  http.createServer(this.publicApp);
+        publicServer.listen(443);
+
         // express middleware
         this.app.use(bodyParser.urlencoded({ extended: true }))
             .use(bodyParser.json())
             .use(logger('dev'))
             .use(compression())
-            .use(helmet());
+            .use(helmet())
+
 
         //global connection object for Google Sheets API
         this.sheets = new GoogleSheets();

@@ -14,8 +14,8 @@ module.exports = {
     ],
     devtool: 'inline-source-map',
     output: {
-      path: ROOT_PATH +  '/build',
-      publicPath: '/',
+      path: ROOT_PATH +  '/dist/assets',
+      publicPath: '/assets/',
       filename: '[name].bundle.js'
     },
     module:{
@@ -86,6 +86,7 @@ module.exports = {
       new webpack.HotModuleReplacementPlugin(),
       new HtmlwebpackPlugin({
         title: 'Shared Value Experience',
+        filename: '../index.html'
       }),
       new ExtractTextPlugin('style.css'),
       new webpack.DefinePlugin({

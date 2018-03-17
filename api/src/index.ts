@@ -30,13 +30,15 @@ if (fs.existsSync('/sapien/certificates/planetsapien.com/privkey.pem')) {
     let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
     debug(`Listening on ${bind}`);
   }
+}else{
+    const httpServer = http.createServer(server.app);
+    httpServer.listen(port);
+    httpServer
+        .on('error', onError)
+        .on('listening', onListening);
+      
 }
 
-const httpServer = http.createServer(server.app);
-httpServer.listen(port);
-httpServer
-    .on('error', onError)
-    .on('listening', onListening);
 
 
 function normalizePort(val: number|string): number|string|boolean {
@@ -67,7 +69,5 @@ function onError(error: NodeJS.ErrnoException): void {
 }
 
 function onListening(): void {
-    let addr = httpServer.address();
-    let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
-    debug(`Listening on ${bind}`);
+
 }
