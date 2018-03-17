@@ -502,7 +502,8 @@ export default class AppServer
                 next();
             }
         })
-
+        //  google-verification
+        this.publicApp.use('/google-verification', express.static("google-verification"));
         this.publicApp.use('/assets', express.static("dist/assets"));
         this.publicApp.use('/', express.static("dist"));
         this.publicApp.use('*', express.static("dist"));
