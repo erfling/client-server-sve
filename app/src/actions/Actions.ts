@@ -390,7 +390,7 @@ export const createTeamSocket = (team:ITeam) => {
             // Set up is-awake interval checker thingy
             timer = setInterval(() => {
                 var currTime = new Date().getTime();
-                if (lastTimeConnected && currTime - lastTimeConnected > 1000) {
+                if (lastTimeConnected && currTime - lastTimeConnected > 998) {
                     alert("reconnect required")
                     dispatch(
                         {
