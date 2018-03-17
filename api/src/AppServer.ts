@@ -778,6 +778,11 @@ export default class AppServer
                 res.json("ADMIN MESSAGE FAILED");
             }
         });
+
+        this.app.post("/sapien/api/driveupdate/", async (req, res) => {
+            console.log(req.headers);
+            res.json(true);
+        })
     }
 
     /**

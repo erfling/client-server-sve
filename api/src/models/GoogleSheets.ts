@@ -307,7 +307,7 @@ export default class GoogleSheets
                     resource: {
                       id: new Date().getMilliseconds().toString(),
                       type: 'web_hook',
-                      address: 'https://planetsapientestsite.com:8443/sapien/api/driveupdate/' + teamSlug
+                      address: 'https://planetsapien.com:8443/sapien/api/driveupdate/'
                     },
                     fileId: "1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg",
                     auth: auth
