@@ -499,6 +499,7 @@ export default class AppServer
             var isIOS = agent.match('/iPad|iPhone|iphone|iPod/g');
             console.log(isIOS);
             if(isIOS && isIOS.length){
+                console.log(agent.match("/(.*) OS ([0-9]*)_(.*)_(.*)\//"))
                 res.sendFile("/sapien/client-server-sve/api/src/no-support.html")
             } else {
                 next();
