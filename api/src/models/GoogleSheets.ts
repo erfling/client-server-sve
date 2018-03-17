@@ -318,6 +318,7 @@ export default class GoogleSheets
                         return;
                     }
                     var files = response;
+                    resolve(response);
                     console.log(response);
                 })
             })

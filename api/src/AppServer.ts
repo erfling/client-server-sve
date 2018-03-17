@@ -337,7 +337,6 @@ export default class AppServer
 
         if (team) {
             var t = team.toObject();           
-            console.log("GOODBYE?")
 
             if (!t.Roles) {
                 (<any>t.Roles) = {};
