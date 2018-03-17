@@ -391,6 +391,7 @@ export const createTeamSocket = (team:ITeam) => {
             timer = setInterval(() => {
                 var currTime = new Date().getTime();
                 if (lastTimeConnected && currTime - lastTimeConnected > 1000) {
+                    alert("reconnect required")
                     dispatch(
                         {
                             type: ACTION_TYPES.RECONNECT_ACTION.actionType,

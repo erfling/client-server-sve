@@ -52,25 +52,42 @@ export default class AdminGamesList extends React.Component<GameListProps, {addi
                                         extra={ <div>
                                                     {g.IsCurrentGame ? 
                                                         <Tooltip placement="topLeft" title="This is the current game" arrowPointAtCenter>
-                                                            <Button type={"primary"} shape="circle">
+                                                            <Button type={"primary"} 
+                                                                className="small-button"
+                                                                shape="circle">
                                                                 <Icon type="star" />                                                       
                                                             </Button>                                                  
                                                         </Tooltip>
                                                         
                                                     : 
                                                         <Tooltip placement="topLeft" title="Make this the current game" arrowPointAtCenter>
-                                                            <Button type={"dashed"} shape="circle" onClick={e => this.props.setGameCurrent(g)}>
+                                                            <Button 
+                                                                type={"dashed"} 
+                                                                shape="circle" 
+                                                                className="small-button"
+                                                                onClick={e => this.props.setGameCurrent(g)}>
                                                                 <Icon type="star-o" />                                                       
                                                             </Button>                                                  
                                                         </Tooltip>
                                                     }
                                                     
                                                     <Tooltip placement="topLeft" title="Edit" arrowPointAtCenter>
-                                                        <Button type="dashed" shape="circle" onClick={e => this.props.editGame(g)}><Icon type="edit" /></Button>
+                                                        <Button 
+                                                            type="dashed" 
+                                                            shape="circle" 
+                                                            className="small-button"
+                                                            onClick={e => this.props.editGame(g)}
+                                                        >
+                                                            <Icon type="edit" />
+                                                        </Button>
                                                     </Tooltip>
 
                                                     <Tooltip placement="topLeft" title="View details" arrowPointAtCenter>
-                                                        <Button type="dashed" shape="circle">
+                                                        <Button 
+                                                            className="small-button"
+                                                            type="dashed" 
+                                                            shape="circle"
+                                                        >
                                                             <Link to={'/admin/games/'+g._id}><Icon type="info" /></Link>
                                                         </Button>                                                    
                                                     </Tooltip>
