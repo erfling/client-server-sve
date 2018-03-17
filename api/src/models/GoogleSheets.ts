@@ -14,6 +14,7 @@ import ITeam from '../../../shared/models/ITeam';
 import IDeal from '../../../shared/models/IDeal';
 import formValues from '../../../shared/models/FormValues';
 import INation from '../../../shared/models/INation';
+import IGame from '../../../shared/models/IGame';
 
 export default class GoogleSheets
 {
@@ -297,7 +298,7 @@ export default class GoogleSheets
         .catch()
     }
 
-    public setTeamListener(sheetId:string):Promise<any> {
+    public setTeamListener(game: IGame):Promise<any> {
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth: any) => {
@@ -305,11 +306,11 @@ export default class GoogleSheets
             return new Promise((resolve, reject) => {
                 service.files.watch({
                     resource: {
-                      id: sheetId,
+                      id: game._id,
                       type: 'web_hook',
                       address: 'https://planetsapien.com:8443/sapien/api/driveupdate/'
                     },
-                    fileId: sheetId,
+                    fileId: game.SheetId,
                     auth: auth
                 }, function(err:any, response:any) {
                     if (err) {
