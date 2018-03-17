@@ -85,7 +85,7 @@ module.exports = {
     plugins: [
       new HtmlwebpackPlugin({
         title: 'Shared Value Experience',
-        filename: "index.html"
+        filename: "../index.html"
       }),
       new ExtractTextPlugin('style.css'),
       new webpack.DefinePlugin({
