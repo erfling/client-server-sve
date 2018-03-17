@@ -3,7 +3,6 @@ var webpack = require('webpack');
 var path = require('path');  
 var HtmlwebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 var ROOT_PATH = path.resolve(__dirname);
@@ -53,11 +52,6 @@ module.exports = {
         ],
         loaders: [
         {
-          test: /\.jsx?$/,
-          exclude: /node_modules/,
-          loaders: ['react-hot'],
-        },
-        {
           test: /\.(png|jpg|gif)$/,
           use: [
             {
@@ -69,15 +63,6 @@ module.exports = {
           ]
         }
       ]
-    },
-    devServer: {
-      contentBase: path.resolve(ROOT_PATH, '/build/app'),
-      historyApiFallback: true,
-      hot: true,
-      inline: true,
-      progress: true,
-      port:443,
-      disableHostCheck: true
     },
     resolve: {
       extensions: [ '.tsx', '.ts', '.js' ]
