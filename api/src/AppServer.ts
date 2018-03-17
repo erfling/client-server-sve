@@ -496,21 +496,31 @@ export default class AppServer
         mongoose.connect(MONGO_URI || process.env.MONGODB_URI);
         //mongoose.connect('mongodb://mbreeden:MUfC9ex6CWRwktBf@localhost:27017/express-boilerplate');
 
+
         this.publicApp.use((req, res, next) => {
             console.log("request came from ", req.headers['user-agent']);
             const agent = req.headers['user-agent'];
-            if(agent){
+            if(!agent){
                 res.sendFile("/sapien/client-server-sve/api/src/no-support.html")
             } else {
                 next();
             }
         })
+
         this.publicApp.use('/assets', express.static("dist/assets"));
         this.publicApp.use('/', express.static("dist"));
         this.publicApp.use('*', express.static("dist"));
+        var assetServer:https.Server | http.Server;
+        if (fs.existsSync('/sapien/certificates/planetsapien.com/privkey.pem')) {
+            console.log("found SSL key");
+            var privateKey  = fs.readFileSync('/sapien/certificates/planetsapien.com/privkey.pem', 'utf8').toString();
+            var certificate = fs.readFileSync('/sapien/certificates/planetsapien.com/fullchain.pem', 'utf8').toString();
+            assetServer =  https.createServer({key: privateKey, cert: certificate}, this.publicApp);
+        }else{
+            assetServer =  http.createServer(this.publicApp);                
+        }        
 
-        const publicServer =  http.createServer(this.publicApp);
-        publicServer.listen(443, () => {
+        assetServer.listen(443, () => {
             console.log("ASSET SERVER IS LISTENING ON PORT 443")
         });
 
