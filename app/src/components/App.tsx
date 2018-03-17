@@ -36,7 +36,7 @@ export class App extends React.Component<{}> {
         </Switch>
 
         <Route component={AdminMessageContainer}/>
-        <Route component={AdminMessageContainer}/>
+        <Route component={ReconnectModal}/>
 
       </div>
     );

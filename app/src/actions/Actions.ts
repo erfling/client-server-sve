@@ -388,6 +388,7 @@ export const createTeamSocket = (team:ITeam) => {
                 )
             })
             .on("disconnect", () => {
+                console.log("DISCONNECT OCCURED")
                 dispatch(
                     {
                         type: ACTION_TYPES.RECONNECT_ACTION.actionType,
