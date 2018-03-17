@@ -503,7 +503,7 @@ export default class AppServer
             }
         })
         //  google-verification
-        this.publicApp.use('/google-verification', express.static("google-verification"));
+        this.publicApp.use('/google8b116b0e2c1fc48f.html', express.static("google-verification"));
         this.publicApp.use('/assets', express.static("dist/assets"));
         this.publicApp.use('/', express.static("dist"));
         this.publicApp.use('*', express.static("dist"));
