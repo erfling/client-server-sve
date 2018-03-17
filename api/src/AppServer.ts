@@ -510,7 +510,9 @@ export default class AppServer
         this.publicApp.use('*', express.static("dist"));
 
         const publicServer =  http.createServer(this.publicApp);
-        publicServer.listen(443);
+        publicServer.listen(443, () => {
+            console.log("ASSET SERVER IS LISTENING ON PORT 443")
+        });
 
         // express middleware
         this.app.use(bodyParser.urlencoded({ extended: true }))
