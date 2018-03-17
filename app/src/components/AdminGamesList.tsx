@@ -43,7 +43,7 @@ export default class AdminGamesList extends React.Component<GameListProps, {addi
 
           return(          
                 <Col xs={24} sm={24} lg={16}>
-                    <h1>Games <Button type="primary" shape="circle" onClick={e => this.props.addGame()}><Icon type="plus" /></Button></h1>
+                    <h1>Games <Button className="small-button" type="primary" shape="circle" onClick={e => this.props.addGame()}><Icon type="plus" /></Button></h1>
                     {this.props.Loading ?  <Card loading title="Loading Games">testing</Card> :
                     this.props.Games &&
                         this.props.Games.map((g,i) => {

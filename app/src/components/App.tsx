@@ -10,6 +10,7 @@ import State3Container from '../containers/State3Container'
 import State4Container from '../containers/State4Container'
 import State5Container from '../containers/State5Container'
 import AdminMessageContainer from '../components/AdminMessageModal';
+import ReconnectModal from '../components/ReconnectModal';
 // Icon = require('-!svg-react-loader?name=Icon!../img/si-glyph-leaf.svg');
 import Routes from '../routes/Routes';
 
@@ -34,6 +35,7 @@ export class App extends React.Component<{}> {
           <Route exact={false} component={TeamDetailContainer} path="/team-detail/:id" key={3}/>
         </Switch>
 
+        <Route component={AdminMessageContainer}/>
         <Route component={AdminMessageContainer}/>
 
       </div>
