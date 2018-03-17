@@ -20,8 +20,15 @@ export class ReconnectModal extends React.Component<AdminMessageProps, {}> {
                     title={<span>You've been disconnected.</span>}
                     visible={true}
                     width="80%"
+                    footer={<Button 
+                        type="primary" 
+                        size="large"
+                        onClick={e => location.reload()}
+                    >
+                        OK
+                    </Button>}
                 >
-                    <p>Reconnecting you. <Icon type="loading"/></p>
+                    <p>It looks like we've lost our connection to your device. Do you want to re-connect?</p>
                 </Modal>                    
     }
 }
