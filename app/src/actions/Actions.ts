@@ -261,6 +261,7 @@ export const createTeamSocket = (team:ITeam) => {
             socket.emit(SocketEvents.JOIN_ROOM, team.Slug);
         })
         
+        
         return (dispatch: Dispatch<Action<ITeam>>) => {
             console.log("WILL RETURN DISPATCH")
             socket.on(SocketEvents.TEAM_UPDATED, (team:ITeam) => {
@@ -386,8 +387,17 @@ export const createTeamSocket = (team:ITeam) => {
                     }
                 )
             })
+            .on("disconnect", () => {
+                dispatch(
+                    {
+                        type: ACTION_TYPES.RECONNECT_ACTION.actionType,
+                        payload: true
+                    }
+                )
+            })
             
             // Set up is-awake interval checker thingy
+            /*
             timer = setInterval(() => {
                 var currTime = new Date().getTime();
                 if (lastTimeConnected && currTime - lastTimeConnected > 998) {
@@ -405,6 +415,7 @@ export const createTeamSocket = (team:ITeam) => {
                 }
                 lastTimeConnected = currTime;
             }, 999);
+            */
         }
     }
 }
