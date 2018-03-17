@@ -4,6 +4,7 @@ var path = require('path');
 var HtmlwebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 var ROOT_PATH = path.resolve(__dirname);
 
@@ -11,7 +12,7 @@ module.exports = {
     entry: [
       './app/src/index.tsx'
     ],
-    devtool: 'source-map',
+    devtool: false,
     output: {
       path: ROOT_PATH +  '/dist/assets',
       publicPath: '/assets/',
@@ -38,7 +39,6 @@ module.exports = {
             })
           },
           {
-            //why?????????????
             test: /\.(png|jpg|jpeg|gif)$/,
             use: [
               {
@@ -70,7 +70,8 @@ module.exports = {
     plugins: [
       new HtmlwebpackPlugin({
         title: 'Shared Value Experience',
-        filename: "../index.html"
+        filename: "../index.html",
+        template: "template.html"
       }),
       new ExtractTextPlugin('style.css'),
       new webpack.DefinePlugin({
@@ -80,3 +81,4 @@ module.exports = {
       new UglifyJSPlugin()
     ]
   };
+  //<meta name="google-site-verification" content="LJ1jS5T5gq2RSmbjAqtxgKB01F86s7iNm5BZ0Xi91Ak" />

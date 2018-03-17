@@ -86,7 +86,8 @@ module.exports = {
       new webpack.HotModuleReplacementPlugin(),
       new HtmlwebpackPlugin({
         title: 'Shared Value Experience',
-        filename: '../index.html'
+        filename: '../index.html',
+        template: "template.html"
       }),
       new ExtractTextPlugin('style.css'),
       new webpack.DefinePlugin({
