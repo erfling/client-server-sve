@@ -496,7 +496,8 @@ export default class AppServer
         this.publicApp.use((req, res, next) => {
             console.log("request came from ", req.headers['user-agent']);
             const agent = <string>req.headers['user-agent'];
-            var isIOS = agent.match('[iPad|iPhone|iphone|iPod]')
+            var isIOS = agent.match('[iPad|iPhone|iphone|iPod]');
+            console.log(isIOS);
             if(isIOS && isIOS.length){
                 res.sendFile("/sapien/client-server-sve/api/src/no-support.html")
             } else {
