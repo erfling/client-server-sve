@@ -333,7 +333,6 @@ export default class AppServer
         eventTarget.join(roleRoomName);
         console.log("FROM THE SOCKET: ", roleName, " | ", teamSlug);
         const team = await TeamModel.findOne({Slug: teamSlug})
-        console.log("DID WE GET HERE?")
 
         if (team) {
             var t = team.toObject();           
@@ -353,8 +352,6 @@ export default class AppServer
 
                 TeamModel.findOneAndUpdate({Slug: teamSlug}, {Roles: t.Roles}, {new: true}).then(t => console.log(t));
             }
-            console.log("AFTER ADDING ROLES", t.Roles[roleName]);
-
             eventTarget.nsp.to(roleRoomName).emit(SocketEvents.JOIN_ROLE, t.Roles[roleName])
 
         } else {
@@ -744,6 +741,7 @@ export default class AppServer
                         let t:Team = team.toObject() as Team;
                         t.GameState = game.State;
                         if (this.socketServer instanceof https.Server) {
+                            console.log("TRYING TO SET LISTENER FOR SHEET CHANGES")
                             this.sheets.setTeamListener(t.Slug);
                         }
                         let token = jwt.sign({team: t}, 'shhhhh');
@@ -895,7 +893,6 @@ export default class AppServer
         });
 
         this.app.post("/sapien/api/getDaysAbove", async (req, res) => {
-            console.log("CALLING GET DAYS ABOVE", req.body);
             this.getDaysAbove(req.body);
             const updatedValues = await this.sheets.GetSheetValues(req.body.SheetId, "Country Impact!C21");
             res.json(updatedValues);
