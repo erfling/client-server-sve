@@ -782,8 +782,23 @@ export default class AppServer
             console.log(req.headers);
 
             const game = await GameModel.findById(req.headers['x-goog-channel-id']);
+            var gameId:string = <string>req.headers['x-goog-channel-id'];
+            if(gameId){
+                let gameSocketNameSpace = this.io.of(gameId);
 
-            if(game)console.log(game);
+                try{
+                    const dashBoardValues = await this.sheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103")
+                    const yearsAbove2 = await this.sheets.GetSheetValues(game.SheetId, "Country Impact!C21");
+
+                    if(dashBoardValues && yearsAbove2){
+                        gameSocketNameSpace.emit(SocketEvents.DASHBOARD_UPDATED, dashBoardValues);
+                        gameSocketNameSpace.emit(SocketEvents.UPDATE_YEARS_ABOVE_2, yearsAbove2);
+                    }
+
+                }catch{
+                    console.log("WELL FUCK")
+                }
+            }
 
             res.json(true);
         })
