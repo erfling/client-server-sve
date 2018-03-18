@@ -262,15 +262,17 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
 
                         {!this.props.CurrentPlayer.DealsProposedBy.length && typeof this.props.CurrentPlayer.DealsProposedTo[0] != "string" ? 
                         <Row className="propose-block">
-                            <label>Propose a Trade</label>
-                            <Select
-                                style={{ width: '100%' }}
-                                placeholder="--Select Nation--"
-                                onChange={e => this.setState(Object.assign({}, this.state, { ChosenCountry: e }))}
-                            >
-                                {this.getOptionsByTeam().map((o, i) => <Select.Option key={i} value={o.value}>{o.text}</Select.Option>)}
-                            </Select>
-                            {this.state && <Button style={{ marginTop: '10px' }} className="game-button block" onClick={e => this.prepDeal()} disabled={!this.state.ChosenCountry}>Propose Trade</Button>}
+                            <div className="select-wrapper">
+                                <label>Propose a Trade</label>
+                                <select
+                                    style={{ width: '100%' }}
+                                    onChange={e => this.setState(Object.assign({}, this.state, { ChosenCountry: e.target.value }))}
+                                >
+                                    <option value={null}>--Select Trade Partner--</option>
+                                    {this.getOptionsByTeam().map((o, i) => <option key={i} value={o.value}>{o.text}</option>)}
+                                </select>
+                                {this.state && <Button type="primary" style={{ marginTop: '10px' }} onClick={e => this.prepDeal()} disabled={!this.state.ChosenCountry}>Propose Trade</Button>}
+                            </div>
 
                         </Row> : null}
 
