@@ -52,6 +52,7 @@ import { Ratings } from './models/Ratings';
 import { RoleName } from '../../shared/models/RoleName';
 import { RoleRatingCategories } from '../../shared/models/RoleRatingCategories';
 import { version } from 'react-dom';
+import { parse } from 'querystring';
 
 // AppServer class
 export default class AppServer
@@ -498,12 +499,15 @@ export default class AppServer
             console.log("request came from ", req.headers['user-agent']);
             const agent = <string>req.headers['user-agent'];
             var isIOS = agent.match('/iPad|iPhone|iphone|iPod/g');
-            console.log(isIOS);
             if(isIOS && isIOS.length){
-                console.log(agent.split("OS ")[1].split(" ")[0]);
                 var versionString = agent.split("OS ")[1].split(" ")[0].split("_").join(".");
-                console.log(versionString);
-                res.sendFile("/sapien/client-server-sve/api/src/no-support.html")
+                var versionNum = parseFloat(versionString)
+                if(!isNaN(versionNum) && versionNum < 10.3){
+                    res.sendFile("/sapien/client-server-sve/api/src/no-support.html")
+                } else {
+                    next();
+                }
+
             } else {
                 next();
             }
