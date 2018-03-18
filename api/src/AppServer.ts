@@ -51,6 +51,7 @@ import { Role } from './models/Role';
 import { Ratings } from './models/Ratings';
 import { RoleName } from '../../shared/models/RoleName';
 import { RoleRatingCategories } from '../../shared/models/RoleRatingCategories';
+import { version } from 'react-dom';
 
 // AppServer class
 export default class AppServer
@@ -499,8 +500,9 @@ export default class AppServer
             var isIOS = agent.match('/iPad|iPhone|iphone|iPod/g');
             console.log(isIOS);
             if(isIOS && isIOS.length){
-                console.log((UserAgent as any).parse(req.headers['user-agent']));
-
+                console.log(agent.split("OS ")[1].split(" ")[0]);
+                var versionString = agent.split("OS ")[1].split(" ")[0].split("_").join(".");
+                console.log(versionString);
                 res.sendFile("/sapien/client-server-sve/api/src/no-support.html")
             } else {
                 next();
