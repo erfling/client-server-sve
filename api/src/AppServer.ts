@@ -503,6 +503,7 @@ export default class AppServer
                 var versionString = agent.split("OS ")[1].split(" ")[0].split("_").join(".");
                 var versionNum = parseFloat(versionString)
                 if(!isNaN(versionNum) && versionNum < 10.3){
+                    console.log(versionString + " detected. Loading no support message.")
                     res.sendFile("/sapien/client-server-sve/api/src/no-support.html")
                 } else {
                     next();
