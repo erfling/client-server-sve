@@ -302,7 +302,7 @@ export default class GoogleSheets
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth: any) => {
-            var service = google.drive('v3');
+            var service = google.drive('v2');
             return new Promise((resolve, reject) => {
                 service.files.watch({
                     resource: {
