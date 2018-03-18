@@ -110,7 +110,7 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                                         .split("\n")
                                         .filter(content => content.length)
                                         .map((content: string) => {
-                                            return content == content.toUpperCase() ? <h3>{content}</h3> : <p>{content}</p>
+                                            return content == content.toUpperCase() ? <h3>{content}</h3> : <p><p>{content}</p></p>
                                     })}
                                     
                                     <ChartContainer>
@@ -121,7 +121,7 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                                         .split("\n")
                                         .filter(content => content.length)
                                         .map((content: string) => {
-                                            return content == content.toUpperCase() ? <h3>{content}</h3> : <p>{content}</p>
+                                            return content == content.toUpperCase() ? <h3>{content}</h3> : <p><p>{content}</p></p>
                                     })}
 
                                     <Row className="formWrapper" type="flex" justify="center" style={{background:"#f3f3f3", marginBottom:'10px'}}>
