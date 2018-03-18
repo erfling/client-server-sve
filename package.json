@@ -52,6 +52,7 @@
     "mongoose": "@4.11.1",
     "morgan": "^1.9.1",
     "nodemon": "^1.12.1",
+    "optimize-css-assets-webpack-plugin": "^4.0.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-parallax": "^1.6.0",
@@ -71,6 +72,7 @@
     "ts-loader": "^3.2.0",
     "tsx": "^1.0.0",
     "typegoose": "^3.7.0",
+    "user-agent": "^1.0.4",
     "webpack": "@3.10.0",
     "webpack-dev-server": "^2.9.7"
   },
@@ -100,8 +102,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc -w",
     "webserver": "tsc && node ./build/api/src/index.js",
-    "build": "tsc && ./node_modules/.bin/webpack --config webpack.config.dev.js",
-    "dev": "./node_modules/.bin/webpack-dev-server --config webpack.config.dev.js",
+    "build": "tsc && ./node_modules/.bin/webpack --config webpack.config.prod.js",
+    "dev": "./node_modules/.bin/webpack-dev-server --config webpack.config.prod.js",
     "dev-start": "concurrently \"webpack-dev-server --config webpack.config.dev.js\" \"yarn webserver\" ",
     "sapien-start": "concurrently \"sudo yarn webpack --config webpack.config.prod.js\" \"yarn webserver\" "
   },

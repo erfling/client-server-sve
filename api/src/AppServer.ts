@@ -25,7 +25,7 @@ import IDeal from '../../shared/models/IDeal';
 import ITradeOption from '../../shared/models/ITradeOption';
 import IRatings from '../../shared/models/IRatings';
 import { CriteriaName } from './../../shared/models/CriteriaName';
-
+import * as UserAgent from 'user-agent';
 import formValues from '../../shared/models/FormValues';
 import * as fs from 'fs';
 
@@ -499,7 +499,8 @@ export default class AppServer
             var isIOS = agent.match('/iPad|iPhone|iphone|iPod/g');
             console.log(isIOS);
             if(isIOS && isIOS.length){
-                console.log(agent.match("/(.*) OS ([0-9]*)_(.*)_(.*)\//"))
+                console.log((UserAgent as any).parse(req.headers['user-agent']));
+
                 res.sendFile("/sapien/client-server-sve/api/src/no-support.html")
             } else {
                 next();
