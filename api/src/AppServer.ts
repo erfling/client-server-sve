@@ -793,7 +793,7 @@ export default class AppServer
             console.log(req.headers);
 
             const game = await GameModel.findById(req.headers['x-goog-channel-id']);
-            var gameId:string = <string>req.headers['x-goog-channel-id'];
+            var gameId:string = (<string>req.headers['x-goog-channel-id']).split("_TIMESTAMP_")[0];
             if(gameId){
                 let gameSocketNameSpace = this.io.of(gameId);
 

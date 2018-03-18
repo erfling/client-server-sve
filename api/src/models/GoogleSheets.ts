@@ -306,7 +306,7 @@ export default class GoogleSheets
             return new Promise((resolve, reject) => {
                 service.files.watch({
                     resource: {
-                      id: game._id,
+                      id: game._id + "_TIMESTAMP_" + new Date().getTime(),
                       type: 'web_hook',
                       address: 'https://planetsapien.com:8443/sapien/api/driveupdate/'
                     },
