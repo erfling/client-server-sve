@@ -342,7 +342,25 @@ h4{font-size: 160%}
         }
     }
 }
-
+.waves{
+    &::after{
+        right: 0;
+        height: 20vh;
+        border-radius: 50%;
+        position: fixed;
+        content: '';
+        animation: growUp 2s;
+        width: 100%;
+        margin-top: -55px;
+        animation-fill-mode: forwards;
+        z-index: 99999;
+        background: blue;    
+    }   
+}
+@keyframes growUp {
+    0%  { transform: scale(0); opacity: 1;}
+    100% { transform: scale(2); opacity: 0; }
+}
 .deal-list{
     background: rgba(255, 255, 255, 0.95);
     display: table;
@@ -543,7 +561,7 @@ textarea.ant-input{
         background: #FAFAFA;
         border:none;
         option{
-            font-size: 12px;
+            font-size: 16px;
             background: #FAFAFA;
             &:hover{
                 background: blue;
