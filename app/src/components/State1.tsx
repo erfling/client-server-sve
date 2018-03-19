@@ -150,7 +150,6 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                                              {this.props.CurrentPlayer.GameState != "1A" && 
                                             <Alert type="info" 
                                                 className="bottom-alert"
-                                                type="danger"
                                                 style={{ margin: "10px 0 20px" }} 
                                                 message={<h4>You selected {this.state.ChosenHorse}. Change your mind? If so, simply choose again.</h4>}>
                                             </Alert>}
