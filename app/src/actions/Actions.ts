@@ -17,9 +17,9 @@ import { Socket } from 'dgram';
 import { actionTypes } from 'redux-form';
 import { json } from 'express';
 
-const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
-const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
-const socketPort = window.location.host.includes('sapien') ? ":9443" : ":5000";
+const protocol = !window.location.host.includes('local') ? "https:" : "http:";
+const port = !window.location.host.includes('local') ? ":8443" : ":4000";
+const socketPort = !window.location.host.includes('location') ? ":9443" : ":5000";
 const baseRestURL = protocol +  "//" + window.location.hostname + port + "/sapien/api/";
 //const socket = socketIo({path: socketPort + "/" + "Team1", transports: ['websocket'] });
 var socket:SocketIOClient.Socket;
