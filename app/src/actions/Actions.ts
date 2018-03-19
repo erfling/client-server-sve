@@ -896,8 +896,8 @@ export const submitRoleRating = (roleName: string, teamSlug: string, rating: any
 
 export const getDaysAbove = (team:ITeam) => {
     return (dispatch: Dispatch<Action<any>>) => {
-        const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
-        const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
+        const protocol = !window.location.host.includes('local') ? "https:" : "http:";
+        const port = !window.location.host.includes('local') ? ":8443" : ":4000";
         const URL = protocol + "//" + window.location.hostname + port + "/sapien/api/getDaysAbove";
 
         fetch(

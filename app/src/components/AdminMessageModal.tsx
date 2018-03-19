@@ -18,7 +18,6 @@ export class AdminMessageModal extends React.Component<AdminMessageProps, {}> {
         if (!this.props.AdminMessage) return null
 
         return <Modal
-                    title={<span>Message from the game.</span>}
                     visible={true}
                     width="80%"
                     footer={<Button 

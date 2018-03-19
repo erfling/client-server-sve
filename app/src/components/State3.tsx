@@ -67,8 +67,8 @@ export default class State3 extends React.Component<State3Props, { PlayerNotFoun
     }
 
     getRatings(){
-        const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
-        const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
+        const protocol = !window.location.host.includes('local') ? "https:" : "http:";
+        const port = !window.location.host.includes('local') ? ":8443" : ":4000";
         const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/sheets/ratings";
         fetch(
             URL,

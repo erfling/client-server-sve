@@ -58,8 +58,8 @@ export default class State2 extends React.Component<State5Props, { submitting: b
             FormValues: Object.assign(this.state.FormValues, { GameId: this.props.CurrentPlayer.GameId })
         }));
         console.log(this.state.FormValues)
-        const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
-        const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
+        const protocol = !window.location.host.includes('local') ? "https:" : "http:";
+        const port = !window.location.host.includes('local') ? ":8443" : ":4000";
         const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/games/saveexperiment";
 
         this.setState(Object.assign({}, this.state, {
