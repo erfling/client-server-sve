@@ -526,6 +526,15 @@ export default class AppServer
             var privateKey  = fs.readFileSync('/sapien/certificates/planetsapien.com/privkey.pem', 'utf8').toString();
             var certificate = fs.readFileSync('/sapien/certificates/planetsapien.com/fullchain.pem', 'utf8').toString();
             assetServer =  https.createServer({key: privateKey, cert: certificate}, this.publicApp);
+            const forwardApp = express();
+            const forwardServer = http.createServer(forwardApp);
+            forwardServer.listen(80);
+            forwardApp.get('*', (req, res) => {
+                console.log("HTTP INSECURE TRAFFIC");
+                res.redirect('https://' + req.headers.host + req.url);
+            })
+
+
         }else{
             assetServer =  http.createServer(this.publicApp);                
         }        
