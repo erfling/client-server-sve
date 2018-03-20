@@ -66,6 +66,9 @@ export class Team extends BaseClass implements ITeam
     @prop()
     Roles:{ [R in RoleName]: Role };
 
+    @prop()
+    ChosenHorse: string;
+
   }
 
   export const TeamModel = new Team().getModelForClass( Team, { existingMongoose: mongoose } )

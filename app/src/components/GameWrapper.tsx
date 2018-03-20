@@ -39,6 +39,23 @@ export class GameWrapper extends React.Component<GamesList, any> {
         document.querySelector('.home-content').scrollIntoView({ behavior: 'smooth' ,block: 'start' });
     }
 
+    componentDidUpdate(oldState:any, newState:any){
+        console.log("GAME WRAPPER DID UPDATE", oldState, newState);
+        if(this.props.BottomBarVisible && !oldState.BottomBarVisible){
+            var x = 1; //y-axis pixel displacement
+            var y = 25; //delay in milliseconds
+
+            var scrollInterval = setInterval(function() {
+                window.scrollBy(0, x);
+                x += 1; //if you want to increase speed simply increase increment interval
+                if(x >= 100){
+                    clearInterval(scrollInterval);
+                }
+            }, y);
+        }
+
+    }
+
     //onClick={this.props.testUpdate}
     render() {
         if(this.props.CurrentPlayer){

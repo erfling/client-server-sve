@@ -5,12 +5,20 @@ import WaterForm from './form-elements/WaterForm'
 import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom';
 import { Row, Col, Select, Button, Alert, Icon } from 'antd';
-import ChartContainer from '../containers/ChartContainer'
+import ChartContainer from '../containers/ChartContainer';
+import ApplicationStore from '../stores/Store';
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
+import * as Actions from '../actions/Actions';
+import { ACTION_TYPES } from '../actions/Actions';
 
 import Horse from '-!svg-react-loader?name=Icon!../img/horse.svg';
 require('smoothscroll-polyfill').polyfill();
 
 const City = require("../img/Drought_water_city.jpg");
+
+// COMPONENT //
+///////////////
 
 interface State1Props {
     CurrentPlayer: ITeam
@@ -18,7 +26,8 @@ interface State1Props {
     setWaterValues: (team: ITeam) => {}
     match: any;
 }
-export default class State1 extends React.Component<State1Props, { PlayerNotFound: boolean, ChosenHorse: string, FeedBack: string[][], Decided: boolean }> {
+
+export class State1 extends React.Component<State1Props, { PlayerNotFound: boolean, ChosenHorse: string, PendingChoice: string, FeedBack: string[][], Decided: boolean }> {
     componentWillMount() {
         this.setState({ PlayerNotFound: false, ChosenHorse: null })
     }
@@ -41,9 +50,32 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
     }
 
     setDecisionState(e: string) {
+
+        //set choice as the one being sent to server
+        this.setState(Object.assign(this.state, {PendingChoice: e}))
+        const protocol = !window.location.host.includes('local') ? "https:" : "http:";
+        const port = !window.location.host.includes('local') ? ":8443" : ":4000";
+        const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/chooseHorse";
+        fetch(
+            URL,
+            {
+                method: "POST",
+                body: JSON.stringify(Object.assign(this.props.CurrentPlayer, {ChosenHorse: e})),
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            }
+        )
+        .then( r => r.json() )
+        .then(r => {
+            this.setState(Object.assign(this.state, {PendingChoice: null}))
+        })
+
+        //
+
         this.setState(Object.assign({}, this.state, { Decided: true }));
-        console.log(document.querySelector(".decided-messaged"));
-        setTimeout(() => document.querySelector(".decided-messaged").scrollIntoView({ behavior: "smooth" }), 500);
+        var elem = document.querySelector(".decided-messaged");
+        if (elem) setTimeout(() => document.querySelector(".decided-messaged").scrollIntoView({ behavior: "smooth" }), 500);
     }
 
     getResults() {
@@ -65,6 +97,10 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
         console.log(teamFeedBack);
         return teamFeedBack[0].filter((content, i) => i != 0 && i < 5)
             .map(content => content.startsWith("^") ? teamFeedBack[0][5] : content.substr(1))
+    }
+
+    getIcon(){
+        return <Icon type="loading" />
     }
 
 
@@ -111,8 +147,8 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                                         .filter(content => content.length)
                                         .map((content: string) => {
                                             return content == content.toUpperCase() ? <h3>{content}</h3> : <p><p>{content}</p></p>
-                                    })}
-                                    
+                                        })}
+
                                     <ChartContainer>
                                         Planet Sapien Global Warming
                                     </ChartContainer>
@@ -122,69 +158,46 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                                         .filter(content => content.length)
                                         .map((content: string) => {
                                             return content == content.toUpperCase() ? <h3>{content}</h3> : <p><p>{content}</p></p>
-                                    })}
+                                        })}
 
-                                    <Row className="formWrapper" type="flex" justify="center" style={{background:"#f3f3f3", marginBottom:'10px'}}>
-                                        <div style={{width: '75%', maxWidth: '600px'}}>
-                                            
-                                            <div className="button-wrapper">
-                                                <label>Who gets the water?</label>
-                                                <Button 
-                                                    type="primary" 
-                                                    size="large"
-                                                    onClick={e => console.log(e)}
-                                                >
-                                                    Choose Agriculture <Icon type="check-circle-o" />
-                                                </Button>
-                                                <Button 
-                                                    type="primary"
-                                                    size="large" 
-                                                    onClick={e => console.log(e)}
-                                                >
-                                                    Choose Government <Icon type="check-circle-o" />
-                                                </Button>
-                                                <Button 
-                                                    type="primary"
-                                                    size="large" 
-                                                    onClick={e => console.log(e)}
-                                                >
-                                                    Choose Healthcare <Icon type="check-circle-o" />
-                                                </Button>
-                                                <Button 
-                                                    type="primary"
-                                                    size="large" 
-                                                    onClick={e => console.log(e)}
-                                                >
-                                                    Choose Industry <Icon type="check-circle-o" />
-                                                </Button>
-                                                                                      
-                                            </div>
-                                            {this.state.Decided && 
-                                            <Alert type="info" 
-                                                className="bottom-alert"
-                                                style={{ margin: "10px 0 20px" }} 
-                                                message={<h4>You selected {this.state.ChosenHorse}. Change your mind? If so, simply choose again.</h4>}>
-                                            </Alert>}
-                                            
+                                    <Row className="formWrapper" type="flex" justify="center" style={{ background: "#f3f3f3", marginBottom: '10px' }}>
 
-                                             {this.props.CurrentPlayer.GameState != "1A" && 
-                                            <Alert type="info" 
-                                                className="bottom-alert"
-                                                style={{ margin: "10px 0 20px" }} 
-                                                message={<h4>You selected {this.state.ChosenHorse}. Change your mind? If so, simply choose again.</h4>}>
-                                            </Alert>}
+                                        <div className="button-row">
+                                            <label>Who gets the water?</label>
+                                            {["Agriculture", "Government", "Healthcare", "Industry"]
+                                            .map(choice => 
+                                                <div>
+                                                    <div className="button-wrapper">
+                                                        <Button
+                                                            type={!this.props.CurrentPlayer.ChosenHorse || (this.props.CurrentPlayer.ChosenHorse && this.props.CurrentPlayer.ChosenHorse == choice) ? "primary" : "dashed"}
+                                                            size="large"
+                                                            onClick={e => this.setDecisionState(choice)}
+                                                        >
+                                                            Choose {choice}
+                                                        </Button>
+                                                    </div>
+                                                    <div className="icon-wrapper">
 
-                                            {!this.state.Decided && 
-                                            <Button style={{ margin: "30px 0 50px" }}
-                                                type="primary" 
-                                                size="large"
-                                                onClick={e => this.setDecisionState(this.state.ChosenHorse)}
-                                            >
-                                                Commit Decision
-                                            </Button>
-                                            }
-
+                                                        {this.state.PendingChoice && this.state.PendingChoice == choice && !this.props.CurrentPlayer.ChosenHorse ? 
+                                                            <Icon type="loading" /> : null
+                                                        }
+                                                        {this.props.CurrentPlayer.ChosenHorse && this.props.CurrentPlayer.ChosenHorse == choice ? 
+                                                            <Icon type="check-circle-o" /> : null
+                                                        }
+                                                    </div>
+                                                </div>
+                                            )}
+                                          
                                         </div>
+
+                                        {this.props.CurrentPlayer.GameState != "1A" && !this.props.CurrentPlayer.ChosenHorse ?
+                                            <Alert 
+                                                type="error"
+                                                className="bottom-alert"
+                                                style={{ margin: "10px 0 20px" }}
+                                                message={<h4>Please make a selection.</h4>}>
+                                            </Alert> : null}
+
                                     </Row>
                                 </Col>
                             </Row> : null}
@@ -216,7 +229,7 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                             </Row> : null
                         }
 
-                        {this.props.CurrentPlayer.GameState == "1C" && this.state.ChosenHorse ? 
+                        {this.props.CurrentPlayer.GameState == "1C" && this.state.ChosenHorse ?
                             <Row style={{ minHeight: '25vh', marginTop: '-19px' }}>
                                 <Col xs={24}>
                                     {this.state.Decided &&
@@ -250,22 +263,32 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
 
     }
 }
-/* <select
-                                                    style={{ width: '100%' }}
-                                                    onChange={e => {console.log(e); this.setState(Object.assign({}, this.state, { ChosenHorse: e.target.value, Decided: false }))}}
-                                                >
-                                                    <option value=''>-- Who gets the water? -- </option>
-                                                    <option value="Agriculture">Agriculture</option>
-                                                    <option value="Government">Government</option>
-                                                    <option value="Healthcare">Healthcare</option>
-                                                    <option value="Industry">Industry</option>
-                                                </select>
-                                                {!this.state.Decided && 
-                                            <Button style={{ margin: "30px 0 50px" }}
-                                                type="primary" 
-                                                size="large"
-                                                onClick={e => this.setDecisionState(this.state.ChosenHorse)}
-                                            >
-                                                Commit Decision <Icon type="check-circle-o" />
-                                            </Button>
-                                            }*/
+
+// CONTAINER //
+///////////////
+
+interface DispatchProps {
+    getPlayer: () => {}
+    setWaterValues: (team: ITeam) => {}
+    getPossibleResults: () => {}
+}
+export interface State1ContainerProps {
+    CurrentPlayer: ITeam;
+}
+
+const mapStateToProps = (state: ApplicationStore, ownProps: {}): State1ContainerProps => {
+    return {
+        CurrentPlayer: state.GameData.CurrentPlayer,
+    };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>, ownProps: any) => {
+    return {
+        getPlayer: () => dispatch(Actions.getPlayer()),
+        setWaterValues: (team: ITeam) => { dispatch(Actions.setWaterValues(team)) },
+
+    }
+}
+
+const State1Container = connect<State1ContainerProps, {}>(mapStateToProps, mapDispatchToProps)(State1);
+export default State1Container;

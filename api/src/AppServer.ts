@@ -54,6 +54,24 @@ import { RoleRatingCategories } from '../../shared/models/RoleRatingCategories';
 import { version } from 'react-dom';
 import { parse } from 'querystring';
 
+const teamPopulateRules =  [
+    {
+        path: "Nation"
+    },
+    {
+        path:"DealsProposedTo",
+        populate: {
+            path:"TradeOption"
+        }
+    },
+    {
+        path:"DealsProposedBy",
+        populate: {
+            path:"TradeOption"
+        }                            
+    }
+];
+
 // AppServer class
 export default class AppServer
 {
@@ -953,6 +971,28 @@ export default class AppServer
             this.getDaysAbove(req.body);
             const updatedValues = await this.sheets.GetSheetValues(req.body.SheetId, "Country Impact!C21");
             res.json(updatedValues);
+
+        })
+
+        this.app.post("/sapien/api/chooseHorse", async (req, res) => {
+            const newTeam = await TeamModel.findOneAndUpdate({Slug: req.body.Slug}, {ChosenHorse: req.body.ChosenHorse}, {new: true}).populate(teamPopulateRules);
+
+            if(newTeam){
+
+                const game = await GameModel.findById(newTeam.GameId).populate("Teams");
+                if(game){
+                    var teams = (<ITeam[]>game.Teams).filter(t => t.ChosenHorse).map(t => t.Slug);
+                    this.GetRoundCompletion(game, newTeam, teams);
+                    res.json(true)
+                    this.io.of(newTeam.GameId).to(newTeam.Slug).emit(SocketEvents.TEAM_UPDATED, newTeam);
+                } else {
+                    res.status(400);
+                    res.json("done broke")
+                }
+            } else {
+                res.status(400);
+                res.json("done broke")
+            }
 
         })
         

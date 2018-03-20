@@ -4,7 +4,7 @@ import TeamDetailContainer from '../containers/TeamDetailContainer';
 import AdminRoot from '../components/AdminRoot'
 import { Route, Switch } from 'react-router';
 import LoginContainer from '../containers/LoginContainer'
-import State1Container from '../containers/State1Container'
+import State1Container from '../components/State1'
 import State2Container from '../containers/State2Container'
 import State3Container from '../containers/State3Container'
 import State4Container from '../containers/State4Container'
