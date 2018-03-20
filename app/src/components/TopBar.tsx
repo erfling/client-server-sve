@@ -5,7 +5,7 @@ import ITeam from '../../../shared/models/ITeam';
 import RatingsForm from './form-elements/RatingsForm'
 import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom'; 
-import {Row, Col} from 'antd';
+import {Row, Col, Button} from 'antd';
 import INation from '../../../shared/models/INation';
 import IDeal from '../../../shared/models/IDeal';
 import {Ratings} from '../../../api/src/models/Ratings';
@@ -21,7 +21,7 @@ interface State3Props{
    DaysAbove2: number;
    SocketConnected: boolean;
 }
-export default class State3 extends React.Component<State3Props, {PlayerNotFound:boolean}> {
+export default class TopBar extends React.Component<State3Props, {PlayerNotFound:boolean, LocalDaysAbove2: number, LocalDashboard: number}> {
 
     componentDidMount(){
         this.setState({PlayerNotFound: false})
@@ -34,12 +34,29 @@ export default class State3 extends React.Component<State3Props, {PlayerNotFound
         }else{
             console.log("CURRENT PLAYER ALREADY IN REDUX STORE")
         }
+        
         window.scrollTo(0,0);
     }
 
     componentDidUpdate(){
         console.log("did updated called", this.props.SocketConnected, this.props.DaysAbove2)
         this.getData();
+
+        if(this.props.Dashboard && this.props.Dashboard.length){
+            console.log("updated");
+            if(!this.state.LocalDashboard  
+                || this.state.LocalDashboard != this.props.Dashboard[100]
+            ){
+                this.setState(Object.assign({}, this.state, {LocalDashboard: parseFloat(this.props.Dashboard[100])}))
+                this.animateScore();
+            }
+        }
+    }
+
+    animateScore(){
+        var elem:HTMLElement = document.querySelector(".animation-target");
+        elem.classList.add("waves")
+        console.log("FOUND ELEMENT: ", elem);
     }
 
     getData() {
@@ -76,10 +93,17 @@ export default class State3 extends React.Component<State3Props, {PlayerNotFound
         return this.props.CurrentPlayer && this.props.SocketConnected ? 
                     <Row ref="tempTracker" className="tempTracker">
                         {this.props.CurrentPlayer.GameState.indexOf("2") != -1 ? 
-                        <div>Temp  in 2100: <span style={{ color: this.getColor() }}>{this.props.Dashboard[100]}</span>
+                        <div>Temp  in 2100: 
+                            <Button 
+                                className="small-button animation-target" style={{ color: this.getColor() }}
+                                type="dashed"
+                                shape="circle"
+                            >
+                                {this.props.Dashboard[100]}
+                            </Button>
                         <span>Your Trade Bank: ${this.getTradeBank()} Billion</span></div>
                         :
-                        <div>Days 2&#176; above pre-industrial temps: <span>{this.props.DaysAbove2}</span></div>}
+                        <div>Days 2&#176; above pre-industrial temps: <span className="animation-target">{this.props.DaysAbove2}</span></div>}
                     </Row> : null    
                
     }
