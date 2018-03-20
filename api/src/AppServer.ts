@@ -572,8 +572,10 @@ export default class AppServer
         this.app.use((req, res, next) => {
             var allowedOrigins = [
                                     'http://localhost:443', 
-                                    'https://planetsapientestsite.com', 
-                                    'https://planetsapientestsite.com:443', 
+                                    'https://planetendeavor.com', 
+                                    'https://planetendeavor.com:443', 
+                                    'https://www.planetendeavor.com', 
+                                    'https://www.planetendeavor.com:443', 
                                     'https://planetsapien.com', 
                                     'https://planetsapien.com:443', 
                                     'https://www.planetsapien.com:443', 
@@ -846,7 +848,7 @@ export default class AppServer
         var port = AppServer.SOCKET_PORT;
         if (this.socketServer instanceof https.Server) {
             port = AppServer.SECURE_SOCKET_PORT;
-            this.io.origins('https://planetsapien.com:443 | https://www.planetsapien.com:443');
+            this.io.origins('https://planetsapien.com:443 | https://www.planetsapien.com:443 | https://planetendeavor.com:443 | https://www.planetendeavor.com:443');
             
             console.log("ORIGINS HAVE BEEN SET");
         }

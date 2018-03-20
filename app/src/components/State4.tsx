@@ -99,8 +99,8 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
     }
     
     getGenericContent() {
-        const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
-        const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
+        const protocol = !window.location.host.includes('local') ? "https:" : "http:";
+        const port = !window.location.host.includes('local') ? ":8443" : ":4000";
         const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/sheets/content/" + (this.props.CurrentPlayer.Nation as INation).Name + "/" + this.props.CurrentPlayer.SheetId;
         fetch(
             URL
@@ -112,8 +112,8 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
     }
 
     getRoleContent() {
-        const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
-        const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
+        const protocol = !window.location.host.includes('local') ? "https:" : "http:";
+        const port = !window.location.host.includes('local') ? ":8443" : ":4000";
         const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/sheets/content/rolecontent/role/" + this.props.SelectedRole.Name
 
         fetch(

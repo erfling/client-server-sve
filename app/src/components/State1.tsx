@@ -47,8 +47,8 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
     }
 
     getResults() {
-        const protocol = window.location.host.includes('sapien') ? "https:" : "http:";
-        const port = window.location.host.includes('sapien') ? ":8443" : ":4000";
+        const protocol = !window.location.host.includes('local') ? "https:" : "http:";
+        const port = !window.location.host.includes('local') ? ":8443" : ":4000";
         const URL = protocol + "//" + window.location.hostname + port + "/sapien/api/getWaterResuls";
 
         fetch(
@@ -103,7 +103,7 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
             >
                 <Row type="flex" justify="center">
                     <Col xs={24}>
-                        {this.props.CurrentPlayer.GameState == "1A"
+                        {this.props.CurrentPlayer.GameState == "1A" || !this.state.Decided
                             ? <Row type="flex" justify="center">
                                 <Col xs={23}>
                                     {this.state.FeedBack && this.state.FeedBack[12][2]
@@ -167,12 +167,29 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                                             </Alert>}
                                             
 
+                                             {this.props.CurrentPlayer.GameState != "1A" && 
+                                            <Alert type="info" 
+                                                className="bottom-alert"
+                                                style={{ margin: "10px 0 20px" }} 
+                                                message={<h4>You selected {this.state.ChosenHorse}. Change your mind? If so, simply choose again.</h4>}>
+                                            </Alert>}
+
+                                            {!this.state.Decided && 
+                                            <Button style={{ margin: "30px 0 50px" }}
+                                                type="primary" 
+                                                size="large"
+                                                onClick={e => this.setDecisionState(this.state.ChosenHorse)}
+                                            >
+                                                Commit Decision
+                                            </Button>
+                                            }
+
                                         </div>
                                     </Row>
                                 </Col>
                             </Row> : null}
 
-                        {this.props.CurrentPlayer.GameState == "1B" &&
+                        {this.props.CurrentPlayer.GameState == "1B" && this.state.ChosenHorse ?
                             <Row style={{ minHeight: '25vh', marginTop: '-19px' }}>
                                 <Col xs={24}>
                                     {this.state.Decided &&
@@ -196,10 +213,10 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                                                 })}
                                         </Row> : null}
                                 </Col>
-                            </Row>
+                            </Row> : null
                         }
 
-                        {this.props.CurrentPlayer.GameState == "1C" &&
+                        {this.props.CurrentPlayer.GameState == "1C" && this.state.ChosenHorse ? 
                             <Row style={{ minHeight: '25vh', marginTop: '-19px' }}>
                                 <Col xs={24}>
                                     {this.state.Decided &&
@@ -224,7 +241,7 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                                             </Row>
                                         </Row> : null}
                                 </Col>
-                            </Row>
+                            </Row> : null
                         }
                     </Col>
                 </Row>
