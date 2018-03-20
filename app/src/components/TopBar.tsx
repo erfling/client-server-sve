@@ -5,7 +5,7 @@ import ITeam from '../../../shared/models/ITeam';
 import RatingsForm from './form-elements/RatingsForm'
 import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom'; 
-import {Row, Col, Button} from 'antd';
+import {Row, Col} from 'antd';
 import INation from '../../../shared/models/INation';
 import IDeal from '../../../shared/models/IDeal';
 import {Ratings} from '../../../api/src/models/Ratings';
@@ -94,13 +94,7 @@ export default class TopBar extends React.Component<State3Props, {PlayerNotFound
                     <Row ref="tempTracker" className="tempTracker">
                         {this.props.CurrentPlayer.GameState.indexOf("2") != -1 ? 
                         <div>Temp  in 2100: 
-                            <Button 
-                                className="small-button animation-target" style={{ color: this.getColor() }}
-                                type="dashed"
-                                shape="circle"
-                            >
-                                {this.props.Dashboard[100]}
-                            </Button>
+                            <span className="animation-target" style={{ color: this.getColor() }}>{this.props.Dashboard[100]}</span>
                         <span>Your Trade Bank: ${this.getTradeBank()} Billion</span></div>
                         :
                         <div>Days 2&#176; above pre-industrial temps: <span className="animation-target">{this.props.DaysAbove2}</span></div>}
