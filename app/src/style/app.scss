@@ -588,8 +588,8 @@ textarea.ant-input{
 .button-row{
      margin:0 auto;
      display: table;
-     max-width: 510px;
-
+     width: 90%;
+    
      >div{
          display: table-row;
          clear: both;
@@ -603,7 +603,6 @@ textarea.ant-input{
             width:100%;
         }
         .button-wrapper{
-            width:455px;
         }
         .icon-wrapper{
             font-size: 45px;
