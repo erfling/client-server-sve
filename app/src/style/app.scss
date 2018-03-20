@@ -307,21 +307,21 @@ h4{font-size: 160%}
 }
 
 .tempTracker {
-    font-size: 1.5em;
+    font-size: 43px;
     position: fixed;
     right: 0;
     width: 100%;
     left: 0;
     background: rgba(255, 255, 255, 0.95);
-    border-bottom: 1px solid #5b5fbf;
+    border-bottom: 5px solid #1790ff;
     top: -1px;
-    height: 60px;
+    height: 95px;
     overflow: hidden;
     z-index: 9999;
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.9);
     text-align: center;
-    color: #505050;
-    padding-top: 8px;
+    color: #000000;
+    padding-top: 13px;
     >div >span{
         margin-left:3px;
         margin-right:20px;
