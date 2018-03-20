@@ -41,7 +41,6 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
     
     componentWillMount(){
         this.setState({TeamOptions:[], SelectedGame: null})
-        this.props.getTeams();
         this.props.getGames();
     }
     
@@ -55,8 +54,8 @@ export default class LoginFormComponent extends React.Component<FormProps, {Team
     }
 
     onChangeSelectTeam(value: any){
-        console.log("SELECTED: ", value)
-        let selectedTeam = this.props.Teams.filter(t => t.Slug == value)[0] || null;
+        console.log("SELECTED: ", value, this.props.Teams);
+        let selectedTeam = (this.props.CurrentGame.Teams as ITeam[]).filter(t => t.Slug == value)[0] || null;
         if(selectedTeam){
             this.props.selectTeam(selectedTeam);
             console.log(this.props.SelectedTeam)

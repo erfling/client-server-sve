@@ -399,13 +399,15 @@ export default class AppServer
             eventTarget.nsp.to(roleRoomName).emit(SocketEvents.ROLE_RETURNED, (<any>newlyUpdatedTeam).Roles[roleName])
             eventTarget.nsp.to(otherRoleRoomName).emit(SocketEvents.ROLE_RETURNED, (<any>newlyUpdatedTeam).Roles[otherRole])
 
+            const game = await GameModel.findById(newlyUpdatedTeam.GameId).populate({
+                path: "Teams"
+            });
 
             //the two params are in agreement. now we check to see if all are for the given team.
             //we will have already determined whether there is agreement on each param, so just check the AgreementStatus prop
-            var allAgree = Object.keys(newlyUpdatedTeam.Roles[RoleName.BANK].RoleTradeRatings).every((rating:RoleRatingCategories) => {
-                return newlyUpdatedTeam.Roles[RoleName.BANK].RoleTradeRatings[rating].AgreementStatus == 1;
-            })
-            if(allAgree){
+        
+            if(this.AllAgree(newlyUpdatedTeam)){
+                console.log("WE HAD A VVALID TEAM");
                 //get our sheet submit range. Magic strings represent ranges in google sheets model based on country
                 var range = "Round 4!";
                 switch((<INation>newlyUpdatedTeam.Nation).Name){
@@ -435,12 +437,17 @@ export default class AppServer
                     return [newlyUpdatedTeam.Roles[RoleName.BANK].RoleTradeRatings[rating].Value.toString(), newlyUpdatedTeam.Roles[RoleName.MINISTER_OF_ENERGY].RoleTradeRatings[rating].Value.toString()];
                 })
 
-                const game = await GameModel.findById(newlyUpdatedTeam.GameId);
+                
                 console.log(game);
                 const committedAnswers = await this.sheets.commitAnswers( values, range, game.SheetId );
                 this.getDaysAbove(newlyUpdatedTeam);
+
             }
+            var validTeams = (game.Teams as ITeam[]).filter(t => this.AllAgree(t)).map(t => t.Slug);
+            this.GetRoundCompletion(game, team, validTeams);
+
         } 
+        
         //if not emit waiting for other team to role room back to submitting role
         else{
             console.log("DIDN'T FIND MATCHING ANSWER TO CHECK")
@@ -450,7 +457,14 @@ export default class AppServer
             const newlyUpdatedTeam = await TeamModel.findOneAndUpdate({Slug: teamSlug}, t, {new: true});
             eventTarget.nsp.to(roleRoomName).emit(SocketEvents.ROLE_RETURNED, (<any>newlyUpdatedTeam).Roles[roleName])
         }
- 
+
+    }
+
+    private AllAgree(team: ITeam){
+        console.log("TEAM IN ALL AGREE");
+        return team.Roles[RoleName.BANK] && Object.keys(team.Roles[RoleName.BANK].RoleTradeRatings).every((rating:RoleRatingCategories) => {
+            return team.Roles[RoleName.BANK].RoleTradeRatings && team.Roles[RoleName.BANK].RoleTradeRatings[rating].AgreementStatus == 1;
+        })
     }
 
     private onSocketRoomToRoomMessage(eventTarget:SocketIO.Socket, fromRoom:string, toRoom:string, msg:string):void {
@@ -949,5 +963,27 @@ export default class AppServer
             console.log("VALUES FROM SHEET", updatedValues);
             this.io.of(team.GameId).emit(SocketEvents.UPDATE_YEARS_ABOVE_2, updatedValues[0][0]);
         }
+    }
+
+    private async GetRoundCompletion(game:IGame, team: ITeam, validTeams: string[]){
+        const roundNumberIdx = parseInt(game.State.charAt(0)) - 1;
+        if(!game.SubmissionsByRound){
+            game.SubmissionsByRound = [];
+        }
+        game.SubmissionsByRound[roundNumberIdx] = validTeams.length;
+
+        console.log(roundNumberIdx, game.SubmissionsByRound);
+
+        const newGame = await GameModel.findByIdAndUpdate(game._id, game, {new: true});
+        if(newGame){
+            console.log(newGame.SubmissionsByRound)
+            var thingus: any = {NumTeams: newGame.Teams.length, TeamsCompleted: validTeams, Team:team.Slug };
+            console.log("HELLOW EVERYONE> EVERYTHINGS OK HERE", SocketEvents.SOMEBODY_COMPLETED_A_ROUND, thingus);
+            this.io.of(game._id).emit(SocketEvents.SOMEBODY_COMPLETED_A_ROUND, thingus);
+        } else {
+            console.log("OH FUCK");
+        }
+
+
     }
 }

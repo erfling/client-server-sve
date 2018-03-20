@@ -584,7 +584,74 @@ textarea.ant-input{
         pointer-events: none;
     }
 }
+
+.button-wrapper{
+    margin:0 auto;
+    .ant-btn{
+        > span:first-child{
+            float:left;
+        }
+        
+        margin-bottom: 21px;
+        display: block;
+        text-align: left;
+        width:100%;
+        .anticon{
+            float: right;
+            margin-top: 11px;
+        }
+        /*width: 75%;
+        max-width: 600px;*/
+    }
+}
+
 .ant-btn:not(.small-button):not(.game-button){
     font-size: 45px;
     padding: 0 20px 72px;
+}
+
+.bottom-bar{
+    z-index: 2;
+    background: #1790ff;
+    height: 100px;
+    position: fixed;
+    bottom: -100px;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    box-shadow: 0 0 26px 1px rgba(0, 0, 0, 0.7);
+    transition: bottom 1s;
+    color:white;
+    h1,h2,h3,h4,h5,p,label{
+        color: white;
+    }
+    &.visible{
+        bottom:0;
+    }
+
+    >div{
+        display: table;
+        margin:0 auto;
+        > div{
+            display:table-row;
+            > div{
+                display: table-cell;
+                vertical-align: middle;
+            }
+        }
+    }
+
+    .completion-chart{
+        .incomplete{
+            fill: none !important;
+            stroke: #fff !important;
+        }
+        .complete{
+            fill: #16591f !important;
+            stroke: green !important;
+        }
+    }
+}
+.big-bottom{
+    padding-bottom: 70px;
 }

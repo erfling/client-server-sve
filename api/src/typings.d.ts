@@ -43,6 +43,7 @@ declare module "react-vis"{
     export const HorizontalGridLines:any;
     export const VerticalGridLines:any;
     export const LineSeries:any;
+    export const RadialChart: any;
 
     interface IDiscreteColorLegend{
         color?: string;

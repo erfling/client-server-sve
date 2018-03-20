@@ -4,7 +4,7 @@ import ITeam from '../../../shared/models/ITeam';
 import WaterForm from './form-elements/WaterForm'
 import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom';
-import { Row, Col, Select, Button, Alert } from 'antd';
+import { Row, Col, Select, Button, Alert, Icon } from 'antd';
 import ChartContainer from '../containers/ChartContainer'
 
 import Horse from '-!svg-react-loader?name=Icon!../img/horse.svg';
@@ -125,20 +125,39 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                                     })}
 
                                     <Row className="formWrapper" type="flex" justify="center" style={{background:"#f3f3f3", marginBottom:'10px'}}>
-                                        <Col xs={20}>
+                                        <div style={{width: '75%', maxWidth: '600px'}}>
                                             
-                                            <div className="select-wrapper">
+                                            <div className="button-wrapper">
                                                 <label>Who gets the water?</label>
-                                                <select
-                                                    style={{ width: '100%' }}
-                                                    onChange={e => {console.log(e); this.setState(Object.assign({}, this.state, { ChosenHorse: e.target.value, Decided: false }))}}
+                                                <Button 
+                                                    type="primary" 
+                                                    size="large"
+                                                    onClick={e => console.log(e)}
                                                 >
-                                                    <option value=''>-- Who gets the water? -- </option>
-                                                    <option value="Agriculture">Agriculture</option>
-                                                    <option value="Government">Government</option>
-                                                    <option value="Healthcare">Healthcare</option>
-                                                    <option value="Industry">Industry</option>
-                                                </select>
+                                                    Choose Agriculture <Icon type="check-circle-o" />
+                                                </Button>
+                                                <Button 
+                                                    type="primary"
+                                                    size="large" 
+                                                    onClick={e => console.log(e)}
+                                                >
+                                                    Choose Government <Icon type="check-circle-o" />
+                                                </Button>
+                                                <Button 
+                                                    type="primary"
+                                                    size="large" 
+                                                    onClick={e => console.log(e)}
+                                                >
+                                                    Choose Healthcare <Icon type="check-circle-o" />
+                                                </Button>
+                                                <Button 
+                                                    type="primary"
+                                                    size="large" 
+                                                    onClick={e => console.log(e)}
+                                                >
+                                                    Choose Industry <Icon type="check-circle-o" />
+                                                </Button>
+                                                                                      
                                             </div>
                                             {this.state.Decided && 
                                             <Alert type="info" 
@@ -146,17 +165,9 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
                                                 style={{ margin: "10px 0 20px" }} 
                                                 message={<h4>You selected {this.state.ChosenHorse}. Change your mind? If so, simply choose again.</h4>}>
                                             </Alert>}
-                                            {!this.state.Decided && 
-                                            <Button style={{ margin: "30px 0 50px" }}
-                                                type="primary" 
-                                                size="large"
-                                                onClick={e => this.setDecisionState(this.state.ChosenHorse)}
-                                            >
-                                                Commit Decision
-                                            </Button>
-                                            }
+                                            
 
-                                        </Col>
+                                        </div>
                                     </Row>
                                 </Col>
                             </Row> : null}
@@ -222,3 +233,22 @@ export default class State1 extends React.Component<State1Props, { PlayerNotFoun
 
     }
 }
+/* <select
+                                                    style={{ width: '100%' }}
+                                                    onChange={e => {console.log(e); this.setState(Object.assign({}, this.state, { ChosenHorse: e.target.value, Decided: false }))}}
+                                                >
+                                                    <option value=''>-- Who gets the water? -- </option>
+                                                    <option value="Agriculture">Agriculture</option>
+                                                    <option value="Government">Government</option>
+                                                    <option value="Healthcare">Healthcare</option>
+                                                    <option value="Industry">Industry</option>
+                                                </select>
+                                                {!this.state.Decided && 
+                                            <Button style={{ margin: "30px 0 50px" }}
+                                                type="primary" 
+                                                size="large"
+                                                onClick={e => this.setDecisionState(this.state.ChosenHorse)}
+                                            >
+                                                Commit Decision <Icon type="check-circle-o" />
+                                            </Button>
+                                            }*/

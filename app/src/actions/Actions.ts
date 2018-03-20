@@ -147,7 +147,7 @@ export class ACTION_TYPES implements I_ACTION_TYPES{
 
     static PLAYER_UPDATED: ActionDescription = {
         actionType: "PLAYER_UPDATED",
-        payloadType: "Team",
+        payloadType: "any",
     }
 
     static ADMIN_MESSAGE_SENT: ActionDescription = {
@@ -234,6 +234,11 @@ export class ACTION_TYPES implements I_ACTION_TYPES{
         payloadType: "boolean"
     }
 
+    static SOMEBODY_SUBMITTED: ActionDescription = {
+        actionType: "SOMEBODY_SUBMITTED",
+        payloadType: "any"
+    }
+
 
 }
 
@@ -260,7 +265,6 @@ export const createTeamSocket = (team:ITeam) => {
             console.log("SOCKET ON CONNECT THAT RETURNED:", socket);
             socket.emit(SocketEvents.JOIN_ROOM, team.Slug);
         })
-        
         
         return (dispatch: Dispatch<Action<ITeam>>) => {
             console.log("WILL RETURN DISPATCH")
@@ -395,6 +399,13 @@ export const createTeamSocket = (team:ITeam) => {
                         payload: true
                     }
                 )
+            })
+            .on(SocketEvents.SOMEBODY_COMPLETED_A_ROUND, (submissionCount: {NumTeams:  number, TeamsCompleted: string[], Team:string }) => {
+                dispatch({
+                    type: ACTION_TYPES.SOMEBODY_SUBMITTED.actionType,
+                    payload: submissionCount
+                })
+
             })
             
             // Set up is-awake interval checker thingy

@@ -17,4 +17,5 @@ export default interface IGame extends IBaseClass {
     DatePlayed: Date;
     State: string;
     IsCurrentGame:boolean;
+    SubmissionsByRound: number[];
   }  

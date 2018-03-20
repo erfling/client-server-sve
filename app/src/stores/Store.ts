@@ -23,7 +23,9 @@ export default interface ApplicationStore{
         StateContent:any;
         DaysAbove2: number;
         //temp testing value
-        EnvironmentalHealth: number
+        EnvironmentalHealth: number;
+        BottomBarVisible: false;
+        CompletionStatus: {NumTeams:  number, TeamsCompleted: string[] }
     };
     //export type SheetData   
     Application?: {

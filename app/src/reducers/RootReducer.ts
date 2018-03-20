@@ -28,6 +28,8 @@ const initialState: ApplicationStore = {
         SelectedRole: null,
         DaysAbove2: null,
         CurrentGame: null,
+        BottomBarVisible: false,
+        CompletionStatus: { NumTeams: 0, TeamsCompleted: [] }
     },
     Application: {
         Loading: false,
@@ -37,7 +39,7 @@ const initialState: ApplicationStore = {
         Round2Won: false,
         RequiresRefresh: false,
         AdminMessage: null,
-        NeedsReconnect: false
+        NeedsReconnect: false,
     },
     form:{}
 };
@@ -239,7 +241,15 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
         case ACTION_TYPES.GAME_STATE_CHANGED.actionType: 
             localStorage.setItem('SVE_PLAYER', JSON.stringify(action.payload));
-            return Object.assign({}, state, {CurrentPlayer: Object.assign({}, state.CurrentPlayer, {GameState: action.payload.GameState})})
+            return Object.assign({}, state, {CurrentPlayer: Object.assign({}, state.CurrentPlayer, {GameState: action.payload.GameState, BottomBarVisible: false})})
+        case ACTION_TYPES.SOMEBODY_SUBMITTED.actionType: 
+            console.log("HELLO THERE, GENERAL KENOBI",action.payload);
+            return Object.assign({}, state, 
+                {
+                    BottomBarVisible: action.payload.TeamsCompleted.indexOf(state.CurrentPlayer.Slug) > -1, 
+                    CompletionStatus: Object.assign(state.CompletionStatus, {NumTeams: action.payload.NumTeams, TeamsCompleted: action.payload.TeamsCompleted})
+                });
+            
         case ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE.actionType: 
             return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
         case ACTION_TYPES.RATINGS_SUBMITTED.actionType:
@@ -283,6 +293,7 @@ export const Application = ( state = initialState.Application, action: Action<an
             return Object.assign({}, newState, {NeedsReconnect: true})
         case (ACTION_TYPES.PLAYER_JOINED.actionType):
             return Object.assign({}, newState, {NeedsReconnect: false})
+       
         default:
             return ( ACTION_TYPES as any )[action.type] ? newState : state;
         

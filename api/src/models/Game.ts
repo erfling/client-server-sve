@@ -47,6 +47,10 @@ export class Game extends BaseClass implements IGame
     @prop({default: false})
     IsCurrentGame: boolean;
 
+    @prop()
+    SubmissionsByRound: number[];
+
+
   }
 
   export const GameModel = new Game().getModelForClass( Game, { existingMongoose: mongoose } )

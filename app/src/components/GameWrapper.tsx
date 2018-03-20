@@ -11,6 +11,13 @@ import {Parallax, Background} from 'react-parallax';
 import LoginContainer from '../containers/LoginContainer';
 import {StyleHTMLAttributes} from 'react';
 import {Redirect} from 'react-router-dom';
+import BottomBar from './BottomBar';
+import ApplicationStore from '../stores/Store';
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
+import * as Actions from '../actions/Actions';
+import { ACTION_TYPES } from '../actions/Actions';
+import ValidSubmissionsContainer from './ValidSubmissions';
 
 export interface GamesList {
     CurrentPlayer?:ITeam;
@@ -21,11 +28,12 @@ export interface GamesList {
     Style?: any;
     match?: any;
     HideImage?: boolean;
+    BottomBarVisible:boolean;
 }
 
 // 'HelloProps' describes the shape of props.
 // State is never set so we use the '{}' type.
-export default class GameWrapper extends React.Component<GamesList, any> {
+export class GameWrapper extends React.Component<GamesList, any> {
 
     scrollDown(e:any){        
         document.querySelector('.home-content').scrollIntoView({ behavior: 'smooth' ,block: 'start' });
@@ -76,7 +84,7 @@ export default class GameWrapper extends React.Component<GamesList, any> {
 
         }
 
-        return  <Layout style={{minHeight:'100vh'}}>
+        return  <Layout style={{minHeight:'100vh'}} className={this.props.BottomBarVisible ? "big-bottom" : null}>
                     <Content className="game-wrapper">
                         {this.props.ParallaxImg && 
                         <Parallax  
@@ -110,7 +118,35 @@ export default class GameWrapper extends React.Component<GamesList, any> {
                             </Row> }                    
                         </Parallax>}
                     </Content>
+                    <BottomBar
+                        Visible={this.props.BottomBarVisible}
+                    >
+                        <ValidSubmissionsContainer/>
+                    </BottomBar>
                 </Layout>
     }
 }
 
+
+interface DispatchProps {
+    dismissAdminMessage: () => {}
+}
+export interface GameProps{
+    BottomBarVisible:boolean;
+}
+const mapStateToProps = (state: ApplicationStore, ownProps: {}): GameProps => {
+    return {
+        BottomBarVisible: state.GameData.BottomBarVisible
+    };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>, ownProps: any) => {
+    return {
+        hideBottomBar: () => {
+            dispatch( Actions.dismissAdminMessage() )
+        }
+    }
+}
+
+const GameWrapperContainer = connect<GameProps, {}>(mapStateToProps, mapDispatchToProps)(GameWrapper);
+export default GameWrapperContainer;
