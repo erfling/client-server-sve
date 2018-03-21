@@ -210,8 +210,7 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
                         {this.props.CurrentPlayer.GameState == "1B" && this.props.CurrentPlayer.ChosenHorse ?
                             <Row style={{ minHeight: '25vh', marginTop: '-19px' }}>
                                 <Col xs={24}>
-                                    {this.state.Decided &&
-                                        this.state.FeedBack ?
+                                    {this.state.FeedBack ?
                                         <Row className="state1results">
                                             {this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.props.CurrentPlayer.ChosenHorse.toUpperCase())
                                                 .map(f => {
@@ -237,8 +236,7 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
                         {this.props.CurrentPlayer.GameState == "1C" && this.props.CurrentPlayer.ChosenHorse ?
                             <Row style={{ minHeight: '25vh', marginTop: '-19px' }}>
                                 <Col xs={24}>
-                                    {this.state.Decided &&
-                                        this.state.FeedBack ?
+                                    {this.state.FeedBack ?
                                         <Row>
                                             <Row className="state1results">
                                                 {this.replaceWinner()
