@@ -148,7 +148,7 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
             >
                 <Row type="flex" justify="center">
                     <Col xs={24}>
-                        {this.props.CurrentPlayer.GameState == "1A" || !this.state.Decided
+                        {this.props.CurrentPlayer.GameState == "1A" || !this.props.CurrentPlayer.ChosenHorse
                             ? <Row type="flex" justify="center">
                                 <Col xs={23}>
                                     {this.state.FeedBack && this.state.FeedBack[12][2]
