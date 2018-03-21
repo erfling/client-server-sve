@@ -157,7 +157,7 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                         <Row className="role-selection">
                             
                             {this.state && this.state.GenericContent && 
-                                <Col sm={24} md={24} lg={24}>
+                                <Col sm={24} md={24} lg={18}>
 
                                     <Row type="flex" justify="center">
                                         <Col sm={22} md={22} lg={22} style={{marginTop: '75px'}}>
@@ -191,8 +191,9 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                         :
                         <div>
                             <div style={{margin: '75px auto 20px', width: '92%'}}>
-                                {this.state.RoleContent && this.state.RoleContent.split("\n").map(c => {
-                                    return c == c.toUpperCase() ? <h3>{c}</h3> : <p>{c}</p>
+                                {this.state.RoleContent && <p><p>{this.state.RoleContent.split("\n")[0]}</p></p>}
+                                {this.state.RoleContent && this.state.RoleContent.split("\n").slice(1).map(c => {
+                                    return c == c.toUpperCase() ? <h3>{c}</h3> : <p><p>{c}</p></p>
                                 })}
                             </div>
                         </div>
@@ -200,7 +201,7 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                     {this.props.CurrentPlayer.GameState == "4B" && this.props.SelectedRole ? 
                         <Row className="form-wrapper" type="flex" justify="center" style={{paddingLeft: "0", paddingRight:"0"}}>
                             <Col sm={24} md={24} lg={24}>
-                                <label style={{textAlign:'center'}}>{(this.props.CurrentPlayer.Nation as INation).Name } Platform</label>
+                                <label style={{ textAlign:'center', width: '100%', display:'block', marginBottom: '20px' }}>{(this.props.CurrentPlayer.Nation as INation).Name } Platform</label>
                                 {_.sortBy(Object.keys(this.props.SelectedRole.RoleTradeRatings), [(o:any) => o ]).map((rating:any, i) => {
                                     return (
                                         <Row className="form-wrapper">
@@ -232,10 +233,9 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                                                 <Radio value={3}>Planet First</Radio>
                                             </RadioGroup>
                                             <Button 
-                                                style={{ margin: "30px 0 50px" }}
                                                 type="primary" 
                                                 size="large"
-                                                disabled={!(this.refs[rating] as any).state.value}
+                                                disabled={!(this.refs[rating] as any) || !(this.refs[rating] as any).state || !(this.refs[rating] as any).state.value}
                                                 onClick={e =>  this.props.submitRoleRating(this.props.SelectedRole.Name, this.props.CurrentPlayer.Slug, {[rating]: {Value: (this.refs[rating] as any).state.value, AgreementStatus:(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus }})}
                                             >
                                                 Submit {rating.slice(0,1).toUpperCase() + rating.slice(1).toLowerCase()} Selections 
