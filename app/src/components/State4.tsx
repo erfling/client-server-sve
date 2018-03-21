@@ -146,9 +146,7 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                         marginLeft: '-110px'
                     }}
                 >   
-                    {this.props.DaysAbove2 && this.props.SocketConnected ? 
-                        <TopBarContainer /> : null
-                    }
+                    
                     <Col xs={24} style={{paddingLeft:'13px'}}>
                         <h1 style={{ marginTop: "50px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
                         <ChartContainer/>
@@ -257,3 +255,7 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
     }
 }
 
+/*
+{this.props.DaysAbove2 && this.props.SocketConnected ? 
+                        <TopBarContainer /> : null
+                    }*/
