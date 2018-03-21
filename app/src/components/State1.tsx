@@ -102,7 +102,7 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
     }
 
     replaceWinner() {
-        const teamFeedBack = this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.state.ChosenHorse.toUpperCase())
+        const teamFeedBack = this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.props.CurrentPlayer.ChosenHorse.toUpperCase())
         console.log(teamFeedBack);
         return teamFeedBack[0].filter((content, i) => i != 0 && i < 5)
             .map(content => content.startsWith("^") ? teamFeedBack[0][5] : content.substr(1))
@@ -207,13 +207,13 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
                                 </Col>
                             </Row> : null}
 
-                        {this.props.CurrentPlayer.GameState == "1B" && this.state.ChosenHorse ?
+                        {this.props.CurrentPlayer.GameState == "1B" && this.props.CurrentPlayer.ChosenHorse ?
                             <Row style={{ minHeight: '25vh', marginTop: '-19px' }}>
                                 <Col xs={24}>
                                     {this.state.Decided &&
                                         this.state.FeedBack ?
                                         <Row className="state1results">
-                                            {this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.state.ChosenHorse.toUpperCase())
+                                            {this.state.FeedBack.filter(f => f[0] && f[0].toUpperCase() == this.props.CurrentPlayer.ChosenHorse.toUpperCase())
                                                 .map(f => {
                                                     return f.filter((c, i) => i != 0 && i != 5).map((c, i) => {
                                                         return <Row className={c.charAt(0) == "^" && this.props.CurrentPlayer.GameState != "1C" ? "winner" : null}>
@@ -234,7 +234,7 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
                             </Row> : null
                         }
 
-                        {this.props.CurrentPlayer.GameState == "1C" && this.state.ChosenHorse ?
+                        {this.props.CurrentPlayer.GameState == "1C" && this.props.CurrentPlayer.ChosenHorse ?
                             <Row style={{ minHeight: '25vh', marginTop: '-19px' }}>
                                 <Col xs={24}>
                                     {this.state.Decided &&
