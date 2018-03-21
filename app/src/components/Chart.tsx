@@ -86,7 +86,7 @@ export default class Chart extends React.Component<ChartProps, {Width: number}> 
         if (!this.props.Dashboard) return <div />
 
         return this.props.Dashboard  &&  this.props.Dashboard.length > 100 && this.state.Width ? <Row className="main-chart">                
-                <label>{this.props.children || 'Simulated Global Warming Data'}</label>
+                <label>{'Global Warming Data'}</label>
                 
                     
                 <Row className="impact-chart">
