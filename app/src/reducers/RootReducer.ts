@@ -250,8 +250,10 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
                     CompletionStatus: Object.assign(state.CompletionStatus, {NumTeams: action.payload.NumTeams, TeamsCompleted: action.payload.TeamsCompleted})
                 });
             
+        case ACTION_TYPES.MANUALLY_SET_BOTTOM_BAR_VISIBLE.actionType: 
+                return Object.assign({}, state, { BottomBarVisible: true })        
         case ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE.actionType: 
-            return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
+                return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
         case ACTION_TYPES.RATINGS_SUBMITTED.actionType:
             localStorage.setItem('SVE_PLAYER', JSON.stringify(action.payload));
             return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})

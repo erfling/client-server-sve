@@ -239,7 +239,36 @@ export class ACTION_TYPES implements I_ACTION_TYPES{
         payloadType: "any"
     }
 
+    static MANUALLY_SET_BOTTOM_BAR_VISIBLE: ActionDescription = {
+        actionType: "MANUALLY_SET_BOTTOM_BAR_VISIBLE"
+    }
 
+
+}
+
+export const setBottomBarVisible = (team: ITeam) => {
+    return (dispatch: Dispatch<Action<null>>) => {
+        const url = baseRestURL + "games/req/validteams"
+        fetch(
+            url, 
+            {
+                method: "POST",
+                body: JSON.stringify(team), 
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            }
+        )
+        .then( (res:Response) => {
+            return res.json()//.then(r => r);
+        })
+        .then( (submissionResults: any) => {
+            setTimeout(() => {
+                dispatch({type:ACTION_TYPES.SOMEBODY_SUBMITTED.actionType, payload: submissionResults})
+            }, 200);          
+        })
+        .catch(reason => {console.log(reason)})
+    }
 }
 
 export const createTeamSocket = (team:ITeam) => {
@@ -343,11 +372,9 @@ export const createTeamSocket = (team:ITeam) => {
                 } )
             })
             .on(SocketEvents.DASHBOARD_UPDATED,(dashboardData:any) => {
-                console.log("DASHBOARD_UPDATED")
                 dispatch(dashboardUpdated(ACTION_TYPES.DASHBOARD_UPDATED.actionType, dashboardData));
             })
             .on(SocketEvents.DASHBOARD_UPDATED_WIN,(dashboardData:any) => {
-                console.log("DASHBOARD_UPDATED WITH VICTORY")
                 dispatch({type:ACTION_TYPES.ROUND_2_WON.actionType});
             })
             .on(SocketEvents.JOIN_ROLE, (role:IRole) => {

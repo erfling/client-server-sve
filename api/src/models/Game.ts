@@ -48,7 +48,7 @@ export class Game extends BaseClass implements IGame
     IsCurrentGame: boolean;
 
     @prop()
-    SubmissionsByRound: number[];
+    SubmissionsByRound: string[][];
 
 
   }

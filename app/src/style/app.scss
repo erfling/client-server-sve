@@ -242,24 +242,29 @@ h4{font-size: 160%}
         font-size: 200% !important;
         display: block !important;
     }
-
+    .ant-radio-group{
+        width:100%;
+    }
     .ant-radio-wrapper{
         display: block;
-        margin: 15px 0 0px !important;
-        font-size: 150% !important;
-        padding-left: 23px;
+        margin: 0px 0 25px 1em !important;
+        font-size: 4em !important;
+        width: 100%;
         .ant-radio{
             margin-top: 4px;
-            margin-left:-23px;
+            margin-left: -4.5em;
             position: absolute;
         }
         .ant-radio-inner {
-            width: 26px;
-            height: 26px;
+            width: 4.5em;
+            height: 4.5em;
+            top:10px;
             &:after {   
-                width: 18px;
-                height: 18px;
+                width: 3.5em;
+                height: 3.5em;
                 border-radius: 50%;
+                top: 6px;
+                left:6px;
             }            
         }
     }
@@ -312,15 +317,15 @@ h4{font-size: 160%}
     right: 0;
     width: 100%;
     left: 0;
-    background: rgba(255, 255, 255, 0.95);
-    border-bottom: 5px solid #1790ff;
+    border-bottom: 5px solid #fff;
     top: -1px;
     height: 95px;
     overflow: hidden;
     z-index: 9999;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.9);
+    box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.9);
     text-align: center;
-    color: #000000;
+    color: #000;
+    background: #ffffff;
     padding-top: 13px;
     >div >span{
         margin-left:3px;
@@ -584,7 +589,14 @@ textarea.ant-input{
         pointer-events: none;
     }
 }
-
+.big-radio-group{
+    width:80%;
+    margin:10px auto;
+    > label{
+        display:block;
+        font-size:2em;
+    }
+}
 .button-row{
      margin:0 auto;
      display: table;

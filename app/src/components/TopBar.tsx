@@ -70,11 +70,11 @@ export default class TopBar extends React.Component<State3Props, {PlayerNotFound
         var temp = this.props.Dashboard[100];
 
         if (temp <= 0) {
-            return "green";
+            return "#16591f";
         } else if (temp >= 2) {
-            return "red";
+            return "#ba1b1b";
         } else {
-            return "orange";
+            return "#ffa400";
         }
     }
 
@@ -93,8 +93,7 @@ export default class TopBar extends React.Component<State3Props, {PlayerNotFound
         return this.props.CurrentPlayer && this.props.SocketConnected ? 
                     <Row ref="tempTracker" className="tempTracker">
                         {this.props.CurrentPlayer.GameState.indexOf("2") != -1 ? 
-                        <div>Temp  in 2100: 
-                            <span className="animation-target" style={{ color: this.getColor() }}>{this.props.Dashboard[100]}</span>
+                        <div>Temp  in 2100:&nbsp;<span className="animation-target" style={{color: this.getColor()}}>{this.props.Dashboard[100]}</span>
                         <span>Your Trade Bank: ${this.getTradeBank()} Billion</span></div>
                         :
                         <div>Days 2&#176; above pre-industrial temps: <span className="animation-target">{this.props.DaysAbove2}</span></div>}

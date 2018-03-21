@@ -287,7 +287,7 @@ class GameRouter
     private async ResetGame(req: Request, res: Response){
      
         try{
-            const updatedGame = await GameModel.findOneAndUpdate( {_id: req.body._id}, {State: "1A", TeamRatings:{}}, {new: true}).populate("Teams")
+            const updatedGame = await GameModel.findOneAndUpdate( {_id: req.body._id}, { State: "1A", TeamRatings:{}, SubmissionsByRound: null }, {new: true}).populate("Teams")
 
             if(updatedGame){
                 //reset spreadsheet ranges
@@ -309,7 +309,8 @@ class GameRouter
                     TeamRatings: new Ratings(),
                     GameState: "1A",
                     Roles:{},
-                    Ratings:{}
+                    Ratings:{},
+                    ChosenHorse:null
                 },{
                     new: true
                 })
@@ -347,12 +348,30 @@ class GameRouter
         }
     }
 
+    private async getNumberOfValidTeamsByRound(req: Request, res: Response){
+        if(req.body){
+            const roundNumberIdx = parseInt(req.body.GameState.charAt(0)) - 1;
+
+            const game = await GameModel.findById(req.body.GameId);
+            if(game){
+                res.json({NumTeams: game.Teams.length, TeamsCompleted: game.SubmissionsByRound[roundNumberIdx]})
+            } else {
+                res.status(400);
+                res.json('FAILED')
+            }
+        } else {
+            res.status(400);
+            res.json('NO POST BODY')
+        }
+    }
+
     public routes(){
         //this.router.all("*", cors());
         this.getSheets();
         this.router.get("/", this.GetGames.bind(this));
         this.router.get("/:game", this.GetGame.bind(this));
         this.router.get("/req/getcurrentgame", this.getCurrentGame.bind(this));
+        this.router.post("/req/validteams", this.getNumberOfValidTeamsByRound.bind(this));
         this.router.post("/", this.CreateGame.bind(this));
         this.router.post("/setcurrent", this.setCurrentGame.bind(this));
         this.router.post("/saveexperiment", this.saveExperiment.bind(this));

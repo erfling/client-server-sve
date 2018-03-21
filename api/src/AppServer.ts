@@ -1012,7 +1012,7 @@ export default class AppServer
         if(!game.SubmissionsByRound){
             game.SubmissionsByRound = [];
         }
-        game.SubmissionsByRound[roundNumberIdx] = validTeams.length;
+        game.SubmissionsByRound[roundNumberIdx] = validTeams;
 
         console.log(roundNumberIdx, game.SubmissionsByRound);
 
@@ -1025,7 +1025,5 @@ export default class AppServer
         } else {
             console.log("OH FUCK");
         }
-
-
     }
 }
