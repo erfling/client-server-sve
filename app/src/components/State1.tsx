@@ -169,7 +169,7 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
                                             return content == content.toUpperCase() ? <h3>{content}</h3> : <p><p>{content}</p></p>
                                         })}
 
-                                        <Row className="formWrapper" type="flex" justify="center" style={{ background: "#e5e5e5", marginBottom: '10px' }}>
+                                        <Row className="formWrapper" type="flex" justify="center" style={{ background: "#f9f9f9", marginBottom: '10px' }}>
 
                                         
                                         <div className="big-radio-group">
