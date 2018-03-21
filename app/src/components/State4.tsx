@@ -235,7 +235,7 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                                             <Button 
                                                 type="primary" 
                                                 size="large"
-                                                disabled={!(this.refs[rating] as any) || !(this.refs[rating] as any).state || !(this.refs[rating] as any).state.value}
+                                                disabled={!this.refs[rating] || !(this.refs[rating] as any).state || !(this.refs[rating] as any).state.value}
                                                 onClick={e =>  this.props.submitRoleRating(this.props.SelectedRole.Name, this.props.CurrentPlayer.Slug, {[rating]: {Value: (this.refs[rating] as any).state.value, AgreementStatus:(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus }})}
                                             >
                                                 Submit {rating.slice(0,1).toUpperCase() + rating.slice(1).toLowerCase()} Selections 
