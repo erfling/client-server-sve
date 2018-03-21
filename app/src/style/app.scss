@@ -336,7 +336,7 @@ h4{font-size: 160%}
     height: 95px;
     overflow: hidden;
     z-index: 9999;
-    box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.9);
+    /*box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.9);*/
     text-align: center;
     color: #000;
     background: #ffffff;
@@ -654,13 +654,13 @@ textarea.ant-input{
     left: 0;
     right: 0;
     width: 100vw;
-    box-shadow: 0 0 26px 1px rgba(0, 0, 0, 0.7);
-    transition: bottom 1s;
+    transition: all 1s cubic-bezier(0.64, 0.57, 0.67, 1.53);
     color:white;
     h1,h2,h3,h4,h5,p,label{
         color: white;
     }
     &.visible{
+        /*box-shadow: 0 0 26px 1px rgba(0, 0, 0, 0.7);*/
         bottom:0;
     }
 
