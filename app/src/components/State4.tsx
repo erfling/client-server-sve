@@ -197,41 +197,49 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                             </div>
                         </div>
                     }
-
                     {this.props.CurrentPlayer.GameState == "4B" && this.props.SelectedRole ? 
                         <Row className="form-wrapper" type="flex" justify="center" style={{paddingLeft: "0", paddingRight:"0"}}>
                             <Col sm={24} md={24} lg={24}>
                                 <label style={{textAlign:'center'}}>{(this.props.CurrentPlayer.Nation as INation).Name } Platform</label>
                                 {_.sortBy(Object.keys(this.props.SelectedRole.RoleTradeRatings), [(o:any) => o ]).map((rating:any, i) => {
                                     return (
-                                        <Row className="form-wrapper role-trades"  type="flex" justify="center" >
+                                        <Row className="form-wrapper">
                                             <label>
-                                                {(RoleRatingCategories as any)[rating]} MARKET
+                                                {rating} MARKET
                                                 {(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus == -1 && 
                                                     <span>
-                                                        <Icon  type="hourglass" />Waiting...
+                                                        <Icon type="hourglass" style={{marginLeft:"18px"}} />Waiting...
                                                     </span>
                                                 }
                                                 {(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus == 0 && 
-                                                    <span>
-                                                        <Icon type="close-circle-o" style={{color:"red"}} />
+                                                    <span style={{color:"red"}}>
+                                                        <Icon type="close-circle-o" style={{marginLeft:"18px"}} /> No Agreement
                                                     </span>
                                                 }
                                                 {(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus == 1 && 
-                                                    <span>
-                                                        <Icon type="check-circle-o" style={{color:"green"}}/>
+                                                    <span style={{color:"green"}}>
+                                                        <Icon type="check-circle-o" style={{marginLeft:"18px"}}/> Agreement Reached
                                                     </span>
                                                 }
                                             </label>
                                             <RadioGroup 
                                                 defaultValue={(this.props.SelectedRole.RoleTradeRatings as any)[rating].Value} 
                                                 size="large"
-                                                onChange={e => this.props.submitRoleRating(this.props.SelectedRole.Name, this.props.CurrentPlayer.Slug, {[rating]: {Value: e.target.value, AgreementStatus:(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus }})}
+                                                ref={rating}
                                             >
-                                                <RadioButton value={1}>Country First</RadioButton>
-                                                <RadioButton value={2}>Region First</RadioButton>
-                                                <RadioButton value={3}>Planet First</RadioButton>
+                                                <Radio value={1}>Country First</Radio>
+                                                <Radio value={2}>Region First</Radio>
+                                                <Radio value={3}>Planet First</Radio>
                                             </RadioGroup>
+                                            <Button 
+                                                style={{ margin: "30px 0 50px" }}
+                                                type="primary" 
+                                                size="large"
+                                                disabled={!(this.refs[rating] as any).state.value}
+                                                onClick={e =>  this.props.submitRoleRating(this.props.SelectedRole.Name, this.props.CurrentPlayer.Slug, {[rating]: {Value: (this.refs[rating] as any).state.value, AgreementStatus:(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus }})}
+                                            >
+                                                Submit {rating.slice(0,1).toUpperCase() + rating.slice(1).toLowerCase()} Selections 
+                                            </Button>
                                         </Row>
                                     )
                                 })}
@@ -257,3 +265,8 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
     }
 }
 
+/** 
+ * {this.state.PendingChoice != null && <Icon type="loading"/>}
+ * 
+ * disabled={!this.state.Selection || this.props.CurrentPlayer.ChosenHorse != null}
+                                                onClick={e => this.setDecisionState(this.state.Selection)} */

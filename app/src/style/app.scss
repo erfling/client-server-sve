@@ -1,6 +1,6 @@
 @import '~antd/dist/antd.css';
 
-$breakPoint: 80em;
+$breakPoint: 5000em;
 
 
 .has-button .ant-card-extra {
@@ -643,7 +643,7 @@ textarea.ant-input{
 
 .ant-btn:not(.small-button):not(.game-button){
     font-size: 45px;
-    padding: 0 20px 72px;
+    padding: 15px 25px 87px;
 }
 
 .bottom-bar{
