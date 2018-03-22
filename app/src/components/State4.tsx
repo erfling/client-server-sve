@@ -38,7 +38,7 @@ interface State3Props{
    SocketConnected: boolean;
    DaysAbove2: number;
 }
-export default class State4 extends React.Component<State3Props, { energyEnabled:boolean, productEnabled: boolean, financialEnabled:boolean, talentEnabled:boolean; PlayerNotFound:boolean, GenericContent: any[], RoleContent: string, showVictoryModal: boolean, victoryModalShown: boolean}> {
+export default class State4 extends React.Component<State3Props, { energyEnabled:number, productEnabled: number, financialEnabled:number, talentEnabled:number; PlayerNotFound:boolean, GenericContent: any[], RoleContent: string, showVictoryModal: boolean, victoryModalShown: boolean}> {
 
     componentWillMount(){
         this.setState({PlayerNotFound: false})
@@ -138,23 +138,23 @@ export default class State4 extends React.Component<State3Props, { energyEnabled
 
     render(){
 
-        const setEnabled = (stateProp: string) => {
+        const setEnabled = (stateProp: string, value: number) => {
             console.log(stateProp);
             switch(stateProp){
                 case('energyEnabled'):
-                    this.setState({energyEnabled: true})  
+                    this.setState({energyEnabled: value})  
                     break;
   
                 case('productEnabled'):
-                    this.setState({productEnabled: true})    
+                    this.setState({productEnabled: value})    
                     break;
 
                 case('financialEnabled'):
-                    this.setState({financialEnabled: true})  
+                    this.setState({financialEnabled: value})  
                     break;
   
                 case('talentEnabled'):
-                    this.setState({talentEnabled: true})
+                    this.setState({talentEnabled: value})
                     break;
 
                 default:
@@ -253,10 +253,10 @@ export default class State4 extends React.Component<State3Props, { energyEnabled
                                                 }
                                             </label>
                                             <RadioGroup 
-                                                defaultValue={(this.props.SelectedRole.RoleTradeRatings as any)[rating].Value} 
                                                 size="large"
                                                 ref={rating}
-                                                onChange={e => setEnabled(rating.toLowerCase() + 'Enabled')}
+                                                value={(this.state as any)[rating.toLowerCase() + "Enabled"] || (this.props.SelectedRole.RoleTradeRatings as any)[rating].Value }
+                                                onChange={e => setEnabled(rating.toLowerCase() + 'Enabled', parseInt((e.target as HTMLInputElement).value))}
                                             >
                                                 <Radio value={1}>Country First</Radio>
                                                 <Radio value={2}>Region First</Radio>
