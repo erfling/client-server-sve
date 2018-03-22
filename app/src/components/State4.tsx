@@ -38,7 +38,7 @@ interface State3Props{
    SocketConnected: boolean;
    DaysAbove2: number;
 }
-export default class State4 extends React.Component<State3Props, { energyEnabled:number, productEnabled: number, financialEnabled:number, talentEnabled:number; PlayerNotFound:boolean, GenericContent: any[], RoleContent: string, showVictoryModal: boolean, victoryModalShown: boolean}> {
+export default class State4 extends React.Component<State3Props, { hasScrolled:boolean, energyEnabled:number, productEnabled: number, financialEnabled:number, talentEnabled:number; PlayerNotFound:boolean, GenericContent: any[], RoleContent: string, showVictoryModal: boolean, victoryModalShown: boolean}> {
 
     componentWillMount(){
         this.setState({PlayerNotFound: false})
@@ -78,10 +78,11 @@ export default class State4 extends React.Component<State3Props, { energyEnabled
             
         }
 
-        if(this.props.CurrentPlayer && this.props.CurrentPlayer.GameState == "4B"){
+        if(this.props.CurrentPlayer && this.props.CurrentPlayer.GameState == "4B" && !this.state.hasScrolled){
             var elem = document.querySelector('.scroll-target');
             console.log(elem);
             if(elem)elem.scrollIntoView( { behavior:'smooth', block:'end' } )
+            this.setState(Object.assign({}, this.state, {hasScrolled: true}));
         }
 
         if(this.props.SelectedRole && !this.state.RoleContent){
