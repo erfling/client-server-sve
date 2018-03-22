@@ -183,7 +183,7 @@ export default class State4 extends React.Component<State3Props, { hasScrolled:b
                         <h1 style={{ marginTop: "50px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
                         <ChartContainer/>
                     </Col>
-                    {this.props.CurrentPlayer.GameState == "4A" && !this.props.SelectedRole ? 
+                    {!this.props.SelectedRole ?
                         <Row className="role-selection">
                             
                             {this.state && this.state.GenericContent && 
