@@ -235,7 +235,7 @@ h4{font-size: 160%}
 
 .ant-radio-group{
     width:95%;
-    min-width:1000px;
+    min-width:650px;
     margin:0 auto;
     label:not(.rdo-btn-label){
         width:100%;
@@ -663,8 +663,8 @@ textarea.ant-input{
     }
 }
 .big-radio-group{
-    width:80%;
-    margin:10px auto;
+    width: 100%;
+    margin: 10px auto;
     > label{
         display:block;
         font-size:2em;
@@ -704,9 +704,9 @@ textarea.ant-input{
 .bottom-bar{
     z-index: 2;
     background: #1790ff;
-    height: 100px;
+    height: 130px;
     position: fixed;
-    bottom: -100px;
+    bottom: -160px;
     left: 0;
     right: 0;
     width: 100vw;
@@ -717,7 +717,7 @@ textarea.ant-input{
     }
     &.visible{
         box-shadow: 0 0 26px 1px rgba(0, 0, 0, 0.7);
-        bottom:0;
+        bottom:-30px;
     }
 
     >div{

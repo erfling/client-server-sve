@@ -246,8 +246,8 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             console.log("HELLO THERE, GENERAL KENOBI",action.payload);
             return Object.assign({}, state, 
                 {
-                    BottomBarVisible: action.payload.TeamsCompleted.indexOf(state.CurrentPlayer.Slug) > -1, 
-                    CompletionStatus: Object.assign(state.CompletionStatus, {NumTeams: action.payload.NumTeams, TeamsCompleted: action.payload.TeamsCompleted})
+                    BottomBarVisible: action.payload.TeamsCompleted && action.payload.TeamsCompleted.length > 0 || false , 
+                    CompletionStatus: Object.assign(state.CompletionStatus, {NumTeams: action.payload.NumTeams || 0, TeamsCompleted: action.payload.TeamsCompleted || 0})
                 });
             
         case ACTION_TYPES.MANUALLY_SET_BOTTOM_BAR_VISIBLE.actionType: 

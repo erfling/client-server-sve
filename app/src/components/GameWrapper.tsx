@@ -29,6 +29,7 @@ export interface GamesList {
     match?: any;
     HideImage?: boolean;
     BottomBarVisible:boolean;
+    setBottomBarVisible?: (team: ITeam) => {}
 }
 
 // 'HelloProps' describes the shape of props.
@@ -53,6 +54,8 @@ export class GameWrapper extends React.Component<GamesList, any> {
                 }
             }, y);
         }
+
+        this.props.CurrentPlayer && this.props.setBottomBarVisible(this.props.CurrentPlayer);
 
     }
 
@@ -161,7 +164,9 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
     return {
         hideBottomBar: () => {
             dispatch( Actions.dismissAdminMessage() )
-        }
+        },
+        setBottomBarVisible: (team: ITeam) => { dispatch( Actions.setBottomBarVisible(team) ) }
+
     }
 }
 
