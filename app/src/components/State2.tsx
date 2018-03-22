@@ -2,29 +2,18 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as moment from 'moment';
 import { reduxForm, Field, WrappedFieldProps, InjectedFormProps, GenericFieldHTMLAttributes } from 'redux-form';
-import { InputWrapper, SliderWrapper } from './form-elements/AntdFormWrappers';
 import ITeam from '../../../shared/models/ITeam';
 import IDeal from '../../../shared/models/IDeal';
 import DealFormWrapper from './form-elements/DealForm'
 import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom';
-import { Row, Col, Modal, Icon, Button, Select, Spin, List } from 'antd';
+import { Row, Col, Modal, Icon, Button, Radio, Spin } from 'antd';
+const RadioGroup = Radio.Group;
 import ITradeOption from '../../../shared/models/ITradeOption';
 import INation from '../../../shared/models/INation';
 import ChartContainer from '../containers/ChartContainer'
 import TopBarContainer from '../containers/TopBarContainer'
 
-import {
-    XYPlot,
-    XAxis,
-    YAxis,
-    HorizontalGridLines,
-    VerticalGridLines,
-    LineSeries,
-    DiscreteColorLegend,
-    DiscreteColorLegendItem,
-    Hint
-} from 'react-vis';
 
 interface State2Props {
     CurrentPlayer: ITeam;
@@ -261,19 +250,20 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                         </Row>
 
                         {!this.props.CurrentPlayer.DealsProposedBy.length && typeof this.props.CurrentPlayer.DealsProposedTo[0] != "string" ? 
-                        <Row className="propose-block">
-                            <div className="select-wrapper">
+                        <Row className="big-radio-group" type="flex" justify="center" align="middle" style={{ background: "#f9f9f9", marginBottom: '10px', color: "#333" }}>
                                 <label>Propose a Trade</label>
-                                <select
-                                    style={{ width: '100%' }}
+                                <RadioGroup 
+                                    disabled={this.props.CurrentPlayer.ChosenHorse != null}
                                     onChange={e => this.setState(Object.assign({}, this.state, { ChosenCountry: e.target.value }))}
                                 >
-                                    <option value={null}>--Select Trade Partner--</option>
-                                    {this.getOptionsByTeam().map((o, i) => <option key={i} value={o.value}>{o.text}</option>)}
-                                </select>
-                                {this.state && <Button type="primary" style={{ marginTop: '10px' }} onClick={e => this.prepDeal()} disabled={!this.state.ChosenCountry}>Propose Trade</Button>}
-                            </div>
-
+                                    {this.getOptionsByTeam()
+                                    .map(choice => 
+                                        <Radio value={choice.value}>{choice.text}</Radio>
+                                    )}
+                                </RadioGroup>
+                                <label className="button-wrapper-label">
+                                    {this.state && <Button type="primary" style={{ marginTop: '10px' }} onClick={e => this.prepDeal()} disabled={!this.state.ChosenCountry}>Propose Trade</Button>}
+                                </label>
                         </Row> : null}
 
 
@@ -344,3 +334,18 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
     }
 
 }
+/*{!this.props.CurrentPlayer.DealsProposedBy.length && typeof this.props.CurrentPlayer.DealsProposedTo[0] != "string" ? 
+                        <Row className="propose-block">
+                            <div className="select-wrapper">
+                                <label>Propose a Trade</label>
+                                <select
+                                    style={{ width: '100%' }}
+                                    onChange={e => this.setState(Object.assign({}, this.state, { ChosenCountry: e.target.value }))}
+                                >
+                                    <option value={null}>--Select Trade Partner--</option>
+                                    {this.getOptionsByTeam().map((o, i) => <option key={i} value={o.value}>{o.text}</option>)}
+                                </select>
+                                {this.state && <Button type="primary" style={{ marginTop: '10px' }} onClick={e => this.prepDeal()} disabled={!this.state.ChosenCountry}>Propose Trade</Button>}
+                            </div>
+
+                        </Row> : null}*/

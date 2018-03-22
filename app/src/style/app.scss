@@ -305,7 +305,7 @@ span.ant-radio + * {
         background: rgba(178, 179, 179, 0.2);
         display: block;
         margin: 0px 0 25px 0 !important;
-        font-size: 4em !important;
+        font-size: 3.7em !important;
         width: 100%;
         padding-left: 5px;
         border: 2px solid rgba(178, 179, 179, 0.2);
@@ -332,7 +332,7 @@ span.ant-radio + * {
         }
     }
     span.ant-radio + * {
-        padding-left: 1.3em;
+        padding-left: 1.5em;
         padding-right: 8px;
     }
     .ant-radio-button-wrapper{
@@ -620,6 +620,8 @@ span.ant-radio + * {
     font-size:200%;
     padding:30px 10px;
 }
+
+
 textarea.ant-input{
     padding:10px 15px;
 }
@@ -746,4 +748,10 @@ textarea.ant-input{
 }
 .big-bottom{
     padding-bottom: 130px;
+}
+
+
+.button-wrapper-label{
+    width: 95%;
+    margin-top: 0 !important;
 }

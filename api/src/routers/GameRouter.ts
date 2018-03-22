@@ -354,7 +354,11 @@ class GameRouter
 
             const game = await GameModel.findById(req.body.GameId);
             if(game){
-                res.json({NumTeams: game.Teams.length, TeamsCompleted: game.SubmissionsByRound[roundNumberIdx]})
+                if(game.SubmissionsByRound && game.SubmissionsByRound[roundNumberIdx]){
+                    res.json({NumTeams: game.Teams.length, TeamsCompleted: game.SubmissionsByRound[roundNumberIdx]})
+                }else{
+                    res.json({NumTeams: game.Teams.length, TeamsCompleted: 0})
+                }
             } else {
                 res.status(400);
                 res.json('FAILED')
