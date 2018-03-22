@@ -9,8 +9,6 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { createStore, applyMiddleware, compose  } from 'redux';
 import reducer from './reducers/RootReducer';
 import { ConnectedRouter, routerReducer, routerMiddleware, push } from 'react-router-redux'
-
-import Routes from './routes/Routes'
 import { App } from './components/App'
 import {Layout} from 'antd';
 import { Row, Col } from 'antd/lib/grid';

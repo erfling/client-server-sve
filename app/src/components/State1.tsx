@@ -25,7 +25,6 @@ interface State1Props {
     CurrentPlayer: ITeam
     getPlayer: () => {}
     setWaterValues: (team: ITeam) => {}
-    setBottomBarVisible: (team: ITeam) => {}
     match: any;
 }
 
@@ -95,9 +94,6 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
                 this.setState(Object.assign({}, this.state, { FeedBack: r, 
                     Selection: this.props.CurrentPlayer && this.props.CurrentPlayer.ChosenHorse ? this.props.CurrentPlayer.ChosenHorse : null }))
                     console.log(this.state);
-                    if(this.props.CurrentPlayer && this.props.CurrentPlayer.ChosenHorse){
-                        this.props.setBottomBarVisible(this.props.CurrentPlayer);
-                    }
             })
     }
 
@@ -289,7 +285,6 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
     return {
         getPlayer: () => dispatch(Actions.getPlayer()),
         setWaterValues: (team: ITeam) => { dispatch(Actions.setWaterValues(team)) },
-        setBottomBarVisible: (team: ITeam) => { dispatch( Actions.setBottomBarVisible(team) ) }
     }
 }
 
