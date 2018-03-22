@@ -228,7 +228,7 @@ export default class State4 extends React.Component<State3Props, { energyEnabled
                         </div>
                     }
                     {this.props.CurrentPlayer.GameState == "4B" && this.props.SelectedRole ? 
-                        <Row className="form-wrapper" type="flex" justify="center" style={{paddingLeft: "0", paddingRight:"0"}}>
+                        <Row className="form-wrapper" style={{paddingLeft: "0", paddingRight:"0"}}>
                             <Col sm={24} md={24} lg={24}>
                                 <label style={{ textAlign:'center', width: '100%', display:'block', marginBottom: '20px' }}>{(this.props.CurrentPlayer.Nation as INation).Name } Platform</label>
                                 {_.sortBy(Object.keys(this.props.SelectedRole.RoleTradeRatings), [(o:any) => o ]).map((rating:any, i) => {
