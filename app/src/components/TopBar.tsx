@@ -38,17 +38,19 @@ export default class TopBar extends React.Component<State3Props, {PlayerNotFound
         window.scrollTo(0,0);
     }
 
-    componentDidUpdate(){
-        console.log("did updated called", this.props.SocketConnected, this.props.DaysAbove2)
-        this.getData();
-
-        if(this.props.Dashboard && this.props.Dashboard.length){
-            console.log("updated");
-            if(!this.state.LocalDashboard  
-                || this.state.LocalDashboard != this.props.Dashboard[100]
+    componentDidUpdate(oldProps:any, oldState:any){
+        if(this.props.CurrentPlayer && !this.props.CurrentPlayer.GameState.includes("2")){
+            console.log("did updated called", this.props.SocketConnected, this.props.DaysAbove2)
+            this.getData();
+        }
+        else if(this.props.Dashboard && this.props.Dashboard.length){
+            if(this.state.LocalDashboard == null || this.state.LocalDashboard == undefined
+                || this.state.LocalDashboard != parseFloat(this.props.Dashboard[100][0])
             ){
-                this.setState(Object.assign({}, this.state, {LocalDashboard: parseFloat(this.props.Dashboard[100])}))
-                this.animateScore();
+                console.log(this.state.LocalDashboard, this.props.Dashboard[100][0], this.state.LocalDashboard != parseFloat(this.props.Dashboard[100][0]));
+                if(!this.state || ( !oldState || !oldState.LocalDashboard || oldState.LocalDashboard != this.state.LocalDashboard ) ){
+                    this.setState(Object.assign({}, this.state, {LocalDashboard: parseFloat(this.props.Dashboard[100][0])}))
+                }
             }
         }
     }
@@ -60,7 +62,6 @@ export default class TopBar extends React.Component<State3Props, {PlayerNotFound
     }
 
     getData() {
-        console.log("Calling get data")
         if(this.props.SocketConnected && !this.props.DaysAbove2){
             this.props.getDaysAbove(this.props.CurrentPlayer);
         }

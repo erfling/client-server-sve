@@ -42,7 +42,7 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
     return {
         getPlayer: () => dispatch( Actions.getPlayer() ),
         proposeDeal: ( deal: IDeal ) => dispatch( Actions.proposeDeal(deal) ),
-        rejectDeal: ( deal: IDeal ) => dispatch( Actions.rejectDeal(deal) ),
+        rejectDeal: ( deal: IDeal, rescinded: boolean = false ) => dispatch( Actions.rejectDeal( deal, rescinded ) ),
         acceptDeal: (deal: IDeal, accept: boolean) => dispatch( Actions.acceptDeal(deal, accept) ),
         acknowledgeDealRejection: () => dispatch( Actions.acknowledgeDealRejection() )
     }

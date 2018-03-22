@@ -809,7 +809,8 @@ export const proposeDeal = (deal: IDeal) => {
     }
 }
 
-export const rejectDeal = (deal: IDeal) => {
+export const rejectDeal = (deal: IDeal, rescinded:boolean = false) => {
+    if(rescinded)deal.Rescinded = true;
     socket.emit(SocketEvents.REJECT_DEAL, deal);
     return (dispatch: Dispatch<Action<boolean>>) => {
         dispatch({

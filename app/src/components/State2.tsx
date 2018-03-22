@@ -34,7 +34,7 @@ interface State2Props {
     //Options: ITradeOption[];
     getPlayer: () => {}
     proposeDeal: (deal: IDeal) => {}
-    rejectDeal: (deal: IDeal) => {}
+    rejectDeal: (deal: IDeal, rescinded?: boolean) => {}
     acceptDeal: (deal: IDeal) => {}
     acknowledgeDealRejection: () => {}
     match: any;
@@ -92,8 +92,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
         this.props.proposeDeal(deal);
     }
 
-    rejectDeal(deal: IDeal) {
-        this.props.rejectDeal(deal)
+    rejectDeal(deal: IDeal, rescinded:boolean = false) {
+        this.props.rejectDeal(deal, rescinded)
     }
 
     acceptDeal(deal: IDeal) {
@@ -196,7 +196,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                             width="95%"
                             footer={
                                 this.props.PendingDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug
-                                    ? [<Button type="danger" size="large" onClick={e => { this.rejectDeal(this.props.PendingDealOffer) }}>Rescind Deal</Button>]
+                                    ? [<Button type="danger" size="large" onClick={e => { this.rejectDeal(this.props.PendingDealOffer, true) }}>Rescind Deal</Button>]
                                     : [
                                         <Button type="primary" size="large" onClick={e => { this.acceptDeal(this.props.PendingDealOffer) }}>Accept Deal</Button>,
                                         <Button type="danger" size="large" onClick={e => { this.rejectDeal(this.props.PendingDealOffer) }}>Reject Deal</Button>
@@ -214,8 +214,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                         <Modal
                             title={
                                 this.props.RejectedDealOffer.FromTeamSlug == this.props.CurrentPlayer.Slug
-                                    ? <span>Your trade deal with {this.props.RejectedDealOffer.ToNationName} was rejected{this.props.RejectedDealOffer.CanAccept == false && " by the SVI"}.</span>
-                                    : <span>Your trade deal with {this.props.RejectedDealOffer.FromNationName} was rejected{this.props.RejectedDealOffer.CanAccept == false && " by the SVI"}.</span>
+                                    ? <span>Your trade deal with {this.props.RejectedDealOffer.ToNationName} was {this.props.RejectedDealOffer.Rescinded ? 'rescinded' : 'rejected'}{this.props.RejectedDealOffer.CanAccept == false && " by the SVI"}.</span>
+                                    : <span>Your trade deal with {this.props.RejectedDealOffer.FromNationName} was {this.props.RejectedDealOffer.Rescinded ? 'rescinded' : 'rejected'}{this.props.RejectedDealOffer.CanAccept == false && " by the SVI"}.</span>
                             }
                             visible={true}
                             width="80%"

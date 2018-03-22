@@ -13,7 +13,7 @@ export default interface IDeal extends IBaseClass{
     Message: string;
     CanAccept?:boolean;
     Value?:number;
-
+    Rescinded?: boolean;
     TransferFromTeamSlug?: string;
     TransferFromNationName?: string;
     TransferToTeamSlug?: string;

@@ -33,6 +33,9 @@ export class Deal extends BaseClass implements IDeal {
     Accept?: boolean;
 
     @prop()
+    Rescinded: boolean;
+
+    @prop()
     CanAccept: boolean;
 
     @prop()
