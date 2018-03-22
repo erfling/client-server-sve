@@ -38,7 +38,7 @@ interface State3Props{
    SocketConnected: boolean;
    DaysAbove2: number;
 }
-export default class State4 extends React.Component<State3Props, {PlayerNotFound:boolean, GenericContent: any[], RoleContent: string, showVictoryModal: boolean, victoryModalShown: boolean}> {
+export default class State4 extends React.Component<State3Props, { energyEnabled:boolean, productEnabled: boolean, financialEnabled:boolean, talentEnabled:boolean; PlayerNotFound:boolean, GenericContent: any[], RoleContent: string, showVictoryModal: boolean, victoryModalShown: boolean}> {
 
     componentWillMount(){
         this.setState({PlayerNotFound: false})
@@ -94,6 +94,7 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                 victoryModalShown: true
             }));
         }
+        console.log(this.refs);
 
         
     }
@@ -131,7 +132,35 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
         }
     }
 
+    setDisabled(){
+
+    }
+
     render(){
+
+        const setEnabled = (stateProp: string) => {
+            console.log(stateProp);
+            switch(stateProp){
+                case('energyEnabled'):
+                    this.setState({energyEnabled: true})  
+                    break;
+  
+                case('productEnabled'):
+                    this.setState({productEnabled: true})    
+                    break;
+
+                case('financialEnabled'):
+                    this.setState({financialEnabled: true})  
+                    break;
+  
+                case('talentEnabled'):
+                    this.setState({talentEnabled: true})
+                    break;
+
+                default:
+                    break;
+            }
+        }
         
         if(!this.props.CurrentPlayer)return <div>loading</div>
         return (
@@ -227,6 +256,7 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                                                 defaultValue={(this.props.SelectedRole.RoleTradeRatings as any)[rating].Value} 
                                                 size="large"
                                                 ref={rating}
+                                                onChange={e => setEnabled(rating.toLowerCase() + 'Enabled')}
                                             >
                                                 <Radio value={1}>Country First</Radio>
                                                 <Radio value={2}>Region First</Radio>
@@ -235,10 +265,10 @@ export default class State4 extends React.Component<State3Props, {PlayerNotFound
                                             <Button 
                                                 type="primary" 
                                                 size="large"
-                                                disabled={!this.refs[rating] || !(this.refs[rating] as any).state || !(this.refs[rating] as any).state.value}
+                                                disabled={!(this.state as any)[rating.toLowerCase() + "Enabled"]}
                                                 onClick={e =>  this.props.submitRoleRating(this.props.SelectedRole.Name, this.props.CurrentPlayer.Slug, {[rating]: {Value: (this.refs[rating] as any).state.value, AgreementStatus:(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus }})}
                                             >
-                                                Submit {rating.slice(0,1).toUpperCase() + rating.slice(1).toLowerCase()} Selections 
+                                                Submit {rating.slice(0,1).toUpperCase() + rating.slice(1).toLowerCase()} Selection
                                             </Button>
                                         </Row>
                                     )
