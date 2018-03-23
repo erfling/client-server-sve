@@ -154,7 +154,7 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
                                         })}
 
                                     <ChartContainer>
-                                        Planet Sapien Global Warming
+                                        Global Warming {this.props.CurrentPlayer && this.props.CurrentPlayer.GameState}
                                     </ChartContainer>
 
                                     {this.state.FeedBack && this.state.FeedBack[13][2]

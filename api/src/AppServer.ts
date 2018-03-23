@@ -456,7 +456,6 @@ export default class AppServer
                 })
 
                 
-                console.log(game);
                 const committedAnswers = await this.sheets.commitAnswers( values, range, game.SheetId );
                 this.getDaysAbove(newlyUpdatedTeam);
 

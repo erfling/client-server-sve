@@ -222,7 +222,7 @@ export default class State4 extends React.Component<State4Props, { hasScrolled:b
 
                                     <Row type="flex" justify="center">
                                         <Col sm={22} md={22} lg={22} style={{marginTop: '75px'}}>
-                                            <p>{this.state.GenericContent[0]}</p>
+                                            <p><p>{this.state.GenericContent[0]}</p></p>
                                         </Col>
                                         
                                     </Row>        
@@ -234,7 +234,7 @@ export default class State4 extends React.Component<State4Props, { hasScrolled:b
                                     <Row type="flex" justify="center">
                                         <Col xs={22}>
                                             <BankIcon height={400}/>
-                                            <p>{this.state.GenericContent[1]}</p>
+                                            <p><p>{this.state.GenericContent[1]}</p></p>
                                             <Button onClick={e => this.props.selectRole(RoleName.BANK, this.props.CurrentPlayer.Slug)} className="game-button block title-case">Play As {(this.props.CurrentPlayer.Nation as INation).Name}Bank</Button>
                                         </Col>
                                     </Row>
@@ -242,7 +242,7 @@ export default class State4 extends React.Component<State4Props, { hasScrolled:b
                                     <Row type="flex" justify="center">
                                         <Col xs={22}>
                                             <MinisterIcon height={400}/>
-                                            <p>{this.state.GenericContent[2]}</p>
+                                            <p><p>{this.state.GenericContent[2]}</p></p>
                                             <Button onClick={e => this.props.selectRole(RoleName.MINISTER_OF_ENERGY, this.props.CurrentPlayer.Slug)} className="game-button block title-case">Play As Minister of Energy, {(this.props.CurrentPlayer.Nation as INation).Name}</Button>
                                         </Col>
                                     </Row>                                
@@ -267,7 +267,7 @@ export default class State4 extends React.Component<State4Props, { hasScrolled:b
                                     return (
                                         <Row className="form-wrapper">
                                             <label>
-                                                {rating} MARKET {(this.props.SelectedRole.RoleTradeRatings as any)[rating] && (this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus}
+                                                {rating} MARKET
                                                 {(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus == -1 && 
                                                     <span>
                                                         <Icon type="hourglass" style={{marginLeft:"18px"}} />Waiting...
