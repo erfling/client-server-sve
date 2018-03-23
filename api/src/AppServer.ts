@@ -1007,6 +1007,7 @@ export default class AppServer
     }
 
     private async GetRoundCompletion(game:IGame, team: ITeam, validTeams: string[]){
+        console.log(team.Slug, " REQUESTS ROUND COMPLETION")
         const roundNumberIdx = parseInt(game.State.charAt(0)) - 1;
         if(!game.SubmissionsByRound){
             game.SubmissionsByRound = [];

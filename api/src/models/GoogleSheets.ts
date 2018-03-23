@@ -116,7 +116,7 @@ export default class GoogleSheets
                     range: range
                 }, (err:any, response: any) => {
                     if (err) {
-                        console.log(err,"ERROR HERE");
+                        console.log(err,"ERROR HERE GetSheetValues");
                         reject(err);
                         return;
                     }
@@ -183,7 +183,7 @@ export default class GoogleSheets
                   fields: "nextPageToken, files(id, name)"
               }, function(err:any, response:any) {
                   if (err) {
-                      //console.log('The API returned an error: ' + err);
+                      console.log('The API returned an error: getRatingsByNation' + err);
                       return;
                   }
                   var files = response.files;
@@ -240,7 +240,7 @@ export default class GoogleSheets
                     (err:any, result: any) => {
                     console.log(result);
                     if (err) {
-                        console.log(err,"ERROR HERE")
+                        console.log(err,"ERROR HERE submitTradeDealValues")
                         return reject(err);
                     }
                     console.log("HERE");
@@ -287,7 +287,7 @@ export default class GoogleSheets
                   (err:any, result: any) => {
                   console.log(result);
                   if (err) {
-                      console.log(err,"ERROR HERE")
+                      console.log(err,"ERROR HERE commitAnswers")
                       return reject(err);
                   }
                   console.log("HERE");
@@ -342,6 +342,7 @@ export default class GoogleSheets
                     'resource': {'title': sheetName}
                 }, (error:any, resp: any) => {
                     if (error) {
+                        console.log(error, "getRatingsByNation")
                         reject(error);
                     } else {
                         console.log("CREATE SHEET RESPONSE");
@@ -350,7 +351,7 @@ export default class GoogleSheets
                 });
             })
             
-        }).catch(e => console.log("CAUGHT ERROR",e));
+        }).catch(e => console.log("CAUGHT ERROR createTeamSheet",e));
     }
 
     public GetNationContent(name: string) {
@@ -367,7 +368,7 @@ export default class GoogleSheets
                     range: "Round 2 Offers"
                 }, (err:any, response: any) => {
                     if (err) {
-                        console.log(err,"ERROR HERE");
+                        console.log(err,"ERROR HERE GetNationContent");
                         reject(err);
                         return;
                     }
@@ -396,7 +397,7 @@ export default class GoogleSheets
                     range: "Round 2 Offers!K2:Q8"
                 }, (err:any, response: any) => {
                     if (err) {
-                        console.log(err,"ERROR HERE");
+                        console.log(err,"ERROR HERE getRejectionOrAcceptanceReason");
                         reject("error");
                         return;
                     }
@@ -442,7 +443,7 @@ export default class GoogleSheets
                 
                   sheets.spreadsheets.values.clear(request, function(err:Error, response:any) {
                     if (err) {
-                      console.error(err);
+                      console.error(err, "clearRange");
                       return reject(err);
                     }
 
@@ -472,7 +473,7 @@ export default class GoogleSheets
                 
                   sheets.spreadsheets.values.get(request, function(err:Error, response:any) {
                     if (err) {
-                      console.error(err);
+                      console.error(err, "getRatingsByNation");
                       return reject(err);
                     }
 
