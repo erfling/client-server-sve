@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { reduxForm, Field, WrappedFieldProps, InjectedFormProps, GenericFieldHTMLAttributes } from 'redux-form';
 import ITeam from '../../../shared/models/ITeam';
 import WaterForm from './form-elements/WaterForm'
 import GameWrapper from './GameWrapper';

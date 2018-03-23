@@ -253,7 +253,6 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                         <Row className="big-radio-group" type="flex" justify="center" align="middle" style={{ background: "#f9f9f9", marginBottom: '10px', color: "#333" }}>
                                 <label>Propose a Trade</label>
                                 <RadioGroup 
-                                    disabled={this.props.CurrentPlayer.ChosenHorse != null}
                                     onChange={e => this.setState(Object.assign({}, this.state, { ChosenCountry: e.target.value }))}
                                 >
                                     {this.getOptionsByTeam()

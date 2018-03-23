@@ -23,7 +23,7 @@ import * as _ from "lodash";
 
 const PlanetSapien = require('../img/sapien-from-moon.jpg');
 
-interface State3Props{
+interface State4Props{
    CurrentPlayer: ITeam
    getPlayer: () => {}
    submitValues: (formValues: any) => {}
@@ -31,6 +31,7 @@ interface State3Props{
    selectRole: (role: string, teamSlug: string) => {}
    submitRoleRating: (roleName: string, teamSlug: string, rating: any) => {} 
    getDaysAbove: (team: ITeam) => {}
+   changeRoleRating: (role:IRole, whichRole: string, rating: any) => {}
 
    match:any;
    StateContent: any;
@@ -38,7 +39,7 @@ interface State3Props{
    SocketConnected: boolean;
    DaysAbove2: number;
 }
-export default class State4 extends React.Component<State3Props, { hasScrolled:boolean, energyEnabled:number, productEnabled: number, financialEnabled:number, talentEnabled:number; PlayerNotFound:boolean, GenericContent: any[], RoleContent: string, showVictoryModal: boolean, victoryModalShown: boolean}> {
+export default class State4 extends React.Component<State4Props, { hasScrolled:boolean, energyEnabled:number, productEnabled: number, financialEnabled:number, talentEnabled:number; PlayerNotFound:boolean, GenericContent: any[], RoleContent: string, showVictoryModal: boolean, victoryModalShown: boolean}> {
 
     componentWillMount(){
         this.setState({PlayerNotFound: false})
@@ -60,7 +61,7 @@ export default class State4 extends React.Component<State3Props, { hasScrolled:b
     }
 
     
-    componentDidUpdate(){
+    componentDidUpdate(previousProps: State4Props, previousState: any){
         console.log("UPDATED")
         this.getData();
 
@@ -97,9 +98,39 @@ export default class State4 extends React.Component<State3Props, { hasScrolled:b
         }
         console.log(this.refs);
 
-        
+
+        if(this.props.SelectedRole){
+            if(this.checkValueProp("ENERGY", previousProps) && previousProps.SelectedRole.RoleTradeRatings.ENERGY.Value != this.props.SelectedRole.RoleTradeRatings.ENERGY.Value){
+                this.setValue(this.props.SelectedRole.RoleTradeRatings.ENERGY.Value, "ENERGY")
+            }
+
+            if(this.checkValueProp("FINANCIAL", previousProps) && previousProps.SelectedRole.RoleTradeRatings.FINANCIAL.Value != this.props.SelectedRole.RoleTradeRatings.FINANCIAL.Value){
+                this.setValue(this.props.SelectedRole.RoleTradeRatings.FINANCIAL.Value, "FINANCIAL")
+            }
+
+            if(this.checkValueProp("PRODUCT", previousProps) && previousProps.SelectedRole.RoleTradeRatings.PRODUCT.Value != this.props.SelectedRole.RoleTradeRatings.PRODUCT.Value){
+                this.setValue(this.props.SelectedRole.RoleTradeRatings.PRODUCT.Value, "PRODUCT")
+            }
+
+            if(this.checkValueProp("TALENT", previousProps) && previousProps.SelectedRole.RoleTradeRatings.TALENT.Value != this.props.SelectedRole.RoleTradeRatings.TALENT.Value){
+                this.setValue(this.props.SelectedRole.RoleTradeRatings.ENERGY.Value, "TALENT")
+            }
+        }
+
+
     }
     
+    checkValueProp(value: string, previousProps:any){
+        return this.props.SelectedRole.RoleTradeRatings 
+                && (this.props.SelectedRole.RoleTradeRatings as any)[value]
+                && (this.props.SelectedRole.RoleTradeRatings as any)[value].Value != null
+                && previousProps 
+                && previousProps.SelectedRole
+                && previousProps.SelectedRole.RoleTradeRatings
+                && previousProps.SelectedRole.RoleTradeRatings[value]
+                && previousProps.SelectedRole.RoleTradeRatings[value] != null
+    }
+
     getGenericContent() {
         const protocol = !window.location.host.includes('local') ? "https:" : "http:";
         const port = !window.location.host.includes('local') ? ":8443" : ":4000";
@@ -137,32 +168,32 @@ export default class State4 extends React.Component<State3Props, { hasScrolled:b
 
     }
 
+    _value = {
+        ENERGY: 0,
+        FINANCIAL: 0,
+        TALENT: 0,
+        PRODUCT: 0
+    };
+
+    getValue = (category: string) => {
+        if((this._value as any)[category])
+            return (this._value as any)[category];
+    }
+
+    setValue = (val:number, category:string) => {
+        console.log("called", category)
+        
+        if(val != (this._value as any)[category]){
+            (this._value as any)[category] = val;
+            console.log("setting",  this._value)
+            this.forceUpdate();
+        }
+    }
+
     render(){
 
-        const setEnabled = (stateProp: string, value: number) => {
-            console.log(stateProp);
-            switch(stateProp){
-                case('energyEnabled'):
-                    this.setState({energyEnabled: value})  
-                    break;
-  
-                case('productEnabled'):
-                    this.setState({productEnabled: value})    
-                    break;
+       
 
-                case('financialEnabled'):
-                    this.setState({financialEnabled: value})  
-                    break;
-  
-                case('talentEnabled'):
-                    this.setState({talentEnabled: value})
-                    break;
-
-                default:
-                    break;
-            }
-        }
-        
         if(!this.props.CurrentPlayer)return <div>loading</div>
         return (
                 this.props.CurrentPlayer && <GameWrapper
@@ -256,8 +287,9 @@ export default class State4 extends React.Component<State3Props, { hasScrolled:b
                                             <RadioGroup 
                                                 size="large"
                                                 ref={rating}
-                                                value={(this.state as any)[rating.toLowerCase() + "Enabled"] || (this.props.SelectedRole.RoleTradeRatings as any)[rating].Value }
-                                                onChange={e => setEnabled(rating.toLowerCase() + 'Enabled', parseInt((e.target as HTMLInputElement).value))}
+                                                value={(this.props.SelectedRole.RoleTradeRatings as any)[rating].Value}
+                                                onChange={e => this.props.changeRoleRating(this.props.SelectedRole, rating, Object.assign(
+                                                    {}, (this.props.SelectedRole.RoleTradeRatings as any)[rating], {Value: e.target.value} ))}
                                             >
                                                 <Radio value={1}>Country First</Radio>
                                                 <Radio value={2}>Region First</Radio>
@@ -266,7 +298,7 @@ export default class State4 extends React.Component<State3Props, { hasScrolled:b
                                             <Button 
                                                 type="primary" 
                                                 size="large"
-                                                disabled={!(this.state as any)[rating.toLowerCase() + "Enabled"]}
+                                                disabled={!(this.props.SelectedRole.RoleTradeRatings as any)[rating] || !(this.props.SelectedRole.RoleTradeRatings as any)[rating].Value}
                                                 onClick={e =>  this.props.submitRoleRating(this.props.SelectedRole.Name, this.props.CurrentPlayer.Slug, {[rating]: {Value: (this.refs[rating] as any).state.value, AgreementStatus:(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus }})}
                                             >
                                                 Submit {rating.slice(0,1).toUpperCase() + rating.slice(1).toLowerCase()} Selection

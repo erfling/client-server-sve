@@ -16,6 +16,7 @@ interface DispatchProps {
     selectRole: (role: string, teamSlug:string) => {}
     submitRoleRating: (roleName: string, teamSlug: string, rating: any) => {}
     getDaysAbove: (team: ITeam) => {}
+    changeRoleRating: (role:IRole, whichRole: string, rating: any) => {}
 }
 export interface State1Props{
     CurrentPlayer: ITeam;
@@ -42,7 +43,8 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
         getContent: (team: ITeam) => dispatch( Actions.getContent( team ) ),
         selectRole: (role: string, teamSlug:string) => dispatch( Actions.selectRole(role, teamSlug) ),
         submitRoleRating: (roleName: string, teamSlug: string, rating: any) => dispatch( Actions.submitRoleRating(roleName, teamSlug, rating) ),
-        getDaysAbove: (team:ITeam) => dispatch( Actions.getDaysAbove(team) )
+        getDaysAbove: (team:ITeam) => dispatch( Actions.getDaysAbove(team) ),
+        changeRoleRating: (role:IRole, whichRole: string, rating: any) => dispatch( Actions.changeRoleRating(role, whichRole, rating) )
 
     }
 }

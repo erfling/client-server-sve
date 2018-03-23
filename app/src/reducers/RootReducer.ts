@@ -229,8 +229,11 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
         case ACTION_TYPES.GOT_TEAMS.actionType:
             return Object.assign({}, state, {Team: action.payload})
         case ACTION_TYPES.ROLE_SELECTED.actionType:
+            var ns = JSON.parse(JSON.stringify(state));
+            ns.SelectedRole = action.payload;
             localStorage.setItem("SELECTED_ROLE", JSON.stringify(action.payload));
-            return Object.assign({}, state, {SelectedRole: action.payload});
+            return ns;
+            //return Object.assign({}, state, {SelectedRole: action.payload});
         case ACTION_TYPES.PLAYER_JOINED.actionType:
             localStorage.setItem('SVE_PLAYER', JSON.stringify(action.payload.team));
             localStorage.setItem('TOKEN', JSON.stringify(action.payload.token));

@@ -21,7 +21,7 @@ import ValidSubmissionsContainer from './ValidSubmissions';
 
 export interface GamesList {
     CurrentPlayer?:ITeam;
-    ParallaxImg: any;
+    ParallaxImg?: any;
     HeaderText: string;
     FormComponent?: any;
     ImageStyles?: any;
@@ -65,32 +65,23 @@ export class GameWrapper extends React.Component<GamesList, any> {
 
             switch (this.props.CurrentPlayer.GameState) {
                 case "1A":
-                    if(this.props.match.path.indexOf('who-gets-the-water') == -1)return <div><Redirect to="/who-gets-the-water"/></div>
-                    break;
                 case "1B":
-                    if(this.props.match.path.indexOf('who-gets-the-water') == -1)return <div><Redirect to="/who-gets-the-water"/></div>
-                    break;
                 case "1C":
                     if(this.props.match.path.indexOf('who-gets-the-water') == -1)return <div><Redirect to="/who-gets-the-water"/></div>
                     break;
                 case "2":
                     if(this.props.match.path.indexOf('make-the-trade') == -1)return <div><Redirect to="/make-the-trade"/></div>
                     break;
-                case "3A":
-                    if(this.props.match.path.indexOf('war-of-the-worlds') == -1)return <div><Redirect to="/war-of-the-worlds"/></div>
+                case "I":
+                    if(this.props.match.path.indexOf('intermission') == -1)return <div><Redirect to="/intermission"/></div>
                     break;
-                case "3B":
-                    if(this.props.match.path.indexOf('war-of-the-worlds') == -1)return <div><Redirect to="/war-of-the-worlds"/></div>
-                    break;                
+                case "3A":
+                case "3B":              
                 case "3C":
                     if(this.props.match.path.indexOf('war-of-the-worlds') == -1)return <div><Redirect to="/war-of-the-worlds"/></div>
                     break;
                 case "4A":
-                    if(this.props.match.path.indexOf('international-trade') == -1)return <div><Redirect to="/international-trade"/></div>
-                    break;
                 case "4B":
-                    if(this.props.match.path.indexOf('international-trade') == -1)return <div><Redirect to="/international-trade"/></div>
-                    break;
                 case "4C":
                     if(this.props.match.path.indexOf('international-trade') == -1)return <div><Redirect to="/international-trade"/></div>
                     break;
@@ -109,7 +100,7 @@ export class GameWrapper extends React.Component<GamesList, any> {
                         {this.props.ParallaxImg && 
                         <Parallax  
                             className="banner-bg"                              
-                            bgImage={this.props.ParallaxImg}
+                            bgImage={this.props.ParallaxImg || null}
                             bgImageAlt="this blows"
                             strength={500}
                             bgStyle={ this.props.ImageStyles ? this.props.ImageStyles : {
@@ -137,6 +128,7 @@ export class GameWrapper extends React.Component<GamesList, any> {
                                 </Col>  
                             </Row> }                    
                         </Parallax>}
+                        {!this.props.ParallaxImg && this.props.children}
                     </Content>
                     <BottomBar
                         Visible={this.props.BottomBarVisible}

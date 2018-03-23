@@ -16,6 +16,7 @@ import IRole from '../../../shared/models/IRole';
 import { Socket } from 'dgram';
 import { actionTypes } from 'redux-form';
 import { json } from 'express';
+import { Role } from '../../../api/src/models/Role';
 
 const protocol = !window.location.host.includes('local') ? "https:" : "http:";
 const port = !window.location.host.includes('local') ? ":8443" : ":4000";
@@ -930,6 +931,17 @@ export const submitRoleRating = (roleName: string, teamSlug: string, rating: any
         dispatch({
             type: "NOPE"
         })
+    }
+}
+
+export const changeRoleRating = (role: IRole, whichRating: string, rating: any) => {
+    (role.RoleTradeRatings as any)[whichRating] = rating;
+    console.log(role);
+    return (dispatch:Dispatch<Action<any>>) => {
+        dispatch( {
+            type: ACTION_TYPES.ROLE_SELECTED.actionType,
+            payload: role
+        } );
     }
 }
 
