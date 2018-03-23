@@ -40,9 +40,9 @@ export class GameWrapper extends React.Component<GamesList, any> {
         document.querySelector('.home-content').scrollIntoView({ behavior: 'smooth' ,block: 'start' });
     }
 
-    componentDidUpdate(oldState:any, newState:any){
-        console.log("GAME WRAPPER DID UPDATE", oldState, newState);
-        if(this.props.BottomBarVisible && !oldState.BottomBarVisible){
+    componentDidUpdate(oldProps:any, oldState:any){
+        console.log("GAME WRAPPER DID UPDATE", oldState, oldState);
+        if(this.props.BottomBarVisible && !oldProps.BottomBarVisible){
             var x = 1; //y-axis pixel displacement
             var y = 25; //delay in milliseconds
 
@@ -55,8 +55,11 @@ export class GameWrapper extends React.Component<GamesList, any> {
             }, y);
         }
 
-        this.props.CurrentPlayer && this.props.setBottomBarVisible(this.props.CurrentPlayer);
-
+        if(this.props.CurrentPlayer && !oldProps.CurrentPlayer 
+            || JSON.stringify(this.props.CurrentPlayer) != JSON.stringify(oldProps.CurrentPlayer)
+        ){
+            this.props.setBottomBarVisible(this.props.CurrentPlayer);
+        }
     }
 
     //onClick={this.props.testUpdate}
