@@ -11,14 +11,13 @@ interface DispatchProps {
     getPlayer: () => {}
     getDaysAbove: (team: ITeam) => {}
 }
-export interface State1Props{
-    CurrentPlayer: ITeam
-  
-   Dashboard: any;
-   DaysAbove2: number;
-   SocketConnected: boolean;
+export interface TopOfTheProps{
+   CurrentPlayer?: ITeam
+   Dashboard?: any;
+   DaysAbove2?: number;
+   SocketConnected?: boolean;
 }
-const mapStateToProps = (state: ApplicationStore, ownProps: {}): State1Props => {
+const mapStateToProps = (state: ApplicationStore, ownProps: {}): TopOfTheProps => {
     return {
         CurrentPlayer: state.GameData.CurrentPlayer,
         DaysAbove2: state.GameData.DaysAbove2,
@@ -37,5 +36,5 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
     }
 }
 
-const TopBarContainer = connect<State1Props, {}>(mapStateToProps, mapDispatchToProps)(TopBar);
+const TopBarContainer = connect<TopOfTheProps, {}>(mapStateToProps, mapDispatchToProps)(TopBar);
 export default TopBarContainer;

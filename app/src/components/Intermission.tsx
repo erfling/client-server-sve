@@ -6,6 +6,7 @@ import ApplicationStore from '../stores/Store';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import ITeam from '../../../shared/models/ITeam';
+import TopBar from '../containers/TopBarContainer'
 // 'HelloProps' describes the shape of props.
 // State is never set so we use the '{}' type.
 export interface IntermissionProps {
@@ -19,16 +20,23 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
     }   
 
     componentWillMount() {
-        var twentyMinutesLater = new Date().setSeconds(Date.now() + 12000000);
+        var twentyMinutesLater = Date.now() + 12000000;
         var TwentyMinutesFromNow = twentyMinutesLater.valueOf();
         this.setState(Object.assign({}, { TwentyMinutesFromNow, TimesUp: false }))
     }
 
-    secondsToTime(miliseconds: number) {  
-        var time = miliseconds/1000;   
-        var minutes = "0" + Math.floor(time / 60);
-        var seconds = "0" + (time - parseInt(minutes) * 60);
-        return minutes.substr(-2) + ":" + seconds.substr(-2);
+    secondsToTime(time: number) {  
+
+        //console.log(miliseconds);
+
+        var m = Math.floor(time % 3600 / 60);
+        var s = Math.floor(time % 3600 % 60);
+
+        var mDisplay = m > 9 ? m + ":" : "0" + m + ":";
+        var sDisplay = s > 9 ? s : "0" + s;
+
+        console.log(mDisplay, ":", sDisplay);
+        return mDisplay + sDisplay; 
     }
 
     componentDidMount() {
@@ -40,11 +48,16 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
     componentDidUpdate() {
     }
 
+    componentWillUnmount(){
+        clearInterval(this.state.Timer);
+    }
+
     countDown() {
         if (this.state) {
-            console.log("countdown");
             var now = Date.now();
-            let time = this.secondsToTime(this.state.TwentyMinutesFromNow - now);
+            console.log("countdown", this.state.TwentyMinutesFromNow, now, (this.state.TwentyMinutesFromNow - now)/1000);
+
+            let time = this.secondsToTime((this.state.TwentyMinutesFromNow - now) / 1000);
             this.setState(Object.assign( {}, this.state, { Now: time } ) )
             console.log(this.state.Now)
             if (this.state.TwentyMinutesFromNow - now == 0) {
@@ -64,18 +77,23 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
             ParallaxImg=""
             HideImage={true}
         >
-            <Row type="flex" justify="center" align="middle">
-                <h3>{this.state && this.state.Now ? <p><p>{this.state.Now}</p></p> : null}</h3>
-                <Col xs={22}>
-                    <p>
-                        <p>What was your systemic leverage point?</p>
-                        <p>Where is your team on stability/agility matrix?</p>
-                        <p>What connections are you seeing?</p>
-                        <p>What are you thinking/feeling?</p>
-                        <p>What are you considering doing differently when you return?</p>
-                        <p>What questions do you have for the group or the facilitators when we return?</p>
-                    </p>
-                </Col>
+            <Row>
+                <TopBar>
+                    {this.state && this.state.Now ? <h4 style={{marginTop:'-18px'}}>{this.state.Now}</h4> : null}
+                </TopBar>
+                <Row type="flex" justify="center" align="middle" className="intermission-content" style={{minHeight:'100vh'}}>
+
+                    <Col xs={22}>
+                        <p>
+                            <p>What was your systemic leverage point?</p>
+                            <p>Where is your team on stability/agility matrix?</p>
+                            <p>What connections are you seeing?</p>
+                            <p>What are you thinking/feeling?</p>
+                            <p>What are you considering doing differently when you return?</p>
+                            <p>What questions do you have for the group or the facilitators when we return?</p>
+                        </p>
+                    </Col>
+                </Row>
             </Row>
         </GameWrapper>
     }

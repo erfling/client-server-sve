@@ -13,19 +13,19 @@ import ChartContainer from '../containers/ChartContainer'
 
 const WOTW = require("../img/The-War-of-the-Worlds-Radio-Broadcast.jpg");
 const NY = require("../img/The_New_Yorker_logo.png");
-interface State3Props{
-   CurrentPlayer: ITeam
+interface TopOfTheProps{
+   CurrentPlayer?: ITeam
    getPlayer?: () => {}
    getDaysAbove?: (team: ITeam) => {}
-   Dashboard: any;
-   DaysAbove2: number;
-   SocketConnected: boolean;
+   Dashboard?: any;
+   DaysAbove2?: number;
+   SocketConnected?: boolean;
 }
-export default class TopBar extends React.Component<State3Props, {PlayerNotFound:boolean, LocalDaysAbove2: number, LocalDashboard: number}> {
+export default class TopBar extends React.Component<TopOfTheProps, {PlayerNotFound:boolean, LocalDaysAbove2: number, LocalDashboard: number}> {
 
     componentDidMount(){
         this.setState({PlayerNotFound: false})
-        if(!this.props.CurrentPlayer){
+        if(!this.props.CurrentPlayer && this.props.getPlayer){
             if(localStorage.getItem("SVE_PLAYER")){
                 this.props.getPlayer();
             }else{
@@ -91,14 +91,18 @@ export default class TopBar extends React.Component<State3Props, {PlayerNotFound
         const day = d.getDate();
         const future = new Date(year + 20, month, day);
         if(!this.props.CurrentPlayer)return <div></div>
-        return this.props.CurrentPlayer && this.props.SocketConnected ? 
+        return !this.props.children && this.props.CurrentPlayer && this.props.SocketConnected ? 
                     <Row ref="tempTracker" className="tempTracker">
                         {this.props.CurrentPlayer.GameState.indexOf("2") != -1 ? 
                         <div>Temp  in 2100:&nbsp;<span className="animation-target" style={{color: this.getColor()}}>{this.props.Dashboard[100]}</span>
                         <span>Your Trade Bank: ${this.getTradeBank()} Billion</span></div>
                         :
                         <div>Days 2&#176; above pre-industrial temps: <span className="animation-target">{this.props.DaysAbove2}</span></div>}
-                    </Row> : null    
+                    </Row> 
+                    : 
+                    <Row ref="tempTracker" className="tempTracker">
+                        {this.props.children}
+                    </Row>    
                
     }
 }
