@@ -35,7 +35,6 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
         var mDisplay = m > 9 ? m + ":" : "0" + m + ":";
         var sDisplay = s > 9 ? s : "0" + s;
 
-        console.log(mDisplay, ":", sDisplay);
         return mDisplay + sDisplay; 
     }
 
@@ -55,7 +54,6 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
     countDown() {
         if (this.state) {
             var now = Date.now();
-            console.log("countdown", this.state.TwentyMinutesFromNow, now, (this.state.TwentyMinutesFromNow - now)/1000);
 
             let time = this.secondsToTime((this.state.TwentyMinutesFromNow - now) / 1000);
             this.setState(Object.assign( {}, this.state, { Now: time } ) )
@@ -65,7 +63,6 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
                 this.setState({ TimesUp: true });
             }
         } else {
-            console.log("countdown without time");
         }
     }
 
