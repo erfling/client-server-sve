@@ -40,6 +40,8 @@ export class GameWrapper extends React.Component<GamesList, any> {
         document.querySelector('.home-content').scrollIntoView({ behavior: 'smooth' ,block: 'start' });
     }
 
+    _now:number =  Date.now();
+
     componentDidUpdate(oldProps:any, oldState:any){
         console.log("GAME WRAPPER DID UPDATE", oldState, oldState);
         if(this.props.BottomBarVisible && !oldProps.BottomBarVisible){
@@ -58,7 +60,10 @@ export class GameWrapper extends React.Component<GamesList, any> {
         if(this.props.CurrentPlayer && !oldProps.CurrentPlayer 
             || JSON.stringify(this.props.CurrentPlayer) != JSON.stringify(oldProps.CurrentPlayer)
         ){
-            this.props.setBottomBarVisible(this.props.CurrentPlayer);
+            if(Date.now() - this._now > 2000){
+                this.props.setBottomBarVisible(this.props.CurrentPlayer);
+                this._now = Date.now();
+            }
         }
     }
 
