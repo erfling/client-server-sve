@@ -116,7 +116,7 @@ export default class GoogleSheets
                     range: range
                 }, (err:any, response: any) => {
                     if (err) {
-                        console.log(err,"ERROR HERE GetSheetValues");
+                        console.log(err,"ERROR HERE GetSheetValues " + range);
                         reject(err);
                         return;
                     }
