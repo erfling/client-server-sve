@@ -257,7 +257,7 @@ export default class AppServer
             console.log("something broke")
         }
 
-        const reasonMessage = await this.sheets.getRejectionOrAcceptanceReason(deal.FromNationName, deal.ToNationName);
+        const reasonMessage = await GoogleSheets.getRejectionOrAcceptanceReason(deal.FromNationName, deal.ToNationName);
         deal.Message = reasonMessage;
 
         if (deal.CanAccept) {
@@ -298,13 +298,12 @@ export default class AppServer
             eventTarget.nsp.to(deal.FromTeamSlug).emit(SocketEvents.RESPOND_TO_DEAL, fromTeam); // Send proposal or response to team it's asking
 
             //emit the values to all the teams
-            const sheets = new GoogleSheets();
             const game = await GameModel.findById(toTeam.GameId).populate({ path:"Teams", populate:teamPopulateRules });
-            const sheetsResponse = await sheets.submitTradeDealValues(game.Teams as ITeam[], deal)
+            const sheetsResponse = await GoogleSheets.submitTradeDealValues(game.Teams as ITeam[], deal)
             console.log(sheetsResponse);
 
             setTimeout(() => {
-                sheets.GetSheetValues(toTeam.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
+                GoogleSheets.GetSheetValues(toTeam.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
                     eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, r);
                 })
             },10)
@@ -335,7 +334,7 @@ export default class AppServer
 
             //emit the values to all the teams
             if(game){
-                this.sheets.GetSheetValues((game as IGame).SheetId, "Country Impact!Y3:Y103").then((r:any) => {
+                GoogleSheets.GetSheetValues((game as IGame).SheetId, "Country Impact!Y3:Y103").then((r:any) => {
                     console.log("trying to emit to ", roomName)
                     eventTarget.nsp.to(roomName).emit(SocketEvents.DASHBOARD_UPDATED, r);
                 })
@@ -456,7 +455,7 @@ export default class AppServer
                 })
 
                 
-                const committedAnswers = await this.sheets.commitAnswers( values, range, game.SheetId );
+                const committedAnswers = await GoogleSheets.commitAnswers( values, range, game.SheetId );
                 this.getDaysAbove(newlyUpdatedTeam);
 
             }
@@ -497,7 +496,7 @@ export default class AppServer
         const t = await TeamModel.findOne( { Slug } ).populate("Players");
         eventTarget.nsp.emit(SocketEvents.SELECT_TEAM, t);
 
-        this.sheets.GetSheetValues(t.SheetId).then((v:any) => {
+        GoogleSheets.GetSheetValues(t.SheetId).then((v:any) => {
             console.log("going to send values", v);
             eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, v);                            
         })
@@ -582,9 +581,6 @@ export default class AppServer
             .use(helmet())
 
 
-        //global connection object for Google Sheets API
-        this.sheets = new GoogleSheets();
-
         // cors
         this.app.use((req, res, next) => {
             var allowedOrigins = [
@@ -635,8 +631,7 @@ export default class AppServer
         });
 
         this.app.get('/sapien/api/getWaterResuls', (req, res) => {
-            const sheets = new GoogleSheets();
-            sheets.GetSheetValues(null, "Round 1 Results!A:ZZ").then((r:any) => res.json(r))
+            GoogleSheets.GetSheetValues(null, "Round 1 Results!A:ZZ").then((r:any) => res.json(r))
         })
 
         this.app.get('/sapien/api/generatetradeoptions', function(req, res) {
@@ -714,7 +709,7 @@ export default class AppServer
                                     "Nation", "DealsProposedTo", "DealsProposedBy"
                                 ]
                             ).then((t) => {
-                                this.sheets.GetNationContent((t.Nation as INation).Name).then(c => {
+                                GoogleSheets.GetNationContent((t.Nation as INation).Name).then(c => {
                                     (t.Nation as INation).Content = c;
                                     this.io.of(t.GameId).to(t.Slug).emit(SocketEvents.TEAM_UPDATED, t);
                                 })
@@ -723,10 +718,9 @@ export default class AppServer
                         }
 
 
-                        const sheets = new GoogleSheets();
                         console.log("LOOKING UP", game.SheetId)
                         //emit the values to all the teams
-                        sheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
+                        GoogleSheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
                             console.log("SHOULD BE EMITTING TO TEAMS")
                             this.io.of(game._id).emit(SocketEvents.DASHBOARD_UPDATED, r);
                         })
@@ -783,8 +777,7 @@ export default class AppServer
                 ).then(t => t);
 
                 if (team) {
-                    const sheets = new GoogleSheets();
-                    const content = await sheets.GetNationContent((team.Nation as INation).Name);
+                    const content = await GoogleSheets.GetNationContent((team.Nation as INation).Name);
                     if(content) (team.Nation as INation).Content = content;
                    // console.log("NATION IS",(content));
                     game = await GameModel.findById(team.GameId);
@@ -797,13 +790,13 @@ export default class AppServer
                         t.GameState = game.State;
                         if (this.socketServer instanceof https.Server) {
                             console.log("TRYING TO SET LISTENER FOR SHEET CHANGES")
-                            this.sheets.setTeamListener(game);
+                            GoogleSheets.setTeamListener(game);
                         }
                         let token = jwt.sign({team: t}, 'shhhhh');
 
                         //emit the values to all the teams
                         console.log("LOOKING UP", game.SheetId)
-                        this.sheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
+                        GoogleSheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
                             console.log("trying to emit to ", game._id);
                             this.io.of(game._id).emit(SocketEvents.DASHBOARD_UPDATED, r);
                         })
@@ -839,8 +832,8 @@ export default class AppServer
                 let gameSocketNameSpace = this.io.of(gameId);
 
                 try{
-                    const dashBoardValues = await this.sheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103")
-                    const yearsAbove2 = await this.sheets.GetSheetValues(game.SheetId, "Country Impact!C21");
+                    const dashBoardValues = await GoogleSheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103")
+                    const yearsAbove2 = await GoogleSheets.GetSheetValues(game.SheetId, "Country Impact!C21");
 
                     if(dashBoardValues && yearsAbove2){
                         gameSocketNameSpace.emit(SocketEvents.DASHBOARD_UPDATED, dashBoardValues);
@@ -877,7 +870,6 @@ export default class AppServer
 
                 const game = await GameModel.findOne({IsCurrentGame: true}).then(g => g);
                 console.log("FOUND THIS TEAM", game)
-                var sheets = new GoogleSheets();
 
                 //TODO: this must be a loop through all active games. We must emit to all sockets for all games being played
                 /*
@@ -945,7 +937,7 @@ export default class AppServer
                     });
                 }
                 
-                const sheetSubmit = await new GoogleSheets().commitAnswers(sheetValues,"Round 3 Criteria!B2:D7", savedGame.SheetId)
+                const sheetSubmit = await GoogleSheets.commitAnswers(sheetValues,"Round 3 Criteria!B2:D7", savedGame.SheetId)
     
                 console.log(sheetValues);
     
@@ -968,7 +960,7 @@ export default class AppServer
 
         this.app.post("/sapien/api/getDaysAbove", async (req, res) => {
             this.getDaysAbove(req.body);
-            const updatedValues = await this.sheets.GetSheetValues(req.body.SheetId, "Country Impact!C21");
+            const updatedValues = await GoogleSheets.GetSheetValues(req.body.SheetId, "Country Impact!C21");
             res.json(updatedValues);
 
         })
@@ -998,7 +990,7 @@ export default class AppServer
     }
 
     private async getDaysAbove(team:ITeam): Promise<any>{
-        const updatedValues = await this.sheets.GetSheetValues(team.SheetId, "Country Impact!C21");
+        const updatedValues = await GoogleSheets.GetSheetValues(team.SheetId, "Country Impact!C21");
                 
         if(updatedValues){
             console.log("VALUES FROM SHEET", updatedValues);

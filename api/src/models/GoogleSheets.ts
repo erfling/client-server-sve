@@ -16,7 +16,7 @@ import formValues from '../../../shared/models/FormValues';
 import INation from '../../../shared/models/INation';
 import IGame from '../../../shared/models/IGame';
 
-export default class GoogleSheets
+export default abstract class GoogleSheets
 {
     //----------------------------------------------------------------------
     //
@@ -24,7 +24,7 @@ export default class GoogleSheets
     //
     //----------------------------------------------------------------------
 
-    auth: any;
+    static auth: any;
     static SCOPES:string[] = [
                                 'https://www.googleapis.com/auth/spreadsheets',
                                 'https://www.googleapis.com/auth/drive.readonly',
@@ -60,7 +60,7 @@ export default class GoogleSheets
      * Reads a file and returns a promise
      * @param path
      */
-    private readAndAuthFile(path:string):Promise<any> {
+    private static readAndAuthFile(path:string):Promise<any> {
         return new Promise((resolve, reject) => {
             fs.readFile(path, function processClientSecrets(err: any, content: any) {
                 if (err) {
@@ -76,7 +76,7 @@ export default class GoogleSheets
      * Authorize a client with the loaded credentials
      * @param credentials 
      */
-    private authorize(credentials:any):Promise<any> {
+    private static authorize(credentials:any):Promise<any> {
         console.log("trying to authorize");
         var clientSecret = credentials.installed.client_secret;
         var clientId = credentials.installed.client_id;
@@ -87,7 +87,7 @@ export default class GoogleSheets
             console.log("TOKEN PATH", GoogleSheets.TOKEN_PATH);
             fs.readFile(GoogleSheets.TOKEN_PATH, function(err:any, token:any) {
                 if (err) {
-                    new GoogleSheets().getNewToken(oauth2Client);
+                    GoogleSheets.getNewToken(oauth2Client);
                     reject(err)
                 } else {
                     oauth2Client.credentials = JSON.parse(token);
@@ -97,7 +97,7 @@ export default class GoogleSheets
         }).catch(e => {})
     }
     
-    public GetSheetValues(sheetId:string = null, range: string = null, log:boolean = false):any {
+    public static GetSheetValues(sheetId:string = null, range: string = null, log:boolean = false):any {
         console.log("SHEET ID: ", sheetId)
         if(log){
             console.log("OUR RANGE IS:");
@@ -130,7 +130,7 @@ export default class GoogleSheets
         })
     }
 
-    private storeToken(token:any):void {
+    private  static storeToken(token:any):void {
         try {
             fs.mkdirSync(GoogleSheets.TOKEN_DIR);
         } catch (err) {
@@ -140,7 +140,7 @@ export default class GoogleSheets
         console.log('Token stored to ' + GoogleSheets.TOKEN_PATH);
     }
 
-    private getNewToken(oauth2Client:any):void {
+    private static getNewToken(oauth2Client:any):void {
         var authUrl = oauth2Client.generateAuthUrl({
             access_type: 'offline',
             scope: GoogleSheets.SCOPES
@@ -164,14 +164,14 @@ export default class GoogleSheets
         });
     }
     
-    public entryPoint(method:Function, instance:GoogleSheets):Promise<any> {
+    public static entryPoint(method:Function, instance:GoogleSheets):Promise<any> {
         if (!method) method = this.GetSheetValues;
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .catch()
     }
 
-    public subscribeToDriveResource(path: string):Promise<any> {
+    public static subscribeToDriveResource(path: string):Promise<any> {
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth: any) => {
@@ -203,7 +203,7 @@ export default class GoogleSheets
         })
     }
 
-    public submitTradeDealValues(teams: ITeam[], deal:IDeal):Promise<any>{
+    public static submitTradeDealValues(teams: ITeam[], deal:IDeal):Promise<any>{
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth) => {
@@ -250,7 +250,7 @@ export default class GoogleSheets
         }).catch(e => {throw(e)})
     }
 
-    public commitAnswers(values:string[][] | number[][], range:string, sheetId:string ):Promise<any> {
+    public static commitAnswers(values:string[][] | number[][], range:string, sheetId:string ):Promise<any> {
         console.log("ABOUT TO COMMIT ANSWERS TO SHEET ", sheetId);
 
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
@@ -298,7 +298,7 @@ export default class GoogleSheets
         .catch()
     }
 
-    public setTeamListener(game: IGame):Promise<any> {
+    public static setTeamListener(game: IGame):Promise<any> {
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth: any) => {
@@ -329,7 +329,7 @@ export default class GoogleSheets
         })
     }
 
-    public createTeamSheet(sheetName: string, sourceId: string):Promise<any>{
+    public static createTeamSheet(sheetName: string, sourceId: string):Promise<any>{
         console.log("ATTEMPTING CREATE SHEET", sheetName)
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
@@ -354,7 +354,7 @@ export default class GoogleSheets
         }).catch(e => console.log("CAUGHT ERROR createTeamSheet",e));
     }
 
-    public GetNationContent(name: string) {
+    public static GetNationContent(name: string) {
         const sheets = google.sheets('v4');
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
@@ -382,7 +382,7 @@ export default class GoogleSheets
         })    
     }
 
-    public getRejectionOrAcceptanceReason(fromNationName: string, toNationName: string): Promise<any>{
+    public static getRejectionOrAcceptanceReason(fromNationName: string, toNationName: string): Promise<any>{
         const sheets = google.sheets('v4');
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
@@ -424,7 +424,7 @@ export default class GoogleSheets
         })    
     }
 
-    public  clearRange(sheetId: string, range: string){
+    public static clearRange(sheetId: string, range: string){
         const sheets = google.sheets('v4');
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
@@ -454,7 +454,7 @@ export default class GoogleSheets
         })    
     }
 
-    public getRatingsByNation(team:ITeam){
+    public static getRatingsByNation(team:ITeam){
         const sheets = google.sheets('v4');
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
