@@ -285,12 +285,10 @@ export default abstract class GoogleSheets
                 sheets.spreadsheets.values.batchUpdate(
                     requestBody,
                     (err:any, result: any) => {
-                    console.log(result);
                     if (err) {
                         console.log(err,"ERROR HERE submitTradeDealValues")
                         return reject(err);
                     }
-                    console.log("HERE");
                     return resolve(result.values);
                 })
             }).then(values => values)
@@ -326,18 +324,15 @@ export default abstract class GoogleSheets
                 auth:auth,
             }
 
-            console.log("data to submit", values);
           // console.log("TRYING TO SEND:",requestBody)
           return new Promise((resolve, reject) => {
               sheets.spreadsheets.values.batchUpdate(
                   requestBody, 
                   (err:any, result: any) => {
-                  console.log(result);
                   if (err) {
                       console.log(err,"ERROR HERE commitAnswers")
                       return reject(err);
                   }
-                  console.log("HERE");
                   return resolve(result.values);
               })
           })

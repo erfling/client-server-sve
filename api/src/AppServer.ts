@@ -778,7 +778,6 @@ export default class AppServer
 
                 if (team) {
                     const content = await GoogleSheets.GetNationContent((team.Nation as INation).Name);
-                    console.log(content);
                     if(content) (team.Nation as INation).Content = content;
                    // console.log("NATION IS",(content));
                     game = await GameModel.findById(team.GameId);
