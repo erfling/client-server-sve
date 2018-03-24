@@ -16,6 +16,15 @@ import formValues from '../../../shared/models/FormValues';
 import INation from '../../../shared/models/INation';
 import IGame from '../../../shared/models/IGame';
 
+interface SheetsCache{
+    [index:string]: CacheValue;
+}
+
+interface CacheValue{
+    RequestTime: number;
+    SheetsValues: any;
+}
+
 export default abstract class GoogleSheets
 {
     //----------------------------------------------------------------------
@@ -23,6 +32,8 @@ export default abstract class GoogleSheets
     //  Properties
     //
     //----------------------------------------------------------------------
+
+
 
     static auth: any;
     static SCOPES:string[] = [
@@ -32,6 +43,31 @@ export default abstract class GoogleSheets
                              ];
     static TOKEN_DIR: string = '/sapien/.credentials/';
     static TOKEN_PATH: string = GoogleSheets.TOKEN_DIR + 'sheets.googleapis.sve.json';
+
+
+    static Cache: SheetsCache = {};
+    static setInCache(range: string, SheetsValues: any){
+        console.log("SETTING ", range, " INTO CACHE")
+        var values:CacheValue = {
+            RequestTime: Date.now(),
+            SheetsValues
+        }
+        GoogleSheets.Cache[range] = values;
+    }
+    static getFromCache(range:string): CacheValue | boolean {
+        console.log("CALLED. RANGE IS: ", range)
+
+        if(GoogleSheets.Cache[range] 
+            && GoogleSheets.Cache[range].SheetsValues
+            && GoogleSheets.Cache[range].RequestTime
+            && Date.now() - GoogleSheets.Cache[range].RequestTime < 5000
+        ){
+            return GoogleSheets.Cache[range];
+        }
+
+        return false;
+    }
+
 
     //----------------------------------------------------------------------
     //
@@ -97,12 +133,18 @@ export default abstract class GoogleSheets
         }).catch(e => {})
     }
     
-    public static GetSheetValues(sheetId:string = null, range: string = null, log:boolean = false):any {
-        console.log("SHEET ID: ", sheetId)
-        if(log){
-            console.log("OUR RANGE IS:");
-            console.log(range);
+    public static GetSheetValues(sheetId:string = null, range: string = null, ignoreCache:boolean = false):any {
+
+        if(!ignoreCache && range && GoogleSheets.getFromCache(range)){
+            console.log("OUR CACHE IS");
+            return new Promise((resolve) => {
+                console.log(range, " WAS FOUND IN CACHE")
+                return resolve((GoogleSheets.getFromCache(range) as CacheValue).SheetsValues);
+            })
         }
+
+        console.log("SHEET ID: ", sheetId)
+
         const sheets = google.sheets('v4');
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
@@ -120,9 +162,8 @@ export default abstract class GoogleSheets
                         reject(err);
                         return;
                     }
-                    if(log){
-                        console.log(response.values);
-                    }
+
+                    GoogleSheets.setInCache(range, response.values);
                     return resolve(response.values);
 
                 })

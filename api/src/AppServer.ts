@@ -303,7 +303,7 @@ export default class AppServer
             console.log(sheetsResponse);
 
             setTimeout(() => {
-                GoogleSheets.GetSheetValues(toTeam.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
+                GoogleSheets.GetSheetValues(toTeam.SheetId, "Country Impact!Y3:Y103", true).then((r:any) => {
                     eventTarget.nsp.emit(SocketEvents.DASHBOARD_UPDATED, r);
                 })
             },10)
@@ -456,7 +456,7 @@ export default class AppServer
 
                 
                 const committedAnswers = await GoogleSheets.commitAnswers( values, range, game.SheetId );
-                this.getDaysAbove(newlyUpdatedTeam);
+                this.getDaysAbove(newlyUpdatedTeam, true);
 
             }
             var validTeams = (game.Teams as ITeam[]).filter(t => this.AllAgree(t)).map(t => t.Slug);
@@ -685,7 +685,7 @@ export default class AppServer
         });
 
         //login route
-        mongoose.set('debug', true);
+        //mongoose.set('debug', true);
 
         this.app.post('/sapien/api/changestate', (req, res) => {
             console.log(req.body._id);
@@ -947,7 +947,7 @@ export default class AppServer
                         .then(t => t);
 
                
-                this.getDaysAbove(savedTeam);
+                this.getDaysAbove(savedTeam, true);
 
                 
                 res.json(req.body);
@@ -989,8 +989,8 @@ export default class AppServer
         
     }
 
-    private async getDaysAbove(team:ITeam): Promise<any>{
-        const updatedValues = await GoogleSheets.GetSheetValues(team.SheetId, "Country Impact!C21");
+    private async getDaysAbove(team:ITeam, ignoreCache: boolean = false): Promise<any>{
+        const updatedValues = await GoogleSheets.GetSheetValues(team.SheetId, "Country Impact!C21", ignoreCache);
                 
         if(updatedValues){
             console.log("VALUES FROM SHEET", updatedValues);
