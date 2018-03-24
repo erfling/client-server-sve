@@ -60,7 +60,7 @@ export default abstract class GoogleSheets
         if(GoogleSheets.Cache[range] 
             && GoogleSheets.Cache[range].SheetsValues
             && GoogleSheets.Cache[range].RequestTime
-            && Date.now() - GoogleSheets.Cache[range].RequestTime < 5000
+            && Date.now() - GoogleSheets.Cache[range].RequestTime < 50000
         ){
             return GoogleSheets.Cache[range];
         }
@@ -92,6 +92,44 @@ export default abstract class GoogleSheets
     //
     //----------------------------------------------------------------------
     
+
+    private static apiGetValues( sheetId: string, range: string, ignoreCache: boolean = false ){
+        if(!ignoreCache && range && GoogleSheets.getFromCache(range)){
+            console.log("OUR CACHE IS");
+            return new Promise((resolve) => {
+                console.log(range, " WAS FOUND IN CACHE")
+                return resolve((GoogleSheets.getFromCache(range) as CacheValue).SheetsValues);
+            })
+        }
+
+        console.log("SHEET ID: ", sheetId)
+
+        const sheets = google.sheets('v4');
+        return this.readAndAuthFile('./api/src/creds/client_secret.json')
+        .then(this.authorize)
+        .then((auth) => {
+            if (!sheetId) sheetId = '1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg'
+            return new Promise((resolve, reject) => {
+                if (!auth) return;
+                sheets.spreadsheets.values.get({
+                    auth: auth,            
+                    spreadsheetId: sheetId,
+                    range: range
+                }, (err:any, response: any) => {
+                    if (err) {
+                        console.log(err,"ERROR HERE GetSheetValues " + range);
+                        reject(err);
+                        return;
+                    }
+
+                    GoogleSheets.setInCache(range, response.values);
+                    return resolve(response.values);
+
+                })
+            })
+        })
+    }
+
     /**
      * Reads a file and returns a promise
      * @param path
@@ -134,41 +172,8 @@ export default abstract class GoogleSheets
     }
     
     public static GetSheetValues(sheetId:string = null, range: string = null, ignoreCache:boolean = false):any {
-
-        if(!ignoreCache && range && GoogleSheets.getFromCache(range)){
-            console.log("OUR CACHE IS");
-            return new Promise((resolve) => {
-                console.log(range, " WAS FOUND IN CACHE")
-                return resolve((GoogleSheets.getFromCache(range) as CacheValue).SheetsValues);
-            })
-        }
-
-        console.log("SHEET ID: ", sheetId)
-
-        const sheets = google.sheets('v4');
-        return this.readAndAuthFile('./api/src/creds/client_secret.json')
-        .then(this.authorize)
-        .then((auth) => {
-            if (!sheetId) sheetId = '1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg'
-            return new Promise((resolve, reject) => {
-                if (!auth) return;
-                sheets.spreadsheets.values.get({
-                    auth: auth,            
-                    spreadsheetId: sheetId,
-                    range: range
-                }, (err:any, response: any) => {
-                    if (err) {
-                        console.log(err,"ERROR HERE GetSheetValues " + range);
-                        reject(err);
-                        return;
-                    }
-
-                    GoogleSheets.setInCache(range, response.values);
-                    return resolve(response.values);
-
-                })
-            })
-        })
+        if (!sheetId) sheetId = '1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg';
+        return GoogleSheets.apiGetValues(sheetId, range, ignoreCache);
     }
 
     private  static storeToken(token:any):void {
@@ -395,74 +400,41 @@ export default abstract class GoogleSheets
         }).catch(e => console.log("CAUGHT ERROR createTeamSheet",e));
     }
 
-    public static GetNationContent(name: string) {
-        const sheets = google.sheets('v4');
-        return this.readAndAuthFile('./api/src/creds/client_secret.json')
-        .then(this.authorize)
-        .then((auth) => {
-            const sheetId = '1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg'
-            return new Promise((resolve, reject) => {
-                if (!auth) return;
-                sheets.spreadsheets.values.get({
-                    auth: auth,            
-                    spreadsheetId: sheetId,
-                    range: "Round 2 Offers"
-                }, (err:any, response: any) => {
-                    if (err) {
-                        console.log(err,"ERROR HERE GetNationContent");
-                        reject(err);
-                        return;
-                    }
-                    var values = response.values.filter((r: any) => {
-                        return r[0] == name
-                    })
-                    values[0][7] = values[0][7] + "\n" +  response.values[9][1];
-                    return resolve(values);
-                })
-            })
-        })    
+    public static GetNationContent(name: string, ignoreCache:boolean = false) {
+
+        return GoogleSheets.apiGetValues('1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg', "Round 2 Offers", ignoreCache)
+                    .then( ( response:any ) => {
+                        var values = response.filter((r: any) => {
+                            console.log(r[0]);
+                            return r[0] == name
+                        })
+                        values[0][7] = values[0][7] + "\n" +  response[9][1];
+                        return values;
+                    }).catch(e => console.log(e))
     }
 
     public static getRejectionOrAcceptanceReason(fromNationName: string, toNationName: string): Promise<any>{
         const sheets = google.sheets('v4');
-        return this.readAndAuthFile('./api/src/creds/client_secret.json')
-        .then(this.authorize)
-        .then((auth) => {
-            const sheetId = '1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg'
-            return new Promise((resolve, reject) => {
-                if (!auth) return;
-                sheets.spreadsheets.values.get({
-                    auth: auth,            
-                    spreadsheetId: sheetId,
-                    //the range where rejection reasons live
-                    range: "Round 2 Offers!K2:Q8"
-                }, (err:any, response: any) => {
-                    if (err) {
-                        console.log(err,"ERROR HERE getRejectionOrAcceptanceReason");
-                        reject("error");
-                        return;
-                    }
 
+        return GoogleSheets.apiGetValues('1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg', "Round 2 Offers!K2:Q8")
+                            .then((values: any) => {
+                                var rows = values.filter((r: any) => {
+                                    return r[0].toUpperCase().indexOf(fromNationName.toUpperCase()) != -1
+                                })
+                                
+                                console.log(rows);
+            
+                                if(rows && rows[0]){
+                                    var column:string[] = rows[0].filter((row:string[], i: number) => {
+                                        return values[0][i] && values[0][i].toUpperCase().indexOf(toNationName.toUpperCase()) != -1
+                                    })
+                                    console.log(column);
+                                    if(column) return column[0];
+                                }
+                                
+                            })
+                            .catch(e => console.log(e))
 
-                    var rows = response.values.filter((r: any) => {
-                        return r[0].toUpperCase().indexOf(fromNationName.toUpperCase()) != -1
-                    })
-                    
-                    console.log(rows);
-
-                    if(rows && rows[0]){
-                        var column:string[] = rows[0].filter((row:string[], i: number) => {
-                            return response.values[0][i] && response.values[0][i].toUpperCase().indexOf(toNationName.toUpperCase()) != -1
-                        })
-                        console.log(column);
-                        if(column) return resolve(column[0]);
-                    }
-                    
-                    return reject("no match found")
-                    
-                })
-            })
-        })    
     }
 
     public static clearRange(sheetId: string, range: string){
@@ -497,6 +469,8 @@ export default abstract class GoogleSheets
 
     public static getRatingsByNation(team:ITeam){
         const sheets = google.sheets('v4');
+
+        
         return this.readAndAuthFile('./api/src/creds/client_secret.json')
         .then(this.authorize)
         .then((auth) => {
