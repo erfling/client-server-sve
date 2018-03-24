@@ -214,51 +214,6 @@ export default class State4 extends React.Component<State4Props, { hasScrolled:b
                         <h1 style={{ marginTop: "50px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
                         <ChartContainer/>
                     </Col>
-                    {!this.props.SelectedRole ?
-                        <Row className="role-selection">
-                            
-                            {this.state && this.state.GenericContent && 
-                                <Col sm={24} md={24} lg={18}>
-
-                                    <Row type="flex" justify="center">
-                                        <Col sm={22} md={22} lg={22} style={{marginTop: '75px'}}>
-                                            <p><p>{this.state.GenericContent[0]}</p></p>
-                                        </Col>
-                                        
-                                    </Row>        
-
-                                    <Row  type="flex" justify="center" style={{paddingTop:'20px'}}>
-                                        <h1>Role Selection</h1>                                                            
-                                    </Row>
-                                                                    
-                                    <Row type="flex" justify="center">
-                                        <Col xs={22}>
-                                            <BankIcon height={400}/>
-                                            <p><p>{this.state.GenericContent[1]}</p></p>
-                                            <Button onClick={e => this.props.selectRole(RoleName.BANK, this.props.CurrentPlayer.Slug)} className="game-button block title-case">Play As {(this.props.CurrentPlayer.Nation as INation).Name}Bank</Button>
-                                        </Col>
-                                    </Row>
-
-                                    <Row type="flex" justify="center">
-                                        <Col xs={22}>
-                                            <MinisterIcon height={400}/>
-                                            <p><p>{this.state.GenericContent[2]}</p></p>
-                                            <Button onClick={e => this.props.selectRole(RoleName.MINISTER_OF_ENERGY, this.props.CurrentPlayer.Slug)} className="game-button block title-case">Play As Minister of Energy, {(this.props.CurrentPlayer.Nation as INation).Name}</Button>
-                                        </Col>
-                                    </Row>                                
-                                </Col>
-                            }
-                        </Row>
-                        :
-                        <div>
-                            <div style={{margin: '75px auto 20px', width: '92%'}}>
-                                {this.state.RoleContent && <p><p>{this.state.RoleContent.split("\n")[0]}</p></p>}
-                                {this.state.RoleContent && this.state.RoleContent.split("\n").slice(1).map(c => {
-                                    return c == c.toUpperCase() ? <h3>{c}</h3> : <p><p>{c}</p></p>
-                                })}
-                            </div>
-                        </div>
-                    }
                     {this.props.CurrentPlayer.GameState == "3B" && this.props.SelectedRole ? 
                         <Row className="form-wrapper" style={{paddingLeft: "0", paddingRight:"0"}}>
                             <Col sm={24} md={24} lg={24}>
@@ -310,6 +265,52 @@ export default class State4 extends React.Component<State4Props, { hasScrolled:b
                             </Col> 
                         </Row> : null                
                     }
+                    {!this.props.SelectedRole ?
+                        <Row className="role-selection">
+                            
+                            {this.state && this.state.GenericContent && 
+                                <Col sm={24} md={24} lg={18}>
+
+                                    <Row type="flex" justify="center">
+                                        <Col sm={22} md={22} lg={22} style={{marginTop: '75px'}}>
+                                            <p><p>{this.state.GenericContent[0]}</p></p>
+                                        </Col>
+                                        
+                                    </Row>        
+
+                                    <Row  type="flex" justify="center" style={{paddingTop:'20px'}}>
+                                        <h1>Role Selection</h1>                                                            
+                                    </Row>
+                                                                    
+                                    <Row type="flex" justify="center">
+                                        <Col xs={22}>
+                                            <BankIcon height={400}/>
+                                            <p><p>{this.state.GenericContent[1]}</p></p>
+                                            <Button onClick={e => this.props.selectRole(RoleName.BANK, this.props.CurrentPlayer.Slug)} className="game-button block title-case">Play As {(this.props.CurrentPlayer.Nation as INation).Name}Bank</Button>
+                                        </Col>
+                                    </Row>
+
+                                    <Row type="flex" justify="center">
+                                        <Col xs={22}>
+                                            <MinisterIcon height={400}/>
+                                            <p><p>{this.state.GenericContent[2]}</p></p>
+                                            <Button onClick={e => this.props.selectRole(RoleName.MINISTER_OF_ENERGY, this.props.CurrentPlayer.Slug)} className="game-button block title-case">Play As Minister of Energy, {(this.props.CurrentPlayer.Nation as INation).Name}</Button>
+                                        </Col>
+                                    </Row>                                
+                                </Col>
+                            }
+                        </Row>
+                        :
+                        <div>
+                            <div style={{margin: '75px auto 20px', width: '92%'}}>
+                                {this.state.RoleContent && <p><p>{this.state.RoleContent.split("\n")[0]}</p></p>}
+                                {this.state.RoleContent && this.state.RoleContent.split("\n").slice(1).map(c => {
+                                    return c == c.toUpperCase() ? <h3>{c}</h3> : <p><p>{c}</p></p>
+                                })}
+                            </div>
+                        </div>
+                    }
+                    
                 {this.props.DaysAbove2 && this.props.DaysAbove2 == 0 ? 
                 <Modal
                     className="victory-modal"
