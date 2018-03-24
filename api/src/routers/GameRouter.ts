@@ -37,7 +37,6 @@ class GameRouter
 
     constructor() {
         this.router = Router({mergeParams:true});
-        this.Sheets = new GoogleSheets();
         this.routes();
     }
 
@@ -95,8 +94,7 @@ class GameRouter
         
         const savedGame = await g.save();
 
-        const sheets = new GoogleSheets();
-        const sheetId = await sheets.createTeamSheet((savedGame.Name ? savedGame.Name + ", " : null) + savedGame.Location + " " + savedGame.DatePlayed.toLocaleDateString(), savedGame.SourceSheetId)
+        const sheetId = await GoogleSheets.createTeamSheet((savedGame.Name ? savedGame.Name + ", " : null) + savedGame.Location + " " + savedGame.DatePlayed.toLocaleDateString(), savedGame.SourceSheetId)
         const newGame = await GameModel.findOneAndUpdate({_id: g._id},{SheetId: sheetId, State: "1A"},{new:true});
 
         const gameWithTeams = await this.SaveChildGames(newGame);
@@ -194,7 +192,7 @@ class GameRouter
                 });
             }
             
-            new GoogleSheets().commitAnswers(sheetValues,"Round 3 Criteria!B2:D7", game.SheetId)
+            GoogleSheets.commitAnswers(sheetValues,"Round 3 Criteria!B2:D7", game.SheetId)
 
             console.log(sheetValues);
 
@@ -212,7 +210,7 @@ class GameRouter
     }
 
     private getSheets(){
-        if(!this.Sheets)this.Sheets = new GoogleSheets();
+        if(!this.Sheets)this.Sheets = GoogleSheets;
         return this.Sheets;
     }
 
@@ -291,14 +289,13 @@ class GameRouter
 
             if(updatedGame){
                 //reset spreadsheet ranges
-                const sheets = new GoogleSheets();
                 const sheetId = updatedGame.SheetId
                 //clear team ratings
-                const ratingsCleared     = await sheets.clearRange(sheetId, "Round 3 Criteria!B2:D7");
+                const ratingsCleared     = await GoogleSheets.clearRange(sheetId, "Round 3 Criteria!B2:D7");
                 //clear role deals
-                const roleDealsCleared   = await sheets.clearRange(sheetId, "Round 4!B14:M17");
+                const roleDealsCleared   = await GoogleSheets.clearRange(sheetId, "Round 4!B14:M17");
                 //clear tech investments
-                const investmentsCleared = await sheets.clearRange(sheetId, "Country Impact!C12:C17");
+                const investmentsCleared = await GoogleSheets.clearRange(sheetId, "Country Impact!C12:C17");
  
                 var slugs = (updatedGame.Teams as ITeam[]).map(t => t._id)
                 console.log(slugs);
@@ -371,7 +368,6 @@ class GameRouter
 
     public routes(){
         //this.router.all("*", cors());
-        this.getSheets();
         this.router.get("/", this.GetGames.bind(this));
         this.router.get("/:game", this.GetGame.bind(this));
         this.router.get("/req/getcurrentgame", this.getCurrentGame.bind(this));
