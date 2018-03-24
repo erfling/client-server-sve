@@ -78,13 +78,13 @@ export default class State4 extends React.Component<State4Props, { hasScrolled:b
             }
             
         }
-
+/*
         if(this.props.CurrentPlayer && this.props.CurrentPlayer.GameState == "4B" && !this.state.hasScrolled){
             var elem = document.querySelector('.scroll-target');
             console.log(elem);
             if(elem)elem.scrollIntoView( { behavior:'smooth', block:'end' } )
             this.setState(Object.assign({}, this.state, {hasScrolled: true}));
-        }
+        }*/
 
         if(this.props.SelectedRole && !this.state.RoleContent){
             this.getRoleContent();
