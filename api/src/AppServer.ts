@@ -991,7 +991,7 @@ export default class AppServer
     }
 
     private async getDaysAbove(team:ITeam, ignoreCache: boolean = false): Promise<any>{
-        const updatedValues = await GoogleSheets.GetSheetValues(team.SheetId, "Country Impact!C21", ignoreCache);
+        const updatedValues = await GoogleSheets.GetSheetValues(team.SheetId, "Country Impact!C21", true);
                 
         if(updatedValues){
             console.log("VALUES FROM SHEET", updatedValues);
