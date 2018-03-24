@@ -42,9 +42,8 @@ class GoogleSheetsRouter
     
     public GetSheetValues(req: Request, res: Response):Promise<any> {
         console.log("GET SHEETS CALLED")
-        let sheet = new GoogleSheets();
         
-        return sheet.entryPoint(sheet.GetSheetValues, sheet)
+        return GoogleSheets.entryPoint(GoogleSheets.GetSheetValues, GoogleSheets)
         .then( (values) => {
             if (values) {
                 res.json(values);
@@ -79,8 +78,6 @@ class GoogleSheetsRouter
 
     private async GetTeamContent(req: Request, res: Response){
         const state = (req.body as ITeam).GameState;
-
-        const sheets = new GoogleSheets();
         
         var range = "";
 
@@ -96,7 +93,7 @@ class GoogleSheetsRouter
             res.json("No Game State provided")
         }
 
-        const content = await sheets.GetSheetValues(null, range);
+        const content = await GoogleSheets.GetSheetValues(null, range);
 
         console.log(content);
 
@@ -107,10 +104,9 @@ class GoogleSheetsRouter
 
     private  async getGenericState4Content (req: Request, res: Response){
         console.log("CALLED ID")
-        const sheets = new GoogleSheets();
 
         try{
-            const sheetsResponse = await sheets.GetSheetValues(req.params.sheetId, "Round 4!B1:M3")
+            const sheetsResponse = await GoogleSheets.GetSheetValues(req.params.sheetId, "Round 4!B1:M3")
             if(sheetsResponse){
 
                 var resp = sheetsResponse.filter((row:string[], i:number) => {
@@ -140,10 +136,9 @@ class GoogleSheetsRouter
 
     private async getRoleContent(req: Request, res: Response){
         if(req.params.role){
-            const sheets = new GoogleSheets();
             console.log("ROLE:", req.params.role)
             try{
-                const sheetsResponse = await sheets.GetSheetValues(null, "Round 4!B5:C5")
+                const sheetsResponse = await GoogleSheets.GetSheetValues(null, "Round 4!B5:C5")
                 var finalResponse = req.params.role.toUpperCase().indexOf("BANK") != -1 ? sheetsResponse[0][0] : sheetsResponse[0][1];
                 if(finalResponse){
                     res.json(finalResponse)
@@ -164,9 +159,8 @@ class GoogleSheetsRouter
 
     private async GetRatingsByTeam(req: Request, res: Response){
         try{
-            const sheets = new GoogleSheets();
             const t = new Team(req.body);
-            const values:any = await sheets.getRatingsByNation(t);
+            const values:any = await GoogleSheets.getRatingsByNation(t);
             console.log("SHEETS", values)
 
             if(values){
