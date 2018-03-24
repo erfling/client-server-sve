@@ -94,6 +94,7 @@ export default abstract class GoogleSheets
     
 
     private static apiGetValues( sheetId: string, range: string, ignoreCache: boolean = false ){
+        if(ignoreCache)console.log("WE ARE IGNORING THE CACHE FOR RANGE ", range)
         if(!ignoreCache && range && GoogleSheets.getFromCache(range)){
             console.log("OUR CACHE IS");
             return new Promise((resolve) => {
