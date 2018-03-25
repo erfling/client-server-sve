@@ -20,13 +20,19 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
     }
 
     componentWillMount() {
-
+        if(localStorage.getItem("TwentyMinutesFromNow")){
+            this.setState(Object.assign({}, { TwentyMinutesFromNow: parseInt(localStorage.getItem("TwentyMinutesFromNow")), TimesUp: false }))
+            setTimeout(() => this.startTimer(), 100);
+        }
     }
 
     startTimer() {
-        var twentyMinutesLater = Date.now() + 2200;
-        var TwentyMinutesFromNow = twentyMinutesLater.valueOf();
-        this.setState(Object.assign({}, { TwentyMinutesFromNow, TimesUp: false }))
+        if(!this.state || !this.state.TwentyMinutesFromNow){
+            var twentyMinutesLater = Date.now() + 12000;//120000000;
+            localStorage.setItem("TwentyMinutesFromNow", twentyMinutesLater.valueOf().toString())
+            var TwentyMinutesFromNow = twentyMinutesLater.valueOf();
+            this.setState(Object.assign({}, { TwentyMinutesFromNow, TimesUp: false, }))
+        }
         var timer = setInterval(this.countDown.bind(this), 1000)
         this.setState(Object.assign({}, { Timer: timer }));
     }
