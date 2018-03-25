@@ -41,7 +41,7 @@ export default class State3 extends React.Component<State3Props, { PlayerNotFoun
             console.log("CURRENT PLAYER ALREADY IN REDUX STORE")
             this.props.getContent(this.props.CurrentPlayer)
         }
-        window.scrollTo(0, 0);
+        //window.scrollTo(0, 0);
     }
 
     componentDidUpdate() {

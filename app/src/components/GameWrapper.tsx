@@ -43,7 +43,6 @@ export class GameWrapper extends React.Component<GamesList, any> {
     _now:number =  Date.now();
 
     componentDidUpdate(oldProps:any, oldState:any){
-        console.log("GAME WRAPPER DID UPDATE", oldState, oldState);
         /*
         if(this.props.BottomBarVisible && !oldProps.BottomBarVisible){
             var x = 1; //y-axis pixel displacement

@@ -40,7 +40,6 @@ export default class TopBar extends React.Component<TopOfTheProps, {PlayerNotFou
 
     componentDidUpdate(oldProps:any, oldState:any){
         if(this.props.CurrentPlayer && !this.props.CurrentPlayer.GameState.includes("2")){
-            console.log("did updated called", this.props.SocketConnected, this.props.DaysAbove2)
             this.getData();
         }
         else if(this.props.Dashboard && this.props.Dashboard.length){
@@ -94,7 +93,7 @@ export default class TopBar extends React.Component<TopOfTheProps, {PlayerNotFou
         return !this.props.children && this.props.CurrentPlayer && this.props.SocketConnected ? 
                     <Row ref="tempTracker" className="tempTracker">
                         {this.props.CurrentPlayer.GameState.indexOf("2") != -1 ? 
-                        <div>Temp  in 2100:&nbsp;<span className="animation-target" style={{color: this.getColor()}}>{this.props.Dashboard[100]}</span>
+                        <div>Temp in 2100:&nbsp;<span className="animation-target" style={{color: this.getColor()}}>{this.props.Dashboard[100]}</span>
                         <span>Your Trade Bank: ${this.getTradeBank()} Billion</span></div>
                         :
                         <div>Days 2&#176; above pre-industrial temps: <span className="animation-target">{this.props.DaysAbove2}</span></div>}

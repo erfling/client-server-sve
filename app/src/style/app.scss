@@ -1,7 +1,7 @@
 @import '~antd/dist/antd.css';
 
 $breakPoint: 80em;
-
+$mainBlue: #1790ff;
 
 .has-button .ant-card-extra {
     padding: 9.5px 0;
@@ -234,8 +234,8 @@ h4{font-size: 160%}
     border: 1px solid rgba(178, 179, 179, 0.2);
     height: 56px;
     &.ant-radio-wrapper-checked{
-        background: #1890ff;
-        border-color: #1790ff;
+        background: $mainBlue;
+        border-color: $mainBlue;
         color: white;
         box-shadow: 0 0 40px 0 rgba(0,0,0,.5);
     }
@@ -676,7 +676,7 @@ textarea.ant-input{
 
 .bottom-bar{
     z-index: 2;
-    background: #1790ff;
+    background: $mainBlue;
     height: 130px;
     position: fixed;
     bottom: -160px;
@@ -727,7 +727,7 @@ textarea.ant-input{
 }
 
 .intermission-content{
-    background: #1790ff;
+    background: $mainBlue;
     color: white;
     min-height: 100vh;
 }
@@ -782,4 +782,10 @@ textarea.ant-input{
             margin-left:25px;
         }
     }
+}
+.topbar-button{
+    padding: 4px 15px 70px !important;
+    margin-top: -1px !important;
+    color:$mainBlue;
+    border-color: $mainBlue;
 }

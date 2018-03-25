@@ -1,7 +1,7 @@
 import * as React from "react";
 import GameWrapper from './GameWrapper';
 import '../style/app.scss';
-import { Row, Col } from 'antd';
+import { Row, Col, Button, Icon } from 'antd';
 import ApplicationStore from '../stores/Store';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
@@ -17,17 +17,21 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
 
     constructor(props: IntermissionProps) {
         super(props);
-    }   
-
-    componentWillMount() {
-        var twentyMinutesLater = Date.now() + 12000000;
-        var TwentyMinutesFromNow = twentyMinutesLater.valueOf();
-        this.setState(Object.assign({}, { TwentyMinutesFromNow, TimesUp: false }))
     }
 
-    secondsToTime(time: number) {  
+    componentWillMount() {
 
-        //console.log(miliseconds);
+    }
+
+    startTimer() {
+        var twentyMinutesLater = Date.now() + 2200;
+        var TwentyMinutesFromNow = twentyMinutesLater.valueOf();
+        this.setState(Object.assign({}, { TwentyMinutesFromNow, TimesUp: false }))
+        var timer = setInterval(this.countDown.bind(this), 1000)
+        this.setState(Object.assign({}, { Timer: timer }));
+    }
+
+    secondsToTime(time: number) {
 
         var m = Math.floor(time % 3600 / 60);
         var s = Math.floor(time % 3600 % 60);
@@ -35,32 +39,30 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
         var mDisplay = m > 9 ? m + ":" : "0" + m + ":";
         var sDisplay = s > 9 ? s : "0" + s;
 
-        return mDisplay + sDisplay; 
+        return mDisplay + sDisplay;
     }
 
     componentDidMount() {
-        console.log("CALLED COMPONENT DID MOUNT IN INTERMISSION CMPNT", this.state.TwentyMinutesFromNow);
-        var timer = setInterval(this.countDown.bind(this), 1000)
-        this.setState(Object.assign({}, { Timer:  timer}));
+
+
     }
 
     componentDidUpdate() {
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         clearInterval(this.state.Timer);
     }
-
+    //TODO: store initial time in localStorage
     countDown() {
         if (this.state) {
             var now = Date.now();
 
             let time = this.secondsToTime((this.state.TwentyMinutesFromNow - now) / 1000);
-            this.setState(Object.assign( {}, this.state, { Now: time } ) )
-            console.log(this.state.Now)
-            if (this.state.TwentyMinutesFromNow - now == 0) {
+            this.setState(Object.assign({}, this.state, { Now: time }))
+            if (this.state.TwentyMinutesFromNow - now <= 0) {
                 clearInterval(this.state.Timer);
-                this.setState({ TimesUp: true });
+                this.setState({ TimesUp: true, Now: "00:00" });
             }
         } else {
         }
@@ -76,12 +78,26 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
         >
             <Row>
                 <TopBar>
-                    {this.state && this.state.Now ? <h4 style={{marginTop:'-18px'}}>{this.state.Now}</h4> : null}
+                    {this.state && this.state.Now ? <h4 style={{ marginTop: '-18px' }}>{this.state.Now}</h4> : null}
+                    {!this.state || !this.state.Now ? <Button
+                        onClick={e => this.startTimer()}
+                        className="topbar-button"
+                    >
+                        Start Timer
+                    </Button> : null}
                 </TopBar>
-                <Row type="flex" justify="center" align="middle" className="intermission-content" style={{minHeight:'100vh'}}>
-
+                <Row type="flex" justify="center" align="middle" className="intermission-content" style={{ minHeight: '100vh' }}>
                     <Col xs={22}>
                         <p>
+                            <p style={{
+                                fontWeight: "bold",
+                                opacity: this.state && this.state.TimesUp ? 1 : 0,
+                                maxHeight: this.state && this.state.TimesUp ? "10vh" : "0",
+                                fontSize:'220%',
+                                transition: "all 1s"
+                            }}>Time has expired.<br/>Please begin walking back.</p>                                
+                            
+
                             <p>What was your systemic leverage point?</p>
                             <p>Where is your team on stability/agility matrix?</p>
                             <p>What connections are you seeing?</p>
