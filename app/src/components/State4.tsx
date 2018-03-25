@@ -307,7 +307,7 @@ export default class State4 extends React.Component<State4Props, { hasScrolled: 
                         <Row type="flex" justify="center" className="market-policies">
                             <Col xs={22}>
                                 <Icon type="info-circle" />
-                                <h1>Market Positions</h1>
+                                <h1>Market Policies:</h1>
                                 {this.state.RoleContent && this.state.RoleContent.split("\n").slice(1, 14).map(c => {
                                     return c == c.toUpperCase() ? <h3>{c}</h3> : <p><p>{c}</p></p>
                                 })}
@@ -316,7 +316,7 @@ export default class State4 extends React.Component<State4Props, { hasScrolled: 
                         <Row type="flex" justify="center" className="market-positions">
                             <Col xs={22}>
                                 <Icon type="global" />
-                                <h1>Market Positions:</h1>
+                                <h1>Positions:</h1>
                                 {this.state.RoleContent && this.state.RoleContent.split("\n").slice(15).map(c => {
                                     return c == c.toUpperCase() ? <h3>{c}</h3> : <p><p>{c}</p></p>
                                 })}
