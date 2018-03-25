@@ -307,8 +307,9 @@ export default class State4 extends React.Component<State4Props, { hasScrolled: 
                         <Row type="flex" justify="center" className="market-policies">
                             <Col xs={22}>
                                 <Icon type="info-circle" />
-                                <h1>Market Policies:</h1>
-                                {this.state.RoleContent && this.state.RoleContent.split("\n").slice(1, 14).map(c => {
+                                <h1>Market Policies</h1>
+                                <h2>You will select policy in one of four areas:</h2>
+                                {this.state.RoleContent && this.state.RoleContent.split("\n").slice(1).map(c => {
                                     return c == c.toUpperCase() ? <h3>{c}</h3> : <p><p>{c}</p></p>
                                 })}
                             </Col>
@@ -316,9 +317,18 @@ export default class State4 extends React.Component<State4Props, { hasScrolled: 
                         <Row type="flex" justify="center" className="market-positions">
                             <Col xs={22}>
                                 <Icon type="global" />
-                                <h1>Positions:</h1>
-                                {this.state.RoleContent && this.state.RoleContent.split("\n").slice(15).map(c => {
+                                <h1>Positions</h1>
+                                <h2>You will select one of three positions:</h2>
+                                {this.state.RoleContent && this.state.RoleContent.split("\n").slice(15, this.state.RoleContent.toUpperCase().split("\n").indexOf("YOUR POSITION") - 1).map(c => {
                                     return c == c.toUpperCase() ? <h3>{c}</h3> : <p><p>{c}</p></p>
+                                })}
+                            </Col>
+                        </Row>
+                        <Row type="flex" justify="center" className="market-positions">
+                            <Col xs={22}>
+                                <Icon type="notification" />                                
+                                {this.state.RoleContent && this.state.RoleContent.split("\n").slice(this.state.RoleContent.toUpperCase().split("\n").indexOf("YOUR POSITION")).map(c => {
+                                    return c == c.toUpperCase() ? <h1>{c}</h1> : <p><p>{c}</p></p>
                                 })}
                             </Col>
                         </Row>

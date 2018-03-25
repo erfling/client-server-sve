@@ -758,12 +758,14 @@ textarea.ant-input{
         margin-top:65px;
         margin-bottom: 0;
         background: #1890ff;
-        background: linear-gradient(#1890ff, #1890ff);
     }
     .market-positions{
         margin-top: 0;
         background: #00e676;
-        background: linear-gradient(#00e676, #1de985);
+    }
+    .your-position{
+        margin-top: 0;
+        background: #f44336;
     }
 }
 .impact-chart{
