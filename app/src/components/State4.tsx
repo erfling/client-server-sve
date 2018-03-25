@@ -324,7 +324,7 @@ export default class State4 extends React.Component<State4Props, { hasScrolled: 
                                 })}
                             </Col>
                         </Row>
-                        <Row type="flex" justify="center" className="market-positions">
+                        <Row type="flex" justify="center" className="your-position">
                             <Col xs={22}>
                                 <Icon type="notification" />                                
                                 {this.state.RoleContent && this.state.RoleContent.split("\n").slice(this.state.RoleContent.toUpperCase().split("\n").indexOf("YOUR POSITION")).map(c => {
