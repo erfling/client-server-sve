@@ -28,7 +28,7 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
 
     startTimer() {
         if(!this.state || !this.state.TwentyMinutesFromNow){
-            var twentyMinutesLater = Date.now() + 12000;//120000000;
+            var twentyMinutesLater = Date.now() + 120000000;
             localStorage.setItem("TwentyMinutesFromNow", twentyMinutesLater.valueOf().toString())
             var TwentyMinutesFromNow = twentyMinutesLater.valueOf();
             this.setState(Object.assign({}, { TwentyMinutesFromNow, TimesUp: false, }))
@@ -101,7 +101,7 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
                                 maxHeight: this.state && this.state.TimesUp ? "10vh" : "0",
                                 fontSize:'220%',
                                 transition: "all 1s"
-                            }}>Time has expired.<br/>Please begin walking back.</p>                                
+                            }}>Time has expired.</p>                                
                             
 
                             <p>What was your systemic leverage point?</p>
