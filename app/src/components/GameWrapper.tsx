@@ -44,6 +44,7 @@ export class GameWrapper extends React.Component<GamesList, any> {
 
     componentDidUpdate(oldProps:any, oldState:any){
         console.log("GAME WRAPPER DID UPDATE", oldState, oldState);
+        /*
         if(this.props.BottomBarVisible && !oldProps.BottomBarVisible){
             var x = 1; //y-axis pixel displacement
             var y = 25; //delay in milliseconds
@@ -55,7 +56,7 @@ export class GameWrapper extends React.Component<GamesList, any> {
                     clearInterval(scrollInterval);
                 }
             }, y);
-        }
+        }*/
 
         if(this.props.CurrentPlayer && !oldProps.CurrentPlayer 
             || JSON.stringify(this.props.CurrentPlayer) != JSON.stringify(oldProps.CurrentPlayer)

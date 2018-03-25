@@ -211,10 +211,12 @@ export default class State4 extends React.Component<State4Props, { hasScrolled: 
                 {this.props.DaysAbove2 && this.props.SocketConnected ?
                     <TopBarContainer /> : null
                 }
-                <Col xs={24} style={{ paddingLeft: '13px' }}>
-                    <h1 style={{ marginTop: "50px", textAlign: "center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
-                    <ChartContainer />
-                </Col>
+                <Row>
+                    <Col xs={24} style={{ paddingLeft: '13px' }}>
+                        <h1 style={{ marginTop: "50px", textAlign: "center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
+                        <ChartContainer />
+                    </Col>
+                </Row>
                 {this.props.CurrentPlayer.GameState == "3B" && this.props.SelectedRole ?
                     <Row className="form-wrapper" style={{ paddingLeft: "0", paddingRight: "0" }}>
                         <Col sm={24} md={24} lg={24}>
@@ -267,7 +269,7 @@ export default class State4 extends React.Component<State4Props, { hasScrolled: 
                     </Row> : null
                 }
                 {!this.props.SelectedRole ?
-                    <Row className="role-selection">
+                    <Row className="role-selection" type="flex" justify="center">
 
                         {this.state && this.state.GenericContent &&
                             <Col sm={24} md={24} lg={18}>
