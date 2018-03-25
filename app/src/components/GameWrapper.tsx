@@ -42,6 +42,15 @@ export class GameWrapper extends React.Component<GamesList, any> {
 
     _now:number =  Date.now();
 
+    componentDidMount(){
+        var getBottomBar = setInterval(() => {
+            if(this.props.CurrentPlayer){
+                this.props.setBottomBarVisible(this.props.CurrentPlayer);
+                clearInterval(getBottomBar);
+            }
+        },1000)
+    }
+
     componentDidUpdate(oldProps:any, oldState:any){
         /*
         if(this.props.BottomBarVisible && !oldProps.BottomBarVisible){

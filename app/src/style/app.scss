@@ -2,6 +2,7 @@
 
 $breakPoint: 80em;
 $mainBlue: #1790ff;
+$lightBlue:#6FBAFD;
 
 .has-button .ant-card-extra {
     padding: 9.5px 0;
@@ -743,21 +744,23 @@ textarea.ant-input{
         display: block;
     }
     .market-policies, .market-positions, .your-position{
+        min-height: 100vh;
+        box-sizing: border-box;
         padding: 2em 0;
         box-shadow: 0 0 50px 0 rgba(0,0,0,.7);
     }
     .market-policies{
         margin-top:65px;
         margin-bottom: 0;
-        background: #1890ff;
+        background: $lightBlue;
     }
     .market-positions{
         margin-top: 0;
-        background: #00c853;
+        background: $mainBlue;
     }
     .your-position{
         margin-top: 0;
-        background: #f44336;
+        background: $lightBlue;
     }
 }
 .impact-chart{

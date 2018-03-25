@@ -306,27 +306,27 @@ export default class State4 extends React.Component<State4Props, { hasScrolled: 
                     :
                     <Row type="flex" justify="center" style={{ margin: '75px auto 20px' }} className="role-content">
                         {this.state.RoleContent && <Col xs={22}><p><p>{this.state.RoleContent.split("\n")[0]}</p></p></Col>}
-                        <Row type="flex" justify="center" className="market-policies">
+                        <Row type="flex" justify="center" align="middle" className="market-policies">
                             <Col xs={22}>
                                 <Icon type="info-circle" />
                                 <h1>Market Policies</h1>
                                 <h2>You will select policy in one of four areas:</h2>
-                                {this.state.RoleContent && this.state.RoleContent.split("\n").slice(1).map(c => {
+                                {this.state.RoleContent && this.state.RoleContent.split("\n").slice(1, this.state.RoleContent.toUpperCase().split("\n").indexOf("COUNTRY FIRST") - 1).map(c => {
                                     return c == c.toUpperCase() ? <h3>{c}</h3> : <p><p>{c}</p></p>
                                 })}
                             </Col>
                         </Row>
-                        <Row type="flex" justify="center" className="market-positions">
+                        <Row type="flex" justify="center" align="middle" className="market-positions">
                             <Col xs={22}>
                                 <Icon type="global" />
                                 <h1>Positions</h1>
                                 <h2>You will select one of three positions:</h2>
-                                {this.state.RoleContent && this.state.RoleContent.split("\n").slice(15, this.state.RoleContent.toUpperCase().split("\n").indexOf("YOUR POSITION") - 1).map(c => {
+                                {this.state.RoleContent && this.state.RoleContent.split("\n").slice(this.state.RoleContent.toUpperCase().split("\n").indexOf("COUNTRY FIRST"), this.state.RoleContent.toUpperCase().split("\n").indexOf("YOUR POSITION") - 1).map(c => {
                                     return c == c.toUpperCase() ? <h3>{c}</h3> : <p><p>{c}</p></p>
                                 })}
                             </Col>
                         </Row>
-                        <Row type="flex" justify="center" className="your-position">
+                        <Row type="flex" justify="center" align="middle" className="your-position">
                             <Col xs={22}>
                                 <Icon type="notification" />                                
                                 {this.state.RoleContent && this.state.RoleContent.split("\n").slice(this.state.RoleContent.toUpperCase().split("\n").indexOf("YOUR POSITION")).map(c => {
