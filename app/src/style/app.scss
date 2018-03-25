@@ -69,29 +69,7 @@ h4{font-size: 160%}
     }
 
 }
-.impact-chart{
-    margin:0 auto;
-    display: block;
-    text-align: center;
-    .ant-radio-button-wrapper{
-        padding-left: 12px !important;
-        padding-right: 12px !important;
-        position: relative;
-        text-transform: none;
 
-        .swatch{
-            height: 11px;
-            width: 20px;
-            display: inline-block;
-            margin-top: 14px;
-            position: absolute;
-        }
-
-        .rdo-btn-label{
-            margin-left:25px;
-        }
-    }
-}
 
 @keyframes chartLine {
     0%   {
@@ -760,4 +738,53 @@ textarea.ant-input{
     background: #1790ff;
     color: white;
     min-height: 100vh;
+}
+
+.role-content{
+    h1{
+        text-transform: uppercase;
+    }
+    .anticon {
+        font-size: 24em;
+        color: rgba(255, 255, 255, 0.83);
+        margin: 70px auto;
+        display: block;
+    }
+    .market-policies, .market-positions{
+        padding: 2em 0;
+        box-shadow: 0 0 50px 0 rgba(0,0,0,.7);
+    }
+    .market-policies{
+        margin-bottom: 0;
+        background: #1890ff;
+        background: linear-gradient(#1890ff, #1890ff);
+    }
+    .market-positions{
+        margin-top: 0;
+        background: #00e676;
+        background: linear-gradient(#00e676, #1de985);
+    }
+}
+.impact-chart{
+    margin:0 auto;
+    display: block;
+    text-align: center;
+    label.chart-label{
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        position: relative;
+        text-transform: none;
+        display:inline-block !important;
+        .swatch{
+            height: 11px;
+            width: 20px;
+            display: inline-block;
+            margin-top: 24px;
+            position: absolute;
+        }
+
+        .rdo-btn-label{
+            margin-left:25px;
+        }
+    }
 }

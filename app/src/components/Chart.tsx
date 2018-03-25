@@ -90,19 +90,13 @@ export default class Chart extends React.Component<ChartProps, {Width: number}> 
                 
                     
                 <Row className="impact-chart">
-                    <RadioGroup 
-                        ref="ChartSelector"
-                        size="large"
-                        onChange={e => this.onChartItemClick(parseInt(e.target.value))}
-                        defaultValue={2}
-                    >                        
-                        {["Paris Accord" , "Preindustrial", "Adjusted Temp Increase"].map((val, i) => {
-                            return <RadioButton value={i}>
-                                        <span className="swatch" style={{background:colors[i]}}></span>
-                                        <span className="rdo-btn-label">{val}</span>
-                                   </RadioButton>
-                        })}
-                    </RadioGroup>
+                                          
+                    {["Paris Accord" , "Preindustrial", "Temp Increase"].map((val, i) => {
+                        return <label className="chart-label">
+                                    <span className="swatch" style={{background:colors[i]}}></span>
+                                    <span className="rdo-btn-label">{val}</span>
+                                </label>
+                    })}
 
                 </Row>
 
