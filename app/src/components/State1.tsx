@@ -27,7 +27,7 @@ interface State1Props {
     match: any;
 }
 
-export class State1 extends React.Component<State1Props, { PlayerNotFound: boolean, Selection:string, ChosenHorse: string, PendingChoice: string, FeedBack: string[][], Decided: boolean }> {
+export class State1 extends React.Component<State1Props, { PlayerNotFound: boolean, Selection: string, ChosenHorse: string, PendingChoice: string, FeedBack: string[][], Decided: boolean }> {
     componentWillMount() {
         this.setState({ PlayerNotFound: false, ChosenHorse: null })
     }
@@ -38,8 +38,8 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
             if (localStorage.getItem("SVE_PLAYER")) {
                 this.props.getPlayer()
                 console.log(this.props.CurrentPlayer);
-                if(this.props.CurrentPlayer && this.props.CurrentPlayer.ChosenHorse)
-                    this.setState(Object.assign(this.state, {Selection: this.props.CurrentPlayer.ChosenHorse}))
+                if (this.props.CurrentPlayer && this.props.CurrentPlayer.ChosenHorse)
+                    this.setState(Object.assign(this.state, { Selection: this.props.CurrentPlayer.ChosenHorse }))
             } else {
                 this.setState({ PlayerNotFound: true })
             }
@@ -54,24 +54,24 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
     setDecisionState(e: string) {
 
         //set choice as the one being sent to server
-        this.setState(Object.assign(this.state, {PendingChoice: e}))
+        this.setState(Object.assign(this.state, { PendingChoice: e }))
         const protocol = !window.location.host.includes('local') ? "https:" : "http:";
         const port = !window.location.host.includes('local') ? ":8443" : ":4000";
-        const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/chooseHorse";
+        const URL = protocol + "//" + window.location.hostname + port + "/sapien/api/chooseHorse";
         fetch(
             URL,
             {
                 method: "POST",
-                body: JSON.stringify(Object.assign(this.props.CurrentPlayer, {ChosenHorse: e})),
+                body: JSON.stringify(Object.assign(this.props.CurrentPlayer, { ChosenHorse: e })),
                 headers: new Headers({
                     'Content-Type': 'application/json'
                 })
             }
         )
-        .then( r => r.json() )
-        .then(r => {
-            this.setState(Object.assign({}, this.state, {PendingChoice: null}))
-        })
+            .then(r => r.json())
+            .then(r => {
+                this.setState(Object.assign({}, this.state, { PendingChoice: null }))
+            })
 
         //
 
@@ -89,10 +89,12 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
             URL
         )
             .then(r => r.json())
-            .then(r => { 
-                this.setState(Object.assign({}, this.state, { FeedBack: r, 
-                    Selection: this.props.CurrentPlayer && this.props.CurrentPlayer.ChosenHorse ? this.props.CurrentPlayer.ChosenHorse : null }))
-                    console.log(this.state);
+            .then(r => {
+                this.setState(Object.assign({}, this.state, {
+                    FeedBack: r,
+                    Selection: this.props.CurrentPlayer && this.props.CurrentPlayer.ChosenHorse ? this.props.CurrentPlayer.ChosenHorse : null
+                }))
+                console.log(this.state);
             })
     }
 
@@ -103,7 +105,7 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
             .map(content => content.startsWith("^") ? teamFeedBack[0][5] : content.substr(1))
     }
 
-    getIcon(){
+    getIcon() {
         return <Icon type="loading" />
     }
 
@@ -145,7 +147,7 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
                     <Col xs={24}>
                         {this.props.CurrentPlayer.GameState == "1A" || !this.props.CurrentPlayer.ChosenHorse
                             ? <Row type="flex" justify="center">
-                                <Col xs={23}>
+                                <Col xs={24}>
                                     {this.state.FeedBack && this.state.FeedBack[12][2]
                                         .split("\n")
                                         .filter(content => content.length)
@@ -156,44 +158,46 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
                                     <ChartContainer>
                                         Global Warming {this.props.CurrentPlayer && this.props.CurrentPlayer.GameState}
                                     </ChartContainer>
+                                    <Row type="flex" justify="center">
+                                        <Col xs={23}>
+                                            {this.state.FeedBack && this.state.FeedBack[13][2]
+                                                .split("\n")
+                                                .filter(content => content.length)
+                                                .map((content: string) => {
+                                                    return content == content.toUpperCase() ? <h3>{content}</h3> : <p><p>{content}</p></p>
+                                                })}
+                                        </Col>
+                                    </Row>
+                                    <Row className="formWrapper bottom-form" type="flex" justify="center">
+                                        <Col xs={22}>           
+                                            <div className="big-radio-group">
+                                                <label>Who gets the water?</label>
 
-                                    {this.state.FeedBack && this.state.FeedBack[13][2]
-                                        .split("\n")
-                                        .filter(content => content.length)
-                                        .map((content: string) => {
-                                            return content == content.toUpperCase() ? <h3>{content}</h3> : <p><p>{content}</p></p>
-                                        })}
-
-                                        <Row className="formWrapper" type="flex" justify="center" style={{ background: "#f9f9f9", marginBottom: '10px' }}>
-
-                                        
-                                        <div className="big-radio-group">
-                                            <label>Who gets the water?</label>
-                                                                                    
-                                            <RadioGroup 
-                                                value={this.props.CurrentPlayer.ChosenHorse || this.state.Selection || null}
-                                                disabled={this.props.CurrentPlayer.ChosenHorse != null}
-                                                onChange={e => this.setState(Object.assign(this.state, {Selection: e.target.value}))}>
-                                                {["Agriculture", "Government", "Healthcare", "Industry"]
-                                                .map(choice => 
-                                                    <Radio value={choice}>{choice}</Radio>
-                                                )}
-                                            </RadioGroup>
-                                            <Button 
-                                                style={{ margin: "30px 0 50px" }}
-                                                type="primary" 
-                                                size="large"
-                                                disabled={!this.state.Selection || this.props.CurrentPlayer.ChosenHorse != null}
-                                                onClick={e => this.setDecisionState(this.state.Selection)}
-                                            >
-                                                Commit Decision {this.state.PendingChoice != null && <Icon type="loading"/>}
-                                            </Button>
-                                        </div>
+                                                <RadioGroup
+                                                    value={this.props.CurrentPlayer.ChosenHorse || this.state.Selection || null}
+                                                    disabled={this.props.CurrentPlayer.ChosenHorse != null}
+                                                    onChange={e => this.setState(Object.assign(this.state, { Selection: e.target.value }))}>
+                                                    {["Agriculture", "Government", "Healthcare", "Industry"]
+                                                        .map(choice =>
+                                                            <Radio value={choice}>{choice}</Radio>
+                                                        )}
+                                                </RadioGroup>
+                                                <Button
+                                                    style={{ margin: "30px 0 50px" }}
+                                                    type="primary"
+                                                    size="large"
+                                                    disabled={!this.state.Selection || this.props.CurrentPlayer.ChosenHorse != null}
+                                                    onClick={e => this.setDecisionState(this.state.Selection)}
+                                                >
+                                                    Commit Decision {this.state.PendingChoice != null && <Icon type="loading" />}
+                                                </Button>
+                                            </div>
+                                        </Col>
 
                                         {this.props.CurrentPlayer.GameState != "1A" && !this.props.CurrentPlayer.ChosenHorse ?
-                                            <Alert 
+                                            <Alert
                                                 type="error"
-                                                className="bottom-alert"    
+                                                className="bottom-alert"
                                                 style={{ margin: "10px 0 20px" }}
                                                 message={<h4>Please make a selection.</h4>}>
                                             </Alert> : null}

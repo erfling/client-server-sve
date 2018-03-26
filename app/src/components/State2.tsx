@@ -52,8 +52,8 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
         window.scrollTo(0, 0);
     }
 
-    componentDidUpdate(){
-        if(this.props.Dashboard && this.props.Dashboard.length > 100 && this.props.Dashboard[100] < 1 && !this.state.showVictoryModal && !this.state.victoryModalShown){
+    componentDidUpdate() {
+        if (this.props.Dashboard && this.props.Dashboard.length > 100 && this.props.Dashboard[100] < 1 && !this.state.showVictoryModal && !this.state.victoryModalShown) {
             this.setState(Object.assign({}, this.state, {
                 showVictoryModal: true,
                 victoryModalShown: true
@@ -76,19 +76,19 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
         }
 
         deal.Value = this.getTradeBank() / 10;
-        
+
         console.log("WHAT'S THE DEAL?", deal)
         this.props.proposeDeal(deal);
     }
 
-    rejectDeal(deal: IDeal, rescinded:boolean = false) {
+    rejectDeal(deal: IDeal, rescinded: boolean = false) {
         this.props.rejectDeal(deal, rescinded)
     }
 
     acceptDeal(deal: IDeal) {
         this.props.acceptDeal(deal)
     }
-    
+
     getBodyClassName() {
         var temp = this.props.Dashboard[100];
 
@@ -109,7 +109,7 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
             "India",
             "Japan",
             "Vietnam"
-        ]   .filter(nation => nation != (this.props.CurrentPlayer.Nation as INation).Name)
+        ].filter(nation => nation != (this.props.CurrentPlayer.Nation as INation).Name)
             .map(s => {
                 return {
                     text: "Invest $" + (this.props.CurrentPlayer.DealsProposedTo.length ? ((((this.props.CurrentPlayer.DealsProposedTo[0]) as IDeal).Value + 1) * 10) : "10") + " billion in " + s,
@@ -162,15 +162,15 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                 match={this.props.match}
                 CurrentPlayer={this.props.CurrentPlayer}
             >
-                
+
                 <Row className={this.getBodyClassName() + " trades"} type="flex" justify="center">
                     {this.props.Dashboard &&
                         this.props.Dashboard.length > 100 ?
                         <TopBarContainer /> : null
                     }
-                    <Col xs={24} style={{paddingLeft:'13px'}}>
-                        <h1 style={{ marginTop: "50px", textAlign:"center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
-                        {this.props.Dashboard && this.props.Dashboard.length > 100 ? <ChartContainer/> : null}
+                    <Col xs={24} style={{ paddingLeft: '13px' }}>
+                        <h1 style={{ marginTop: "50px", textAlign: "center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
+                        {this.props.Dashboard && this.props.Dashboard.length > 100 ? <ChartContainer /> : null}
                     </Col>
 
                     {this.props.PendingDealOffer ?
@@ -231,103 +231,108 @@ export default class State2 extends React.Component<State2Props, { PlayerNotFoun
                         </Modal> : null
 
                     }
-                    
-
-                    <Col xs={23}>
-
-                        {this.props.CurrentPlayer.Nation && (this.props.CurrentPlayer.Nation as INation).Content && (this.props.CurrentPlayer.Nation as INation).Content.length ? 
-                        <Row>
-                            <p>
-                                {(this.props.CurrentPlayer.Nation as INation).Content[0][7].split('\n').filter((c: string) => c.length).map((c: string) => {
-                                    return c == c.toUpperCase() ? <h4>{c}</h4> : <p>{c.replace(/\[([^}]+)\]/, moment().format('MMMM D, YYYY').toString())}</p>
-                                })}
-                            </p>
-                        </Row> : null}
 
 
-                        <Row>
-                            {(this.state.TradeOptions ? this.state.TradeOptions : this.getTradeOptionContent()).map((o: string) => <p>{this.parseMessage(o)}</p>)}
+                    <Col xs={24}>
+
+                        {this.props.CurrentPlayer.Nation && (this.props.CurrentPlayer.Nation as INation).Content && (this.props.CurrentPlayer.Nation as INation).Content.length ?
+                            <Row type="flex" justify="center" align="middle">
+                                <Col xs={22}>
+                                    <p>
+                                        {(this.props.CurrentPlayer.Nation as INation).Content[0][7].split('\n').filter((c: string) => c.length).map((c: string) => {
+                                            return c == c.toUpperCase() ? <h4>{c}</h4> : <p>{c.replace(/\[([^}]+)\]/, moment().format('MMMM D, YYYY').toString())}</p>
+                                        })}
+                                    </p>
+                                </Col>
+                            </Row> : null}
+
+
+                        <Row type="flex" justify="center" align="middle">
+                            <Col xs={20}>
+                                {(this.state.TradeOptions ? this.state.TradeOptions : this.getTradeOptionContent()).map((o: string) => <p>{this.parseMessage(o)}</p>)}
+                            </Col>
                         </Row>
 
-                        {!this.props.CurrentPlayer.DealsProposedBy.length && typeof this.props.CurrentPlayer.DealsProposedTo[0] != "string" ? 
-                        <Row className="big-radio-group" type="flex" justify="center" align="middle" style={{ background: "#f9f9f9", marginBottom: '10px', color: "#333" }}>
-                                <label>Propose a Trade</label>
-                                <RadioGroup 
-                                    onChange={e => this.setState(Object.assign({}, this.state, { ChosenCountry: e.target.value }))}
-                                >
-                                    {this.getOptionsByTeam()
-                                    .map(choice => 
-                                        <Radio value={choice.value}>{choice.text}</Radio>
-                                    )}
-                                </RadioGroup>
-                                <label className="button-wrapper-label">
-                                    {this.state && <Button type="primary" style={{ marginTop: '10px' }} onClick={e => this.prepDeal()} disabled={!this.state.ChosenCountry}>Propose Trade</Button>}
-                                </label>
-                        </Row> : null}
+                            <Row className="big-radio-group bottom-form" type="flex" justify="center" align="middle">
+                                <Col xs={22}>
+                                    <div className="big-radio-group">
+                                    {!this.props.CurrentPlayer.DealsProposedBy.length && typeof this.props.CurrentPlayer.DealsProposedTo[0] != "string" ?
+                                        <span>
+                                        <label>Propose a Trade</label>
+                                        <RadioGroup
+                                            onChange={e => this.setState(Object.assign({}, this.state, { ChosenCountry: e.target.value }))}
+                                        >
+                                            {this.getOptionsByTeam()
+                                                .map(choice =>
+                                                    <Radio value={choice.value}>{choice.text}</Radio>
+                                                )}
+                                        </RadioGroup>
+                                        <label className="button-wrapper-label">
+                                            {this.state && <Button type="primary" style={{ marginTop: '10px' }} onClick={e => this.prepDeal()} disabled={!this.state.ChosenCountry}>Propose Trade</Button>}
+                                        </label>
+                                        </span> : null}
+                                        {this.props.CurrentPlayer.DealsProposedTo.length && typeof this.props.CurrentPlayer.DealsProposedTo[0] != "string" ?
+                                            <ul className="deal-list">
+                                                {(this.props.CurrentPlayer.DealsProposedTo as IDeal[]).map(d => {
 
+                                                    return <li>
+                                                        <div>
+                                                            <Icon type="global" />
+                                                        </div>
+                                                        <div>
+                                                            <h3>You Accepted {d.TransferFromNationName || d.FromNationName}'s' Trade Deal for ${d.Value * 10}Billion</h3>
+                                                            <p>{this.parseMessage(d.Message)}</p>
+                                                        </div>
+                                                    </li>
+                                                })}
+                                            </ul>
+                                            : null
+                                        }
 
-                        <Row>
-                            {this.props.CurrentPlayer.DealsProposedTo.length && typeof this.props.CurrentPlayer.DealsProposedTo[0] != "string" ?
-                                <ul className="deal-list">
-                                    {(this.props.CurrentPlayer.DealsProposedTo as IDeal[]).map(d => {
+                                        {this.props.CurrentPlayer.DealsProposedBy.length ?
+                                            <ul className="deal-list">
+                                                {(this.props.CurrentPlayer.DealsProposedBy as IDeal[]).map(d => {
+                                                    return <li>
+                                                        <div>
+                                                            <Icon type="global" />
+                                                        </div>
+                                                        <div>
+                                                            <h3>{d.TransferToNationName || d.ToNationName} Accepted Your Trade Deal for ${d.Value * 10}Billion</h3>
+                                                            <p>{this.parseMessage(d.Message)}</p>
+                                                        </div>
+                                                    </li>
+                                                })}
+                                            </ul>
+                                            : null
+                                        }
 
-                                        return <li>
-                                            <div>
-                                                <Icon type="global" />
-                                            </div>
-                                            <div>
-                                                <h3>You Accepted {d.TransferFromNationName || d.FromNationName}'s' Trade Deal for ${d.Value * 10}Billion</h3>
-                                                <p>{this.parseMessage(d.Message)}</p>
-                                            </div>
-                                        </li>
-                                    })}
-                                </ul>
-                                : null
-                            }
-                        </Row>
-
-                        <Row>
-                            {this.props.CurrentPlayer.DealsProposedBy.length ?
-                                <ul className="deal-list">
-                                    {(this.props.CurrentPlayer.DealsProposedBy as IDeal[]).map(d => {
-                                        return <li>
-                                            <div>
-                                                <Icon type="global" />
-                                            </div>
-                                            <div>
-                                                <h3>{d.TransferToNationName || d.ToNationName} Accepted Your Trade Deal for ${d.Value * 10}Billion</h3>
-                                                <p>{this.parseMessage(d.Message)}</p>
-                                            </div>
-                                        </li>
-                                    })}
-                                </ul>
-                                : null
-                            }
-                        </Row>
+                                    </div>
+                                </Col>
+                            </Row>
 
                         {this.state.PlayerNotFound && <Redirect to="/" />}
                     </Col>
                 </Row>
 
 
-                {this.props.Dashboard && this.props.Dashboard.length > 100 && this.props.Dashboard[100] < .3 ? 
-                <Modal
-                    className="victory-modal"
-                    visible={ this.props.Dashboard[100] < 1 && this.state.showVictoryModal }
-                    width={"95%"}
-                    footer={[<Button onClick={e => this.setState(Object.assign({}, this.state, {
-                        showVictoryModal: false
-                    }))}>OK</Button>]}
-                >
-                    <Icon type="trophy" style={{color:"green"}} />
-                    <p>Congratulations. You've worked with the international community to lower temperatures in 2100 to pre-industrial levels.</p>
-                </Modal> : null}
+                {this.props.Dashboard && this.props.Dashboard.length > 100 && this.props.Dashboard[100] < .3 ?
+                    <Modal
+                        className="victory-modal"
+                        visible={this.props.Dashboard[100] < 1 && this.state.showVictoryModal}
+                        width={"95%"}
+                        footer={[<Button onClick={e => this.setState(Object.assign({}, this.state, {
+                            showVictoryModal: false
+                        }))}>OK</Button>]}
+                    >
+                        <Icon type="trophy" style={{ color: "green" }} />
+                        <p>Congratulations. You've worked with the international community to lower temperatures in 2100 to pre-industrial levels.</p>
+                    </Modal> : null}
 
             </GameWrapper>
             :
-            <Row style={{height: '100vh'}} type="flex" justify="center" >
-                <Col xs={24} style={{marginTop: '35vh'}}>
-                    <h4 style={{textAlign:"center"}}>Downloading Climate Data <Spin style={{fontSize:'120%', marginLeft:'10px'}} indicator={<Icon type="loading"/>} /></h4>
+            <Row style={{ height: '100vh' }} type="flex" justify="center" >
+                <Col xs={24} style={{ marginTop: '35vh' }}>
+                    <h4 style={{ textAlign: "center" }}>Downloading Climate Data <Spin style={{ fontSize: '120%', marginLeft: '10px' }} indicator={<Icon type="loading" />} /></h4>
                 </Col>
             </Row>
     }

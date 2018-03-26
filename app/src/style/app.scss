@@ -36,13 +36,22 @@ h4{font-size: 160%}
     fill: none;
 } 
 .main-chart{
+    border-radius: 5px;
+    border: 1px solid black;
+    background: #fff;
+    padding: 10px 0;
+    margin: 25px 1% 25px 0;
+        /* box-shadow: 0 0 40px 0px rgba(0, 0, 0, 0.38); */
+    width: 98%;
     label{
-        color: #333
+        color: #333;
+        text-align: center;
+        margin: 0 0 5px !important;
     }
     .line-chart{
         text{
             stroke: #444 !important;
-            font-size: 100%;
+            font-size: 120%;
         }
 
         .chart-line{
@@ -213,9 +222,9 @@ h4{font-size: 160%}
 }
 
 .ant-radio-group{
-    width:95%;
-    min-width:650px;
-    margin:0 auto;
+    width: 100%;
+    min-width: 720px;
+    margin: 0 auto;
     label:not(.rdo-btn-label){
         width:100%;
     }
@@ -232,15 +241,16 @@ h4{font-size: 160%}
     min-width:800px;
     width: 100%;
     padding-left: 5px;
-    border: 1px solid rgba(178, 179, 179, 0.2);
+    border: 1px solid #7a7a7a;
     height: 56px;
+    box-shadow: 0 0 20px 0 rgba(0,0,0,0.1);
     &.ant-radio-wrapper-checked{
         background: $mainBlue;
         border-color: $mainBlue;
         color: white;
-        box-shadow: 0 0 40px 0 rgba(0,0,0,.5);
     }
     .ant-radio{
+        transition: all 1s;
         margin-top: 9px;
         position: absolute;
     }
@@ -248,6 +258,7 @@ h4{font-size: 160%}
         width: 25px;
         height: 25px;
         top: 5px;
+        border-color: #7a7a7a;
         &:after {   
             top: 0px;
             width: 23px;
@@ -421,10 +432,11 @@ span.ant-radio + * {
             vertical-align: middle;
             padding:10px;
             &:first-child{
+                vertical-align: top;
                 padding: 15px;
             }
             >.anticon {
-                font-size:10em;
+                font-size:5em;
                 color: rgba(51, 128, 230, 0.25);
             }
             >h3, >p{
@@ -552,15 +564,7 @@ span.ant-radio + * {
     }
 
 }
-.main-chart{
-    background: #fff;
-    padding: 10px 0;
-    margin: 25px 0 20px -15px;
-    label{
-        text-align: center;
-        margin: 0 0 5px !important;
-    }
-}
+
 
 //modal styles
 .ant-modal{
@@ -636,14 +640,7 @@ textarea.ant-input{
         pointer-events: none;
     }
 }
-.big-radio-group{
-    width: 100%;
-    margin: 10px auto 1000px;
-    > label{
-        display:block;
-        font-size:2em;
-    }
-}
+
 .button-row{
      margin:0 auto;
      display: table;
@@ -791,4 +788,29 @@ textarea.ant-input{
     margin-top: -1px !important;
     color:$mainBlue;
     border-color: $mainBlue;
+}
+.top-form, .bottom-form{
+    label:not(.ant-radio-button-wrapper):not(.ant-radio-wrapper) {
+        margin: 40px 0 30px !important;
+        font-size: 270% !important;
+        display: block !important;
+        color: #333 !important;
+    }
+}
+.top-form{
+    box-shadow: 0 0 40px 0px rgba(0, 0, 0, 0.38);
+}
+.bottom-form{
+    margin-top: 30px;
+    box-shadow: 0 0 40px 0px rgba(0, 0, 0, 0.38);
+    background: white;
+    padding-bottom:100px !important;
+    .big-radio-group{
+        width: 100%;
+        margin: 10px auto 1000px;
+        > label{
+            display:block;
+            font-size:2em;
+        }
+    }
 }

@@ -27,7 +27,7 @@ const Beach = require("../img/Bangladesh_beach.jpeg")
 export default class Chart extends React.Component<ChartProps, {Width: number}> {
 
     componentWillMount(){
-        this.state = {Width: window.innerWidth}
+        this.state = {Width: window.innerWidth * .95}
     }
     /**
      * Add event listener
@@ -57,7 +57,7 @@ export default class Chart extends React.Component<ChartProps, {Width: number}> 
     }
 
     updateChartDimensions(){
-       this.setState(Object.assign({}, this.state, {Width: window.innerWidth}))
+       this.setState(Object.assign({}, this.state, {Width: window.innerWidth * 95}))
     }
 
     getParsedData(data: number[] | string[] | number) {
@@ -103,7 +103,7 @@ export default class Chart extends React.Component<ChartProps, {Width: number}> 
                 <XYPlot
                     height={600}
                     width={this.state.Width}
-                    margin={{ left: 52, right: 45, top: 60 }}
+                    margin={{ left: 60, right: 43, top: 60 }}
                     className="line-chart"
                 >
                     <HorizontalGridLines
