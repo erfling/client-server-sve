@@ -430,6 +430,7 @@ export default abstract class GoogleSheets
         this.apiGetValues(game.SheetId, "Country Impact!C21", true)
             .then((response:any) => {
                 this.DAYS_ABOVE_REQUESTS ++;
+                this.DAYS_ABOVE = response;
                 io.of(game.GameId).emit(SocketEvents.UPDATE_YEARS_ABOVE_2,this.DAYS_ABOVE[0][0]);
                 if(this.DAYS_ABOVE_REQUESTS <= 1200){
                     setTimeout(() => {                    
