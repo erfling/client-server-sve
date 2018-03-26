@@ -15,6 +15,7 @@ import IDeal from '../../../shared/models/IDeal';
 import formValues from '../../../shared/models/FormValues';
 import INation from '../../../shared/models/INation';
 import IGame from '../../../shared/models/IGame';
+import { SocketEvents } from '../../../shared/models/SocketEvents';
 
 interface SheetsCache{
     [index:string]: CacheValue;
@@ -43,7 +44,9 @@ export default abstract class GoogleSheets
                              ];
     static TOKEN_DIR: string = '/sapien/.credentials/';
     static TOKEN_PATH: string = GoogleSheets.TOKEN_DIR + 'sheets.googleapis.sve.json';
-
+    static DAYS_ABOVE_TIMER:any;
+    static DAYS_ABOVE: any;
+    static DAYS_ABOVE_REQUESTS: number;
 
     static Cache: SheetsCache = {};
     static setInCache(range: string, SheetsValues: any){
@@ -407,6 +410,21 @@ export default abstract class GoogleSheets
                         values[0][7] = values[0][7] + "\n" +  response[9][1];
                         return values;
                     }).catch(e => console.log(e))
+    }
+
+    public static async handleDaysAbove(team: ITeam, io: SocketIO.Server){      
+        if(!this.DAYS_ABOVE_REQUESTS || this.DAYS_ABOVE_REQUESTS == 0) {
+            this.DAYS_ABOVE_TIMER = setInterval(async() => {
+                if(this.DAYS_ABOVE_REQUESTS >= 3600){
+                    this.DAYS_ABOVE_REQUESTS = 0;
+                    clearInterval(this.DAYS_ABOVE_TIMER);
+                }
+                this.DAYS_ABOVE = await this.apiGetValues(team.SheetId, "Country Impact!C21", true);
+                console.log()
+                this.DAYS_ABOVE_REQUESTS ++;
+                io.of(team.GameId).emit(SocketEvents.UPDATE_YEARS_ABOVE_2,this.DAYS_ABOVE[0][0]);
+            },3000);        
+        }
     }
 
     public static getRejectionOrAcceptanceReason(fromNationName: string, toNationName: string): Promise<any>{

@@ -999,12 +999,7 @@ export default class AppServer
     }
 
     private async getDaysAbove(team:ITeam, ignoreCache: boolean = false): Promise<any>{
-        const updatedValues = await GoogleSheets.GetSheetValues(team.SheetId, "Country Impact!C21", true);
-                
-        if(updatedValues){
-            console.log("VALUES FROM SHEET", updatedValues);
-            this.io.of(team.GameId).emit(SocketEvents.UPDATE_YEARS_ABOVE_2, updatedValues[0][0]);
-        }
+        const updatedValues = GoogleSheets.handleDaysAbove(team, this.io);
     }
 
     private async GetRoundCompletion(game:IGame, team: ITeam, validTeams: string[]){
