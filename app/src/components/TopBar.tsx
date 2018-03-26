@@ -62,7 +62,7 @@ export default class TopBar extends React.Component<TopOfTheProps, {PlayerNotFou
 
     getData() {
         if(this.props.SocketConnected && !this.props.DaysAbove2){
-            //this.props.getDaysAbove(this.props.CurrentPlayer);
+            this.props.getDaysAbove(this.props.CurrentPlayer);
         }
     } 
 

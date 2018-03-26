@@ -462,7 +462,7 @@ export default class AppServer
 
                 
                 const committedAnswers = await GoogleSheets.commitAnswers( values, range, game.SheetId );
-                //this.getDaysAbove(newlyUpdatedTeam, true);
+                this.getDaysAbove(newlyUpdatedTeam, true);
 
             }
             var validTeams = (game.Teams as ITeam[]).filter(t => this.AllAgree(t)).map(t => t.Slug);
@@ -735,9 +735,6 @@ export default class AppServer
                         return nations;
                     })
                 } else {
-                    if (game.State.indexOf("3") != -1) {
-                        this.getDaysAbove(game);
-                    }
                     console.log("GAME STATE IS NOW", game.State);
                     (<ITeam[]>game.Teams).forEach((t:ITeam) => {
                         var promise = TeamModel.findByIdAndUpdate(t._id, {GameState: game.State}, {new: true}).populate(
@@ -797,7 +794,10 @@ export default class AppServer
                         
                         let t:Team = team.toObject() as Team;
                         t.GameState = game.State;
-                       
+                        if (this.socketServer instanceof https.Server) {
+                            console.log("TRYING TO SET LISTENER FOR SHEET CHANGES")
+                            GoogleSheets.setTeamListener(game);
+                        }
                         let token = jwt.sign({team: t}, 'shhhhh');
 
                         //emit the values to all the teams
@@ -831,6 +831,26 @@ export default class AppServer
         });
 
         this.app.post("/sapien/api/driveupdate/", async (req, res) => {
+            console.log(req.headers);
+            var gameId:string = (<string>req.headers['x-goog-channel-id']).split("_TIMESTAMP_")[0];
+            const game = await GameModel.findById(gameId);
+            if(game){
+                let gameSocketNameSpace = this.io.of(gameId);
+
+                try{
+                    const dashBoardValues = await GoogleSheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103")
+                    const yearsAbove2 = await GoogleSheets.GetSheetValues(game.SheetId, "Country Impact!C21");
+
+                    if(dashBoardValues && yearsAbove2){
+                        gameSocketNameSpace.emit(SocketEvents.DASHBOARD_UPDATED, dashBoardValues);
+                        gameSocketNameSpace.emit(SocketEvents.UPDATE_YEARS_ABOVE_2, yearsAbove2);
+                    }
+
+                }catch{
+                    console.log("WELL FUCK")
+                }
+            }
+
             res.json(true);
         })
     }
@@ -933,7 +953,7 @@ export default class AppServer
                         .then(t => t);
 
                
-                //this.getDaysAbove(savedTeam, true);
+                this.getDaysAbove(savedTeam, true);
 
                 
                 res.json(req.body);
@@ -978,8 +998,13 @@ export default class AppServer
         
     }
 
-    private async getDaysAbove(game:IGame, ignoreCache: boolean = false): Promise<any>{
-        const updatedValues = GoogleSheets.handleDaysAbove(game, this.io);
+    private async getDaysAbove(team:ITeam, ignoreCache: boolean = false): Promise<any>{
+        const updatedValues = await GoogleSheets.handleDaysAbove(team);
+                
+        if(updatedValues){
+            console.log("VALUES FROM SHEET", updatedValues);
+            this.io.of(team.GameId).emit(SocketEvents.UPDATE_YEARS_ABOVE_2, (updatedValues as any)[0][0]);
+        }
     }
 
     private async GetRoundCompletion(game:IGame, team: ITeam, validTeams: string[]){

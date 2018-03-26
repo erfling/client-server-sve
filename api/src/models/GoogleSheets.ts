@@ -44,9 +44,7 @@ export default abstract class GoogleSheets
                              ];
     static TOKEN_DIR: string = '/sapien/.credentials/';
     static TOKEN_PATH: string = GoogleSheets.TOKEN_DIR + 'sheets.googleapis.sve.json';
-    static DAYS_ABOVE_TIMER:any;
-    static DAYS_ABOVE: any;
-    static DAYS_ABOVE_REQUESTS: number;
+    static LAST_REQUEST_FOR_YEARS_ABOVE_2:number;
 
     static Cache: SheetsCache = {};
     static setInCache(range: string, SheetsValues: any){
@@ -412,41 +410,11 @@ export default abstract class GoogleSheets
                     }).catch(e => console.log(e))
     }
 
-    public static handleDaysAbove(game: IGame, io: SocketIO.Server){ 
-        /*     
-        if(!this.DAYS_ABOVE_REQUESTS || this.DAYS_ABOVE_REQUESTS == 0) {
-            this.DAYS_ABOVE_TIMER = setInterval(async() => {
-                if(this.DAYS_ABOVE_REQUESTS >= 1200 || this.DAYS_ABOVE && this.DAYS_ABOVE[0][0] < 1){
-                    this.DAYS_ABOVE_REQUESTS = 0;
-                    clearInterval(this.DAYS_ABOVE_TIMER);
-                }
-                this.DAYS_ABOVE = await this.apiGetValues(game.SheetId, "Country Impact!C21", true);
-                console.log()
-                io.of(game.GameId).emit(SocketEvents.UPDATE_YEARS_ABOVE_2,this.DAYS_ABOVE[0][0]);
-            },3000);        
-        }
-*/
-        console.log("CALLING YEARS ABOVE TWO ON STATE CHANGE")
-        this.apiGetValues(game.SheetId, "Country Impact!C21", true)
-            .then((response:any) => {
-                if(!this.DAYS_ABOVE_REQUESTS || isNaN(this.DAYS_ABOVE_REQUESTS))this.DAYS_ABOVE_REQUESTS = 0;
-                console.log("RESPONSE FROM SHEETS FOR YEARS ABOVE IS: ", response, game._id)
-                this.DAYS_ABOVE_REQUESTS ++;
-                this.DAYS_ABOVE = response;
-                console.log("HELLO?11111111")
-
-                io.of(game.GameId).emit(SocketEvents.UPDATE_YEARS_ABOVE_2,this.DAYS_ABOVE[0][0]);
-                console.log("HELLO22222222222", this.DAYS_ABOVE_REQUESTS)
-
-                if(this.DAYS_ABOVE_REQUESTS <= 1200){
-                    console.log("HELLO?333333333333")
-                    setTimeout(() => {                    
-                        GoogleSheets.handleDaysAbove(game, io)
-                    }, 3000)
-                }
-            }).catch(e => console.log(e));
-
-
+    public static handleDaysAbove(team: ITeam){ 
+        
+        if(!this.LAST_REQUEST_FOR_YEARS_ABOVE_2)this.LAST_REQUEST_FOR_YEARS_ABOVE_2 = Date.now();
+        var shouldForce = Date.now() - this.LAST_REQUEST_FOR_YEARS_ABOVE_2 > 1000;
+        return this.apiGetValues(team.SheetId, "Country Impact!C21", shouldForce);
 
     }
 
