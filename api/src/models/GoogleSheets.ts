@@ -45,6 +45,7 @@ export default abstract class GoogleSheets
     static TOKEN_DIR: string = '/sapien/.credentials/';
     static TOKEN_PATH: string = GoogleSheets.TOKEN_DIR + 'sheets.googleapis.sve.json';
     static LAST_REQUEST_FOR_YEARS_ABOVE_2:number;
+    static LAST_REQUEST_FOR_DASHBOARD:number;
 
     static Cache: SheetsCache = {};
     static setInCache(range: string, SheetsValues: any){
@@ -174,6 +175,12 @@ export default abstract class GoogleSheets
     }
     
     public static GetSheetValues(sheetId:string = null, range: string = null, ignoreCache:boolean = false):any {
+
+        if(range && range == "Country Impact!Y3:Y103"){
+            if(!this.LAST_REQUEST_FOR_DASHBOARD)this.LAST_REQUEST_FOR_DASHBOARD = Date.now();
+            ignoreCache = Date.now() - this.LAST_REQUEST_FOR_DASHBOARD > 1000;
+        }
+
         if (!sheetId) sheetId = '1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg';
         return GoogleSheets.apiGetValues(sheetId, range, ignoreCache);
     }
