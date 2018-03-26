@@ -178,11 +178,9 @@ export default abstract class GoogleSheets
 
         if(range && range == "Country Impact!Y3:Y103"){
             console.log("RANGE FOUND")
-            if(!this.LAST_REQUEST_FOR_DASHBOARD || this.LAST_REQUEST_FOR_DASHBOARD > 1000){
+            if(!this.LAST_REQUEST_FOR_DASHBOARD || this.LAST_REQUEST_FOR_DASHBOARD - Date.now() > 1000){
                 this.LAST_REQUEST_FOR_DASHBOARD = Date.now();
-                ignoreCache = true;
-                this.LAST_REQUEST_FOR_DASHBOARD = Date.now();
-                
+                ignoreCache = true;                
             }
         }
 
