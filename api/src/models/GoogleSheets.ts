@@ -177,6 +177,7 @@ export default abstract class GoogleSheets
     public static GetSheetValues(sheetId:string = null, range: string = null, ignoreCache:boolean = false):any {
 
         if(range && range == "Country Impact!Y3:Y103"){
+            console.log("RANGE FOUND")
             if(!this.LAST_REQUEST_FOR_DASHBOARD){
                 this.LAST_REQUEST_FOR_DASHBOARD = Date.now();
                 if(this.LAST_REQUEST_FOR_DASHBOARD > 1000){
