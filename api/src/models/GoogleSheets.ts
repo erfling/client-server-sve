@@ -177,8 +177,13 @@ export default abstract class GoogleSheets
     public static GetSheetValues(sheetId:string = null, range: string = null, ignoreCache:boolean = false):any {
 
         if(range && range == "Country Impact!Y3:Y103"){
-            if(!this.LAST_REQUEST_FOR_DASHBOARD)this.LAST_REQUEST_FOR_DASHBOARD = Date.now();
-            ignoreCache = Date.now() - this.LAST_REQUEST_FOR_DASHBOARD > 1000;
+            if(!this.LAST_REQUEST_FOR_DASHBOARD){
+                this.LAST_REQUEST_FOR_DASHBOARD = Date.now();
+                if(this.LAST_REQUEST_FOR_DASHBOARD > 1000){
+                    ignoreCache = true;
+                    this.LAST_REQUEST_FOR_DASHBOARD = Date.now();
+                }
+            }
         }
 
         if (!sheetId) sheetId = '1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg';
@@ -418,9 +423,13 @@ export default abstract class GoogleSheets
     }
 
     public static handleDaysAbove(team: ITeam){ 
-        
+        var shouldForce = false;
         if(!this.LAST_REQUEST_FOR_YEARS_ABOVE_2)this.LAST_REQUEST_FOR_YEARS_ABOVE_2 = Date.now();
-        var shouldForce = Date.now() - this.LAST_REQUEST_FOR_YEARS_ABOVE_2 > 1000;
+        if( Date.now() - this.LAST_REQUEST_FOR_YEARS_ABOVE_2 > 1000){
+            shouldForce = true;
+            this.LAST_REQUEST_FOR_YEARS_ABOVE_2 = Date.now()
+        }
+
         return this.apiGetValues(team.SheetId, "Country Impact!C21", shouldForce);
 
     }
