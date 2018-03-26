@@ -434,6 +434,7 @@ export default abstract class GoogleSheets
                 this.DAYS_ABOVE = response;
                 io.of(game.GameId).emit(SocketEvents.UPDATE_YEARS_ABOVE_2,this.DAYS_ABOVE[0][0]);
                 if(this.DAYS_ABOVE_REQUESTS <= 1200){
+                    console.log("HELLO????????")
                     setTimeout(() => {                    
                         this.handleDaysAbove(game, io)
                     }, 3000)
