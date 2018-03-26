@@ -440,7 +440,7 @@ export default abstract class GoogleSheets
                 if(this.DAYS_ABOVE_REQUESTS <= 1200){
                     console.log("HELLO?333333333333")
                     setTimeout(() => {                    
-                        this.handleDaysAbove(game, io)
+                        GoogleSheets.handleDaysAbove(game, io)
                     }, 3000)
                 }
             }).catch(e => console.log(e));
