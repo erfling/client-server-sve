@@ -160,7 +160,7 @@ export default class State4 extends React.Component<State4Props, { hasScrolled: 
 
     getData() {
         if (this.props.SocketConnected && !this.props.DaysAbove2) {
-            //this.props.getDaysAbove(this.props.CurrentPlayer);
+            this.props.getDaysAbove(this.props.CurrentPlayer);
         }
     }
 
