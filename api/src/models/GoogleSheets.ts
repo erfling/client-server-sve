@@ -435,7 +435,7 @@ export default abstract class GoogleSheets
                 console.log("HELLO?11111111")
 
                 io.of(game.GameId).emit(SocketEvents.UPDATE_YEARS_ABOVE_2,this.DAYS_ABOVE[0][0]);
-                console.log("HELLO22222222222")
+                console.log("HELLO22222222222", this.DAYS_ABOVE_REQUESTS)
 
                 if(this.DAYS_ABOVE_REQUESTS <= 1200){
                     console.log("HELLO?333333333333")
