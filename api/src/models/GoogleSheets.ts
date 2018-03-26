@@ -429,6 +429,7 @@ export default abstract class GoogleSheets
         console.log("CALLING YEARS ABOVE TWO ON STATE CHANGE")
         this.apiGetValues(game.SheetId, "Country Impact!C21", true)
             .then((response:any) => {
+                console.log("RESPONSE FROM SHEETS FOR YEARS ABOVE IS: ", response)
                 this.DAYS_ABOVE_REQUESTS ++;
                 this.DAYS_ABOVE = response;
                 io.of(game.GameId).emit(SocketEvents.UPDATE_YEARS_ABOVE_2,this.DAYS_ABOVE[0][0]);
