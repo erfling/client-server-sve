@@ -13,6 +13,7 @@ interface DispatchProps {
     selectGame: (game:string) => {}
     setGameState:(game:IGame, newState:number) => {}
     resetGame: (game:IGame) => {}
+    adminJoinedGame: (game: IGame) => {}
     //sendMessageFromAdmin: (gameId:string, message:string) => {}
 }
 export interface AdminGameDetailProps{
@@ -31,6 +32,7 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
         selectGame: (slug: string) => dispatch( Actions.getGame( slug ) ),
         setGameState: (game:IGame, newState: number) => dispatch( Actions.setGameState(game, newState)),
         resetGame: (game:IGame) => dispatch( Actions.resetGame(game) ),
+        adminJoinedGame: (game: IGame) => dispatch( Actions.adminJoinedGame(game) )
         //sendMessageFromAdmin: (gameId:string, message:string) => dispatch( Actions.sendMessageFromAdmin(gameId, message) )
     }
 }

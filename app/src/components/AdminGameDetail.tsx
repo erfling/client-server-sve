@@ -8,6 +8,7 @@ import { Button, Input, Menu, Layout, Col, Row, Card, Icon, Modal } from "antd/"
 const Panel = Collapse.Panel;
 const { Header, Footer, Sider, Content } = Layout;
 import { Link } from "react-router-dom";
+import * as _ from "lodash";
 
 class SapienButton extends Button{
 
@@ -21,6 +22,8 @@ interface AdminGameDetailProps{
     resetGame: (game: IGame) => {}
     setGameState : (game:IGame, newState: number | string) => {}
     match:any;
+    adminJoinedGame: (game:IGame) => {}
+
     //sendMessageFromAdmin : (gameId:string, message:string) => {}
 }
 
@@ -53,6 +56,10 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
         if (window.confirm("Do you really reset this game? This action cannot be undone")) { 
            this.props.resetGame(this.props.Game)
         }
+    }
+
+    componentDidUpdate(){
+        if(this.props.Game)this.props.adminJoinedGame(this.props.Game);
     }
 
     sendMessageFromAdmin(gameId:string, message:string) {
@@ -140,8 +147,14 @@ export default class AdminGameDetail extends React.Component<AdminGameDetailProp
                             }
                         >
                             <Collapse accordion defaultActiveKey={['0']}>
-                                { this.props.Game && this.getTeams(this.props.Game).map(( t, i ) => {
-                                    return <Panel header={t.Name || (t.Nation as INation).Name} key={i.toString()}>
+                                { this.props.Game && _.sortBy(this.getTeams(this.props.Game) as ITeam[], [(team:ITeam) =>  (team.Nation as INation).Name ]).map(( t, i ) => {
+                                    return <Panel 
+                                                key={i.toString()}
+                                                header={
+                                                    <div key={i.toString()}>
+                                                        Team {i+1} State 1 Selection: {t.ChosenHorse != null && <Icon style={{color:'#3aec3a'}} type="check-circle" />}
+                                                    </div>
+                                                }>
                                                 {JSON.stringify(t, null, 2)}
                                            </Panel>
                                 })} 

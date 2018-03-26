@@ -176,7 +176,13 @@ export default class AppServer
             .on(SocketEvents.ACCEPT_DEAL, this.handleDealAcceptance.bind(this, socket))
             .on(SocketEvents.JOIN_ROLE, this.onSocketJoinRole.bind(this, socket))
             .on(SocketEvents.SUBMIT_ROLE_RATING, this.submitRatingByRole.bind(this, socket))
+            .on(SocketEvents.ADMIN_JOINED, this.adminSocketConnected.bind(this, socket))
             
+    }
+
+    private adminSocketConnected(eventTarget:SocketIO.Socket){
+        console.log("ADMIN JOINING ROOM")
+        eventTarget.join("admin");
     }
 
     private async setDealToAndFromNations(gameID:string, deal:IDeal):Promise<IDeal> {
@@ -970,12 +976,15 @@ export default class AppServer
 
             if(newTeam){
 
-                const game = await GameModel.findById(newTeam.GameId).populate("Teams");
+                const game = await GameModel.findById(newTeam.GameId).populate({path: "Teams", populate: {path: "Nation"}});
                 if(game){
                     var teams = (<ITeam[]>game.Teams).filter(t => t.ChosenHorse).map(t => t.Slug);
                     this.GetRoundCompletion(game, newTeam, teams);
                     res.json(true)
                     this.io.of(newTeam.GameId).to(newTeam.Slug).emit(SocketEvents.TEAM_UPDATED, newTeam);
+                    const updatedGame = await GameModel.findById(newTeam.GameId).populate({path: "Teams", populate: {path: "Nation"}});
+
+                    this.io.of(newTeam.GameId).to("admin").emit(SocketEvents.ADMIN_GAME_UPDATED, updatedGame);
                 } else {
                     res.status(400);
                     res.json("done broke")

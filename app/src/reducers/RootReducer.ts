@@ -176,7 +176,10 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
         case(ACTION_TYPES.ROUND_2_WON.actionType):
             return Object.assign({}, state, {Dashboard: action.payload})
         case(ACTION_TYPES.GOT_GAME.actionType):
-            return Object.assign({}, state, {SelectedGame: action.payload})
+            console.log(action.payload);
+            var ns = JSON.parse(JSON.stringify(state));
+            ns.SelectedGame = action.payload;
+            return ns;
         case(ACTION_TYPES.GAME_STATE_CHANGED_ADMIN.actionType):
             console.log("REDUCER HANDLING")
             var ns = JSON.parse(JSON.stringify(state));

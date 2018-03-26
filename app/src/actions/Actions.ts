@@ -435,7 +435,7 @@ export const createTeamSocket = (team:ITeam) => {
                 })
 
             })
-            
+            //SocketEvents.ADMIN_GAME_UPDATED
             // Set up is-awake interval checker thingy
             /*
             timer = setInterval(() => {
@@ -1001,6 +1001,7 @@ export const resetGame = (game:IGame) => {
                 type: ACTION_TYPES.GOT_GAME.actionType,
                 payload:r
             })
+            location.reload();
         })
     }
 }
@@ -1010,5 +1011,33 @@ export const dismissAdminMessage = () => {
         dispatch({ 
             type: ACTION_TYPES.DISMISS_ADMIN_MESSAGE.actionType
         })        
+    }
+}
+
+export const adminJoinedGame = (game: IGame) => {
+    var adminSocket = socketIo(protocol +  "//" + window.location.hostname + socketPort + "/" + game._id);
+    console.log("ADMIN SOCKET CONNECTED", game._id);
+    console.log("OUR SOCKET IS", adminSocket);
+
+    adminSocket.on(SocketEvents.CONNECT, (data: any) => {
+        console.log("SOCKET ON CONNECT THAT RETURNED:", adminSocket);    
+        adminSocket.emit(SocketEvents.ADMIN_JOINED)
+    })
+
+
+
+    return (dispatch: Dispatch<Action<null>>) => {
+        dispatch({ 
+            type: ACTION_TYPES.IS_LOADING.actionType,
+            payload: false
+        })    
+
+        adminSocket.on(SocketEvents.ADMIN_GAME_UPDATED, (game: IGame) => {
+            console.log("GAME UPDATE RECEIVED", game)
+            dispatch({ 
+                type: ACTION_TYPES.GOT_GAME.actionType,
+                payload: game
+            })  
+        })    
     }
 }
