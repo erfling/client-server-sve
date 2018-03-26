@@ -406,7 +406,6 @@ export default class AppServer
             //var isAgreed = correspondingAnswers.every(answer => answer[ratingName].Value == rating[ratingName].Value
             if((<any>updatedTeam.Roles[otherRole].RoleTradeRatings)[valueToAssign].Value == rating[valueToAssign].Value){
                 //we have a match
-                console.log("ROLES IN AGREEMENT")
                 t.Roles[roleName].RoleTradeRatings[valueToAssign].AgreementStatus = 1;
                 t.Roles[otherRole].RoleTradeRatings[valueToAssign].AgreementStatus = 1;
 
@@ -417,7 +416,6 @@ export default class AppServer
                 t.Roles[otherRole].RoleTradeRatings[valueToAssign].AgreementStatus = 0;
             }
             const newlyUpdatedTeam = await TeamModel.findOneAndUpdate({Slug: teamSlug}, t, {new: true}).populate("Nation");
-            console.log((<any>newlyUpdatedTeam).Roles[otherRole]);
             //emit to both roles on the team
             eventTarget.nsp.to(roleRoomName).emit(SocketEvents.ROLE_RETURNED, (<any>newlyUpdatedTeam).Roles[roleName])
             eventTarget.nsp.to(otherRoleRoomName).emit(SocketEvents.ROLE_RETURNED, (<any>newlyUpdatedTeam).Roles[otherRole])
@@ -1006,7 +1004,6 @@ export default class AppServer
     }
 
     private async GetRoundCompletion(game:IGame, team: ITeam, validTeams: string[]){
-        console.log(team.Slug, " REQUESTS ROUND COMPLETION")
         const roundNumberIdx = parseInt(game.State.charAt(0)) - 1;
         if(!game.SubmissionsByRound){
             game.SubmissionsByRound = [];
