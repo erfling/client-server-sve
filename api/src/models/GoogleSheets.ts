@@ -426,6 +426,7 @@ export default abstract class GoogleSheets
             },3000);        
         }
 */
+        console.log("CALLING YEARS ABOVE TWO ON STATE CHANGE")
         this.apiGetValues(game.SheetId, "Country Impact!C21", true)
             .then((response:any) => {
                 this.DAYS_ABOVE_REQUESTS ++;
