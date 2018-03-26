@@ -56,13 +56,13 @@ export default abstract class GoogleSheets
         GoogleSheets.Cache[range] = values;
     }
     static getFromCache(range:string): CacheValue | boolean {
-        console.log("CALLED. RANGE IS: ", range)
 
         if(GoogleSheets.Cache[range] 
             && GoogleSheets.Cache[range].SheetsValues
             && GoogleSheets.Cache[range].RequestTime
             && Date.now() - GoogleSheets.Cache[range].RequestTime < 50000
         ){
+            console.log("GETTING FROM CACHE. RANGE IS: ", range)
             return GoogleSheets.Cache[range];
         }
 
