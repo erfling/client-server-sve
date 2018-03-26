@@ -415,7 +415,7 @@ export default abstract class GoogleSheets
     public static async handleDaysAbove(team: ITeam, io: SocketIO.Server){      
         if(!this.DAYS_ABOVE_REQUESTS || this.DAYS_ABOVE_REQUESTS == 0) {
             this.DAYS_ABOVE_TIMER = setInterval(async() => {
-                if(this.DAYS_ABOVE_REQUESTS >= 3600){
+                if(this.DAYS_ABOVE_REQUESTS >= 1200 || this.DAYS_ABOVE && this.DAYS_ABOVE[0][0] < 1){
                     this.DAYS_ABOVE_REQUESTS = 0;
                     clearInterval(this.DAYS_ABOVE_TIMER);
                 }
