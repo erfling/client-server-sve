@@ -412,7 +412,7 @@ export default abstract class GoogleSheets
                     }).catch(e => console.log(e))
     }
 
-    public static async handleDaysAbove(game: IGame, io: SocketIO.Server){ 
+    public static handleDaysAbove(game: IGame, io: SocketIO.Server){ 
         /*     
         if(!this.DAYS_ABOVE_REQUESTS || this.DAYS_ABOVE_REQUESTS == 0) {
             this.DAYS_ABOVE_TIMER = setInterval(async() => {
