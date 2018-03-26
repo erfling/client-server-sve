@@ -796,7 +796,7 @@ export default class AppServer
                         t.GameState = game.State;
                         if (this.socketServer instanceof https.Server) {
                             console.log("TRYING TO SET LISTENER FOR SHEET CHANGES")
-                            GoogleSheets.setTeamListener(game);
+                            //GoogleSheets.setTeamListener(game);
                         }
                         let token = jwt.sign({team: t}, 'shhhhh');
 
