@@ -27,7 +27,7 @@ const Beach = require("../img/Bangladesh_beach.jpeg")
 export default class Chart extends React.Component<ChartProps, {Width: number}> {
 
     componentWillMount(){
-        this.state = {Width: window.innerWidth * .95}
+        this.state = {Width: window.innerWidth}
     }
     /**
      * Add event listener
@@ -57,7 +57,7 @@ export default class Chart extends React.Component<ChartProps, {Width: number}> 
     }
 
     updateChartDimensions(){
-       this.setState(Object.assign({}, this.state, {Width: window.innerWidth * 95}))
+       this.setState(Object.assign({}, this.state, {Width: window.innerWidth}))
     }
 
     getParsedData(data: number[] | string[] | number) {
@@ -90,20 +90,26 @@ export default class Chart extends React.Component<ChartProps, {Width: number}> 
                 
                     
                 <Row className="impact-chart">
-                                          
-                    {["Paris Accord" , "Preindustrial", "Temp Increase"].map((val, i) => {
-                        return <label className="chart-label">
-                                    <span className="swatch" style={{background:colors[i]}}></span>
-                                    <span className="rdo-btn-label">{val}</span>
-                                </label>
-                    })}
+                    <RadioGroup 
+                        ref="ChartSelector"
+                        size="large"
+                        onChange={e => this.onChartItemClick(parseInt(e.target.value))}
+                        defaultValue={2}
+                    >                        
+                        {["Paris Accord" , "Preindustrial", "Adjusted Temp Increase"].map((val, i) => {
+                            return <RadioButton value={i}>
+                                        <span className="swatch" style={{background:colors[i]}}></span>
+                                        <span className="rdo-btn-label">{val}</span>
+                                   </RadioButton>
+                        })}
+                    </RadioGroup>
 
                 </Row>
 
                 <XYPlot
                     height={600}
                     width={this.state.Width}
-                    margin={{ left: 60, right: 43, top: 60 }}
+                    margin={{ left: 52, right: 45, top: 60 }}
                     className="line-chart"
                 >
                     <HorizontalGridLines
