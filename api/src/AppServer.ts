@@ -430,7 +430,6 @@ export default class AppServer
             //we will have already determined whether there is agreement on each param, so just check the AgreementStatus prop
         
             if(this.AllAgree(newlyUpdatedTeam)){
-                console.log("WE HAD A VVALID TEAM");
                 //get our sheet submit range. Magic strings represent ranges in google sheets model based on country
                 var range = "Round 4!";
                 switch((<INation>newlyUpdatedTeam.Nation).Name){
@@ -483,7 +482,6 @@ export default class AppServer
     }
 
     private AllAgree(team: ITeam){
-        console.log("TEAM IN ALL AGREE");
         return team.Roles[RoleName.BANK] && Object.keys(team.Roles[RoleName.BANK].RoleTradeRatings).every((rating:RoleRatingCategories) => {
             return team.Roles[RoleName.BANK].RoleTradeRatings && team.Roles[RoleName.BANK].RoleTradeRatings[rating].AgreementStatus == 1;
         })
@@ -1021,7 +1019,6 @@ export default class AppServer
         if(newGame){
             console.log(newGame.SubmissionsByRound)
             var thingus: any = {NumTeams: newGame.Teams.length, TeamsCompleted: validTeams, Team:team.Slug };
-            console.log("HELLOW EVERYONE> EVERYTHINGS OK HERE", SocketEvents.SOMEBODY_COMPLETED_A_ROUND, thingus);
             this.io.of(game._id).emit(SocketEvents.SOMEBODY_COMPLETED_A_ROUND, thingus);
         } else {
             console.log("OH FUCK");
