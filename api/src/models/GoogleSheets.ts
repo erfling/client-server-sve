@@ -412,7 +412,8 @@ export default abstract class GoogleSheets
                     }).catch(e => console.log(e))
     }
 
-    public static async handleDaysAbove(game: IGame, io: SocketIO.Server){      
+    public static async handleDaysAbove(game: IGame, io: SocketIO.Server){ 
+        /*     
         if(!this.DAYS_ABOVE_REQUESTS || this.DAYS_ABOVE_REQUESTS == 0) {
             this.DAYS_ABOVE_TIMER = setInterval(async() => {
                 if(this.DAYS_ABOVE_REQUESTS >= 1200 || this.DAYS_ABOVE && this.DAYS_ABOVE[0][0] < 1){
@@ -421,10 +422,23 @@ export default abstract class GoogleSheets
                 }
                 this.DAYS_ABOVE = await this.apiGetValues(game.SheetId, "Country Impact!C21", true);
                 console.log()
-                this.DAYS_ABOVE_REQUESTS ++;
                 io.of(game.GameId).emit(SocketEvents.UPDATE_YEARS_ABOVE_2,this.DAYS_ABOVE[0][0]);
             },3000);        
         }
+*/
+        this.apiGetValues(game.SheetId, "Country Impact!C21", true)
+            .then((response:any) => {
+                this.DAYS_ABOVE_REQUESTS ++;
+                io.of(game.GameId).emit(SocketEvents.UPDATE_YEARS_ABOVE_2,this.DAYS_ABOVE[0][0]);
+                if(this.DAYS_ABOVE_REQUESTS <= 1200){
+                    setTimeout(() => {                    
+                        this.handleDaysAbove(game, io)
+                    }, 3000)
+                }
+            }).catch(e => console.log(e));
+
+
+
     }
 
     public static getRejectionOrAcceptanceReason(fromNationName: string, toNationName: string): Promise<any>{
