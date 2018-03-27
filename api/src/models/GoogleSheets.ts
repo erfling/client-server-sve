@@ -180,7 +180,7 @@ export default abstract class GoogleSheets
             if(!this.LAST_REQUEST_FOR_DASHBOARD) this.LAST_REQUEST_FOR_DASHBOARD = Date.now();
             console.log("RANGE FOUND")
 
-            if(!this.LAST_REQUEST_FOR_DASHBOARD || this.LAST_REQUEST_FOR_DASHBOARD - Date.now() > 1000){
+            if(!this.LAST_REQUEST_FOR_DASHBOARD || Date.now() - this.LAST_REQUEST_FOR_DASHBOARD  > 1000){
                 console.log("RANGE FOUND -- FORCING IGNORE CACHE")
 
                 this.LAST_REQUEST_FOR_DASHBOARD = Date.now();
