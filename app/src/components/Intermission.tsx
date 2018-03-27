@@ -41,9 +41,9 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
 
         var m = Math.floor(time % 3600 / 60);
         var s = Math.floor(time % 3600 % 60);
-
-        var mDisplay = m > 9 ? m + ":" : "0" + m + ":";
-        var sDisplay = s > 9 ? s : "0" + s;
+        
+        var mDisplay = m/1000 > 9 ? m/1000 + ":" : "0" + m/1000 + ":";
+        var sDisplay = s/1000 > 9 ? s/1000 : "0" + s/1000;
 
         return mDisplay + sDisplay;
     }
@@ -63,12 +63,14 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
     countDown() {
         if (this.state) {
             var now = Date.now();
-
-            let time = this.secondsToTime((this.state.TwentyMinutesFromNow - now) / 1000);
-            this.setState(Object.assign({}, this.state, { Now: time }))
+            console.log(this.state.TwentyMinutesFromNow, this.state.TwentyMinutesFromNow - now);
+            
             if (this.state.TwentyMinutesFromNow - now <= 0) {
                 clearInterval(this.state.Timer);
                 this.setState({ TimesUp: true, Now: "00:00" });
+            } else {
+                let time = this.secondsToTime((this.state.TwentyMinutesFromNow - now));
+                this.setState(Object.assign({}, this.state, { Now: time }))
             }
         } else {
         }
