@@ -460,6 +460,7 @@ export default class AppServer
                 
                 const committedAnswers = await GoogleSheets.commitAnswers( values, range, game.SheetId );
                 this.getDaysAbove(newlyUpdatedTeam, true);
+                GoogleSheets.GetSheetValues(null, "Country Impact!Y3:Y103");
 
             }
             var validTeams = (game.Teams as ITeam[]).filter(t => this.AllAgree(t)).map(t => t.Slug);
