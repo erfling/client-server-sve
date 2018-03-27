@@ -460,7 +460,10 @@ export default class AppServer
                 
                 const committedAnswers = await GoogleSheets.commitAnswers( values, range, game.SheetId );
                 this.getDaysAbove(newlyUpdatedTeam, true);
-                GoogleSheets.GetSheetValues(null, "Country Impact!Y3:Y103");
+                GoogleSheets.GetSheetValues(game.SheetId, "Country Impact!Y3:Y103").then((r:any) => {
+                    console.log("SHOULD BE EMITTING TO TEAMS")
+                    this.io.of(game._id).emit(SocketEvents.DASHBOARD_UPDATED, r);
+                })
 
             }
             var validTeams = (game.Teams as ITeam[]).filter(t => this.AllAgree(t)).map(t => t.Slug);
