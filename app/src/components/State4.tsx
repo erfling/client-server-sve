@@ -227,17 +227,17 @@ export default class State4 extends React.Component<State4Props, { hasScrolled: 
                                         <label>
                                             {rating} MARKET
                                                 {(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus == -1 &&
-                                                <span>
+                                                <span style={{fontSize: '.8em'}}>
                                                     <Icon type="hourglass" style={{ marginLeft: "18px" }} />Waiting...
                                                     </span>
                                             }
                                             {(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus == 0 &&
-                                                <span style={{ color: "red" }}>
+                                                <span style={{ color: "red", fontSize: '.8em' }}>
                                                     <Icon type="close-circle-o" style={{ marginLeft: "18px" }} /> No Agreement
                                                     </span>
                                             }
                                             {(this.props.SelectedRole.RoleTradeRatings as any)[rating].AgreementStatus == 1 &&
-                                                <span style={{ color: "green" }}>
+                                                <span style={{ color: "green", fontSize: '.8em' }}>
                                                     <Icon type="check-circle-o" style={{ marginLeft: "18px" }} /> Agreement Reached
                                                     </span>
                                             }

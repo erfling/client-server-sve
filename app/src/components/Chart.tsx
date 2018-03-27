@@ -103,7 +103,7 @@ export default class Chart extends React.Component<ChartProps, { Width: number }
             <XYPlot
                 height={600}
                 width={this.state.Width}
-                margin={{ left: 52, right: 45, top: 60 }}
+                margin={{ left: 52, right: 49, top: 60 }}
                 className="line-chart"
             >
                 <HorizontalGridLines
