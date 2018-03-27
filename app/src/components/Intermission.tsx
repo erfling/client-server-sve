@@ -63,8 +63,8 @@ export class Intermission extends React.Component<IntermissionProps, { Now: any,
     countDown() {
         if (this.state) {
             var now = Date.now();
-            console.log(this.state.TwentyMinutesFromNow, this.state.TwentyMinutesFromNow - now);
-            let time = this.secondsToTime((this.state.TwentyMinutesFromNow - now));
+
+            let time = this.secondsToTime((this.state.TwentyMinutesFromNow - now) / 1000);
             this.setState(Object.assign({}, this.state, { Now: time }))
             if (this.state.TwentyMinutesFromNow - now <= 0) {
                 clearInterval(this.state.Timer);
