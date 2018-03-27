@@ -178,9 +178,9 @@ export default abstract class GoogleSheets
 
         if(range && range == "Country Impact!Y3:Y103"){
             if(!this.LAST_REQUEST_FOR_DASHBOARD) this.LAST_REQUEST_FOR_DASHBOARD = Date.now();
-            console.log("RANGE FOUND")
+            console.log("RANGE FOUND", Date.now() - this.LAST_REQUEST_FOR_DASHBOARD)
 
-            if(!this.LAST_REQUEST_FOR_DASHBOARD || Date.now() - this.LAST_REQUEST_FOR_DASHBOARD  > 1000){
+            if(Date.now() - this.LAST_REQUEST_FOR_DASHBOARD  > 1000){
                 console.log("RANGE FOUND -- FORCING IGNORE CACHE")
 
                 this.LAST_REQUEST_FOR_DASHBOARD = Date.now();
