@@ -25,6 +25,7 @@ interface State3State {
     Completed3A: boolean;
     Value3A: string;
     Completed3B: boolean;
+    Value3B: string;
     Completed3C: boolean;
     Completed3D: boolean;
     PlayerNotFound: boolean;
@@ -148,7 +149,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                 </ScrollyContainer>
 
                 <ScrollyContainer
-                    BackgroundColor="#3129FF"
+                    BackgroundColor={this.state.Value3B && this.state.Value3B.toUpperCase() == this.evaluateState1() ? "#64c766" : "#1790ff"}
                     Active={this.state.Completed3A}
                 >
 
