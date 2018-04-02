@@ -149,13 +149,13 @@ export default class State3 extends React.Component<State3Props, State3State> {
                 </ScrollyContainer>
 
                 <ScrollyContainer
-                    BackgroundColor={this.state.Value3B && this.state.Value3B.toUpperCase() == this.evaluateState1() ? "#64c766" : "#1790ff"}
+                    BackgroundColor={this.state.Value3B && this.state.Value3B.toUpperCase() == this.evaluateState1() ? "#64c766" : "##e1e8ee"}
                     Active={this.state.Completed3A}
                 >
 
                     <Button
                         className="checker"
-                        type="dashed"
+                        type="primary"
                     >
                         <Checkbox>Check your button</Checkbox>
                     </Button>
