@@ -97,9 +97,8 @@ export class GameWrapper extends React.Component<GamesList, any> {
                 case "3C":
                     if(this.props.match.path.indexOf('war-of-the-worlds') == -1)return <div><Redirect to="/war-of-the-worlds"/></div>
                     break;*/
-                case "3A":
-                case "3B":
-                    if(this.props.match.path.indexOf('international-trade') == -1)return <div><Redirect to="/international-trade"/></div>
+                case "3":
+                    if(this.props.match.path.indexOf('solve-the-puzzles') == -1)return <div><Redirect to="/solve-the-puzzles"/></div>
                     break;
                 case "5":
                     if(this.props.match.path.indexOf('experiment') == -1)return <div><Redirect to="/experiment"/></div>

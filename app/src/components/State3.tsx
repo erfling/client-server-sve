@@ -1,20 +1,13 @@
 import * as React from 'react';
-import { reduxForm, Field, WrappedFieldProps, InjectedFormProps, GenericFieldHTMLAttributes } from 'redux-form';
 import { InputWrapper, SliderWrapper } from './form-elements/AntdFormWrappers';
 import ITeam from '../../../shared/models/ITeam';
-import RatingsForm from './form-elements/RatingsForm'
 import GameWrapper from './GameWrapper';
 import { Redirect } from 'react-router-dom';
-import { Row, Col } from 'antd';
-import IRatings from '../../../shared/models/IRatings';
+import { Button, Row, Col, Icon, Input, Checkbox } from 'antd';
 import INation from '../../../shared/models/INation';
 import { Ratings } from '../../../api/src/models/Ratings';
-import ChartContainer from '../containers/ChartContainer'
-import TopBarContainer from '../containers/TopBarContainer';
-import { CriteriaName } from '../../../shared/models/CriteriaName';
+import ScrollyContainer from './ScrollyContainer';
 
-const WOTW = require("../img/The-War-of-the-Worlds-Radio-Broadcast.jpg");
-const NY = require("../img/The_New_Yorker_logo.png");
 interface State3Props {
     CurrentPlayer: ITeam
     getPlayer: () => {}
@@ -27,10 +20,20 @@ interface State3Props {
     DaysAbove2: number;
     SocketConnected: boolean;
 }
-export default class State3 extends React.Component<State3Props, { PlayerNotFound: boolean, Ratings:string[] }> {
+
+interface State3State {
+    Completed3A: boolean;
+    Value3A: string;
+    Completed3B: boolean;
+    Completed3C: boolean;
+    Completed3D: boolean;
+    PlayerNotFound: boolean;
+}
+
+export default class State3 extends React.Component<State3Props, State3State> {
 
     componentDidMount() {
-        this.setState({ PlayerNotFound: false })
+        this.setState({ Completed3A: false })
         if (!this.props.CurrentPlayer) {
             if (localStorage.getItem("SVE_PLAYER")) {
                 this.props.getPlayer();
@@ -41,13 +44,13 @@ export default class State3 extends React.Component<State3Props, { PlayerNotFoun
             console.log("CURRENT PLAYER ALREADY IN REDUX STORE")
             this.props.getContent(this.props.CurrentPlayer)
         }
-        //window.scrollTo(0, 0);
+        //window. To(0, 0);
+
     }
 
     componentDidUpdate() {
-        console.log("did updated called", this.props.SocketConnected, this.props.DaysAbove2)
         this.getData();
-        if(this.props.CurrentPlayer && !this.state.Ratings)this.getRatings();
+        //if(this.props.CurrentPlayer && !this.state.Ratings)this.getRatings();
     }
 
     getData() {
@@ -56,20 +59,11 @@ export default class State3 extends React.Component<State3Props, { PlayerNotFoun
         }
     }
 
-    prepareRatings(formValues: any) {
-        var ratings: IRatings = {};
-        Object.keys(formValues).forEach((o: string) => {
-            var nation: string = o.split("_")[0];
-            if (!(ratings as any)[nation]) (ratings as any)[nation] = {};
-            (ratings as any)[nation][o.substr(nation.length + 1)] = formValues[o];
-        })
-        this.props.submitRatings(Object.assign(this.props.CurrentPlayer, { Ratings: ratings }));
-    }
 
-    getRatings(){
+    getRatings() {
         const protocol = !window.location.host.includes('local') ? "https:" : "http:";
         const port = !window.location.host.includes('local') ? ":8443" : ":4000";
-        const URL = protocol +  "//" + window.location.hostname + port + "/sapien/api/sheets/ratings";
+        const URL = protocol + "//" + window.location.hostname + port + "/sapien/api/sheets/ratings";
         fetch(
             URL,
             {
@@ -80,77 +74,111 @@ export default class State3 extends React.Component<State3Props, { PlayerNotFoun
                 })
             }
         )
-        .then( r => r.json() )
-        .then(r => {
-            console.log("RATINGS RETURNED", r)
-            this.setState(Object.assign({}, this.state, {Ratings: r}))
-        })
+            .then(r => r.json())
+            .then(r => {
+                console.log("RATINGS RETURNED", r)
+                this.setState(Object.assign({}, this.state, { Ratings: r }))
+            })
+    }
+
+    evaluateState1(): string {
+        var val: string = '';
+        switch ((this.props.CurrentPlayer.Nation as INation).Name) {
+            case "Australia":
+                val = "India"
+                break;
+            case "Bangladesh":
+            case "India":
+                val = "Bangladesh"
+                break
+            case "China":
+                val = "Japan"
+                break
+            case "Japan":
+                val = "Australia"
+                break
+            case "Vietnam":
+                val = "China"
+                break
+        }
+        return val.toUpperCase();
     }
 
     render() {
-        const d = new Date();
-        const year = d.getFullYear();
-        const month = d.getMonth();
-        const day = d.getDate();
-        const future = new Date(year + 20, month, day);
         if (!this.props.CurrentPlayer) return <div>Should go to login<Redirect to="/" /></div>
+        if (!this.state) return <div></div>
         return (
-            this.props.CurrentPlayer && <GameWrapper
-                ParallaxImg={WOTW}
-                HeaderText="War Of The Worlds"
+            <GameWrapper
+                HeaderText=""
                 match={this.props.match}
                 CurrentPlayer={this.props.CurrentPlayer}
+                ParallaxImg=""
                 HideImage={true}
             >
-                {this.props.DaysAbove2 && this.props.SocketConnected ?
-                    <TopBarContainer /> : null
-                }
-                <Col xs={24} style={{ paddingLeft: '13px' }}>
-                    <h1 style={{ marginTop: "50px", textAlign: "center" }}>{(this.props.CurrentPlayer.Nation as INation).Name}</h1>
-                    <ChartContainer />
-                </Col>
-                {this.props.CurrentPlayer.GameState == "3B"
-                    ?
-                    <Row className="form-wrapper" gutter={{ lg: "1", xl: "1" }}>
-                        <Col sm={23} md={23} lg={23}>
-                            <RatingsForm onSubmit={this.prepareRatings.bind(this)} />
-                        </Col>
-                    </Row>
-                    :
-                    this.props.CurrentPlayer.GameState == "3A" ?
-                    <Row className="form-wrapper" gutter={{ lg: "1", xl: "1" }}>
-                        <h3><img src={NY} style={{ maxWidth: '100%' }} /></h3>
-                        <h3>DECEIVING THE NATION</h3>
-                        <p style={{ fontWeight: "lighter", textAlign: "center" }}>By Akwugo St. Claire,&nbsp; February 22, {new Date().getFullYear() + 2}</p>
+                <ScrollyContainer
+                    Active={!this.state.Completed3A}
+                    BackgroundColor={this.state.Value3A && this.state.Value3A.toUpperCase() == this.evaluateState1() ? "#64c766" : "#1790ff"}
+                >
+                    <Col xs={20} lg={8}>
+                        <Col xs={24}>
+                            <Input
+                                placeholder="Password"
+                                type="password"
+                                disabled={this.state.Value3A && this.state.Value3A.toUpperCase() == this.evaluateState1()}
+                                prefix={<Icon type="lock" style={
+                                    {
+                                        color: !this.state.Value3A || this.state.Value3A.toUpperCase() != this.evaluateState1() ? 'rgba(0,0,0,.25)' : 'green',
+                                        transition: 'all .5sec'
+                                    }
+                                } />}
+                                onChange={e => {
+                                    this.setState(Object.assign({}, this.state, { Value3A: e.target.value }))
 
-                        {this.props.StateContent ? <Col sm={23} md={23} lg={12}>
-                            {this.props.StateContent[0][0].split("\n").map((c: string, i: number) => {
-                                return c == c.toUpperCase() ? <h3>{c}</h3> : i == 0 ? <p><em><strong>{c}</strong></em></p> : <p>{c}</p>
-                            })}
+                                    setTimeout(() => {
+                                        if (this.state.Value3A) console.log(this.state.Value3A.toUpperCase(), this.evaluateState1(), this.state.Value3A.toUpperCase() == this.evaluateState1());
+                                        if (this.state.Value3A && this.state.Value3A.toUpperCase() == this.evaluateState1()) {
+                                            setTimeout(() => this.setState(Object.assign({}, this.state, { Completed3A: true })), 1000)
+                                        }
+                                    }, 1)
+                                }
+                                }
+                            />
                         </Col>
-                            : <span>{this.props.getContent(this.props.CurrentPlayer)}</span>}
+                    </Col>
+                </ScrollyContainer>
 
-                    </Row> : null
-                }
+                <ScrollyContainer
+                    BackgroundColor="#3129FF"
+                    Active={this.state.Completed3A}
+                >
 
-                {this.props.CurrentPlayer.GameState == "3C" && this.state && this.state.Ratings
-                    ?
-                    <Row className="form-wrapper" gutter={{ lg: "1", xl: "1" }}>
-                        <h2>Your Ratings</h2>
-                        <Col sm={23} md={23} lg={23}>
-                            {this.state.Ratings.slice(1).map((r, i) => {
-                                return <Row>
-                                    <h4>{Object.keys(CriteriaName)[i].split("_").map(c => c.charAt(0).toUpperCase() + c.slice(1).toLocaleLowerCase() ).join("_").replace(/_/g, ' ') + ": " + Math.round( parseFloat(r) * 10 ) / 10}</h4>
-                                </Row>
-                            })}
-                        </Col>
-                    </Row>
-                    :
-                    null
-                }
+                    <Button
+                        className="checker"
+                        type="dashed"
+                    >
+                        <Checkbox>Check your button</Checkbox>
+                    </Button>
+                </ScrollyContainer>
+
+                <ScrollyContainer
+                    BackgroundColor="#1790ff"
+                    Active={this.state.Completed3B}
+                >
+                    <p><p>Check your button</p></p>
+                    
+                </ScrollyContainer>
+
+                <ScrollyContainer
+                    BackgroundColor="#3129FF"
+                    Active={this.state.Completed3C}
+                >
+                    <p><p>3D Content goes here</p></p>
+                </ScrollyContainer>
 
             </GameWrapper>
         )
 
     }
 }
+/**suffix={suffix}
+                       */

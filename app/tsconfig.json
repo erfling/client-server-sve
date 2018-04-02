@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "outDir": "./build",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "target": "es6",
+        "jsx": "react",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "types" : ["node", "lodash", "express"]        
+    },
+    "include": [
+        "./**/*"
+    ]
+}
+
+//console.log("TEAMS REQ:", req)
