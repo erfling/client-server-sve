@@ -13,6 +13,7 @@ import IRatings from './IRatings';
 export default interface ITeam extends IBaseClass {    
   Location?: string;  
   Name?: string;
+  TeamNumber?: number;
   Slug?:string;
   SheetId?: string;
   SourceSheetId?: string;

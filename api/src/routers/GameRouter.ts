@@ -226,7 +226,7 @@ class GameRouter
             console.log(i, game.Location + " " + " Team " + (i + 1));
             //+ game.DatePlayed.toISOString()
 
-            var team = new Team({GameId: game._id, SheetId: game.SheetId, SourceSheetId: game.SourceSheetId, Slug: "Team" + (i + 1) + "-" + game._id, Nation: nations[i]._id})
+            var team = new Team({GameId: game._id, SheetId: game.SheetId, SourceSheetId: game.SourceSheetId, Slug: "Team" + (i + 1) + "-" + game._id, Nation: nations[i]._id, TeamNumber: (i + 1)})
 
             let promise = TeamModel.create(team);
             

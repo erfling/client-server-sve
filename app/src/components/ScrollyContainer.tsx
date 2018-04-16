@@ -29,7 +29,7 @@ export default class ScrollyContainer extends React.Component<ScrollyContainerPr
                 justify="center"
                 align="middle"          
                 style={{                    
-                    background: this.props.BackgroundColor ? this.props.BackgroundColor : 'purple'
+                    background: this.props.BackgroundColor ? this.props.BackgroundColor : '#1790ff'
                 }}
                 className={getClassName()}
             >

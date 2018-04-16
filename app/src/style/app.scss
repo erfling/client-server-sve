@@ -367,14 +367,19 @@ span.ant-radio + * {
         }
         &.checker{
             padding: 4px 25px 87px;
-        
+            border-radius: 10px;
+            box-shadow:0 0 20px 0 rgba(0, 0, 0, 0.45);
+            &:focus{
+                box-shadow:0 0 30px 0 rgba(0, 0, 0, 0.65);
+            }
             label.ant-checkbox-wrapper{
                 font-size: 120% !important;
-                margin-top: 0 !important;
+                margin-top: -4px !important;
                 .ant-checkbox-inner{
                     width: 4.5em;
                     height: 4.5em;
                     border-width: 4px;
+                    top:0;
                     &:after {   
                         width: 1.5em;
                         height: 3.5em;
