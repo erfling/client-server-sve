@@ -227,10 +227,10 @@ export default class State3 extends React.Component<State3Props, State3State> {
                                         className="checker"
                                         type="primary"
                                         size="large"
-                                        disabled={!this.state.Value3C || this.state.Value3C.toUpperCase() != "Together we will save the planet".toUpperCase()}
+                                        disabled={!this.state.Value3C || this.state.Value3C.toUpperCase() != "Together we will save the planet".toUpperCase().replace(/ /g, '')}
                                     >
                                         <Checkbox
-                                            disabled={!this.state.Value3C || this.state.Value3C.toUpperCase() != "Together we will save the planet".toUpperCase()}
+                                            disabled={!this.state.Value3C || this.state.Value3C.toUpperCase() != "Together we will save the planet".toUpperCase().replace(/ /g, '')}
                                             onChange={e => setTimeout(() => {
                                                 this.setState(Object.assign({}, this.state, { Advance3C: true }));
                                                 setTimeout(() => this.setState(Object.assign({}, this.state, { Completed3C: true })), 1000)
@@ -247,7 +247,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                                 placeholder="Passphrase"
                                 onChange={(e) => {
                                     this.setState(Object.assign({}, this.state, {
-                                        Value3C: e.target.value.toUpperCase()
+                                        Value3C:  e.target.value.toUpperCase().replace(/ /g, '')
                                     }))
                                     console.log(e.target.value.toUpperCase(), this.state.Value3C);
                                 }
