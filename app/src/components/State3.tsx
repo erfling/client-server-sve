@@ -178,7 +178,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                     <Col xs={20} lg={20}>
                         <p>
                             <p>
-                                Congratulations on reducing the projected temperature in 2100 through clever deal making in the previous round. However, based on current projects there are still several years in which the temperature is more than 2 degrees Celsius above pre-industrial levels, which is above the Paris Accord level. Compute the number of years above 2 degrees.
+                                Congratulations on reducing the projected temperature in 2100 through clever deal making in the previous round. However, based on current projections there are still several years in which the temperature is more than 2 degrees Celsius above pre-industrial levels, which is above the Paris Accord level. Compute the number of years above 2 degrees.
                                 </p>
                         </p>
                         <p><p style={{ fontSize: '110%' }}>{getState3Content()}</p></p>
@@ -268,7 +268,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                         <Col xs={20}>
                             <p>
                                 <p>
-                                    Engage the rest of the world in solving the problem: can’t be just Asia. Do this by entering the 31-letter global cooperation code. You can discover this code by arranging the images in the file in the fourth flip.
+                                    Engage the rest of the world in solving the problem: it will take more than one region. Do this by entering the 31-letter global cooperation code. You can discover this code by arranging the images in the file in the fourth flip.
                                 </p>
                             </p>
                         </Col>
