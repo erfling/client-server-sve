@@ -33,6 +33,7 @@ interface State3State {
     Completed3D: boolean;
     PlayerNotFound: boolean;
 }
+import Cover from '-!svg-react-loader?name=Icon!../img/zoom.svg';
 
 export default class State3 extends React.Component<State3Props, State3State> {
 
@@ -223,7 +224,11 @@ export default class State3 extends React.Component<State3Props, State3State> {
                                 <p>
                                     Decrease the number of years above two degrees by entering the six word passphrase. Check your button to discover a clue to the passphrase.
                                     <Button
-                                        style={{ marginLeft: '5px' }}
+                                        style={{
+                                            marginLeft: '25px',
+                                            marginTop: '0',
+                                            position: 'absolute'
+                                        }}
                                         className="checker"
                                         type="primary"
                                         size="large"
@@ -242,12 +247,12 @@ export default class State3 extends React.Component<State3Props, State3State> {
                                 </p>
                             </p>
                         </Col>
-                        <Col xs={20}>
+                        <Col xs={20} style={{ marginTop: '10px' }}>
                             <Input.TextArea
                                 placeholder="Passphrase"
                                 onChange={(e) => {
                                     this.setState(Object.assign({}, this.state, {
-                                        Value3C:  e.target.value.toUpperCase().replace(/ /g, '')
+                                        Value3C: e.target.value.toUpperCase().replace(/ /g, '')
                                     }))
                                     console.log(e.target.value.toUpperCase(), this.state.Value3C);
                                 }
@@ -258,34 +263,48 @@ export default class State3 extends React.Component<State3Props, State3State> {
                 </ScrollyContainer>
 
                 <ScrollyContainer
-                    BackgroundColor={this.state.Completed3D ? "#64c766" : "#f7f7f7"}
+                    BackgroundColor={this.state.Completed3D ? "#e93512" : "#f7f7f7"}
                     Active={this.state.Completed3C}
                 >
                     <Row
                         type="flex"
                         justify="center"
                     >
-                        <Col xs={20}>
-                            <p>
+                        {!this.state.Completed3D &&
+                            <Col xs={20}>
+
                                 <p>
-                                    Engage the rest of the world in solving the problem: it will take more than one region. Do this by entering the 31-letter global cooperation code. You can discover this code by arranging the images in the file in the fourth flip.
+                                    <p>
+                                        Engage the rest of the world in solving the problem: it will take more than one region. Do this by entering the 31-letter global cooperation code. You can discover this code by arranging the images in the file in the fourth flip.
                                 </p>
-                            </p>
-                        </Col>
-                        <Col xs={20}>
-                            <Input.TextArea
-                                placeholder="Passphrase"
-                                disabled={this.state.Completed3D}
-                                onChange={(e) => {
-                                    this.setState(Object.assign({}, this.state, {
-                                        Value3D: e.target.value.toUpperCase().replace(/ /g, ''),
-                                        Completed3D: e.target.value.toUpperCase().replace(/ /g, '') == "ZOOMOUTSOYOUCANSEETHEBIGPICTURE"
-                                    }))
-                                    console.log(e.target.value.toUpperCase(), this.state.Value3C);
-                                }
-                                }
-                            ></Input.TextArea>
-                        </Col>
+
+                                </p>
+                                <Input.TextArea
+                                    placeholder="Passphrase"
+                                    disabled={this.state.Completed3D}
+                                    onChange={(e) => {
+                                        this.setState(Object.assign({}, this.state, {
+                                            Value3D: e.target.value.toUpperCase().replace(/ /g, ''),
+                                            Completed3D: e.target.value.toUpperCase().replace(/ /g, '') == "ZOOMOUTSOYOUCANSEETHEBIGPICTURE"
+                                        }))
+                                        console.log(e.target.value.toUpperCase(), this.state.Value3C);
+                                    }
+                                    }
+                                ></Input.TextArea>
+                            </Col>
+                        }
+
+                        {this.state.Completed3D &&
+                            <Col xs={24}>
+                                <Cover
+                                    className="zoom"
+                                />
+                                <p style={{ textAlign: 'center' }}>
+                                    <p>
+                                        You did it!
+                                    </p>
+                                </p>
+                            </Col>}
                     </Row>
                 </ScrollyContainer>
 
@@ -295,22 +314,22 @@ export default class State3 extends React.Component<State3Props, State3State> {
     }
 }
 /**suffix={suffix}
- * {this.state.Value3C.map((s, i) => {
-                                return <Row>
-                                    <Col xs={22}>
-                                        <Input
-                                            style={{padding: '40px 10px', marginBottom:'.5em'}}
-                                            placeholder={"Passphrase " + (i + 1)}
-                                            onChange={e => this.setState(Object.assign({}, this.state, {
-                                                Value3C: this.state.Value3C.map((v, j) => {
-                                                    return i == j ? e.target.value.toUpperCase() : v;
-                                                })
-                                            }))}
-                                        />
-                                    </Col>
-                                </Row>
-                            })}
-                   
-                                    <Col xs={2}>
-                                        <p><p>{i + 1}.</p></p>
-                                    </Col>    */
+                        * {this.state.Value3C.map((s, i) => {
+                            return <Row>
+                                <Col xs={22}>
+                                    <Input
+                                        style={{ padding: '40px 10px', marginBottom: '.5em' }}
+                                        placeholder={"Passphrase " + (i + 1)}
+                                        onChange={e => this.setState(Object.assign({}, this.state, {
+                                            Value3C: this.state.Value3C.map((v, j) => {
+                                                return i == j ? e.target.value.toUpperCase() : v;
+                                            })
+                                        }))}
+                                    />
+                                </Col>
+                            </Row>
+                        })}
+
+                        <Col xs={2}>
+                            <p><p>{i + 1}.</p></p>
+                        </Col>    */

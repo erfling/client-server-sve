@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 import * as Actions from '../actions/Actions';
 import { ACTION_TYPES } from '../actions/Actions';
 
-import Horse from '-!svg-react-loader?name=Icon!../img/horse.svg';
+import Horsey from '-!svg-react-loader?name=Icon!../img/horse.svg';
 require('smoothscroll-polyfill').polyfill();
 
 const City = require("../img/Drought_water_city.jpg");
@@ -216,7 +216,7 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
                                                     return f.filter((c, i) => i != 0 && i != 5).map((c, i) => {
                                                         return <Row className={c.charAt(0) == "^" && this.props.CurrentPlayer.GameState != "1C" ? "winner" : null}>
                                                             <div>
-                                                                <Horse />
+                                                                <Horsey />
                                                                 <p>
                                                                     {getLabel(i)}
                                                                 </p>
@@ -242,7 +242,7 @@ export class State1 extends React.Component<State1Props, { PlayerNotFound: boole
                                                     .map((c: string, i) => {
                                                         return <Row className={c.indexOf("The fourth horseman has arrived") != -1 ? "former-winner" : null}>
                                                             <div>
-                                                                <Horse />
+                                                                <Horsey />
                                                                 <p>
                                                                     {getLabel(i)}
                                                                 </p>

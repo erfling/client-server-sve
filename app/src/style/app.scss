@@ -877,3 +877,15 @@ textarea.ant-input{
         bottom: 100vh;
     }
 }
+
+.zoom{
+    width: 100%;
+    min-width:800px;
+    display: block;
+    margin:10px auto;
+    animation: zoomOut .6s forwards;
+}
+@keyframes zoomOut {
+    0%{transform: scale(10);}
+    100% {transform: scale(1);}
+}
