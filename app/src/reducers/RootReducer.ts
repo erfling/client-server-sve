@@ -29,7 +29,8 @@ const initialState: ApplicationStore = {
         DaysAbove2: null,
         CurrentGame: null,
         BottomBarVisible: false,
-        CompletionStatus: { NumTeams: 0, TeamsCompleted: [] }
+        CompletionStatus: { NumTeams: 0, TeamsCompleted: [] },
+        GameWon: false
     },
     Application: {
         Loading: false,
@@ -271,6 +272,8 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
             return Object.assign({}, state, {StateContent: action.payload})
         case ACTION_TYPES.YEARS_ABOVE_2_UPDATED.actionType:
             return Object.assign({}, state, {DaysAbove2: action.payload})
+        case ACTION_TYPES.GAME_WON.actionType:
+            return Object.assign({}, state, {GameWon: true})
         default:
             return state;
     }

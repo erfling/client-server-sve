@@ -26,6 +26,7 @@ export default interface ApplicationStore{
         EnvironmentalHealth: number;
         BottomBarVisible: false;
         CompletionStatus: {NumTeams:  number, TeamsCompleted: string[] }
+        GameWon: boolean;
     };
     //export type SheetData   
     Application?: {

@@ -244,6 +244,11 @@ export class ACTION_TYPES implements I_ACTION_TYPES{
         actionType: "MANUALLY_SET_BOTTOM_BAR_VISIBLE"
     }
 
+    static GAME_WON: ActionDescription = {
+        actionType: "GAME_WON",
+        payloadType: "boolean"
+    }
+
 
 }
 
@@ -434,6 +439,12 @@ export const createTeamSocket = (team:ITeam) => {
                     payload: submissionCount
                 })
 
+            })
+            .on(SocketEvents.GAME_WON, () => {
+                dispatch({
+                    type: ACTION_TYPES.GAME_WON.actionType,
+                    payload: true
+                })
             })
             //SocketEvents.ADMIN_GAME_UPDATED
             // Set up is-awake interval checker thingy

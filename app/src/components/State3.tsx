@@ -7,18 +7,18 @@ import { Button, Row, Col, Icon, Input, Checkbox } from 'antd';
 import INation from '../../../shared/models/INation';
 import { Ratings } from '../../../api/src/models/Ratings';
 import ScrollyContainer from './ScrollyContainer';
+import ApplicationStore from '../stores/Store';
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
+import * as Actions from '../actions/Actions';
+import { ACTION_TYPES } from '../actions/Actions';
 
 interface State3Props {
     CurrentPlayer: ITeam
     getPlayer: () => {}
-    setWaterValues: (team: ITeam) => {}
-    submitRatings: (formValues: any) => {}
-    getContent: (team: ITeam) => {}
-    getDaysAbove: (team: ITeam) => {}
     match: any;
-    StateContent: any;
-    DaysAbove2: number;
     SocketConnected: boolean;
+    GameWon: boolean
 }
 
 interface State3State {
@@ -47,28 +47,23 @@ export default class State3 extends React.Component<State3Props, State3State> {
             }
         } else {
             console.log("CURRENT PLAYER ALREADY IN REDUX STORE")
-            this.props.getContent(this.props.CurrentPlayer)
         }
         //window. To(0, 0);
 
     }
 
-    componentDidUpdate() {
-        this.getData();
+    componentDidUpdate(prevProps: State3Props, prevState: State3State) {
         //if(this.props.CurrentPlayer && !this.state.Ratings)this.getRatings();
-    }
-
-    getData() {
-        if (this.props.SocketConnected && !this.props.DaysAbove2 && this.props.CurrentPlayer) {
-            this.props.getDaysAbove(this.props.CurrentPlayer);
+        if(this.state && !this.state.Completed3D && this.props.GameWon){
+            this.setState(Object.assign({}, this.state, {Completed3D: true}));
         }
     }
 
 
-    getRatings() {
+    submitVitory() {
         const protocol = !window.location.host.includes('local') ? "https:" : "http:";
         const port = !window.location.host.includes('local') ? ":8443" : ":4000";
-        const URL = protocol + "//" + window.location.hostname + port + "/sapien/api/sheets/ratings";
+        const URL = protocol + "//" + window.location.hostname + port + "/sapien/api/gamewon";
         fetch(
             URL,
             {
@@ -81,8 +76,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
         )
             .then(r => r.json())
             .then(r => {
-                console.log("RATINGS RETURNED", r)
-                this.setState(Object.assign({}, this.state, { Ratings: r }))
+                console.log("Victory submitted", r)
             })
     }
 
@@ -264,7 +258,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
 
                 <ScrollyContainer
                     BackgroundColor={this.state.Completed3D ? "#e93512" : "#f7f7f7"}
-                    Active={this.state.Completed3C}
+                    Active={this.state.Completed3C || this.props.GameWon}
                 >
                     <Row
                         type="flex"
@@ -283,11 +277,12 @@ export default class State3 extends React.Component<State3Props, State3State> {
                                     placeholder="Passphrase"
                                     disabled={this.state.Completed3D}
                                     onChange={(e) => {
+                                        var complete = e.target.value.toUpperCase().replace(/ /g, '') == "ZOOMOUTSOYOUCANSEETHEBIGPICTURE";
                                         this.setState(Object.assign({}, this.state, {
                                             Value3D: e.target.value.toUpperCase().replace(/ /g, ''),
-                                            Completed3D: e.target.value.toUpperCase().replace(/ /g, '') == "ZOOMOUTSOYOUCANSEETHEBIGPICTURE"
+                                            Completed3D: complete
                                         }))
-                                        console.log(e.target.value.toUpperCase(), this.state.Value3C);
+                                        if(complete) this.submitVitory();
                                     }
                                     }
                                 ></Input.TextArea>
@@ -313,23 +308,3 @@ export default class State3 extends React.Component<State3Props, State3State> {
 
     }
 }
-/**suffix={suffix}
-                        * {this.state.Value3C.map((s, i) => {
-                            return <Row>
-                                <Col xs={22}>
-                                    <Input
-                                        style={{ padding: '40px 10px', marginBottom: '.5em' }}
-                                        placeholder={"Passphrase " + (i + 1)}
-                                        onChange={e => this.setState(Object.assign({}, this.state, {
-                                            Value3C: this.state.Value3C.map((v, j) => {
-                                                return i == j ? e.target.value.toUpperCase() : v;
-                                            })
-                                        }))}
-                                    />
-                                </Col>
-                            </Row>
-                        })}
-
-                        <Col xs={2}>
-                            <p><p>{i + 1}.</p></p>
-                        </Col>    */

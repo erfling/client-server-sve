@@ -9,23 +9,17 @@ import { ACTION_TYPES } from '../actions/Actions';
 
 interface DispatchProps {
     getPlayer:() => {}
-    setWaterValues:(team:ITeam) => {}
-    submitRatings:(teamWithRatings: ITeam) => {}
-    getContent: (team: ITeam) => {}
-    getDaysAbove: (team: ITeam) => {}
 }
-export interface State1Props{
+export interface State3ContainerProps{
     CurrentPlayer: ITeam;
-    StateContent: any;
-    DaysAbove2: number;
-    SocketConnected: boolean
+    SocketConnected: boolean;
+    GameWon: boolean;
 }
-const mapStateToProps = (state: ApplicationStore, ownProps: {}): State1Props => {
+const mapStateToProps = (state: ApplicationStore, ownProps: {}): State3ContainerProps => {
     return {
         CurrentPlayer: state.GameData.CurrentPlayer,
-        StateContent: state.GameData.StateContent,
-        DaysAbove2: state.GameData.DaysAbove2,
-        SocketConnected: state.Application.SocketConnected
+        SocketConnected: state.Application.SocketConnected,
+        GameWon: state.GameData.GameWon
     };
 };
 
@@ -34,12 +28,8 @@ const mapDispatchToProps = (dispatch: Dispatch<ApplicationStore & DispatchProps>
         getPlayer: () => {
             dispatch( Actions.getPlayer() )
         },
-        setWaterValues: (team: ITeam) => {dispatch(Actions.setWaterValues(team))},
-        submitRatings: (teamWithRatings: ITeam) => dispatch( Actions.submitRatings(teamWithRatings) ),
-        getContent: (team: ITeam) => dispatch( Actions.getContent( team ) ),
-        getDaysAbove: (team:ITeam) => dispatch( Actions.getDaysAbove(team) )
     }
 }
 
-const State3Container = connect<State1Props, {}>(mapStateToProps, mapDispatchToProps)(State3);
+const State3Container = connect<State3ContainerProps, {}>(mapStateToProps, mapDispatchToProps)(State3);
 export default State3Container;

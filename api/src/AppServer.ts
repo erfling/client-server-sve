@@ -692,6 +692,24 @@ export default class AppServer
 
         //login route
         //mongoose.set('debug', true);
+        this.app.post('/sapien/api/gamewon', async (req, res) => {
+            try{
+                const game = await GameModel.findById((req.body as ITeam).GameId);
+                if(game){
+                    this.io.of(game._id).emit(SocketEvents.GAME_WON, true);
+                    res.json(true);
+                }else{
+                    res.status(400);
+                    res.json("GAME WON MESSAGE NOT SENT")
+                }
+            }catch{
+                res.status(400);
+                res.json("GAME WON MESSAGE NOT SENT")
+            }
+
+
+        });
+
 
         this.app.post('/sapien/api/changestate', (req, res) => {
             console.log(req.body._id);
