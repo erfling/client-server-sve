@@ -18,7 +18,6 @@ interface State3Props {
     getPlayer: () => {}
     match: any;
     SocketConnected: boolean;
-    GameWon: boolean
 }
 
 interface State3State {
@@ -26,19 +25,19 @@ interface State3State {
     Value3A: string;
     Completed3B: boolean;
     Value3B: string;
-    Value3C: string;
+    Value3C: string[];
     Value3D: string;
     Advance3C: boolean;
     Completed3C: boolean;
     Completed3D: boolean;
     PlayerNotFound: boolean;
 }
-import Cover from '-!svg-react-loader?name=Icon!../img/zoom.svg';
 
+const zoomer = require("../img/zoom-planet.png"); 
 export default class State3 extends React.Component<State3Props, State3State> {
 
     componentDidMount() {
-        this.setState({ Completed3A: false, Value3C: "", Advance3C: false })
+        this.setState({ Completed3A: false, Value3C: ["","","","","",""], Advance3C: false })
         if (!this.props.CurrentPlayer) {
             if (localStorage.getItem("SVE_PLAYER")) {
                 this.props.getPlayer();
@@ -53,10 +52,9 @@ export default class State3 extends React.Component<State3Props, State3State> {
     }
 
     componentDidUpdate(prevProps: State3Props, prevState: State3State) {
-        //if(this.props.CurrentPlayer && !this.state.Ratings)this.getRatings();
-        if(this.state && !this.state.Completed3D && this.props.GameWon){
-            this.setState(Object.assign({}, this.state, {Completed3D: true}));
-        }
+       if(this.state && !this.state.Completed3D && this.props.CurrentPlayer.GameWon){
+           this.setState(Object.assign({}, this.state, {Completed3D: true}));
+       }
     }
 
 
@@ -213,52 +211,75 @@ export default class State3 extends React.Component<State3Props, State3State> {
                         type="flex"
                         justify="center"
                     >
-                        <Col xs={20}>
+                        <Col xs={22}>
                             <p>
                                 <p>
                                     Decrease the number of years above two degrees by entering the six word passphrase. Check your button to discover a clue to the passphrase.
+
+                                </p>
+                            </p>
+                        </Col>
+                        <Col xs={22}>
+                            
+                              
+                                {this.state.Value3C.map((s, i) => {
+                               return <Row>
+                                   <Col xs={22}>
+                                       <Input
+                                            className={"input" + i}
+                                            prefix={<Icon type="lock" style={
+                                                {
+                                                    color: !this.state.Value3C || this.state.Value3C[i].toUpperCase() != "TOGETHER WE WILL SAVE THE PLANET".split(" ")[i] ? 'rgba(0,0,0,.25)' : 'green',
+                                                    transition: 'all .5sec'
+                                                }
+                                            } />}  
+                                            disabled={this.state.Value3C[i].toUpperCase() == "TOGETHER WE WILL SAVE THE PLANET".split(" ")[i]}                                        
+                                            style={{padding: '10px 0'}}
+                                            placeholder={"Passphrase " + (i + 1)}                                            
+                                            onChange={e => {this.setState(Object.assign({}, this.state, {
+                                               Value3C: this.state.Value3C.map((v, j) => {
+                                                   return i == j ? e.target.value.toUpperCase() : v;
+                                                })
+                                            }))
+                                            if(e.target.value.toUpperCase() == "TOGETHER WE WILL SAVE THE PLANET".split(" ")[i]){
+                                                var elClass = ".input" + (i + 1)
+                                                var el:HTMLSpanElement = document.querySelector(elClass);
+                                                if(el){
+                                                    var formEl:HTMLInputElement = el.querySelector("input");
+                                                    if(formEl)formEl.focus();
+                                                }
+                                            }
+
+                                        }}
+                                        />
+                                    </Col>
+                                </Row>
+                            })}
                                     <Button
                                         style={{
-                                            marginLeft: '25px',
-                                            marginTop: '0',
-                                            position: 'absolute'
+                                            marginTop: '30px',
                                         }}
                                         className="checker"
                                         type="primary"
                                         size="large"
-                                        disabled={!this.state.Value3C || this.state.Value3C.toUpperCase() != "Together we will save the planet".toUpperCase().replace(/ /g, '')}
+                                        disabled={!this.state.Value3C || this.state.Value3C.join("").toUpperCase() != "Together we will save the planet".toUpperCase().replace(/ /g, '')}
                                     >
                                         <Checkbox
-                                            disabled={!this.state.Value3C || this.state.Value3C.toUpperCase() != "Together we will save the planet".toUpperCase().replace(/ /g, '')}
+                                            disabled={!this.state.Value3C || this.state.Value3C.join("").toUpperCase() != "Together we will save the planet".toUpperCase().replace(/ /g, '')}
                                             onChange={e => setTimeout(() => {
                                                 this.setState(Object.assign({}, this.state, { Advance3C: true }));
                                                 setTimeout(() => this.setState(Object.assign({}, this.state, { Completed3C: true })), 1000)
 
                                             }, 1)}
-                                        ></Checkbox>
+                                        ><span>CHECK YOUR BUTTON</span></Checkbox>
                                     </Button>
-
-                                </p>
-                            </p>
-                        </Col>
-                        <Col xs={20} style={{ marginTop: '10px' }}>
-                            <Input.TextArea
-                                placeholder="Passphrase"
-                                onChange={(e) => {
-                                    this.setState(Object.assign({}, this.state, {
-                                        Value3C: e.target.value.toUpperCase().replace(/ /g, '')
-                                    }))
-                                    console.log(e.target.value.toUpperCase(), this.state.Value3C);
-                                }
-                                }
-                            ></Input.TextArea>
                         </Col>
                     </Row>
                 </ScrollyContainer>
 
                 <ScrollyContainer
-                    BackgroundColor={this.state.Completed3D ? "#e93512" : "#f7f7f7"}
-                    Active={this.state.Completed3C || this.props.GameWon}
+                    BackgroundColor={this.state.Completed3D ? "#000" : "#f7f7f7"}
+                    Active={this.state.Completed3C || this.props.CurrentPlayer.GameWon}
                 >
                     <Row
                         type="flex"
@@ -282,7 +303,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                                             Value3D: e.target.value.toUpperCase().replace(/ /g, ''),
                                             Completed3D: complete
                                         }))
-                                        if(complete) this.submitVitory();
+                                        if (complete) this.submitVitory();
                                     }
                                     }
                                 ></Input.TextArea>
@@ -291,12 +312,10 @@ export default class State3 extends React.Component<State3Props, State3State> {
 
                         {this.state.Completed3D &&
                             <Col xs={24}>
-                                <Cover
-                                    className="zoom"
-                                />
-                                <p style={{ textAlign: 'center' }}>
+                                <img src={zoomer} className="zoom"/>
+                                <p className="zoom-text">
                                     <p>
-                                        You did it!
+                                        Together, you saved the planet!
                                     </p>
                                 </p>
                             </Col>}

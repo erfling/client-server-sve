@@ -289,7 +289,7 @@ class GameRouter
 
             if(updatedGame){
                 //reset spreadsheet ranges
-                const sheetId = updatedGame.SheetId
+                const sheetId = "1nvQUmCJAb6ltOUwLm6ZygZE2HqGqcPJpGA1hv3K_9Zg";//updatedGame.SheetId
                 //clear team ratings
                 const ratingsCleared     = await GoogleSheets.clearRange(sheetId, "Round 3 Criteria!B2:D7");
                 //clear role deals
@@ -298,7 +298,7 @@ class GameRouter
                 const investmentsCleared = await GoogleSheets.clearRange(sheetId, "Country Impact!C12:C17");
  
                 var slugs = (updatedGame.Teams as ITeam[]).map(t => t._id)
-                console.log(slugs);
+                console.log("TEAMS TO RESET", slugs);
                 
                 const updatedTeams = await TeamModel.updateMany({_id: {$in: slugs}},{
                     DealsProposedTo: [],
@@ -307,7 +307,8 @@ class GameRouter
                     GameState: "1A",
                     Roles:{},
                     Ratings:{},
-                    ChosenHorse:null
+                    ChosenHorse:null,
+                    GameWon: false
                 },{
                     new: true
                 })

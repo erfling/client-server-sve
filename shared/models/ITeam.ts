@@ -27,4 +27,5 @@ export default interface ITeam extends IBaseClass {
   DealsProposedTo: Ref<Deal>[] | IDeal[];
   Roles:{ [R in RoleName]:Role };
   ChosenHorse: string;
+  GameWon: boolean;
 }

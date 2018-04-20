@@ -13,13 +13,11 @@ interface DispatchProps {
 export interface State3ContainerProps{
     CurrentPlayer: ITeam;
     SocketConnected: boolean;
-    GameWon: boolean;
 }
 const mapStateToProps = (state: ApplicationStore, ownProps: {}): State3ContainerProps => {
     return {
         CurrentPlayer: state.GameData.CurrentPlayer,
         SocketConnected: state.Application.SocketConnected,
-        GameWon: state.GameData.GameWon
     };
 };
 

@@ -258,7 +258,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
                 });
             
         case ACTION_TYPES.MANUALLY_SET_BOTTOM_BAR_VISIBLE.actionType: 
-                return Object.assign({}, state, { BottomBarVisible: true })        
+                return Object.assign({}, state, { BottomBarVisible: true })
         case ACTION_TYPES.GOT_PLAYER_FROM_LOCAL_STORAGE.actionType: 
                 return Object.assign({}, state, {CurrentPlayer: Object.assign({}, action.payload)})
         case ACTION_TYPES.RATINGS_SUBMITTED.actionType:
@@ -273,7 +273,9 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
         case ACTION_TYPES.YEARS_ABOVE_2_UPDATED.actionType:
             return Object.assign({}, state, {DaysAbove2: action.payload})
         case ACTION_TYPES.GAME_WON.actionType:
-            return Object.assign({}, state, {GameWon: true})
+            var player = Object.assign({}, JSON.parse(JSON.stringify(state.CurrentPlayer)), {GameWon: true})
+            localStorage.setItem('SVE_PLAYER', JSON.stringify(player));
+            return Object.assign({}, state, {CurrentPlayer: player});
         default:
             return state;
     }
