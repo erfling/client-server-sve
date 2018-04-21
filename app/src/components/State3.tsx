@@ -215,7 +215,6 @@ export default class State3 extends React.Component<State3Props, State3State> {
                             <p>
                                 <p>
                                     Decrease the number of years above two degrees by entering the six word passphrase. Check your button to discover a clue to the passphrase.
-
                                 </p>
                             </p>
                         </Col>
@@ -235,7 +234,6 @@ export default class State3 extends React.Component<State3Props, State3State> {
                                             } />}  
                                             disabled={this.state.Value3C[i].toUpperCase() == "TOGETHER WE WILL SAVE THE PLANET".split(" ")[i]}                                        
                                             style={{padding: '10px 0'}}
-                                            placeholder={"Passphrase " + (i + 1)}                                            
                                             onChange={e => {this.setState(Object.assign({}, this.state, {
                                                Value3C: this.state.Value3C.map((v, j) => {
                                                    return i == j ? e.target.value.toUpperCase() : v;
