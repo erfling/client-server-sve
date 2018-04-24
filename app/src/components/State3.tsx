@@ -223,7 +223,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                         <Col xs={22}>
                             <p>
                                 <p>
-                                    Decrease the number of years above two degrees by entering the six word passphrase. Check your button to discover a clue to the passphrase.
+                                    Decrease the number of years above two degrees by entering the six word passphrase. Check your button so you can get a clue to the passphrase.
                                 </p>
                             </p>
                         </Col>
