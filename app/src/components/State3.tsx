@@ -321,7 +321,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                         }
 
                         {this.state.Completed3D &&
-                            <Col xs={24}>
+                            <Col xs={24} style={{width:'100vh'}}>
                                 <img src={zoomer} className="zoom"/>
                                 <p className="zoom-text">
                                     <p>
