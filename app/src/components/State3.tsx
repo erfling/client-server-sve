@@ -131,6 +131,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                 ParallaxImg=""
                 HideImage={true}
             >
+            {!this.state.Completed3B &&
                 <ScrollyContainer
                     Active={true}
                     WasActive={this.state.Completed3A}
@@ -163,6 +164,8 @@ export default class State3 extends React.Component<State3Props, State3State> {
                         </Col>
                     </Col>
                 </ScrollyContainer>
+            }
+            {this.state.Completed3A &&
 
                 <ScrollyContainer
                     BackgroundColor={(this.state.Value3B && this.state.Value3B.toUpperCase() == "30") ? "#64c766" : "#f7f7f7"}
@@ -204,7 +207,8 @@ export default class State3 extends React.Component<State3Props, State3State> {
 
 
                 </ScrollyContainer>
-
+            }
+            {this.state.Completed3B &&
                 <ScrollyContainer
                     BackgroundColor={this.state.Advance3C ? "#64c766" : "#f7f7f7"}
                     Active={this.state.Completed3B}
@@ -277,7 +281,8 @@ export default class State3 extends React.Component<State3Props, State3State> {
                         </Col>
                     </Row>
                 </ScrollyContainer>
-
+            }
+            {this.state.Completed3C &&
                 <ScrollyContainer
                     BackgroundColor={this.state.Completed3D ? "#000" : "#f7f7f7"}
                     Active={this.state.Completed3C || this.props.CurrentPlayer.GameWon}
@@ -322,7 +327,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                             </Col>}
                     </Row>
                 </ScrollyContainer>
-
+            }
             </GameWrapper>
         )
 
