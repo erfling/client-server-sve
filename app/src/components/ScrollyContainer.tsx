@@ -4,6 +4,7 @@ import { Row, Col } from 'antd';
 interface ScrollyContainerProps {
     Active: boolean;
     BackgroundColor?: string;
+    WasActive?: boolean;
 }
 
 export default class ScrollyContainer extends React.Component<ScrollyContainerProps, {WasActive: boolean}> {
@@ -19,7 +20,7 @@ export default class ScrollyContainer extends React.Component<ScrollyContainerPr
         const getClassName = () => {
             var className = "scrolly-container";
             if(this.props.Active) className += " active";
-            if(this.state && this.state.WasActive)className += " was-active";
+            if(this.props && this.props.WasActive)className += " was-active";
             return className;
         }
 

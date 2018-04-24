@@ -133,6 +133,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
             >
                 <ScrollyContainer
                     Active={true}
+                    WasActive={this.state.Completed3A}
                     BackgroundColor={this.state.Value3A && this.state.Value3A.toUpperCase() == this.evaluateState1() ? "#64c766" : "#f7f7f7"}
                 >
                     <Col xs={20} lg={8}>
@@ -166,6 +167,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                 <ScrollyContainer
                     BackgroundColor={(this.state.Value3B && this.state.Value3B.toUpperCase() == "30") ? "#64c766" : "#f7f7f7"}
                     Active={this.state.Completed3A}
+                    WasActive={this.state.Completed3B}
                 >
 
                     <Col xs={20} lg={20}>
@@ -206,6 +208,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                 <ScrollyContainer
                     BackgroundColor={this.state.Advance3C ? "#64c766" : "#f7f7f7"}
                     Active={this.state.Completed3B}
+                    WasActive={this.state.Completed3C}
                 >
                     <Row
                         type="flex"
