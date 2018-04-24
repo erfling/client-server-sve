@@ -110,7 +110,7 @@ export class GameWrapper extends React.Component<GamesList, any> {
 
         }
 
-        return  <Layout style={{minHeight:'100vh', width:'100vw'}} className={this.props.BottomBarVisible ? "big-bottom" : null}>
+        return  <Layout style={{minHeight:'100vh'}} className={this.props.BottomBarVisible ? "big-bottom" : null}>
                     <Content className="game-wrapper">
                         {this.props.ParallaxImg && 
                         <Parallax  
