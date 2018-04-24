@@ -33,11 +33,11 @@ interface State3State {
     PlayerNotFound: boolean;
 }
 
-const zoomer = require("../img/zoom-planet.png"); 
+const zoomer = require("../img/zoom-planet.png");
 export default class State3 extends React.Component<State3Props, State3State> {
 
     componentDidMount() {
-        this.setState({ Completed3A: false, Value3C: ["","","","","",""], Advance3C: false })
+        this.setState({ Completed3A: false, Value3C: ["", "", "", "", "", ""], Advance3C: false })
         if (!this.props.CurrentPlayer) {
             if (localStorage.getItem("SVE_PLAYER")) {
                 this.props.getPlayer();
@@ -52,9 +52,9 @@ export default class State3 extends React.Component<State3Props, State3State> {
     }
 
     componentDidUpdate(prevProps: State3Props, prevState: State3State) {
-       if(this.state && !this.state.Completed3D && this.props.CurrentPlayer.GameWon){
-           this.setState(Object.assign({}, this.state, {Completed3D: true}));
-       }
+        if (this.state && !this.state.Completed3D && this.props.CurrentPlayer.GameWon) {
+            this.setState(Object.assign({}, this.state, { Completed3D: true }));
+        }
     }
 
 
@@ -135,7 +135,9 @@ export default class State3 extends React.Component<State3Props, State3State> {
                     Active={true}
                     BackgroundColor={this.state.Value3A && this.state.Value3A.toUpperCase() == this.evaluateState1() ? "#64c766" : "#f7f7f7"}
                 >
-                    <Col xs={20} lg={8}>
+                    <Col xs={20} lg={8}
+                        style={{ zIndex: 1 }}
+                    >
                         <Col xs={24}>
                             <Input
                                 placeholder="Password"
@@ -168,7 +170,10 @@ export default class State3 extends React.Component<State3Props, State3State> {
                     Active={this.state.Completed3A}
                 >
 
-                    <Col xs={20} lg={20}>
+                    <Col
+                        style={{ zIndex: 2 }}
+                        xs={20} lg={20}
+                    >
                         <p>
                             <p>
                                 Congratulations on reducing the projected temperature in 2100 through clever deal making in the previous round. However, based on current projections there are still several years in which the temperature is more than 2 degrees Celsius above pre-industrial levels, which is above the Paris Accord level. Compute the number of years above 2 degrees.
@@ -210,6 +215,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                     <Row
                         type="flex"
                         justify="center"
+                        style={{ zIndex: 3 }}
                     >
                         <Col xs={22}>
                             <p>
@@ -219,58 +225,59 @@ export default class State3 extends React.Component<State3Props, State3State> {
                             </p>
                         </Col>
                         <Col xs={22}>
-                            
-                              
-                                {this.state.Value3C.map((s, i) => {
-                               return <Row>
-                                   <Col xs={22}>
-                                       <Input
+
+
+                            {this.state.Value3C.map((s, i) => {
+                                return <Row>
+                                    <Col xs={22}>
+                                        <Input
                                             className={"input" + i}
                                             prefix={<Icon type="lock" style={
                                                 {
                                                     color: !this.state.Value3C || this.state.Value3C[i].toUpperCase() != "TOGETHER WE WILL SAVE THE PLANET".split(" ")[i] ? 'rgba(0,0,0,.25)' : 'green',
                                                     transition: 'all .5sec'
                                                 }
-                                            } />}  
-                                            disabled={this.state.Value3C[i].toUpperCase() == "TOGETHER WE WILL SAVE THE PLANET".split(" ")[i]}                                        
-                                            style={{padding: '10px 0'}}
-                                            onChange={e => {this.setState(Object.assign({}, this.state, {
-                                               Value3C: this.state.Value3C.map((v, j) => {
-                                                   return i == j ? e.target.value.toUpperCase() : v;
-                                                })
-                                            }))
-                                            if(e.target.value.toUpperCase() == "TOGETHER WE WILL SAVE THE PLANET".split(" ")[i]){
-                                                var elClass = ".input" + (i + 1)
-                                                var el:HTMLSpanElement = document.querySelector(elClass);
-                                                if(el){
-                                                    var formEl:HTMLInputElement = el.querySelector("input");
-                                                    if(formEl)formEl.focus();
+                                            } />}
+                                            disabled={this.state.Value3C[i].toUpperCase() == "TOGETHER WE WILL SAVE THE PLANET".split(" ")[i]}
+                                            style={{ padding: '10px 0' }}
+                                            onChange={e => {
+                                                this.setState(Object.assign({}, this.state, {
+                                                    Value3C: this.state.Value3C.map((v, j) => {
+                                                        return i == j ? e.target.value.toUpperCase() : v;
+                                                    })
+                                                }))
+                                                if (e.target.value.toUpperCase() == "TOGETHER WE WILL SAVE THE PLANET".split(" ")[i]) {
+                                                    var elClass = ".input" + (i + 1)
+                                                    var el: HTMLSpanElement = document.querySelector(elClass);
+                                                    if (el) {
+                                                        var formEl: HTMLInputElement = el.querySelector("input");
+                                                        if (formEl) formEl.focus();
+                                                    }
                                                 }
-                                            }
 
-                                        }}
+                                            }}
                                         />
                                     </Col>
                                 </Row>
                             })}
-                                    <Button
-                                        style={{
-                                            marginTop: '30px',
-                                        }}
-                                        className="checker"
-                                        type="primary"
-                                        size="large"
-                                        disabled={!this.state.Value3C || this.state.Value3C.join("").toUpperCase() != "Together we will save the planet".toUpperCase().replace(/ /g, '')}
-                                    >
-                                        <Checkbox
-                                            disabled={!this.state.Value3C || this.state.Value3C.join("").toUpperCase() != "Together we will save the planet".toUpperCase().replace(/ /g, '')}
-                                            onChange={e => setTimeout(() => {
-                                                this.setState(Object.assign({}, this.state, { Advance3C: true }));
-                                                setTimeout(() => this.setState(Object.assign({}, this.state, { Completed3C: true })), 1000)
+                            <Button
+                                style={{
+                                    marginTop: '30px',
+                                }}
+                                className="checker"
+                                type="primary"
+                                size="large"
+                                disabled={!this.state.Value3C || this.state.Value3C.join("").toUpperCase() != "Together we will save the planet".toUpperCase().replace(/ /g, '')}
+                            >
+                                <Checkbox
+                                    disabled={!this.state.Value3C || this.state.Value3C.join("").toUpperCase() != "Together we will save the planet".toUpperCase().replace(/ /g, '')}
+                                    onChange={e => setTimeout(() => {
+                                        this.setState(Object.assign({}, this.state, { Advance3C: true }));
+                                        setTimeout(() => this.setState(Object.assign({}, this.state, { Completed3C: true })), 1000)
 
-                                            }, 1)}
-                                        ><span>CHECK YOUR BUTTON</span></Checkbox>
-                                    </Button>
+                                    }, 1)}
+                                ><span>CHECK YOUR BUTTON</span></Checkbox>
+                            </Button>
                         </Col>
                     </Row>
                 </ScrollyContainer>
@@ -282,6 +289,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                     <Row
                         type="flex"
                         justify="center"
+                        style={{ zIndex: 4 }}
                     >
                         {!this.state.Completed3D &&
                             <Col xs={20}>
@@ -310,7 +318,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
 
                         {this.state.Completed3D &&
                             <Col xs={24}>
-                                <img src={zoomer} className="zoom"/>
+                                <img src={zoomer} className="zoom" />
                                 <p className="zoom-text">
                                     <p>
                                         Together, you saved the planet!
