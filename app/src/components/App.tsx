@@ -51,7 +51,7 @@ export class App extends React.Component<{}, ImportState> {
   render() {
     if(!this.state)return <div></div>
     return (
-      <div>
+      <div style={{width:'100vw'}}>
 
         <Switch>
           {this.state.AdminRoot && <Route exact={false} path="/admin" component={this.state.AdminRoot}/>}
