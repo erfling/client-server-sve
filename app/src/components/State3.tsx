@@ -155,6 +155,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                                     setTimeout(() => {
                                         if (this.state.Value3A) console.log(this.state.Value3A.toUpperCase(), this.evaluateState1(), this.state.Value3A.toUpperCase() == this.evaluateState1());
                                         if (this.state.Value3A && this.state.Value3A.toUpperCase() == this.evaluateState1()) {
+                                            (document.activeElement as HTMLFormElement).blur();
                                             setTimeout(() => this.setState(Object.assign({}, this.state, { Completed3A: true })), 1000)
                                         }
                                     }, 1)
@@ -195,6 +196,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
 
                                 setTimeout(() => {
                                     if (this.state.Value3B && this.state.Value3B.toUpperCase() == "30") {
+                                        (document.activeElement as HTMLFormElement).blur();
                                         setTimeout(() => this.setState(Object.assign({}, this.state, { Completed3B: true })), 1000)
                                     }
                                 }, 1)
@@ -273,8 +275,9 @@ export default class State3 extends React.Component<State3Props, State3State> {
                                             disabled={!this.state.Value3C || this.state.Value3C.join("").toUpperCase() != "Together we will save the planet".toUpperCase().replace(/ /g, '')}
                                             onChange={e => setTimeout(() => {
                                                 this.setState(Object.assign({}, this.state, { Advance3C: true }));
+                                                (document.activeElement as HTMLFormElement).blur();
                                                 setTimeout(() => this.setState(Object.assign({}, this.state, { Completed3C: true })), 1000)
-
+                                                
                                             }, 1)}
                                         ><span>CHECK YOUR BUTTON</span></Checkbox>
                                     </Button>
