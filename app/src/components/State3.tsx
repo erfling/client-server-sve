@@ -299,7 +299,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                                     placeholder="Passphrase"
                                     disabled={this.state.Completed3D}
                                     onChange={(e) => {
-                                        var complete = e.target.value.toUpperCase().replace(/ /g, '') == "ZOOMOUTSOYOUCANSEETHEBIGPICTURE";
+                                        var complete = e.target.value.toUpperCase().replace(/ /g, '') == "ZOOMOUT&YOUCANSEETHEBIGPICTURE";
                                         this.setState(Object.assign({}, this.state, {
                                             Value3D: e.target.value.toUpperCase().replace(/ /g, ''),
                                             Completed3D: complete
