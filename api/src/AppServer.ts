@@ -713,6 +713,28 @@ export default class AppServer
         });
 
 
+        this.app.post('/sapien/api/round3subroundcomplete', async (req, res) => {
+            try{
+
+                const team = (<ITeam>req.body);
+                const updatedTeam = await TeamModel.findOneAndUpdate({Slug: team.Slug}, {HighestRoundThreeCompletion: team.HighestRoundThreeCompletion}, {new: true}).populate(teamPopulateRules);
+
+                if(updatedTeam){
+                    console.log("WAS UPDATED",updatedTeam)
+                    this.io.of(team.GameId).to(team.Slug).emit(SocketEvents.TEAM_UPDATED, updatedTeam);
+                    res.json(true);
+                }else{
+                    res.status(400);
+                    res.json("GAME WON MESSAGE NOT SENT")
+                }
+            }catch{
+                res.status(400);
+                res.json("GAME WON MESSAGE NOT SENT")
+            }
+
+
+        });
+
         this.app.post('/sapien/api/changestate', (req, res) => {
             console.log(req.body._id);
             GameModel.findByIdAndUpdate(req.body._id, {State: req.body.State}, {new: true}).populate("Teams").then(( game ) => {

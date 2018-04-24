@@ -121,6 +121,7 @@ export const GameData = (state = initialState.GameData, action: Action<any>) => 
            
         case (ACTION_TYPES.DEAL_RESPONSE.actionType):        
             console.log("Deal response in reducer", action.payload)
+            var player = JSON.parse(JSON.stringify(state.CurrentPlayer));
             return Object.assign({}, state, {CurrentPlayer: Object.assign(
                 {}, state.CurrentPlayer, {
                     DealsProposedTo: action.payload.DealsProposedTo,

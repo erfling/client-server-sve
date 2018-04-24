@@ -57,6 +57,28 @@ export default class State3 extends React.Component<State3Props, State3State> {
        }
     }
 
+    submitSubRoundCompletion(subRoundCompleted: number){
+        const protocol = !window.location.host.includes('local') ? "https:" : "http:";
+        const port = !window.location.host.includes('local') ? ":8443" : ":4000";
+        const URL = protocol + "//" + window.location.hostname + port + "/sapien/api/round3subroundcomplete";
+
+        var teamToSubmit = Object.assign({}, this.props.CurrentPlayer, {HighestRoundThreeCompletion: subRoundCompleted})
+        console.log("ABOUT TO SEND TO SERVER: ", teamToSubmit);
+        fetch(
+            URL,
+            {
+                method: "POST",
+                body: JSON.stringify(teamToSubmit),
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            }
+        )
+            .then(r => r.json())
+            .then(r => {
+                console.log("Victory submitted", r)
+            })
+    }
 
     submitVitory() {
         const protocol = !window.location.host.includes('local') ? "https:" : "http:";
@@ -131,10 +153,10 @@ export default class State3 extends React.Component<State3Props, State3State> {
                 ParallaxImg=""
                 HideImage={true}
             >
-            {!this.state.Completed3B && !this.props.CurrentPlayer.GameWon &&
+            {!this.state.Completed3B && !this.props.CurrentPlayer.GameWon && (!this.props.CurrentPlayer.HighestRoundThreeCompletion || this.props.CurrentPlayer.HighestRoundThreeCompletion < 1) &&
                 <ScrollyContainer
                     Active={true}
-                    WasActive={this.state.Completed3A}
+                    WasActive={this.state.Completed3A || (this.props.CurrentPlayer.HighestRoundThreeCompletion != undefined || this.props.CurrentPlayer.HighestRoundThreeCompletion > 1)}
                     BackgroundColor={this.state.Value3A && this.state.Value3A.toUpperCase() == this.evaluateState1() ? "#64c766" : "#f7f7f7"}
                 >
                     <Col xs={20} lg={8}>
@@ -153,8 +175,8 @@ export default class State3 extends React.Component<State3Props, State3State> {
                                     this.setState(Object.assign({}, this.state, { Value3A: e.target.value }))
 
                                     setTimeout(() => {
-                                        if (this.state.Value3A) console.log(this.state.Value3A.toUpperCase(), this.evaluateState1(), this.state.Value3A.toUpperCase() == this.evaluateState1());
                                         if (this.state.Value3A && this.state.Value3A.toUpperCase() == this.evaluateState1()) {
+                                            this.submitSubRoundCompletion(1);
                                             (document.activeElement as HTMLFormElement).blur();
                                             setTimeout(() => this.setState(Object.assign({}, this.state, { Completed3A: true })), 1000)
                                         }
@@ -166,12 +188,12 @@ export default class State3 extends React.Component<State3Props, State3State> {
                     </Col>
                 </ScrollyContainer>
             }
-            {this.state.Completed3A &&
+            {this.state.Completed3A || (this.props.CurrentPlayer.HighestRoundThreeCompletion && this.props.CurrentPlayer.HighestRoundThreeCompletion == 1) ? 
 
                 <ScrollyContainer
                     BackgroundColor={(this.state.Value3B && this.state.Value3B.toUpperCase() == "30") ? "#64c766" : "#f7f7f7"}
-                    Active={this.state.Completed3A}
-                    WasActive={this.state.Completed3B}
+                    Active={this.state.Completed3A || (this.props.CurrentPlayer.HighestRoundThreeCompletion && this.props.CurrentPlayer.HighestRoundThreeCompletion == 1)}
+                    WasActive={this.state.Completed3B || (this.props.CurrentPlayer.HighestRoundThreeCompletion && this.props.CurrentPlayer.HighestRoundThreeCompletion > 1)}
                 >
 
                     <Col xs={20} lg={20}>
@@ -196,25 +218,22 @@ export default class State3 extends React.Component<State3Props, State3State> {
 
                                 setTimeout(() => {
                                     if (this.state.Value3B && this.state.Value3B.toUpperCase() == "30") {
+                                        this.submitSubRoundCompletion(2);
                                         (document.activeElement as HTMLFormElement).blur();
-                                        setTimeout(() => this.setState(Object.assign({}, this.state, { Completed3B: true })), 1000)
+                                        setTimeout(() => this.setState(Object.assign({}, this.state, { Completed3B: true })), 1000);
                                     }
                                 }, 1)
                             }
                             }
                         />
                     </Col>
-
-
-
-
-                </ScrollyContainer>
+                </ScrollyContainer> : null
             }
-            {this.state.Completed3B &&
+            {this.state.Completed3B || (this.props.CurrentPlayer.HighestRoundThreeCompletion && this.props.CurrentPlayer.HighestRoundThreeCompletion == 2) ?
                 <ScrollyContainer
                     BackgroundColor={this.state.Advance3C ? "#64c766" : "#f7f7f7"}
-                    Active={this.state.Completed3B}
-                    WasActive={this.state.Completed3C}
+                    Active={this.state.Completed3B || (this.props.CurrentPlayer.HighestRoundThreeCompletion && this.props.CurrentPlayer.HighestRoundThreeCompletion == 2)}
+                    WasActive={this.state.Completed3C || (this.props.CurrentPlayer.HighestRoundThreeCompletion && this.props.CurrentPlayer.HighestRoundThreeCompletion > 2)}
                 >
                     <Row
                         type="flex"
@@ -274,6 +293,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                                         <Checkbox
                                             disabled={!this.state.Value3C || this.state.Value3C.join("").toUpperCase() != "Together we will save the planet".toUpperCase().replace(/ /g, '')}
                                             onChange={e => setTimeout(() => {
+                                                this.submitSubRoundCompletion(3);
                                                 this.setState(Object.assign({}, this.state, { Advance3C: true }));
                                                 (document.activeElement as HTMLFormElement).blur();
                                                 setTimeout(() => this.setState(Object.assign({}, this.state, { Completed3C: true })), 1000)
@@ -283,13 +303,13 @@ export default class State3 extends React.Component<State3Props, State3State> {
                                     </Button>
                         </Col>
                     </Row>
-                </ScrollyContainer>
+                </ScrollyContainer> : null
             }
-            {this.state.Completed3C || this.props.CurrentPlayer.GameWon ?
+            {this.state.Completed3C || (this.props.CurrentPlayer.HighestRoundThreeCompletion && this.props.CurrentPlayer.HighestRoundThreeCompletion == 3) || this.props.CurrentPlayer.GameWon ?
                 <ScrollyContainer
                     className={this.props.CurrentPlayer.GameWon ? "victory" : null}
                     BackgroundColor={this.state.Completed3D ? "#000" : "#f7f7f7"}
-                    Active={this.state.Completed3C || this.props.CurrentPlayer.GameWon}
+                    Active={this.state.Completed3C || this.props.CurrentPlayer.GameWon || (this.props.CurrentPlayer.HighestRoundThreeCompletion && this.props.CurrentPlayer.HighestRoundThreeCompletion == 3)}
                 >
                     <Row
                         type="flex"

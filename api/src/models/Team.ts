@@ -68,6 +68,9 @@ export class Team extends BaseClass implements ITeam
 
     @prop()
     ChosenHorse: string;
+    
+    @prop()
+    HighestRoundThreeCompletion: number;
 
     @prop()
     GameWon: boolean;
