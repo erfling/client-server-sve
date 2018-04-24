@@ -870,7 +870,7 @@ textarea.ant-input{
         
     }
 
-    position:fixed;
+    position: absolute;
     width:100%;
     bottom: -200vh;
     height:100vh;
@@ -880,7 +880,7 @@ textarea.ant-input{
     display: none;
     &.active{
         bottom:0;
-        display:block;
+        display:flex;
     }
     &.was-active{
         bottom: 100vh;
