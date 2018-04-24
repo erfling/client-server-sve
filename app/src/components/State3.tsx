@@ -287,6 +287,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
             }
             {this.state.Completed3C || this.props.CurrentPlayer.GameWon ?
                 <ScrollyContainer
+                    className={this.props.CurrentPlayer.GameWon ? "victory" : null}
                     BackgroundColor={this.state.Completed3D ? "#000" : "#f7f7f7"}
                     Active={this.state.Completed3C || this.props.CurrentPlayer.GameWon}
                 >

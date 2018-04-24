@@ -5,6 +5,7 @@ interface ScrollyContainerProps {
     Active: boolean;
     BackgroundColor?: string;
     WasActive?: boolean;
+    className?: string;
 }
 
 export default class ScrollyContainer extends React.Component<ScrollyContainerProps, {WasActive: boolean}> {
@@ -21,6 +22,7 @@ export default class ScrollyContainer extends React.Component<ScrollyContainerPr
             var className = "scrolly-container";
             if(this.props.Active) className += " active";
             if(this.props && this.props.WasActive)className += " was-active";
+            if(this.props.className)className += " " + this.props.className;
             return className;
         }
 

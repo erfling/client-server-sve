@@ -885,6 +885,9 @@ textarea.ant-input{
 
     &::nth-of-type(4){
         z-index: 4;
+        &.victory{
+            position: fixed;
+        }
     }
 
     position: absolute;
