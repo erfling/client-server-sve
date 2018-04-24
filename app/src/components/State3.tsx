@@ -131,7 +131,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
                 ParallaxImg=""
                 HideImage={true}
             >
-            {!this.state.Completed3B &&
+            {!this.state.Completed3B && !this.props.CurrentPlayer.GameWon &&
                 <ScrollyContainer
                     Active={true}
                     WasActive={this.state.Completed3A}
