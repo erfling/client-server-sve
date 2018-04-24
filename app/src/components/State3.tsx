@@ -132,11 +132,11 @@ export default class State3 extends React.Component<State3Props, State3State> {
                 case (2):
                     return <p>Cumulative carbon emitted by coal:<br /> 745 Gigatons of Carbon (GtC)</p>;
                 case (3):
-                    return <p>Cumulative carbon emitted by oil and gas:<br /> 502 GtC</p>;
+                    return <p>Cumulative carbon emitted by oil and gas:<br /> 502 Gigatons of Carbon (GtC)</p>;
                 case (4):
-                    return <p>Cumulative carbon emitted by all sources other than coal, oil and gas:<br /> 378 GtC</p>;
+                    return <p>Cumulative carbon emitted by all sources other than coal, oil and gas:<br /> 378 Gigatons of Carbon (GtC)</p>;
                 case (5):
-                    return <p>Cumulative carbon captured by negative emissions technologies:<br /> 125 GtC</p>;
+                    return <p>Cumulative carbon captured by negative emissions technologies:<br /> 125 Gigatons of Carbon (GtC)</p>;
                 case (6):
                     return <p>Number of Years Above 2 Degrees:<br />(Cumulative Projected Temp Increase by 2100) X 20</p>;
             }
@@ -288,9 +288,14 @@ export default class State3 extends React.Component<State3Props, State3State> {
                                         className="checker"
                                         type="primary"
                                         size="large"
+                                        onClick={e => {
+                                            var checkbox:HTMLFormElement = document.querySelector(".checkbox-3C");
+                                            if(checkbox) checkbox.click();
+                                        }}
                                         disabled={!this.state.Value3C || this.state.Value3C.join("").toUpperCase() != "Together we will save the planet".toUpperCase().replace(/ /g, '')}
                                     >
                                         <Checkbox
+                                            className="checkbox-3C"
                                             disabled={!this.state.Value3C || this.state.Value3C.join("").toUpperCase() != "Together we will save the planet".toUpperCase().replace(/ /g, '')}
                                             onChange={e => setTimeout(() => {
                                                 this.submitSubRoundCompletion(3);
