@@ -334,7 +334,7 @@ export default class State3 extends React.Component<State3Props, State3State> {
 
                                     <p>
                                         <p>
-                                            Engage the rest of the world in solving the problem: it will take more than one region. Do this by entering the 31-letter global cooperation code. You can discover this code by arranging the images in the file in the fourth flip.
+                                            Engage the rest of the world in solving the problem: it will take more than one region. Do this by entering the 30-character global cooperation code. You can discover this code by arranging the images in the file in the fourth flip.
                                 </p>
 
                                     </p>
